@@ -1,6 +1,7 @@
 """Bank-transfer confirmation -> przelew_bankowy."""
 
 import re
+from dataclasses import dataclass
 
 from stdnum import iban
 
@@ -10,8 +11,15 @@ from .receipt_layout import booking_heading
 
 # 26-digit Polish account number, optionally 'PL'-prefixed, grouped or wrapped across lines.
 ACCOUNT_RE = re.compile(r"(?<![\w/|*])(?:PL\s?)?(\d{2}(?:[ \n]?\d{4}){6})(?![\w/|*])")
-SENDER_RE = re.compile(r"nadawc|zleceniodawc|płatnik|obciąż|z rachunku")
-RECIPIENT_RE = re.compile(r"odbiorc|beneficjent|adresat|uznawan|na rachunek")
+SENDER_LABEL = (
+    r"(?:rachunek (?:nadawcy|zleceniodawcy|obciążany)|z rachunku|(?:dane )?(?:nadawc[ay]|zleceniodawc[ay]|płatnik))"
+)
+RECIPIENT_LABEL = r"(?:rachunek (?:odbiorcy|beneficjenta|uznawany)|na rachunek|(?:dane )?(?:odbiorc[ay]|beneficjent|adresat(?: przelewu)?))"
+ACCOUNT_LABEL = re.compile(
+    rf"(?:(?P<sender>{SENDER_LABEL})|(?P<recipient>{RECIPIENT_LABEL})|(?P<generic>konto|rachunek))\b", re.IGNORECASE
+)
+STRICT_ACCOUNT_LABEL = re.compile(r"rachunek (nadawcy|odbiorcy):", re.IGNORECASE)
+ACCOUNT_VALUE = re.compile(rf"(?:{ACCOUNT_RE.pattern}|(?<!\w)(?:\*{{4,}}|[Xx]{{3,}}|[—–-])(?!\w))")
 
 MONEY = r"(?<![\d.,])(?:\d{1,3}(?:[ .\u00a0]\d{3})+[.,]\d{2}|\d+[.,]\d{2})(?![.,]?\d)"
 AMOUNT_LABEL = r"(?:kwota(?: (?:operacji|przelewu|transakcji|zaksięgowana))?|wartość)"
@@ -68,44 +76,112 @@ def booking_form(text: str) -> bool:
     return any(booking_heading(line) for line in text.splitlines()) or bool(re.search(r"(?im)^data obciążenia\b", text))
 
 
-def _accounts(text: str) -> tuple[str | None, str | None]:
-    """Resolve labelled roles or an ordered pair of column headers."""
-    found = {}
+@dataclass(frozen=True)
+class AccountEvidence:
+    sender: str | None
+    recipient: str | None
+    distinct_numbers: int
+    masked_pair: bool
+
+
+def account_evidence(text: str) -> AccountEvidence:
+    """Bind complete numbers or masks to their printed field or ordered table column."""
+    numbers = set()
     bank = booking_form(text)
-    for match in (BANK_ACCOUNT if bank else ACCOUNT_RE).finditer(text):
-        found.setdefault(re.sub(r"\s", "", match[1]), match)
-    if not found or len(found) > 2:
-        return None, None
 
+    def compact(match: re.Match) -> str:
+        number = "".join(match[1].split())
+        numbers.add(number)
+        if bank:
+            return validated_account(number) or "?"
+        return number
+
+    source = text
+    text = (BANK_ACCOUNT if bank else ACCOUNT_RE).sub(compact, text)
+    # Preserve inline columns and the two explicit account clauses in bank letters.
+    text = re.sub(rf"(?:(?<=[\d*:—–-])|(?<=XXX))[ \t]+(?={ACCOUNT_LABEL.pattern})", "\n", text, flags=re.IGNORECASE)
+    text = re.sub(r"(?i)\b(z rachunku|na rachunek) nr (?=\d{26}\b)", r"\n\1 ", text)
+    values = {"sender": set(), "recipient": set(), "generic": set()}
+    declared = set()
+    strict = []
     roles = []
-    previous_end = 0
-    column_order = []
-    for match in found.values():
-        context = text[previous_end : match.start()].casefold()
-        labels = sorted(
-            [(m.start(), "sender") for m in SENDER_RE.finditer(context)]
-            + [(m.start(), "recipient") for m in RECIPIENT_RE.finditer(context)]
-        )
-        role = labels[-1][1] if labels else None
-        if not roles and labels and "\n" in context[labels[-1][0] :]:
-            last_heading = context[: labels[-1][0] + 1].rpartition("\n")[2]
-            if SENDER_RE.search(last_heading) or RECIPIENT_RE.search(last_heading):
-                column_order = list(dict.fromkeys(label for _, label in labels[-2:]))
-        roles.append(role)
-        previous_end = match.end()
+    table = False
+    cells = []
+    for raw in text.splitlines():
+        line = raw.strip()
+        if not line:
+            continue
+        label = ACCOUNT_LABEL.match(line)
+        if label:
+            roles, cells = [], []
+            participant = not label[0].casefold().startswith(("konto", "rachunek", "na rachunek", "z rachunku"))
+            count = 0
+            while label:
+                role = label.lastgroup
+                declared.add(role)
+                if role not in roles:
+                    roles.append(role)
+                count += 1
+                line = line[label.end() :].lstrip(" :")
+                label = ACCOUNT_LABEL.match(line)
+            table = count > 1
+            if STRICT_ACCOUNT_LABEL.match(raw.strip()) and ACCOUNT_VALUE.fullmatch(line):
+                strict.append((roles[0], line))
+            if not line:
+                continue
+        if not roles:
+            continue
+        if BOUNDARY_RE.match(line) and not ACCOUNT_VALUE.match(line):
+            roles = []
+            continue
+        if len(roles) > 1:
+            # A row under two headers has only cells. A later archive or
+            # reference field cannot complete a one-cell, ambiguous row.
+            matches = list(ACCOUNT_VALUE.finditer(line))
+            if ACCOUNT_VALUE.sub("", line).strip():
+                if cells or matches:
+                    roles = []
+                continue
+        else:
+            match = ACCOUNT_VALUE.search(line) if table else ACCOUNT_VALUE.match(line)
+            matches = [match] if match else []
+            if not matches and participant:
+                # A participant heading can name the company before its NRB
+                # on the following line. Consume at most one company row.
+                participant = False
+                continue
+        cells.extend(match[1] for match in matches)  # A mask occupies its own cell with value None.
+        if len(cells) == len(roles):
+            for role, number in zip(roles, cells):
+                values[role].add(number)
+            roles = []
+        elif len(roles) == 1 or len(cells) > len(roles):
+            roles = []
 
-    if len(roles) == 2:
-        if len(column_order) == 2 and roles[1] is None:
-            roles = column_order
-        elif roles.count(None) == 1 and re.search(r"\b(?:konto|rachunek)\b", text, re.IGNORECASE):
-            known = next(role for role in roles if role)
-            roles[roles.index(None)] = "recipient" if known == "sender" else "sender"
-    if roles.count("sender") > 1 or roles.count("recipient") > 1:
-        return None, None
-    assigned = dict(zip(roles, found))
-    if bank:
-        assigned = {role: validated_account(number) for role, number in assigned.items()}
-    return assigned.get("sender"), assigned.get("recipient")
+    # A generic "Konto" beside one named account identifies the other member of
+    # a pair. An explicit empty or masked field cannot acquire this number.
+    if len(numbers) == 2 and len(values["generic"]) == 1:
+        for role, opposite in (("sender", "recipient"), ("recipient", "sender")):
+            if role not in declared and values[opposite] and values["generic"].isdisjoint(values[opposite]):
+                values[role] = values["generic"]
+
+    sender, recipient = (
+        next(iter(values[role])) if len(values[role]) == 1 else None for role in ("sender", "recipient")
+    )
+    masked_pair = (
+        len(strict) == 2
+        and {role for role, _ in strict} == {"sender", "recipient"}
+        and sum(value.startswith("*") for _, value in strict) == 1
+        and any(number and iban.is_valid("PL" + number) for number in (sender, recipient))
+    )
+    if bank and DEBIT_ROW.search(source):
+        sender, recipient = _debit_accounts(source)
+    return AccountEvidence(sender, recipient, len(numbers), masked_pair)
+
+
+def _accounts(text: str) -> tuple[str | None, str | None]:
+    accounts = account_evidence(text)
+    return accounts.sender, accounts.recipient
 
 
 def _amount(raw: str) -> float | None:
@@ -191,8 +267,8 @@ def transaction_values(text: str) -> tuple[float | None, str | None]:
     return _amount(amount[1]) if amount else None, to_iso(date[1]) if date else None
 
 
-def extract(text: str) -> dict:
-    sender, recipient = _debit_accounts(text) if DEBIT_ROW.search(text) else _accounts(text)
+def extract(text: str, *, accounts: AccountEvidence | None = None) -> dict:
+    accounts = accounts or account_evidence(text)
     amount, day = transaction_values(text)
     text = _field_text(text)
     reference = re.search(r"(?im)^dzienny numer transakcji[ .:\t]+(\d+)\b", text) or REFERENCE_RE.search(text)
@@ -202,9 +278,9 @@ def extract(text: str) -> dict:
         "przelew_bankowy": {
             "data_operacji": day,
             "kwota": amount,
-            "na_rachunek": recipient,
+            "na_rachunek": accounts.recipient,
             "numer_transakcji": reference.group(1) if reference else None,
             "tytul": _title(text),
-            "z_rachunku": sender,
+            "z_rachunku": accounts.sender,
         }
     }

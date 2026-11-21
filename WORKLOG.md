@@ -6,20 +6,20 @@ Shared state of the project. Rules: `CLAUDE.md` → Worklog.
 
 - Task brief, FAQ and details PDF in `docs/task/`; organizer repo copied into `data/uzp` (`make data` refreshes);
   template example in `input/case1`.
-- The eval harness scores training cases and local paired PDF/JSON corpora. It reports micro F1 and macro F1 by
-  document, represented class and field. Both layouts support per-field errors and OCR stress runs (`--force-ocr`).
-  Private detail files must be outside all worktrees and Git metadata. Input or extraction failures stop evaluation
-  before it writes results or the training gate. Malformed and missing predictions count as misses.
 - App: `kio2json/`, default jury classes use rule-based extraction. CLI `python -m kio2json --input input --output output`;
   content-based classification with a rejection path; regex and line-layout extraction per class; pdfplumber text
   with wheel-packaged Tesseract for blank or page-number-only text layers. Installation fetches and verifies the
   language models. Set `KIO_OCR_ENGINE=rapidocr` to use the optional RapidOCR v6 group. Both engines run offline
   and return word boxes in PDF points on request. Branch `feat/ocr-engine`.
+- The eval harness scores training cases and local paired PDF/JSON corpora. It reports micro F1 and macro F1 by
+  document, represented class and field. Both layouts support per-field errors and OCR stress runs (`--force-ocr`).
+  Private detail files must be outside all worktrees and Git metadata. Input or extraction failures stop evaluation
+  before it writes results or the training gate. Malformed and missing predictions count as misses.
 - The CLI reads class definitions from `config/classes/`.
   The jury classes select the baseline content classifier and their Python extractors by dotted path.
   A disabled participation form demonstrates config-only routing and labelled fields. The optional
   model engine checks each complete source value against its own verbatim quote and reports endpoint failures per PDF.
-- On `feat/gui`, the Polish Shiny viewer compares PDF pages with the CLI's JSON and downloads a ZIP in case folders.
+- The Polish Shiny viewer and CLI share per-document parsing and diagnostics. The viewer compares PDF pages with their JSON and downloads a ZIP in case folders.
 - Research notes on OCR, schema extraction and Polish legal NLP: `docs/kio-extraction-research.md`.
 - Claude Code setup: skills `hacknation-judging`, `odwolania2json-eval`, `build`, `verify`, `humanizer`;
   agents `judge`, `builder`, `reviewer`, `researcher`; pre-push hook in `.githooks/`.
@@ -33,6 +33,7 @@ unseen-case estimate for this baseline.
 
 The merged forced-OCR field report scored 0.897 on 196 synthetic PDFs. Strict F1 on 17 real dev scans was
 0.331 with Tesseract and 0.419 with RapidOCR v6. Natural dev F1 on 20 PDFs was 0.3864 and 0.4588, respectively.
+
 21.11.2026, local real corpus. The all-corpus row comes from `00626a5`. The dev and test scores below
 were first measured at `79eef2a` after the baseline merge. The latest test run records its commit in
 `evals/results/corpus-latest.json`.
@@ -89,3 +90,5 @@ Both splits missed the team’s micro F1 and classification targets. Compared wi
 - 21.11.2026 · Codex · merged the config-driven extraction baseline (`4b1cc42`) into the evaluation branch for the final training and corpus checks.
 - 21.11.2026 · Codex · added training checks for empty or mislabelled positive references. The negative output check now distinguishes a zero-byte prediction from an empty JSON object.
 - 21.11.2026 · Codex · Added the local PDF viewer and start scripts for #11 in `d1c9749`. Browser uploads and ZIP downloads matched the CLI for all three document classes, a scanned appeal and an unrelated PDF.
+- 21.11.2026 · Codex · Merged the GUI baseline through `ac78d2d` into the OCR branch. Added unreadable-scan diagnostics, signature ownership checks, labelled account evidence, a RapidOCR worker deadline, and a checksum-verified local model source.
+- 21.11.2026 · Codex · Integrated the corpus and macro-F1 harness from `3210643`. The OCR comparison uses the frozen extraction rules from `865b1ea`.

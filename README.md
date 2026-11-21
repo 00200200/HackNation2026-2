@@ -10,12 +10,18 @@ label patterns or an optional language model.
 
 ## Run
 
-From the repository root, use 64-bit CPython 3.13 and a virtual environment. pip installs
-the Tesseract library from the tesserocr wheel. While building the local language-data wheel,
-pip downloads the Polish and English fast models (8.9 MB combined) from a pinned upstream
-revision and verifies their SHA-256 hashes. Installation needs internet access. Once installed,
-the CLI reads scans offline. The Windows x64, Linux x64 and macOS wheels are listed on PyPI.
-[Wheel files](https://pypi.org/project/tesserocr/2.13.0/#files)
+From the repository root, use 64-bit CPython 3.13 and a virtual environment. pip installs the
+Tesseract native libraries from PyPI. The local language-data wheel downloads the Polish and
+English fast models (8.88 MB combined) from a pinned revision on `raw.githubusercontent.com`
+and verifies both SHA-256 hashes. Once installed, the CLI and viewer process PDFs offline.
+[Platform wheels](https://pypi.org/project/tesserocr/2.13.0/#files)
+
+If the model host is unreachable, download both files on a connected machine and copy them into
+one directory. Before rerunning the install command below, set
+`export KIO_TESSDATA_SOURCE=/absolute/path/to/models` in a POSIX shell or
+`$env:KIO_TESSDATA_SOURCE = 'C:\models'` in PowerShell. Keep the original filenames.
+The installer verifies the same hashes for locally supplied files.
+[pol.traineddata](https://raw.githubusercontent.com/tesseract-ocr/tessdata_fast/87416418657359cb625c412a48b6e1d6d41c29bd/pol.traineddata) · [eng.traineddata](https://raw.githubusercontent.com/tesseract-ocr/tessdata_fast/87416418657359cb625c412a48b6e1d6d41c29bd/eng.traineddata)
 
 ```
 pip install -r requirements.txt
@@ -38,7 +44,8 @@ With uv, `uv run --group rapidocr python -m kio2json` uses the pinned optional d
 Each PDF gets a JSON at the same relative path and file stem. Appeals, powers of attorney and
 bank-transfer confirmations get the organizer's structure. Any other document gets an empty
 file. A PDF that cannot be processed also gets an empty file, is reported on stderr, and makes
-the run exit with status 1 after processing the remaining PDFs. This includes required OCR that fails or times out.
+the run exit with status 1 after processing the remaining PDFs. An image-only document with no readable text on any inspected page reports
+`no readable text after OCR`. A blank separator beside a readable page is accepted.
 
 To open the Polish document viewer, run `python -m kio2json.gui`. It opens a browser on
 `127.0.0.1:8000`. Select PDFs and name the case, or enter a folder containing cases. Click
@@ -57,7 +64,7 @@ works offline. The pipeline does not report which pages used OCR.
 ## How it works
 
 1. `kio2json/pdf_text.py` reads the first three pages with pdfplumber. Pages with no text or
-   only page numbers go through the selected OCR engine at 300 dpi. When default Tesseract reads
+   only page numbers go through the selected OCR engine at 300 dpi. When Tesseract reads
    a possible e-mail address with a missing `@`, an English single-word pass rereads that crop. The extractor accepts the separator
    only when the rest of both readings agrees. Call `read_pages(path, word_boxes=boxes)` with
    an empty list to collect raw words and their rectangles alongside the page strings. Coordinates
@@ -230,7 +237,7 @@ Across all 20 development documents with natural text-layer routing, corpus micr
 - A receipt with one masked account must have a confirmation heading, a transaction amount and date,
   and two explicitly labelled accounts. One must be fully masked by asterisks and the other checksum-valid.
   Unlabelled or conflicting roles can leave account fields empty.
-- Missing grantor headings can leave a signer out. Attorney names retain the grammatical case used in the document.
+- A signer needs a signature heading, a signature line in the grantor’s block, or a closing name with a representation title directly beneath the grant. Ambiguous roles can leave a signer out. Attorney names retain the grammatical case used in the document.
 - UNCONFIRMED: what "empty JSON" means for unrelated documents. We write an empty file, as the
   organizer README words it.
 - UNCONFIRMED: value types. `pesel` is a number in the organizer's annotated example and a string

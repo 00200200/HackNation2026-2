@@ -906,7 +906,7 @@ wheels = [
 
 [[package]]
 name = "kio-polish-ocr-data"
-version = "1.1.0"
+version = "1.1.1"
 source = { directory = "packaging/polish_ocr_data" }
 
 [[package]]

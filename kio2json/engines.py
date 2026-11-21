@@ -4,6 +4,7 @@ from collections import Counter
 from collections.abc import Callable
 from functools import partial
 
+from . import bank_transfer
 from .class_config import DocumentClass, OutputField
 from .output_schema import scalar_value
 
@@ -76,13 +77,18 @@ def bind_engine(name: str, definition: DocumentClass, model=None) -> Callable[[s
     return partial(extract_llm, definition, model=model)
 
 
-def extract(definition: DocumentClass, text: str, *, model=None) -> dict:
+def extract(
+    definition: DocumentClass, text: str, *, model=None, accounts: bank_transfer.AccountEvidence | None = None
+) -> dict:
     values = None
     for engine in definition.engines:
         if values is not None and not any(gaps(f, values.get(k)) for k, f in definition.fields.items()):
             break
         extractor = bind_engine(engine, definition, model)
-        candidate = extractor(text)
+        if extractor is bank_transfer.extract and accounts is not None:
+            candidate = extractor(text, accounts=accounts)
+        else:
+            candidate = extractor(text)
         if values is None:
             values = candidate
         else:

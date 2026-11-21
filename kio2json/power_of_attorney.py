@@ -4,7 +4,7 @@ import re
 
 from stdnum.pl import nip
 
-from .common import ATTORNEY_RE, PERSON, UPPER, registry_ids, squash
+from .common import ATTORNEY_RE, DATE, PERSON, UPPER, registry_ids, squash
 
 LEGAL_FORM = (
     r"(?i:sp\.\s?z\s?o\.\s?o\.(?:\s?sp\.\s?k\.)?|S\.\s?A\.|sp\.\s?k\.|sp\.\s?j\.|sp\.\s?p\.|s\.c\."
@@ -26,11 +26,7 @@ LABEL_WORDS = {
     "partner",
 }
 SOLE_TRADER_RE = re.compile(r"prowadząc\w+ działalność gospodarczą pod firmą\s+(.+?),\s", re.DOTALL)
-ROLE_WORDS_RE = re.compile(
-    r"\b(?:Prezes|Wiceprezes|Członek|Zarządu|Zarząd|Prokurent|Dyrektor|Generalny|Wspólnik|Właściciel|"
-    r"Komplementariusz|Mocodawca|Pełnomocnik\w*|Pełnomocnictwo|Podpis|Za|W)\b"
-)
-SIGNATURE_LINE_RE = re.compile(r"\.{10,}")
+SIGNATURE_LINE_RE = re.compile(r"\.{10,}|_{5,}|[─━—]{4,}")
 ID_WINDOW = 250  # characters after a company name in which its KRS/NIP must appear
 
 
@@ -202,89 +198,143 @@ SIGNER_ROLE_RE = re.compile(
 )
 
 
-def _undotted_signers(text: str, principals: list[str], attorneys: set[str]) -> list[list[str]]:
-    """Read the trailing signature block. A title or an explicit grantor heading must support the names."""
-    names = [[] for _ in principals]
-    signature = []
-    for raw in reversed(text.splitlines()):
-        line = raw.strip(" :.")
-        if not line or line.casefold() == "miejsce na pieczęć firmową":
-            continue
-        if line.casefold().startswith(("za ", "w imieniu ")):
-            declared = re.sub(r"^(?:za|w imieniu) ", "", line.casefold())
-            matches = [i for i, name in enumerate(principals) if declared == name.casefold().rstrip(".")]
-            signature.append(("principal", matches[0] if len(matches) == 1 else None))
-        elif re.fullmatch(
-            r"(?:Mocodawca|Podpis(?: mocodawcy)?)(?::?\s+Pełnomocnictwo przyjmuję)?", line, re.IGNORECASE
-        ):
-            signature.append(("heading", None))
-        elif re.fullmatch(r"Pełnomocnictwo przyjmuję", line, re.IGNORECASE):
-            signature.append(("acceptance", None))
-        elif SIGNER_ROLE_RE.sub("", line).strip() == "":
-            signature.append(("role", None))
-        else:
-            line = ATTORNEY_RE.sub("", line).strip()
-            if not line:
-                continue
-            if not re.fullmatch(rf"{PERSON}(?: +{PERSON})*", line):
+SIGNATURE_HEADING = re.compile(
+    r"(?:Mocodawca|Podpis(?: mocodawcy)?)(?::?\s+Pełnomocnictwo przyjmuję)?:?", re.IGNORECASE
+)
+NAMED_SIGNATURE = re.compile(r"^(?:W imieniu|Za)\s+", re.IGNORECASE)
+
+
+# The operative clause may finish on wrapped lines or a dated closing.
+LIST_MARKER = re.compile(r"^(?:(?:[a-z]|[0-9]{1,2})[).,]|[-*•.»«–—+]|e) +", re.IGNORECASE)
+GRANT_CLAUSE = re.compile(
+    r"(?:(?:(?:w tym|oraz) )?do )?"
+    r"(?:zastępowania|składania|udzielania|wniesienia|cofnięcia|odbioru|zasięgania|reprezentowania)\b"
+    r"|opłata skarbowa od pełnomocnictwa",
+    re.IGNORECASE,
+)
+DATELINE = re.compile(rf"(?:Data\s+|[{UPPER}][\w -]+,\s*)?{DATE}", re.IGNORECASE)
+STAMP_PLACE = re.compile(r"miejsce na pieczęć firmową[ .]*", re.IGNORECASE)
+
+
+def _directly_after_grant(lines: list[str], index: int, principals: list[str]) -> bool:
+    if len(principals) != 1:
+        return False
+    if index and re.fullmatch(r"Z poważaniem,?", lines[index - 1], re.IGNORECASE):
+        index -= 1
+    if index and DATELINE.fullmatch(lines[index - 1]):
+        index -= 1
+    if not index:
+        return False
+    # Rejoin the final sentence before testing its opening. A wrapped contact
+    # heading can put a grant-related noun at the beginning of a physical line.
+    start = index - 1
+    while start and not LIST_MARKER.match(lines[start]):
+        previous = lines[start - 1]
+        # A lawyer's title, a case reference, and a quoted procurement name
+        # commonly wrap in the middle of the operative sentence.
+        continuation = (
+            re.search(r"\b(?:adw|pr)\.$", previous, re.IGNORECASE)
+            or (previous.casefold().endswith("postępowania:") and re.match(r"[A-Z0-9./-]*\d", lines[start]))
+            or (lines[start].startswith("„") and previous.casefold().endswith("postępowaniu"))
+            or (
+                re.match(r"\d|(?:NIP|KRS|REGON)\b", lines[start], re.IGNORECASE)
+                and re.search(r"(?:\bNIP|\bKRS|\d,)$", previous, re.IGNORECASE)
+            )
+        )
+        if not continuation:
+            if previous.endswith((".", ":", ";")):
                 break
-            signature.append(("names", re.findall(PERSON, line)))
-    current = 0 if len(principals) == 1 else None
-    pending = []
-    headed = False
-    for kind, value in reversed(signature):
-        if kind in ("principal", "heading", "acceptance"):
-            pending.clear()
-            headed = kind != "acceptance"
-            if kind == "principal":
-                current = value
-            elif kind == "acceptance":
-                current = None
-        elif kind == "names":
-            pending.extend(value)
-        if current is not None and pending and (headed or kind == "role"):
-            for person in pending:
-                if person not in attorneys and person not in names[current]:
-                    names[current].append(person)
-            pending.clear()
-    return names
+            if not lines[start][0].islower() and not re.search(r"\b(?:do|w|i|z|oraz|przez)$", previous, re.IGNORECASE):
+                break
+        start -= 1
+    sentence = " ".join(lines[start:index])
+    action = GRANT.search(sentence)
+    if (
+        action
+        and (action.start() == 0 or GRANTOR.match(sentence) or sentence.casefold().startswith(principals[0].casefold()))
+        and re.match(r"\s+(?:pełnomocni\w*|do|reprezentowan\w*)\b", sentence[action.end() :], re.IGNORECASE)
+    ):
+        return True
+    if (
+        start
+        and lines[start - 1].endswith(":")
+        and not re.search(
+            r"zakres pełnomocnictwa|pełnomocnictwo obejmuje|(?:w szczególności|pełnomocnikom|umocowanie) do:$",
+            lines[start - 1],
+            re.IGNORECASE,
+        )
+    ):
+        return False
+    return sentence.endswith(".") and bool(GRANT_CLAUSE.match(LIST_MARKER.sub("", sentence)))
 
 
-def _signers(text: str, principal_names: list[str], attorney_names: set[str]) -> list[list[str]]:
-    """Attach each signature to its explicit heading, including the heading before the first rule."""
-    signers = [[] for _ in principal_names]
-    first = SIGNATURE_LINE_RE.search(text)
-    if not first:
-        return _undotted_signers(text, principal_names, attorney_names)
-    if not principal_names:
-        return signers
-    heading = re.compile(r"^(?:W imieniu|Za)\s+", re.IGNORECASE)
-    # Before the first signature rule, only the immediately preceding heading belongs
-    # to the signature area. Names or role qualifiers sometimes wrap onto the next line.
-    prefix = text[: first.start()].rstrip().splitlines()
-    start = next(
-        (i for i in range(len(prefix) - 1, max(-1, len(prefix) - 4), -1) if heading.match(prefix[i].strip())),
-        len(prefix),
-    )
-    lines = prefix[start:] + text[first.start() :].splitlines()
-    current = 0 if len(principal_names) == 1 else None
+def _signature_owner(heading: str, following: str, principals: list[str]) -> int | None:
+    heading = NAMED_SIGNATURE.sub("", heading)
+    candidates = [heading, squash(heading + " " + following)]
+    owners = []
+    for i, name in enumerate(principals):
+        company = re.escape(name.rstrip(".")) + r"\.?"
+        pattern = rf"{company}(?: +(?:Za|W imieniu) +{company})?(?:\s*(?:\([^()]*\)|[–-] .+))?:?"
+        if any(re.fullmatch(pattern, candidate, re.IGNORECASE) for candidate in candidates):
+            owners.append(i)
+    return owners[0] if len(owners) == 1 else None
+
+
+def _signers(text: str, principals: list[str], attorneys: set[str]) -> list[list[str]]:
+    signers = [[] for _ in principals]
+    single = 0 if len(principals) == 1 else None
+    current = single
+    expect_name = False
+    signed = False
+    lines = [clean for raw in text.splitlines() if (clean := STAMP_PLACE.sub("", raw).strip())]
     for index, line in enumerate(lines):
-        if heading.match(line.strip()):
-            heading_text = line.strip()
-            if index + 1 < len(lines) and not SIGNATURE_LINE_RE.search(lines[index + 1]):
-                heading_text += " " + lines[index + 1].strip()
-            named = [i for i, name in enumerate(principal_names) if name.casefold() in squash(heading_text).casefold()]
-            current = named[0] if len(named) == 1 else None
+        following = lines[index + 1] if index + 1 < len(lines) else ""
+        if NAMED_SIGNATURE.match(line):
+            current = _signature_owner(line, following, principals)
+            expect_name, signed = True, False
             continue
-        if re.match(r"^pełnomocnictwo przyjmuję", line, re.IGNORECASE):
+        if SIGNATURE_HEADING.fullmatch(line):
+            current, expect_name, signed = single, True, False
+            continue
+        if re.match(r"^Pełnomocnictwo przyjmuję\b", line, re.IGNORECASE):
             break
-        if current is None or index < len(prefix) - start:
+        remaining = ATTORNEY_RE.sub("", line).strip()
+        if SIGNATURE_LINE_RE.search(remaining) and not SIGNATURE_LINE_RE.sub("", remaining).strip(" ."):
+            # A rule on an unrelated form field belongs to that field. A new
+            # rule in a signature block can introduce a second signer.
+            if not (expect_name or signed):
+                current = single if _directly_after_grant(lines, index, principals) else None
+            expect_name, signed = True, False
             continue
-        line = ROLE_WORDS_RE.sub("|", ATTORNEY_RE.sub("|", line))
-        for person in re.findall(PERSON, line):
-            person = squash(person)
-            if person not in attorney_names and person not in signers[current]:
-                signers[current].append(person)
+        if re.fullmatch(r"[. ]+", line) or SIGNER_ROLE_RE.sub("", line).strip() == "":
+            continue
+        # A wrapped principal or its parenthesized consortium qualifier.
+        if (
+            expect_name
+            and index
+            and NAMED_SIGNATURE.match(lines[index - 1])
+            and SIGNATURE_LINE_RE.search(following)
+            and _signature_owner(lines[index - 1], line, principals) is not None
+        ):
+            continue
+
+        title = SIGNER_ROLE_RE.search(remaining)
+        inline_role = title and not remaining[title.end() :].strip(" )")
+        if inline_role:
+            remaining = remaining[: title.start()].rstrip(" ,(–—-")
+        if re.fullmatch(rf"{PERSON}(?: +{PERSON})*", remaining):
+            if not expect_name:
+                role = inline_role or (following and SIGNER_ROLE_RE.sub("", following).strip() == "")
+                previous_role = signed and SIGNER_ROLE_RE.sub("", lines[index - 1]).strip() == ""
+                if not (previous_role and role):
+                    current = single if role and _directly_after_grant(lines, index, principals) else None
+            if current is not None:
+                for person in re.findall(PERSON, remaining):
+                    if person not in attorneys and person not in signers[current]:
+                        signers[current].append(person)
+                expect_name, signed = False, True
+                continue
+        current, expect_name, signed = single, False, False
     return signers
 
 
