@@ -1,16 +1,16 @@
 {
-  "commit": "d8a2a8fc0df89285b0a999c1198b4b7a6ca9d78b",
+  "commit": "d00a3e0cef3e94745761ca3786cfb236a89af958",
   "dirty": false,
   "mode": "corpus",
-  "timestamp": "2026-11-21T17:42:21+00:00",
-  "n_cases": 7,
-  "n_docs": 17,
+  "timestamp": "2026-11-21T18:26:40+00:00",
+  "n_cases": 14,
+  "n_docs": 22,
   "coverage_ok": false,
   "overall_pass": false,
   "run_error": null,
   "metrics": {
     "micro_f1": {
-      "value": 0.4069767441860465,
+      "value": 0.6383928571428571,
       "target": 0.9,
       "pass": false
     },
@@ -25,38 +25,38 @@
       "pass": true
     },
     "classification_accuracy": {
-      "value": 0.6153846153846154,
+      "value": 0.6666666666666666,
       "target": 1.0,
       "pass": false
     },
     "seconds_per_doc": {
-      "value": 0.44570908087360506,
+      "value": 48.86827798295681,
       "target": null,
       "pass": true
     }
   },
   "detail": {
-    "micro_f1": 0.4069767441860465,
-    "macro_f1_documents": 0.2859402287004097,
-    "macro_f1_classes": 0.30729684908789384,
+    "micro_f1": 0.6383928571428571,
+    "macro_f1_documents": 0.44528009528009527,
+    "macro_f1_classes": 0.37703406889026847,
     "macro_f1_class_count": 3,
-    "macro_f1_fields": 0.4211621041331186,
-    "micro_f1_non_null": 0.37668161434977576,
+    "macro_f1_fields": 0.503968253968254,
+    "micro_f1_non_null": 0.48109965635738833,
     "per_class_f1": {
-      "odwolanie": 0.4552238805970149,
-      "pelnomocnictwo": 0.3,
-      "przelew": 0.16666666666666666
+      "odwolanie": 0.7055702917771883,
+      "pelnomocnictwo": 0.425531914893617,
+      "przelew": 0.0
     },
-    "classification_accuracy": 0.6153846153846154,
+    "classification_accuracy": 0.6666666666666666,
     "negatives_empty": 1.0,
     "outputs_complete": 1.0,
     "counts": {
-      "tp": 70,
-      "fp": 33,
-      "fn": 171
+      "tp": 143,
+      "fp": 58,
+      "fn": 104
     }
   },
   "holdout_51_60": null,
   "f1_definition": "evals/metrics.py docstring (organizer formula UNCONFIRMED)",
-  "split": "test"
+  "split": "dev"
 }
