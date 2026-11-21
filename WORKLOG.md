@@ -77,6 +77,7 @@ Two and four grant JSONs matched exactly. The ten organizer grants remained exac
 
 ## Log
 
+- 21.11.2026 · Claude · #39: scanned-appeal party names, lawyer fields and procurement titles become null on stray scanner symbols or a low letter ratio, and lose a capitals-noise tail after a legal form. The organizer template scan no longer emits a garbage appellant name or authority tail. Organizer scans 0.9974 → 0.9974, full training 1.000 → 1.000 (holdout 1.000); real corpora not available on this machine · 6daad05
 - 21.11.2026 · Codex · Added native span output for small models, local source validation and a bounded parallel CLI. Verified the native schema on the quantized local model and both regional API releases.
 
 - 21.11.2026 · Claude · brief, eval harness, judge/eval skills, pre-push hook · f6db304
