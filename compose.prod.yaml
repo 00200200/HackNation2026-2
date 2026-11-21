@@ -1,0 +1,20 @@
+# Production on the shared VPS: no published ports. The `edge` network is shared with the Caddy container of the
+# faktczyfejk stack, which terminates HTTPS for doc2json.pl and proxies to doc2json-web:80.
+# Server: /opt/doc2json, `docker network create edge` once, then `docker compose -f compose.prod.yaml up -d --build --wait`.
+name: doc2json
+
+services:
+  web:
+    build: ./frontend
+    container_name: doc2json-web
+    restart: unless-stopped
+    networks: [edge]
+    healthcheck:
+      test: ["CMD", "wget", "-qO-", "http://127.0.0.1/"]
+      interval: 30s
+      timeout: 5s
+      retries: 3
+
+networks:
+  edge:
+    external: true
