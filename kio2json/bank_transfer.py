@@ -47,12 +47,14 @@ LETTER_RE = re.compile(
 # Only an affirmative, dated execution statement can outrank a printed posting date.
 COMPLETED_PAYMENT = r"(?:wykonano|zrealizowano)"
 PAYMENT_NOUN = r"(?:przelew|transakcję|operację|płatność)"
+EXECUTION_DATE_INTRO = r"(?:w dniu|dnia)\s+"
 EXECUTION_DAY_RE = re.compile(
     rf"^(?:bank (?:potwierdza|zaświadcza),? że\s+)?(?:"
     rf"(?:w dniu|dnia)\s+(?P<before>{DATE})\s+(?:z rachunku\s+(?:nr\.?\s+)?{ACCOUNT_RE.pattern}\s+)?"
     rf"{COMPLETED_PAYMENT}\s+{PAYMENT_NOUN}\b|"
-    rf"(?:{PAYMENT_NOUN}\s+)?{COMPLETED_PAYMENT}"
-    rf"(?:\s+{PAYMENT_NOUN})?\s+(?:w dniu|dnia)\s+(?P<after>{DATE}))",
+    rf"(?:{PAYMENT_NOUN}\s+{COMPLETED_PAYMENT}|{COMPLETED_PAYMENT}\s+{PAYMENT_NOUN})"
+    rf"\s+{EXECUTION_DATE_INTRO}(?P<after>{DATE})|"
+    rf"{COMPLETED_PAYMENT}\s+{EXECUTION_DATE_INTRO}(?P<between>{DATE})\s+{PAYMENT_NOUN}\b)",
     re.IGNORECASE | re.MULTILINE,
 )
 
@@ -371,7 +373,7 @@ def transaction_values(text: str) -> tuple[float | None, str | None]:
         if letter and len(DATE_RE.findall(letter[0])) == 1:
             dates.append(("data wykonania", letter[1]))
         for statement in EXECUTION_DAY_RE.finditer(clause):
-            dates.append(("data wykonania", statement["before"] or statement["after"]))
+            dates.append(("data wykonania", statement["before"] or statement["after"] or statement["between"]))
     # Select by the meaning of the printed date, across both labelled fields and table cells.
     # A value date is not evidence of execution.
     day = None
