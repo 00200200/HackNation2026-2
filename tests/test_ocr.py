@@ -12,7 +12,7 @@ def classify_ocr(text):
 def test_account_repair_requires_the_checksum():
     digits = "56458700991234567801234567"
     assert normalize_ocr("Rachunek: 56 4587 OO99 1234 5678 0123 4567") == "Rachunek: " + digits
-    assert normalize_ocr("PL" + digits.replace("7", "/", 1)) == digits
+    assert normalize_ocr("PL" + digits.replace("7", "/", 1)) == "PL" + digits
     for unrelated in ["16 4587 OO99 1234 5678 0123 4567", "2/4/2020", "9" * 26]:
         assert normalize_ocr(unrelated) == unrelated
 

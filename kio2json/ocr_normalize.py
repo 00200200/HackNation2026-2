@@ -28,7 +28,9 @@ def _repair_account(match: re.Match) -> str:
         return match[0]
     candidates = ("".join(digits) for digits in product(*(GLYPHS.get(c, c) for c in number)))
     valid = [n for n in candidates if iban.is_valid("PL" + n)]
-    return valid[0] if len(valid) == 1 else match[0]
+    if len(valid) == 1:
+        return ("PL" if match[0].startswith("PL") else "") + valid[0]
+    return match[0]
 
 
 def confirmed_email(raw: str, second_read: str) -> str:

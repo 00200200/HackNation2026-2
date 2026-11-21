@@ -10,7 +10,7 @@ from typing import Annotated, Literal, Self
 
 from pydantic import BaseModel, BeforeValidator, ConfigDict, Field, ImportString, PrivateAttr, model_validator
 
-from .classify import classify
+from .classify import classify, routing_evidence
 from .model_pages import AlternateOCR, model_readings
 from .model_profile import Profile, ProfileSettings
 from .ocr_accounts import AccountEvidence
@@ -82,6 +82,7 @@ class ClassifierRouting(Config):
 
 
 class OutputField(Config):
+    span_evidence: Literal["attorney_name"] | None = None
     type: Literal["string", "integer", "number", "boolean", "object", "list"]
     instruction: Instruction
     nullable: bool = True
@@ -106,6 +107,8 @@ class OutputField(Config):
                 member = (member.fields or {}).get(key) if member else None
             if not member or member.type in ("object", "list"):
                 raise ValueError("match_by must name a scalar field of a list item")
+        if self.span_evidence and self.type != "string":
+            raise ValueError("attorney name span evidence requires a string field")
         if self.normalizer and self.type != ("number" if self.normalizer == "money" else "string"):
             raise ValueError("normalizer does not match field type")
         if self.pattern and self.pattern.groups != 1:
@@ -114,6 +117,7 @@ class OutputField(Config):
 
 
 class DocumentClass(Config):
+    span_instructions: str = ""
     id: str = Field(pattern=r"^[a-z][a-z0-9_]*$")
     enabled: bool = True
     priority: int = 100
@@ -157,6 +161,12 @@ class DocumentClass(Config):
 
         return record_model(self.fields, self.id, cited=True, allow_abstention=True)
 
+    @cached_property
+    def span_model(self):
+        from .output_schema import record_model
+
+        return record_model(self.fields, self.id, allow_abstention=True, spans=True)
+
     @model_validator(mode="after")
     def python_extractor(self) -> Self:
         if ("python" in self.engines) != (self.extractor is not None):
@@ -164,13 +174,21 @@ class DocumentClass(Config):
         return self
 
 
-def load_classes(directory: Path | None = None) -> list[DocumentClass]:
+def class_sources(directory: Path | None = None) -> dict[Path, bytes]:
     directory = directory or Path(os.getenv("KIO_CLASSES_DIR", DEFAULT_DIR))
     files = sorted(directory.glob("*.toml"))
     if not files:
         raise ValueError(f"{directory}: no class TOML files")
+    return {path: path.read_bytes() for path in files}
+
+
+def load_classes(directory: Path | None = None) -> list[DocumentClass]:
+    return parse_classes(class_sources(directory))
+
+
+def parse_classes(sources: dict[Path, bytes]) -> list[DocumentClass]:
     classes = {}
-    profile = ProfileSettings().profile() if directory.resolve() == DEFAULT_DIR else Profile()
+    profile = ProfileSettings().profile() if next(iter(sources)).parent.resolve() == DEFAULT_DIR else Profile()
     if profile.keyed:
         from pydantic import AnyHttpUrl, TypeAdapter, ValidationError
 
@@ -184,9 +202,9 @@ def load_classes(directory: Path | None = None) -> list[DocumentClass]:
             raise ValueError("Invalid model endpoint configuration") from None
         if os.getenv("KIO_OCR_ENGINE", DEFAULT_OCR_ENGINE) not in OCR_ENGINES:
             raise ValueError("Invalid OCR engine configuration")
-    for path in files:
+    for path, source in sources.items():
         try:
-            definition = DocumentClass.model_validate(tomllib.loads(path.read_text(encoding="utf-8")))
+            definition = DocumentClass.model_validate(tomllib.loads(source.decode("utf-8")))
             if definition.id in classes:
                 raise ValueError(f"duplicate class id {definition.id}")
             if (
@@ -234,7 +252,7 @@ def route(
             classifier = (
                 model_classifier if not rules_only and definition.profile.routing == "model" else routing.classifier
             )
-            if not rules_only and definition.profile.routing == "fallback":
+            if not rules_only and definition.profile.routing in {"fallback", "supported"}:
                 fallback[definition.id] = definition
             if classifier not in labels:
                 labels[classifier] = (
@@ -246,4 +264,18 @@ def route(
                 return definition
         elif routing.matches(pages):
             return definition
-    return fallback.get(model_classifier(pages)) if fallback else None
+    supported = {key for key, definition in fallback.items() if definition.profile.routing == "supported"}
+    evidence, confirmed_transfer = routing_evidence(pages[0]) if pages and supported else (set(), False)
+    for key in supported - evidence:
+        del fallback[key]
+    if not fallback:
+        return None
+    label = model_classifier(pages)
+    if (
+        label == "power_of_attorney"
+        and "bank_transfer" in supported
+        and evidence == {"bank_transfer"}
+        and confirmed_transfer
+    ):
+        label = "bank_transfer"
+    return fallback.get(label)

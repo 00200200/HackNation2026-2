@@ -2,10 +2,15 @@
 
 import ctypes
 import re
+from hashlib import sha256
+from itertools import pairwise
 from pathlib import Path
 
 import pypdfium2 as pdfium
 from asn1crypto import cms
+from pdfminer.pdfpage import PDFPage
+from pdfminer.pdftypes import resolve1
+from pdfminer.psparser import LIT, PSException
 
 from .common import LOWER, UPPER, squash
 from .personal_names import compatible_names
@@ -51,8 +56,43 @@ def _certificate_names(payload: bytes) -> list[str]:
     return names
 
 
+def _visible_order(path: Path, certificates: dict[bytes, list[str]]) -> list[str]:
+    """Read left to right only when all approvals are visible in one row on the first page."""
+    with path.open("rb") as stream:
+        page = next(PDFPage.get_pages(stream, maxpages=1), None)
+        if page is None or page.rotate:
+            return []
+        widgets = []
+        for ref in resolve1(page.annots) or ():
+            widget = resolve1(ref)
+            if not isinstance(widget, dict) or widget.get("Subtype") != LIT("Widget") or widget.get("F", 0) & 35:
+                continue
+            value = resolve1(widget.get("V"))
+            payload = value.get("Contents") if isinstance(value, dict) else None
+            if not isinstance(payload, bytes) or len(payload) > MAX_SIGNATURE_BYTES:
+                continue
+            signature = sha256(payload).digest()
+            if signature not in certificates:
+                continue
+            rect = resolve1(widget.get("Rect"))
+            if not isinstance(rect, list) or len(rect) != 4 or len(certificates[signature]) != 1:
+                return []
+            x0, y0, x1, y1 = rect
+            if x0 >= x1 or y0 >= y1:
+                return []
+            widgets.append((x0, x1, y0, y1, signature))
+    if len(widgets) != len(certificates) or {w[4] for w in widgets} != certificates.keys():
+        return []
+    widgets.sort()
+    if max(w[2] for w in widgets) >= min(w[3] for w in widgets):
+        return []
+    if any(left[1] > right[0] for left, right in pairwise(widgets)):
+        return []
+    return [certificates[w[4]][0] for w in widgets]
+
+
 def signed_names(path: Path) -> list[str]:
-    names = []
+    certificates = {}
     try:
         with pdfium.PdfDocument(path) as doc:
             for index in range(pdfium.raw.FPDF_GetSignatureCount(doc)):
@@ -63,12 +103,17 @@ def signed_names(path: Path) -> list[str]:
                 if not 0 < size <= MAX_SIGNATURE_BYTES:
                     continue
                 buffer = ctypes.create_string_buffer(size)
-                if pdfium.raw.FPDFSignatureObj_GetContents(obj, buffer, size) == size:
-                    names.extend(_certificate_names(buffer.raw))
-    except (OSError, ValueError, TypeError, KeyError, IndexError, pdfium.PdfiumError):
+                if pdfium.raw.FPDFSignatureObj_GetContents(obj, buffer, size) != size:
+                    continue
+                payload = buffer.raw
+                if names := _certificate_names(payload):
+                    certificates[sha256(payload).digest()] = names
+        if len(certificates) > 1 and (ordered := _visible_order(path, certificates)):
+            return list(dict.fromkeys(ordered))
+    except (OSError, ValueError, TypeError, KeyError, IndexError, PSException, pdfium.PdfiumError):
         # Unsupported optional signature data must leave the ordinary extraction intact.
         pass
-    return list(dict.fromkeys(names))
+    return list(dict.fromkeys(name for names in certificates.values() for name in names))
 
 
 def add_certificate_signers(path: Path, record: dict, text: str) -> None:

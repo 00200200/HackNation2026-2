@@ -1,4 +1,5 @@
 id = "power_of_attorney"
+span_instructions = "Mocodawca udziela umocowania. Osoby podpisujące w jego imieniu należą do podpisujących, a osoby umocowane do pełnomocników. Dla typu mocodawcy zacytuj określenie osoby albo formy prawnej. Nie myl danych kancelarii z danymi mocodawcy."
 priority = 20
 engines = ["python"]
 extractor = "kio2json.power_of_attorney.extract"
@@ -54,5 +55,5 @@ nullable = false
 instruction = "One recipient of the power of attorney."
 
 [fields.pelnomocnicy.items.fields]
-imie_nazwisko = { type = "string", instruction = "Given name and surname of the recipient of authority, in the nominative case. If absent, null." }
+imie_nazwisko = { type = "string", span_evidence = "attorney_name", instruction = "Given name and surname of the recipient of authority, in the nominative case. If absent, null." }
 pesel = { type = "string", normalizer = "pesel", instruction = "Eleven-digit PESEL explicitly given for this recipient. Preserve leading zeros. If absent, null." }

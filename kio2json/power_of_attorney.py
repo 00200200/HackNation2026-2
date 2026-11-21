@@ -166,6 +166,9 @@ def _issuer_identifiers(text: str, principal: dict) -> None:
     name_pattern = re.compile(rf"(?<!\w){re.escape(company)}(?!\w)", re.IGNORECASE)
     krs = principal["krs"]
     lines = text.splitlines()
+    # Consecutive registry rows in the letterhead may precede the first legible issuer name.
+    heading = MANDATE_TITLE.search(text)
+    header_rows = text.count("\n", 0, heading.start()) if heading else 0
     candidates = set()
     pending = set()
     owner = None
@@ -178,7 +181,10 @@ def _issuer_identifiers(text: str, principal: dict) -> None:
             ids["krs"] = number[1]
         names = {core(_company_name(m[1])) for m in COMPANY_RE.finditer(line)}
         role = OTHER_ROLE.search(line) if not re.match(r"https?://", line, re.IGNORECASE) else None
-        foreign = role or names - {company} or (krs and ids["krs"] and ids["krs"] != krs)
+        other_company = names - {company} or (krs and ids["krs"] and ids["krs"] != krs)
+        if other_company or re.search(r"\b(?:zamawiając\w*|odbiorc\w*|pełnomocnik\w*)\s*:", line, re.IGNORECASE):
+            header_rows = 0
+        foreign = role or other_company
         registry_line = any(ids.values()) and not names and not foreign
         if not registry_line:
             pending.clear()
@@ -192,7 +198,7 @@ def _issuer_identifiers(text: str, principal: dict) -> None:
         elif not line.strip():
             owner = None
         number = ids["nip"]
-        if not number or not nip.is_valid(number) or owner is False:
+        if not number or not nip.is_valid(number) or (owner is False and not (registry_line and i < header_rows)):
             continue
         if owner and i - anchor <= 2:
             candidates.add(number)

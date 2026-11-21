@@ -13,14 +13,14 @@ MONEY = r"(?<![\d.,])(?:\d{1,3}(?:[ .\u00a0]\d{3})+[.,]\d{2}|\d+[.,]\d{2})(?![.,
 AMOUNT_LABEL = r"(?:kwota(?: (?:operacji|przelewu|transakcji|zaksięgowana))?|wartość)"
 DATE_LABEL = r"data (?:operacji|transakcji|realizacji|wykonania|księgowania|obciążenia|zlecenia)"
 REFERENCE_LABEL = r"(?:nr ref\.?|nr transakcji(?: w [^:\n]{1,55}(?=:))?|numer (?:referencyjny|transakcji)|identyfikator (?:operacji|transakcji))(?: operacji)?"
-TITLE_LABEL = r"(?:tytułem|tytu[łl](?: (?:przelewu|operacji))?|opis)"
+TITLE_LABEL = r"(?:szczegóły płatności|tytułem|tytu[łl](?: (?:przelewu|operacji))?|opis)"
 FIELD_LABEL = rf"(?:{AMOUNT_LABEL}|{DATE_LABEL}|{REFERENCE_LABEL}|{TITLE_LABEL})"
 GENERIC_LABEL = r"[^\W\d_][\w /().-]{0,55}:"
 # A known undelimited field must match the full label word, never a prefix of a title.
 BOUNDARY_RE = re.compile(
     rf"^(?:{GENERIC_LABEL}|{FIELD_LABEL}(?!\w)|(?:waluta|typ operacji|kanał|tryb|nadawca|odbiorca|"
     r"zleceniodawca|beneficjent|płatnik|adresat przelewu|dane (?:nadawcy|odbiorcy)|rachunek|"
-    r"data (?:wystawienia|wydruku|stempla|sporządzenia)|opłata(?:/prowizja)?(?=\s*[\d.:]|$))\b|[-*]{3,}|bank nie ponosi\b|dokument wygenerowany\b|potwierdzenie ma charakter\b)",
+    r"data (?:wystawienia|wydruku|stempla|sporządzenia)|opłata(?:/prowizja)?(?=\s*[\d.:]|$))\b|[-*]{3,}|bank nie ponosi\b|(?:dokument (?:jest wydrukiem|wygenerowany)|signature not verified)\b|potwierdzenie ma charakter\b)",
     re.IGNORECASE,
 )
 STATUS_SCOPE = r"(?:operacji|transakcji|przelewu|realizacji|dyspozycji|zlecenia|płatności)"
@@ -46,7 +46,7 @@ LETTER_RE = re.compile(
 
 # Only an affirmative, dated execution statement can outrank a printed posting date.
 COMPLETED_PAYMENT = r"(?:wykonano|zrealizowano)"
-EXECUTION_DATE = rf"(?:w\s+dniu|dnia)\s+{DATE}"
+EXECUTION_DATE_INTRO = r"(?:w\s+dniu|dnia)\s+"
 # An order or operation can also concern archiving or issuing a copy.
 PAYMENT_NOUN = (
     r"(?:przelew|transakcję|płatność|operację\s+(?:bankową|płatniczą|(?:bez)?gotówkową|przelewu)|"
@@ -55,10 +55,10 @@ PAYMENT_NOUN = (
 )
 EXECUTION_DAY_RE = re.compile(
     rf"^(?:bank\s+(?:potwierdza|zaświadcza),?\s+że\s+)?(?:"
-    rf"{EXECUTION_DATE}\s+(?:z\s+rachunku\s+(?:nr\.?\s+)?{ACCOUNT_RE.pattern}\s+)?"
+    rf"{EXECUTION_DATE_INTRO}(?P<before>{DATE})\s+(?:z\s+rachunku\s+(?:nr\.?\s+)?{ACCOUNT_RE.pattern}\s+)?"
     rf"{COMPLETED_PAYMENT}\s+{PAYMENT_NOUN}\b|"
-    rf"(?:{PAYMENT_NOUN}\s+{COMPLETED_PAYMENT}|{COMPLETED_PAYMENT}\s+{PAYMENT_NOUN})\s+{EXECUTION_DATE}|"
-    rf"{COMPLETED_PAYMENT}\s+{EXECUTION_DATE}\s+{PAYMENT_NOUN}\b(?![ \t]*:|\s+{COMPLETED_PAYMENT}\b))",
+    rf"(?:{PAYMENT_NOUN}\s+{COMPLETED_PAYMENT}|{COMPLETED_PAYMENT}\s+{PAYMENT_NOUN})\s+{EXECUTION_DATE_INTRO}(?P<after>{DATE})|"
+    rf"{COMPLETED_PAYMENT}\s+{EXECUTION_DATE_INTRO}(?P<between>{DATE})\s+{PAYMENT_NOUN}\b(?![ \t]*:|\s+{COMPLETED_PAYMENT}\b))",
     re.IGNORECASE | re.MULTILINE,
 )
 
@@ -106,11 +106,30 @@ def _amount(raw: str) -> float:
     return float(re.sub(r"[.,]", "", whole) + "." + cents)
 
 
+# A one-operation history printout puts the signed debit in its description column.
+DESCRIPTION_DEBIT = re.compile(rf"^przelew\b[^\n]*?[−-]({MONEY})[ \t]*(?:PLN|zł)[ \t]*$", re.IGNORECASE | re.MULTILINE)
+
+
+def description_debit(text: str) -> str | None:
+    rows = DESCRIPTION_DEBIT.findall(text)
+    if len(rows) == 1 and re.search(r"(?im)^opis[ \t]+kwota[ \t]*$", text):
+        return rows[0]
+    return None
+
+
+def completed_value_block(text: str) -> tuple[str, str] | None:
+    """Two identical adjacent dates and one currency amount on an attested bank receipt."""
+    if not re.search(r"(?im)^(?:niniejszy )?dokument jest wydruk[\wł]+ potwierdzającym dokonanie transakcji\b", text):
+        return None
+    blocks = re.findall(rf"(?m)^({DATE})\n\1\n({MONEY})[ \t]+PLN[ \t]*$", text)
+    return blocks[0] if len(blocks) == 1 else None
+
+
 def _title(text: str) -> str | None:
     lines = text.splitlines()
     for index, line in enumerate(lines):
         label = TITLE_LABEL_RE.match(line.strip())
-        if not label:
+        if not label or re.fullmatch(r"opis\s+kwota", line.strip(), re.IGNORECASE):
             continue
         value = label.group(1).strip()
         if BOUNDARY_RE.match(value) or STATUS.match(value):
@@ -256,6 +275,13 @@ def _posted_row(text: str) -> tuple[str, dict[str, str]] | None:
     return records[0] if len(records) == 1 else None
 
 
+def posted_party_debit(text: str) -> bool:
+    if not re.search(r"(?im)^rachunek właściciela\b", text) or not re.search(r"(?im)^dane kontrahenta", text):
+        return False
+    posted = _posted_row(text)
+    return bool(posted and posted[0].startswith(("-", "−")))
+
+
 def _participant_accounts(text: str) -> dict[str, str]:
     candidates = {}
     role = None
@@ -282,7 +308,8 @@ def printed_accounts(text: str) -> dict[str, str | None]:
         cells.setdefault(label, set()).add(value)
     roles = {label: next(iter(values)) if len(values) == 1 else None for label, values in cells.items()}
     posted = _posted_row(text)
-    if posted and posted[0].startswith(("-", "−")):
+    debit = re.search(rf"(?im)^kwota(?: operacji)?[ \t:]+[−-]\s*{MONEY}", text)
+    if debit or (posted and posted[0].startswith(("-", "−"))):
         for role, value in _participant_accounts(text).items():
             roles.setdefault(role, value)
     if executed_letter(text):
@@ -337,7 +364,8 @@ def _prose_values(text: str) -> tuple[float | None, str | None]:
 def transaction_values(text: str) -> tuple[float | None, str | None]:
     fields = _field_text(text)
     amount = AMOUNT_RE.search(fields)
-    money = _amount(amount[1]) if amount else None
+    raw_amount = amount[1] if amount else description_debit(fields)
+    money = _amount(raw_amount) if raw_amount else None
     dates = [(m[1].casefold(), m[2]) for m in OPERATION_DATE_RE.finditer(fields)]
     posted = _posted_row(fields)
     if posted:
@@ -350,7 +378,7 @@ def transaction_values(text: str) -> tuple[float | None, str | None]:
         if letter and len(DATE_RE.findall(letter[0])) == 1:
             dates.append(("data wykonania", letter[1]))
         for statement in EXECUTION_DAY_RE.finditer(clause):
-            dates.append(("data wykonania", DATE_RE.search(statement[0])[0]))
+            dates.append(("data wykonania", statement["before"] or statement["after"] or statement["between"]))
     # Select by the meaning of the printed date, across both labelled fields and table cells.
     # A value date is not evidence of execution.
     day = None
@@ -377,7 +405,7 @@ def extract(text: str) -> dict:
     amount, day = transaction_values(text)
     fields = _field_text(text)
     reference = REFERENCE_RE.search(fields) or re.search(
-        r"(?im)^referencj[ae] (?:banku|transakcji)\s*:?\s+([A-Z0-9/-]*\d[A-Z0-9/-]*)[ \t]*$", fields
+        r"(?im)^referencj[ae] (?:banku|transakcji)\s*:?\s+([A-Z0-9/#-]*\d[A-Z0-9/#-]*)[ \t]*$", fields
     )
     title = _title(fields)
     if executed_letter(fields):
