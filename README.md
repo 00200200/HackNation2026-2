@@ -151,10 +151,27 @@ uv run python -m evals.run --quick            # dev subset, before a push
 uv run python -m evals.run                    # all 60 training cases and the negatives
 uv run python -m evals.field_report --errors  # which fields fail, with list items paired inside their parent
 uv run python -m evals.field_report --force-ocr --errors   # ignore the text layer: what OCR costs
+make eval-real HN_REAL_SPLIT=dev              # /Users/domin/hn2-real-eval, or set HN_REAL_CORPUS
+uv run python -m evals.run --corpus "$corpus" --split test
+uv run python -m evals.run --corpus "$corpus" --split dev --detail-out "$corpus/dev-detail.json"
+uv run python -m evals.field_report --corpus "$corpus" --split dev --force-ocr --errors
 ```
 
-`evals.run` is the team's F1 harness and the source of every number below; its definition of
-F1 is in `evals/metrics.py`. The organizers have not published theirs.
+Set `corpus` to a directory containing `cases/<case_id>/<name>.pdf` and `gold/<case_id>/<name>.json`.
+An empty gold file marks an unrelated document. Corpus runs write aggregates to
+`evals/results/corpus-latest.json`. Set `HN_REAL_SPLIT` to `dev`, `test`, or `all` (default) for `make eval-real`.
+The optional `--detail-out` file must be outside every checkout of this repository and its Git metadata.
+Both commands check the selected directories, PDFs and references before reporting scores, including with
+`--pred`. Invalid inputs or an extractor failure exit with status 2 and preserve the previous results and gate.
+Test-split diagnostics omit local paths. Missing or malformed predictions count as missed reference fields.
+Training mode checks selected files against the organizer inventory committed in `data/uzp/dane`. Each known
+positive reference needs fields for its expected class. The negative-output target requires zero-byte predictions.
+For a case-level split, put `{"dev": [...], "test": [...]}` in `SPLIT.json` at the corpus root. Each list
+contains case folder names. The default `--split all` scores the whole corpus, including corpora without a split.
+Inspect field errors on dev. Use aggregate scores to evaluate test.
+
+`evals.run` reports pooled micro F1 and macro F1 by document, class and field path.
+The working definitions are in `evals/metrics.py`. The organizer's formula is UNCONFIRMED.
 
 ## Results on the training data (synthetic)
 

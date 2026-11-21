@@ -28,6 +28,10 @@ check `git diff data/uzp`, commit it, and compare F1 only between runs on the sa
 uv run python -m evals.run --quick                       # przyklad_01-05, _24 + 3 negatives; before a push
 uv run python -m evals.run                               # all 60 cases + all negatives; before submitting
 uv run python -m evals.run --pred output/                # score an existing output tree (original file names)
+make eval-real HN_REAL_SPLIT=dev                         # local corpus, override with HN_REAL_CORPUS
+uv run python -m evals.run --corpus "$corpus" --split test
+uv run python -m evals.run --corpus "$corpus" --split dev --detail-out "$corpus/dev-detail.json"
+uv run python -m evals.field_report --corpus "$corpus" --split dev --force-ocr --errors
 uv run pytest -q tests/test_eval_metrics.py              # metric code only
 ```
 
@@ -37,9 +41,31 @@ copies each case to `input/<case>/dokument_NN.pdf` in shuffled order, so the app
 reads `output/<case>/dokument_NN.json`. `ODW_TIMEOUT_S` bounds the run (default 3600 s). Exit code 1 when a
 required metric fails or is unknown.
 
-Each run writes `evals/results/latest.json` (commit it: it is the "own quality test results" deliverable) and
+A completed training run writes `evals/results/latest.json` (commit it: it is the "own quality test results" deliverable) and
 `.git/eval-latest.json`, which the pre-push hook reads. Results carry per-document TP/FP/FN, so look at the worst
 documents and fields before changing prompts.
+
+Training mode checks the selected cases and filenames against the committed organizer inventory in `data/uzp/dane`,
+including mixed-case negatives and the three fixed quick-mode negatives. An override with `--data` uses the same layout.
+Commit a reviewed organizer data refresh before evaluating the new inventory.
+
+Set `corpus` to the local corpus root. Each `cases/<case_id>/<name>.pdf` needs a matching
+`gold/<case_id>/<name>.json`, including an empty file for each unrelated PDF. Use `--pred DIR` to read
+`DIR/<case_id>/<name>.json` from a previous extraction. Corpus mode writes aggregates to
+`evals/results/corpus-latest.json` and leaves the training gate alone.
+Set `HN_REAL_SPLIT` to `dev`, `test`, or `all` (default) for `make eval-real`.
+The optional `--detail-out` file must be outside every checkout of this repository and its Git metadata.
+On test splits, corpus I/O failures report an error count and type on the console.
+Invalid inputs, an empty selection and extractor failures exit 2 before writing results or the training gate.
+Both commands validate selected PDF pages and their text layers and read every reference as UTF-8 JSON, even when scoring saved predictions.
+A zero-byte corpus reference labels a negative. The three named organizer references must each contain fields for the expected class. A bad prediction misses all gold leaves and counts as incomplete.
+For a negative prediction to meet the team target, its file must contain zero bytes. A missed target gives exit code 1. Targets with no applicable documents, such as negative handling on an all-positive corpus, are skipped.
+
+An optional `SPLIT.json` at the corpus root gives two lists of case folder names, `dev` and `test`.
+Together they must cover each case exactly once. Both commands accept `--split dev|test|all` (default `all`).
+Only the selected split's gold and PDFs are scored. Inspect field errors on dev and score test by aggregates.
+For a run that includes designated test cases, the field report requires an external `--detail-out` for
+`--errors` and sends document diagnostics to that file.
 
 ## F1 definition (`evals/metrics.py`)
 
@@ -55,6 +81,13 @@ this section when they answer. Working definition:
   document does not state (FAQ 6). `micro_f1_non_null` shows the variant that ignores gold-null fields.
 - Negative document: gold is empty, every predicted pair is a FP. Missing/invalid output: every gold pair is a FN.
 - The micro-F1 is pooled over all documents. `holdout_51_60` (full run) reports the same on cases 51–60.
+- `macro_f1_documents` averages F1 over documents with at least one predicted or reference leaf.
+  An invented field on a negative gives that document zero.
+- `macro_f1_classes` averages the field-level F1 scores for the target classes with reference or predicted fields.
+  A wrong class incurs missed fields in the reference class and spurious fields in the predicted class.
+  `macro_f1_class_count` gives the number of classes in the mean and `per_class_f1` names them.
+- `macro_f1_fields` gives each distinct leaf path the same weight. Match values within each document,
+  pool TP/FP/FN for each path across documents, then average the path scores. An empty average is JSON null.
 
 ## Metrics and targets
 
