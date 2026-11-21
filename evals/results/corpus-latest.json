@@ -1,8 +1,8 @@
 {
-  "commit": "d177cbc7854a17d9a27e49dd79e9420d8eccd1f9",
+  "commit": "ca29753921e6e6c1a7d867ab56965373edf70bec",
   "dirty": false,
   "mode": "corpus",
-  "timestamp": "2026-11-21T18:49:17+00:00",
+  "timestamp": "2026-11-21T22:11:00+00:00",
   "n_cases": 14,
   "n_docs": 39,
   "coverage_ok": false,
@@ -10,7 +10,7 @@
   "run_error": null,
   "metrics": {
     "micro_f1": {
-      "value": 0.5248447204968945,
+      "value": 0.8788659793814433,
       "target": 0.9,
       "pass": false
     },
@@ -25,47 +25,47 @@
       "pass": true
     },
     "classification_accuracy": {
-      "value": 0.6071428571428571,
+      "value": 0.9642857142857143,
       "target": 1.0,
       "pass": false
     },
     "seconds_per_doc": {
-      "value": 3.6084908835398846,
+      "value": 0.757383322641731,
       "target": null,
       "pass": true
     }
   },
   "detail": {
-    "micro_f1": 0.5248447204968945,
-    "macro_f1_documents": 0.3430006757195697,
-    "macro_f1_classes": 0.3618796662274923,
+    "micro_f1": 0.8788659793814433,
+    "macro_f1_documents": 0.8602564102564102,
+    "macro_f1_classes": 0.8950957641016121,
     "macro_f1_class_count": 3,
-    "macro_f1_fields": 0.46520282186948847,
-    "micro_f1_non_null": 0.3719806763285024,
+    "macro_f1_fields": 0.8899443831022779,
+    "micro_f1_non_null": 0.8237623762376237,
     "per_class_f1": {
-      "odwolanie": 0.6007905138339921,
-      "pelnomocnictwo": 0.3333333333333333,
-      "przelew": 0.15151515151515152
+      "odwolanie": 0.8712522045855379,
+      "pelnomocnictwo": 0.9894736842105263,
+      "przelew": 0.8245614035087719
     },
-    "classification_accuracy": 0.6071428571428571,
+    "classification_accuracy": 0.9642857142857143,
     "negatives_empty": 1.0,
     "outputs_complete": 1.0,
     "counts": {
-      "tp": 169,
-      "fp": 81,
-      "fn": 225
+      "tp": 341,
+      "fp": 41,
+      "fn": 53
     },
     "routing_by_class": {
       "odwolanie": {
-        "correct": 12,
+        "correct": 13,
         "total": 13
       },
       "pelnomocnictwo": {
-        "correct": 4,
+        "correct": 5,
         "total": 5
       },
       "przelew": {
-        "correct": 1,
+        "correct": 9,
         "total": 10
       },
       "negatywny": {

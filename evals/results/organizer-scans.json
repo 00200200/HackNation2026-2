@@ -1,16 +1,16 @@
 {
-  "commit": "6f55ef6039674c0df9331fb2d6e4635861190e63",
+  "commit": "ca29753921e6e6c1a7d867ab56965373edf70bec",
   "dirty": false,
   "mode": "organizer-scans",
-  "timestamp": "2026-11-21T21:00:47+00:00",
+  "timestamp": "2026-11-21T22:07:36+00:00",
   "n_cases": 1,
   "n_docs": 30,
   "coverage_ok": false,
-  "overall_pass": false,
+  "overall_pass": true,
   "run_error": null,
   "metrics": {
     "micro_f1": {
-      "value": 0.9203296703296703,
+      "value": 0.9974226804123711,
       "target": 0.9,
       "pass": true
     },
@@ -25,35 +25,35 @@
       "pass": null
     },
     "classification_accuracy": {
-      "value": 0.7333333333333333,
+      "value": 1.0,
       "target": 1.0,
-      "pass": false
+      "pass": true
     },
     "seconds_per_doc": {
-      "value": 16.43757673469372,
+      "value": 1.203998972211654,
       "target": null,
       "pass": true
     }
   },
   "detail": {
-    "micro_f1": 0.9203296703296703,
-    "macro_f1_documents": 0.7055555555555556,
-    "macro_f1_classes": 0.7314814814814815,
+    "micro_f1": 0.9974226804123711,
+    "macro_f1_documents": 0.9944444444444444,
+    "macro_f1_classes": 0.9944444444444445,
     "macro_f1_class_count": 3,
-    "macro_f1_fields": 0.8657407407407408,
-    "micro_f1_non_null": 0.9090909090909091,
+    "macro_f1_fields": 0.9972222222222222,
+    "micro_f1_non_null": 0.996742671009772,
     "per_class_f1": {
       "odwolanie": 1.0,
       "pelnomocnictwo": 1.0,
-      "przelew": 0.19444444444444445
+      "przelew": 0.9833333333333333
     },
-    "classification_accuracy": 0.7333333333333333,
+    "classification_accuracy": 1.0,
     "negatives_empty": null,
     "outputs_complete": 1.0,
     "counts": {
-      "tp": 335,
-      "fp": 5,
-      "fn": 53
+      "tp": 387,
+      "fp": 1,
+      "fn": 1
     },
     "routing_by_class": {
       "odwolanie": {
@@ -65,7 +65,7 @@
         "total": 10
       },
       "przelew": {
-        "correct": 2,
+        "correct": 10,
         "total": 10
       },
       "negatywny": {

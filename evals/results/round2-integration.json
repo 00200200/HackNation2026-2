@@ -1,0 +1,428 @@
+{
+  "product_commit": "ca29753921e6e6c1a7d867ab56965373edf70bec",
+  "training_byte_comparison_base": "10b93843f7d38356602d07fe8d03d742f9b7b400",
+  "method": {
+    "workers": {
+      "keyless": 4,
+      "keyed": 3
+    },
+    "host": "Shared 16 GB Apple M1",
+    "inputs": "Shuffled neutral PDF filenames in the repository evaluation harness. Corpus 1 all and corpus 2 dev.",
+    "exact": "Parsed JSON equality retaining list order and literal field values, or a zero-byte negative.",
+    "f1": "Pooled normalized leaf F1 in evals.metrics, with nulls.",
+    "wall_seconds_per_pdf": "Evaluation harness elapsed time around CLI invocation and private copying of prediction JSON, divided by PDF count. Includes startup, OCR and live regional calls for keyed inputs.",
+    "keyed_model": "ministral-3b-2512",
+    "keyed_endpoint": "https://api.eu.mistral.ai/v1",
+    "profile": "RL / supported / spans / incomplete / charge focus, primary OCR only"
+  },
+  "datasets": {
+    "training": {
+      "keyless": {
+        "pdfs": 196,
+        "micro_f1": 1.0,
+        "macro_f1_classes": 1.0,
+        "per_class_f1": {
+          "odwolanie": 1.0,
+          "pelnomocnictwo": 1.0,
+          "przelew": 1.0
+        },
+        "field_counts": {
+          "tp": 2316,
+          "fp": 0,
+          "fn": 0
+        },
+        "routing_by_class": {
+          "negatywny": {
+            "total": 16,
+            "correct": 16
+          },
+          "odwolanie": {
+            "total": 60,
+            "correct": 60
+          },
+          "pelnomocnictwo": {
+            "total": 60,
+            "correct": 60
+          },
+          "przelew": {
+            "total": 60,
+            "correct": 60
+          }
+        },
+        "exact_json_by_class": {
+          "negatywny": 16,
+          "odwolanie": 60,
+          "pelnomocnictwo": 60,
+          "przelew": 60
+        },
+        "exact_documents": 196,
+        "seconds_per_pdf": 0.03773199489853364,
+        "rule_recoveries": 0,
+        "timestamp": "2026-11-21T22:12:03+00:00",
+        "byte_matches_to_main": 196,
+        "holdout_51_60_micro_f1": 1.0
+      },
+      "keyed": {
+        "pdfs": 196,
+        "micro_f1": 1.0,
+        "macro_f1_classes": 1.0,
+        "per_class_f1": {
+          "odwolanie": 1.0,
+          "pelnomocnictwo": 1.0,
+          "przelew": 1.0
+        },
+        "field_counts": {
+          "tp": 2316,
+          "fp": 0,
+          "fn": 0
+        },
+        "routing_by_class": {
+          "negatywny": {
+            "total": 16,
+            "correct": 16
+          },
+          "odwolanie": {
+            "total": 60,
+            "correct": 60
+          },
+          "pelnomocnictwo": {
+            "total": 60,
+            "correct": 60
+          },
+          "przelew": {
+            "total": 60,
+            "correct": 60
+          }
+        },
+        "exact_json_by_class": {
+          "negatywny": 16,
+          "odwolanie": 60,
+          "pelnomocnictwo": 60,
+          "przelew": 60
+        },
+        "exact_documents": 196,
+        "seconds_per_pdf": 0.04872266454051952,
+        "rule_recoveries": 0,
+        "timestamp": "2026-11-21T22:12:31+00:00",
+        "byte_matches_to_main": 196,
+        "holdout_51_60_micro_f1": 1.0,
+        "regional_http_status_counts": {}
+      },
+      "model_minus_rules_f1": {
+        "odwolanie": 0.0,
+        "pelnomocnictwo": 0.0,
+        "przelew": 0.0
+      }
+    },
+    "organizer": {
+      "keyless": {
+        "pdfs": 30,
+        "micro_f1": 0.9974226804123711,
+        "macro_f1_classes": 0.9944444444444445,
+        "per_class_f1": {
+          "odwolanie": 1.0,
+          "pelnomocnictwo": 1.0,
+          "przelew": 0.9833333333333333
+        },
+        "field_counts": {
+          "tp": 387,
+          "fp": 1,
+          "fn": 1
+        },
+        "routing_by_class": {
+          "odwolanie": {
+            "correct": 10,
+            "total": 10
+          },
+          "pelnomocnictwo": {
+            "correct": 10,
+            "total": 10
+          },
+          "przelew": {
+            "correct": 10,
+            "total": 10
+          },
+          "negatywny": {
+            "correct": 0,
+            "total": 0
+          }
+        },
+        "exact_json_by_class": {
+          "pelnomocnictwo": 10,
+          "odwolanie": 10,
+          "przelew": 9
+        },
+        "exact_documents": 29,
+        "seconds_per_pdf": 1.203998972211654,
+        "rule_recoveries": 0,
+        "timestamp": "2026-11-21T22:07:36+00:00"
+      },
+      "keyed": {
+        "pdfs": 30,
+        "micro_f1": 0.9974226804123711,
+        "macro_f1_classes": 0.9944444444444445,
+        "per_class_f1": {
+          "odwolanie": 1.0,
+          "pelnomocnictwo": 1.0,
+          "przelew": 0.9833333333333333
+        },
+        "field_counts": {
+          "tp": 387,
+          "fp": 1,
+          "fn": 1
+        },
+        "routing_by_class": {
+          "odwolanie": {
+            "correct": 10,
+            "total": 10
+          },
+          "pelnomocnictwo": {
+            "correct": 10,
+            "total": 10
+          },
+          "przelew": {
+            "correct": 10,
+            "total": 10
+          },
+          "negatywny": {
+            "correct": 0,
+            "total": 0
+          }
+        },
+        "exact_json_by_class": {
+          "pelnomocnictwo": 10,
+          "odwolanie": 10,
+          "przelew": 9
+        },
+        "exact_documents": 29,
+        "seconds_per_pdf": 1.4968769375079622,
+        "rule_recoveries": 0,
+        "timestamp": "2026-11-21T22:08:21+00:00",
+        "regional_http_status_counts": {
+          "200": 10
+        }
+      },
+      "model_minus_rules_f1": {
+        "odwolanie": 0.0,
+        "pelnomocnictwo": 0.0,
+        "przelew": 0.0
+      }
+    },
+    "corpus1": {
+      "keyless": {
+        "pdfs": 39,
+        "micro_f1": 0.8607329842931937,
+        "macro_f1_classes": 0.77853284936226,
+        "per_class_f1": {
+          "odwolanie": 0.8909574468085106,
+          "pelnomocnictwo": 0.9557522123893806,
+          "przelew": 0.4888888888888889
+        },
+        "field_counts": {
+          "tp": 411,
+          "fp": 56,
+          "fn": 77
+        },
+        "routing_by_class": {
+          "odwolanie": {
+            "correct": 13,
+            "total": 13
+          },
+          "pelnomocnictwo": {
+            "correct": 6,
+            "total": 6
+          },
+          "przelew": {
+            "correct": 6,
+            "total": 9
+          },
+          "negatywny": {
+            "correct": 11,
+            "total": 11
+          }
+        },
+        "exact_json_by_class": {
+          "przelew": 0,
+          "pelnomocnictwo": 2,
+          "odwolanie": 3,
+          "negatywny": 11
+        },
+        "exact_documents": 16,
+        "seconds_per_pdf": 1.0995048835443764,
+        "rule_recoveries": 0,
+        "timestamp": "2026-11-21T22:09:12+00:00"
+      },
+      "keyed": {
+        "pdfs": 39,
+        "micro_f1": 0.869475847893114,
+        "macro_f1_classes": 0.8254464296091736,
+        "per_class_f1": {
+          "odwolanie": 0.8909574468085106,
+          "pelnomocnictwo": 0.9557522123893806,
+          "przelew": 0.6296296296296297
+        },
+        "field_counts": {
+          "tp": 423,
+          "fp": 62,
+          "fn": 65
+        },
+        "routing_by_class": {
+          "odwolanie": {
+            "correct": 13,
+            "total": 13
+          },
+          "pelnomocnictwo": {
+            "correct": 6,
+            "total": 6
+          },
+          "przelew": {
+            "correct": 9,
+            "total": 9
+          },
+          "negatywny": {
+            "correct": 11,
+            "total": 11
+          }
+        },
+        "exact_json_by_class": {
+          "przelew": 1,
+          "pelnomocnictwo": 2,
+          "odwolanie": 3,
+          "negatywny": 11
+        },
+        "exact_documents": 17,
+        "seconds_per_pdf": 1.5572799957261827,
+        "rule_recoveries": 0,
+        "timestamp": "2026-11-21T22:10:22+00:00",
+        "regional_http_status_counts": {
+          "200": 16
+        }
+      },
+      "model_minus_rules_f1": {
+        "odwolanie": 0.0,
+        "pelnomocnictwo": 0.0,
+        "przelew": 0.14074074074074078
+      }
+    },
+    "corpus2": {
+      "keyless": {
+        "pdfs": 39,
+        "micro_f1": 0.8788659793814433,
+        "macro_f1_classes": 0.8950957641016121,
+        "per_class_f1": {
+          "odwolanie": 0.8712522045855379,
+          "pelnomocnictwo": 0.9894736842105263,
+          "przelew": 0.8245614035087719
+        },
+        "field_counts": {
+          "tp": 341,
+          "fp": 41,
+          "fn": 53
+        },
+        "routing_by_class": {
+          "odwolanie": {
+            "correct": 13,
+            "total": 13
+          },
+          "pelnomocnictwo": {
+            "correct": 5,
+            "total": 5
+          },
+          "przelew": {
+            "correct": 9,
+            "total": 10
+          },
+          "negatywny": {
+            "correct": 11,
+            "total": 11
+          }
+        },
+        "exact_json_by_class": {
+          "pelnomocnictwo": 4,
+          "negatywny": 11,
+          "przelew": 4,
+          "odwolanie": 2
+        },
+        "exact_documents": 21,
+        "seconds_per_pdf": 0.757383322641731,
+        "rule_recoveries": 0,
+        "timestamp": "2026-11-21T22:11:00+00:00"
+      },
+      "keyed": {
+        "pdfs": 39,
+        "micro_f1": 0.8919949174078781,
+        "macro_f1_classes": 0.9124197439986914,
+        "per_class_f1": {
+          "odwolanie": 0.8811188811188811,
+          "pelnomocnictwo": 0.9894736842105263,
+          "przelew": 0.8666666666666667
+        },
+        "field_counts": {
+          "tp": 351,
+          "fp": 42,
+          "fn": 43
+        },
+        "routing_by_class": {
+          "odwolanie": {
+            "correct": 13,
+            "total": 13
+          },
+          "pelnomocnictwo": {
+            "correct": 5,
+            "total": 5
+          },
+          "przelew": {
+            "correct": 10,
+            "total": 10
+          },
+          "negatywny": {
+            "correct": 11,
+            "total": 11
+          }
+        },
+        "exact_json_by_class": {
+          "pelnomocnictwo": 4,
+          "negatywny": 11,
+          "przelew": 4,
+          "odwolanie": 2
+        },
+        "exact_documents": 21,
+        "seconds_per_pdf": 0.7484343589808887,
+        "rule_recoveries": 0,
+        "timestamp": "2026-11-21T22:11:36+00:00",
+        "regional_http_status_counts": {
+          "200": 9
+        }
+      },
+      "model_minus_rules_f1": {
+        "odwolanie": 0.009866676533343277,
+        "pelnomocnictwo": 0.0,
+        "przelew": 0.04210526315789476
+      }
+    }
+  },
+  "mixed_batch_150": {
+    "keyless": {
+      "pdfs": 150,
+      "scans": 60,
+      "synthetic_training": 90,
+      "exact_documents": 148,
+      "byte_matches_to_single_dataset_runs": 150,
+      "wall_seconds": 57.53858929220587,
+      "seconds_per_pdf": 0.38359059528137246
+    },
+    "keyed": {
+      "pdfs": 150,
+      "scans": 60,
+      "synthetic_training": 90,
+      "exact_documents": 148,
+      "byte_matches_to_single_dataset_runs": 150,
+      "wall_seconds": 70.37755116587505,
+      "seconds_per_pdf": 0.469183674439167,
+      "regional_http_status_counts": {
+        "200": 20
+      }
+    },
+    "composition": "Two copies of the 30 organizer scans plus 90 evenly spaced PDFs from the sorted 196-document training inventory, zero-based indices i * 196 // 90."
+  }
+}
