@@ -276,5 +276,37 @@
       "strict_field_f1": 0.901,
       "method": "Fresh T1 transcripts and saved public-corpus RapidOCR v6 transcripts for the unrouted documents, scored through the same hybrid pipeline."
     }
+  },
+  "provenance_check": {
+    "commit": "f0dfd0bcc8dd40ce36fbae08703859aa62cf2625",
+    "setting": "tesseract-dpi",
+    "native_differential": {
+      "base": "32106434f746628c7080191597f0766d4151d786",
+      "documents": 175,
+      "pages": 186,
+      "exact_documents": 175,
+      "differences_at_c222716": 24
+    },
+    "natural_real_dev": {
+      "documents": 20,
+      "cases": 13,
+      "field_micro_f1": 0.41643835616438357,
+      "class_macro_f1": 0.2915038355767839,
+      "source": "corpus-latest.json"
+    },
+    "synthetic_forced": {
+      "documents": 196,
+      "ocr_pages": 307,
+      "exact_documents": 100,
+      "field_records": 2420,
+      "correct": 2005,
+      "wrong": 111,
+      "missing": 200,
+      "spurious": 104,
+      "strict_precision": 0.9031531531531531,
+      "strict_recall": 0.8657167530224525,
+      "strict_field_f1": 0.8840388007054674,
+      "method": "Fresh full-pipeline recognition on each public PDF at 300 dpi, scored with evals.field_report."
+    }
   }
 }

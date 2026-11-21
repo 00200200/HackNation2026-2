@@ -1,6 +1,7 @@
 """Compare every routed field with the baseline checkout before accepting intentional differences."""
 
 import json
+from copy import deepcopy
 from pathlib import Path
 
 import pytest
@@ -28,27 +29,6 @@ INTENDED_CHANGES = [
         "2028-04-16",
         None,
         "The date belongs to submission of the offer.",
-    ),
-    (
-        "r11-R6b",
-        "/output/mocodawca/0/podpisujacy",
-        [{"imie_nazwisko": "Kierownik Projektu"}, {"imie_nazwisko": "Ada Rzeczna"}],
-        [{"imie_nazwisko": "Ada Rzeczna"}],
-        "The parenthesized heading continuation is a job title. Only Ada signs for Luneta.",
-    ),
-    (
-        "r11-R6c",
-        "/output/mocodawca/0/podpisujacy",
-        [{"imie_nazwisko": "Zespół Obsługi"}, {"imie_nazwisko": "Ada Rzeczna"}],
-        [{"imie_nazwisko": "Ada Rzeczna"}],
-        "The parenthesized heading continuation is a job title. Only Ada signs for Luneta.",
-    ),
-    (
-        "r11-Xacc",
-        "/output/przelew_bankowy/na_rachunek",
-        "84848484848484848484848484",
-        None,
-        "The second account is explicitly for refunds.",
     ),
     (
         "r11-Xact",
@@ -105,20 +85,6 @@ INTENDED_CHANGES = [
         "2028-04-15",
         None,
         "The date belongs to dispatch of a separate request.",
-    ),
-    (
-        "r11-Xs0",
-        "/output/mocodawca/0/podpisujacy",
-        [{"imie_nazwisko": "Ada Rzeczna"}],
-        [],
-        "The printed signature names a different legal entity from the grantor.",
-    ),
-    (
-        "r11-Xs1",
-        "/output/mocodawca/0/podpisujacy",
-        [{"imie_nazwisko": "Ada Rzeczna"}],
-        [],
-        "The printed signature names a different legal entity from the grantor.",
     ),
     (
         "r29-one-column",
@@ -482,6 +448,72 @@ INTENDED_CHANGES = [
         {"numer_bzp": None, "numer_postepowania": None, "numer_ted": None, "tytul": None},
         "The appeal supplies no procurement identifiers or title.",
     ),
+    (
+        "native-task22/role-ascii",
+        "/class",
+        None,
+        "appeal",
+        "The filing heading and ASCII appellant label identify an appeal.",
+    ),
+    (
+        "native-task22/role-ascii",
+        "/output/OdwolanieKIO",
+        "<absent>",
+        {"data": None, "czynnosc_dzien": None, "czynnosc_powod_id": None, "czynnosc_opis": None, "miejscowosc": None},
+        "The filing gives no date or challenged act.",
+    ),
+    (
+        "native-task22/role-ascii",
+        "/output/Odwolujacy",
+        "<absent>",
+        [
+            {
+                "krs": None,
+                "nazwa": "Imię",
+                "nip": None,
+                "regon": None,
+                "przez-pelnomocnika": 0,
+                "pelnomocnik": {"imie_nazwisko": None, "nazwa": None, "mail": None},
+            }
+        ],
+        "The appellant label names Imię.",
+    ),
+    ("native-task22/role-ascii", "/output/Zamawiajacy", "<absent>", [], "The filing names no authority."),
+    (
+        "native-task22/role-ascii",
+        "/output/ZamowieniePubliczne",
+        "<absent>",
+        {"numer_bzp": None, "numer_postepowania": None, "numer_ted": None, "tytul": None},
+        "The filing supplies no procurement fields.",
+    ),
+    (
+        "native-task22/mail-paren-at",
+        "/output/Odwolujacy/0/nazwa",
+        "Studio E-mail: anna (at) firma.example",
+        "Studio",
+        "The appellant name ends before the labelled e-mail contact.",
+    ),
+    (
+        "native-task22/mail-square-at",
+        "/output/Odwolujacy/0/nazwa",
+        "Studio E-mail: anna [at] firma.example",
+        "Studio",
+        "The appellant name ends before the labelled e-mail contact.",
+    ),
+    (
+        "native-task22/mail-bare-q",
+        "/output/Odwolujacy/0/nazwa",
+        "Studio E-mail: annaQfirma.example",
+        "Studio",
+        "The appellant name ends before the labelled e-mail contact.",
+    ),
+    (
+        "native-task22/mail-crop-q",
+        "/output/Odwolujacy/0/nazwa",
+        "Studio E-mail: testQx.example",
+        "Studio",
+        "The appellant name ends before the labelled e-mail contact.",
+    ),
 ]
 
 
@@ -506,3 +538,21 @@ def test_against_integration_baseline(key):
     actual = list(differences(BASELINE[key], extract_page(INPUTS[key], DEFINITIONS)))
     allowed = [(field, old, new) for case, field, old, new, reason in INTENDED_CHANGES if case == key]
     assert sorted(actual) == sorted(allowed)
+
+
+def expected_native_result(pages, base):
+    """Apply the reviewed field corrections only when both input text and original output match."""
+    if len(pages) != 1:
+        return base
+    result = {"class": base[0], "output": deepcopy(base[1])}
+    for key, field, old, new, _ in INTENDED_CHANGES:
+        if INPUTS[key] != pages[0]:
+            continue
+        assert BASELINE[key] == {"class": base[0], "output": base[1]}
+        parent = result
+        *parts, leaf = field.lstrip("/").split("/")
+        for part in parts:
+            parent = parent[int(part) if isinstance(parent, list) else part]
+        assert parent.get(leaf, ABSENT) == old
+        parent[leaf] = new
+    return [result["class"], result["output"]]

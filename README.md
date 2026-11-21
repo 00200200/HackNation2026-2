@@ -47,15 +47,15 @@ For example, use `export KIO_OCR_ENGINE=rapidocr` in a POSIX shell or
 Each PDF gets a JSON at the same relative path and file stem. Appeals, powers of attorney and
 bank-transfer confirmations get the organizer's structure. Any other document gets an empty
 file. A PDF that cannot be processed also gets an empty file, is reported on stderr, and makes
-the run exit with status 1 after processing the remaining PDFs. An image-only document with no readable text on any inspected page reports
-`no readable text after OCR`. A blank separator beside a readable page is accepted.
+the run exit with status 1 after processing the remaining PDFs. A nonblank scan that yields fewer than two alphabetic words after page counters are removed
+reports `no readable text after OCR`. Blank pages may stand alone or appear beside a readable page.
 
 To open the Polish document viewer, run `python -m kio2json.gui`. It opens a browser on
 `127.0.0.1:8000`. Select PDFs and name the case, or enter a folder containing cases. Click
 **Analizuj dokumenty**, choose a document and compare its pages with the JSON. **Pobierz wyniki (.zip)**
 downloads one JSON per PDF under its case folder. Failed documents show the reason and get an
 empty file. The viewer keeps temporary copies for the current session. The default configuration
-works offline. The pipeline does not report which pages used OCR.
+works offline. Page provenance is used internally and the output follows the organizer’s JSON schema.
 
 | Start from the repository | Windows | Linux or macOS |
 |---|---|---|
@@ -66,8 +66,10 @@ works offline. The pipeline does not report which pages used OCR.
 
 ## How it works
 
-1. `kio2json/pdf_text.py` reads the first three pages with pdfplumber. Pages with no text or
-   only page numbers go through the selected OCR engine at 300 dpi. When Tesseract reads
+1. `kio2json/pdf_text.py` reads the first three pages with pdfplumber for extraction.
+   Pages with no usable text, including scans with a selectable page counter, go through OCR at 300 dpi.
+   If those pages require OCR and appear unreadable, the reader checks later pages for readable text
+   before reporting a document error. When Tesseract reads
    a possible e-mail address with a missing `@`, an English single-word pass rereads that crop. The extractor accepts the separator
    only when the rest of both readings agrees. Call `read_pages(path, word_boxes=boxes)` with
    an empty list to collect raw words and their rectangles alongside the page strings. Coordinates
@@ -81,8 +83,10 @@ works offline. The pipeline does not report which pages used OCR.
    heading or execution status, and a transaction amount or date. Rejected payments and payment
    requests get an empty file.
 3. `kio2json/engines.py` sends the joined page text to the selected extractor. The three jury
-   classes use `python` with a dotted path to the existing rule function. Each function retains
-   its field order and normalization. `labelled_fields` extracts values by pattern. `llm`
+   classes use `python` with a dotted path to the existing rule function. Native pages follow
+   the integration baseline. The reader records which pages needed OCR so account repair,
+   damaged e-mail handling and signature recovery can use the source of each field.
+   A scanned attachment does not enable masked-account routing on a native receipt. `labelled_fields` extracts values by pattern. `llm`
    generates a Pydantic AI output model from the same field definitions.
 
 ## Enable the fourth class
@@ -218,9 +222,14 @@ Read these as a regression check. The rules were written by looking at these sam
 documents, cases 51-60 included, so no case here is unseen and the 51-60 figure is no estimate
 of how the rules generalize. The hidden test set holds real cases, and this is not its score.
 
+A separate native-text differential test compares the class and serialized fields of 175 invented PDFs
+with a snapshot from integration base `3210643`. It includes 135 review cases and 40 additional
+documents. A second suite checks 154 invented appeal and routing inputs against the same base.
+Both suites use the same field-by-field table for intended appeal corrections. [Fixtures and regeneration command](tests/snapshots/README.md)
+
 Forced OCR on all 196 training PDFs (307 rendered pages) gave strict field F1 **0.900**
-with automatic source resolution and **0.884** with explicit 300 dpi. To repeat the
-explicit-DPI run, select `KIO_OCR_ENGINE=tesseract-dpi` and run
+with automatic source resolution and **0.884** with explicit 300 dpi. The comparison used the rules recorded in the measurement file. To run the
+current rules, select `KIO_OCR_ENGINE=tesseract-dpi` and run
 `uv run python -m evals.field_report --force-ocr --errors`. [OCR measurements](evals/results/ocr-engines.json)
 
 ## OCR on real development documents
@@ -246,6 +255,11 @@ Peak RSS covers the process tree. Installed sizes are decimal MB excluding pip, 
 the interpreter. The six unrelated documents contribute routing outcomes. No private test cases
 were scored for this comparison.
 
+The default engine was measured again after the extraction rules began tracking page sources.
+The real-dev result is in [the OCR branch corpus report](https://github.com/00200200/HackNation2026-2/blob/5c4eff29d5872d64845ec533a3df0af9ba174740/evals/results/corpus-latest.json). The
+`provenance_check` entry records the paired native-text and forced-OCR checks on the same
+rules. [OCR results](evals/results/ocr-engines.json)
+
 ## Known limits
 
 - Appeal extraction reads the first three pages. A signature or dated notice later in the PDF can be missed.
@@ -259,10 +273,10 @@ were scored for this comparison.
   glyphs is repaired only if a unique candidate passes the IBAN mod-97 check. A fully printed
   digit string is retained as read, including when the printed checksum is invalid. Ambiguous
   signatures and e-mail addresses can remain missing.
-- A receipt with one visible number and an explicitly masked account needs a confirmation heading, a transaction amount and date,
-  and two explicitly labelled accounts. One must be fully masked by asterisks and the other checksum-valid.
+- On a scanned receipt, the single-account route needs a confirmation heading, a transaction amount and date,
+  and two explicitly labelled accounts. One must show a mask (asterisks, Xs or a dash) and the other a checksum-valid number.
   The classifier passes the labelled account evidence to the extractor. A repeated number elsewhere in the text cannot fill a masked role. Unlabelled or conflicting roles can leave account fields empty.
-- A signer needs a signature heading, a signature line in the grantor’s block, or a closing name with a representation title directly beneath the grant. Ambiguous roles can leave a signer out. Attorney names retain the grammatical case used in the document.
+- OCR can recover a signer from a signature caption, a signature line in the grantor’s block, or a closing name with a representation title directly beneath the grant. Ambiguous roles can leave a signer out. Attorney names retain the grammatical case used in the document.
 - UNCONFIRMED: what "empty JSON" means for unrelated documents. We write an empty file, as the
   organizer README words it.
 - UNCONFIRMED: value types. `pesel` is a number in the organizer's annotated example and a string

@@ -1,5 +1,12 @@
+from kio2json.ocr_accounts import account_evidence
+from kio2json.ocr_extract import extract_appeal, extract_bank_transfer, extract_power_of_attorney
 from kio2json.ocr_normalize import normalize_ocr
-from kio2json.power_of_attorney import extract
+
+
+def classify_ocr(text):
+    from kio2json.classify import classify
+
+    return classify([text], ocr_accounts=account_evidence(text))
 
 
 def test_account_repair_requires_the_checksum():
@@ -23,16 +30,20 @@ def test_only_restore_explicit_address_separators():
 def test_signers_without_dots_need_evidence_of_a_signature():
     body = "Mocodawca: Fikcyjne Studio sp. z o.o. udziela pełnomocnictwa adw. Idzie Wymyślnej.\n"
     signature = "\nIga Próbna\nPrezes Zarządu"
-    assert extract(body + signature)["mocodawca"][0]["podpisujacy"] == [{"imie_nazwisko": "Iga Próbna"}]
-    assert extract(body + "Adresat: Alicja Fikcyjna")["mocodawca"][0]["podpisujacy"] == []
+    assert extract_power_of_attorney([body + signature], [1])["mocodawca"][0]["podpisujacy"] == [
+        {"imie_nazwisko": "Iga Próbna"}
+    ]
+    assert extract_power_of_attorney([body + "Adresat: Alicja Fikcyjna"], [1])["mocodawca"][0]["podpisujacy"] == []
 
 
 def test_missing_signature_lines_preserve_explicit_principal_and_skip_unnamed_principals():
     body = "Fikcyjne Studio sp. z o.o. oraz Próbna Firma sp. k. udzielają pełnomocnictwa.\n"
     signature = "W imieniu Próbna Firma sp. k.:\nIga Wymyślna\nDyrektor"
-    principals = extract(body + signature)["mocodawca"]
+    principals = extract_power_of_attorney([body + signature], [1])["mocodawca"]
     assert [p["podpisujacy"] for p in principals] == [[], [{"imie_nazwisko": "Iga Wymyślna"}]]
-    assert all(not p["podpisujacy"] for p in extract(body + "Iga Wymyślna\nDyrektor")["mocodawca"])
+    assert all(
+        not p["podpisujacy"] for p in extract_power_of_attorney([body + "Iga Wymyślna\nDyrektor"], [1])["mocodawca"]
+    )
 
 
 def test_restore_accents_in_headings_and_labels_without_changing_names():
@@ -85,29 +96,24 @@ def test_native_word_boxes_keep_pdfplumber_coordinates(monkeypatch):
 
 
 def test_damaged_contact_line_cannot_create_another_contracting_authority():
-    from kio2json.appeal import extract
-
     text = "Zamawiający: Gmina Próbna\nul. Pusta 4\nNIP: 9990001122\nsekretariatQfikcja.example\nODWOŁANIE"
-    parties = extract(text)["Zamawiajacy"]
+    parties = extract_appeal([text], [1])["Zamawiajacy"]
     assert [p["nazwa"] for p in parties] == ["Gmina Próbna"]
-    assert extract("Zamawiający: przyklad.example")["Zamawiajacy"][0]["nazwa"] == "przyklad.example"
+    assert extract_appeal(["Zamawiający: przyklad.example"], [1])["Zamawiajacy"][0]["nazwa"] == "przyklad.example"
 
 
 def test_confirmed_payment_with_one_unreadable_account_preserves_the_other_role():
-    from kio2json import bank_transfer
-    from kio2json.classify import classify
-
     account = "56458700991234567801234567"
     text = (
         "Potwierdzenie przelewu\nRachunek nadawcy: ****\nRachunek odbiorcy: "
         + account
         + "\nKwota przelewu: 64,50 PLN\nData operacji: 04.06.2025"
     )
-    assert classify([text]) == "bank_transfer"
-    result = bank_transfer.extract(text)["przelew_bankowy"]
+    assert classify_ocr(text) == "bank_transfer"
+    result = extract_bank_transfer([text], [1], accounts=account_evidence(text))["przelew_bankowy"]
     assert (result["z_rachunku"], result["na_rachunek"]) == (None, account)
-    assert classify(["Prosimy o potwierdzenie przelewu" + text.removeprefix("Potwierdzenie przelewu")]) is None
-    assert classify(["FAKTURA VAT\n" + text]) is None
+    assert classify_ocr("Prosimy o potwierdzenie przelewu" + text.removeprefix("Potwierdzenie przelewu")) is None
+    assert classify_ocr("FAKTURA VAT\n" + text) is None
 
 
 def test_rapidocr_uses_engine_word_boxes_in_pdf_points(monkeypatch):
@@ -139,8 +145,6 @@ def test_unrecognized_engine_reports_the_setting(monkeypatch):
 
 
 def test_masked_transfer_requires_exact_roles_and_checksum():
-    from kio2json.classify import classify
-
     transfer = (
         "Potwierdzenie przelewu\nRachunek nadawcy: ****\nRachunek odbiorcy: 56458700991234567801234567"
         "\nKwota przelewu: 64,50 PLN\nData operacji: 04.06.2025"
@@ -151,5 +155,5 @@ def test_masked_transfer_requires_exact_roles_and_checksum():
         ("4567", "4568"),
         ("Data operacji", "Data wydruku"),
     ]:
-        assert classify([transfer.replace(before, after)]) is None
-    assert classify([transfer + "\nStatus: odrzucony"]) is None
+        assert classify_ocr(transfer.replace(before, after)) is None
+    assert classify_ocr(transfer + "\nStatus: odrzucony") is None

@@ -3147,6 +3147,756 @@
     "fresh-plural-register": {
       "class": null,
       "output": {}
+    },
+    "native-task1/background-vs-charge": {
+      "class": "appeal",
+      "output": {
+        "OdwolanieKIO": {
+          "data": null,
+          "czynnosc_dzien": "2026-03-08",
+          "czynnosc_powod_id": 1,
+          "czynnosc_opis": "Decyzja o odrzuceniu oferty",
+          "miejscowosc": null
+        },
+        "Odwolujacy": [
+          {
+            "krs": null,
+            "nazwa": "Alfa Zamawiający w dniu 1 marca 2026 opublikował SWZ.",
+            "nip": null,
+            "regon": null,
+            "przez-pelnomocnika": 0,
+            "pelnomocnik": {
+              "imie_nazwisko": null,
+              "nazwa": null,
+              "mail": null
+            }
+          }
+        ],
+        "Zamawiajacy": [],
+        "ZamowieniePubliczne": {
+          "numer_bzp": null,
+          "numer_postepowania": null,
+          "numer_ted": null,
+          "tytul": null
+        }
+      }
+    },
+    "native-task1/non-granting-company": {
+      "class": "power_of_attorney",
+      "output": {
+        "mocodawca": [
+          {
+            "data": {
+              "imie_nazwisko": null,
+              "krs": "9876543211",
+              "nazwa": "Alfa sp. z o.o.",
+              "nip": null,
+              "typ": "osoba_prawna"
+            },
+            "podpisujacy": []
+          }
+        ],
+        "pelnomocnicy": []
+      }
+    },
+    "native-task1/masked-sender": {
+      "class": null,
+      "output": {}
+    },
+    "native-task1/selectable-footer": {
+      "class": "appeal",
+      "output": {
+        "OdwolanieKIO": {
+          "data": null,
+          "czynnosc_dzien": null,
+          "czynnosc_powod_id": null,
+          "czynnosc_opis": null,
+          "miejscowosc": null
+        },
+        "Odwolujacy": [
+          {
+            "krs": null,
+            "nazwa": "Alfa",
+            "nip": null,
+            "regon": null,
+            "przez-pelnomocnika": 0,
+            "pelnomocnik": {
+              "imie_nazwisko": null,
+              "nazwa": null,
+              "mail": null
+            }
+          }
+        ],
+        "Zamawiajacy": [],
+        "ZamowieniePubliczne": {
+          "numer_bzp": null,
+          "numer_postepowania": null,
+          "numer_ted": null,
+          "tytul": null
+        }
+      }
+    },
+    "native-task4/request-account-alternatives": {
+      "class": null,
+      "output": {}
+    },
+    "native-task4/bankowa-title": {
+      "class": "bank_transfer",
+      "output": {
+        "przelew_bankowy": {
+          "data_operacji": null,
+          "kwota": 17.25,
+          "na_rachunek": "34343434343434343434343434",
+          "numer_transakcji": null,
+          "tytul": "Bankowa gwarancja wadialna",
+          "z_rachunku": "21212121212121212121212121"
+        }
+      }
+    },
+    "native-task4/leading-authority-neither-id": {
+      "class": "power_of_attorney",
+      "output": {
+        "mocodawca": [
+          {
+            "data": {
+              "imie_nazwisko": null,
+              "krs": null,
+              "nazwa": "Wrzos sp. z o.o.",
+              "nip": null,
+              "typ": "osoba_prawna"
+            },
+            "podpisujacy": []
+          }
+        ],
+        "pelnomocnicy": []
+      }
+    },
+    "native-task4/roles-recipient-first": {
+      "class": "bank_transfer",
+      "output": {
+        "przelew_bankowy": {
+          "data_operacji": null,
+          "kwota": 17.25,
+          "na_rachunek": "34343434343434343434343434",
+          "numer_transakcji": null,
+          "tytul": null,
+          "z_rachunku": "21212121212121212121212121"
+        }
+      }
+    },
+    "native-task4/valid-wrapped-fee-title": {
+      "class": "bank_transfer",
+      "output": {
+        "przelew_bankowy": {
+          "data_operacji": "2025-04-03",
+          "kwota": 17.25,
+          "na_rachunek": "34343434343434343434343434",
+          "numer_transakcji": null,
+          "tytul": "Opłata za wpis",
+          "z_rachunku": "21212121212121212121212121"
+        }
+      }
+    },
+    "native-task4/intro-dated-rejection": {
+      "class": "appeal",
+      "output": {
+        "OdwolanieKIO": {
+          "data": null,
+          "czynnosc_dzien": null,
+          "czynnosc_powod_id": 1,
+          "czynnosc_opis": "Decyzja o odrzuceniu oferty",
+          "miejscowosc": null
+        },
+        "Odwolujacy": [
+          {
+            "krs": null,
+            "nazwa": "Rdest sp. z o.o. Zamawiający odrzucił ofertę w dniu 8 marca 2026.",
+            "nip": null,
+            "regon": null,
+            "przez-pelnomocnika": 0,
+            "pelnomocnik": {
+              "imie_nazwisko": null,
+              "nazwa": null,
+              "mail": null
+            }
+          }
+        ],
+        "Zamawiajacy": [],
+        "ZamowieniePubliczne": {
+          "numer_bzp": null,
+          "numer_postepowania": null,
+          "numer_ted": null,
+          "tytul": null
+        }
+      }
+    },
+    "native-task4/authority-first": {
+      "class": "power_of_attorney",
+      "output": {
+        "mocodawca": [
+          {
+            "data": {
+              "imie_nazwisko": null,
+              "krs": null,
+              "nazwa": "Wrzos sp. z o.o.",
+              "nip": null,
+              "typ": "osoba_prawna"
+            },
+            "podpisujacy": []
+          }
+        ],
+        "pelnomocnicy": []
+      }
+    },
+    "native-task4/citation-inline": {
+      "class": "appeal",
+      "output": {
+        "OdwolanieKIO": {
+          "data": null,
+          "czynnosc_dzien": null,
+          "czynnosc_powod_id": null,
+          "czynnosc_opis": null,
+          "miejscowosc": null
+        },
+        "Odwolujacy": [
+          {
+            "krs": null,
+            "nazwa": "Rdest sp. z o.o. W uzasadnieniu przywołano orzeczenie Sygn. akt KIO 81/26.",
+            "nip": null,
+            "regon": null,
+            "przez-pelnomocnika": 0,
+            "pelnomocnik": {
+              "imie_nazwisko": null,
+              "nazwa": null,
+              "mail": null
+            }
+          }
+        ],
+        "Zamawiajacy": [],
+        "ZamowieniePubliczne": {
+          "numer_bzp": null,
+          "numer_postepowania": null,
+          "numer_ted": null,
+          "tytul": null
+        }
+      }
+    },
+    "native-task4/judgment-standalone": {
+      "class": null,
+      "output": {}
+    },
+    "native-task4/party-at-eof": {
+      "class": "appeal",
+      "output": {
+        "OdwolanieKIO": {
+          "data": null,
+          "czynnosc_dzien": null,
+          "czynnosc_powod_id": null,
+          "czynnosc_opis": null,
+          "miejscowosc": null
+        },
+        "Odwolujacy": [
+          {
+            "krs": null,
+            "nazwa": "Rdest sp. z o.o.",
+            "nip": null,
+            "regon": null,
+            "przez-pelnomocnika": 0,
+            "pelnomocnik": {
+              "imie_nazwisko": null,
+              "nazwa": null,
+              "mail": null
+            }
+          }
+        ],
+        "Zamawiajacy": [],
+        "ZamowieniePubliczne": {
+          "numer_bzp": null,
+          "numer_postepowania": null,
+          "numer_ted": null,
+          "tytul": null
+        }
+      }
+    },
+    "native-task4/direct-grant-no-id": {
+      "class": "power_of_attorney",
+      "output": {
+        "mocodawca": [
+          {
+            "data": {
+              "imie_nazwisko": null,
+              "krs": null,
+              "nazwa": "Wrzos sp. z o.o.",
+              "nip": null,
+              "typ": "osoba_prawna"
+            },
+            "podpisujacy": []
+          }
+        ],
+        "pelnomocnicy": []
+      }
+    },
+    "native-task4/footer-colon": {
+      "class": "appeal",
+      "output": {
+        "OdwolanieKIO": {
+          "data": null,
+          "czynnosc_dzien": null,
+          "czynnosc_powod_id": null,
+          "czynnosc_opis": null,
+          "miejscowosc": null
+        },
+        "Odwolujacy": [
+          {
+            "krs": null,
+            "nazwa": "Rdest sp. z o.o.",
+            "nip": null,
+            "regon": null,
+            "przez-pelnomocnika": 0,
+            "pelnomocnik": {
+              "imie_nazwisko": null,
+              "nazwa": null,
+              "mail": null
+            }
+          }
+        ],
+        "Zamawiajacy": [],
+        "ZamowieniePubliczne": {
+          "numer_bzp": null,
+          "numer_postepowania": null,
+          "numer_ted": null,
+          "tytul": null
+        }
+      }
+    },
+    "native-task4/footer-polish": {
+      "class": "appeal",
+      "output": {
+        "OdwolanieKIO": {
+          "data": null,
+          "czynnosc_dzien": null,
+          "czynnosc_powod_id": null,
+          "czynnosc_opis": null,
+          "miejscowosc": null
+        },
+        "Odwolujacy": [
+          {
+            "krs": null,
+            "nazwa": "Rdest sp. z o.o.",
+            "nip": null,
+            "regon": null,
+            "przez-pelnomocnika": 0,
+            "pelnomocnik": {
+              "imie_nazwisko": null,
+              "nazwa": null,
+              "mail": null
+            }
+          }
+        ],
+        "Zamawiajacy": [],
+        "ZamowieniePubliczne": {
+          "numer_bzp": null,
+          "numer_postepowania": null,
+          "numer_ted": null,
+          "tytul": null
+        }
+      }
+    },
+    "native-task4/footer-english": {
+      "class": "appeal",
+      "output": {
+        "OdwolanieKIO": {
+          "data": null,
+          "czynnosc_dzien": null,
+          "czynnosc_powod_id": null,
+          "czynnosc_opis": null,
+          "miejscowosc": null
+        },
+        "Odwolujacy": [
+          {
+            "krs": null,
+            "nazwa": "Rdest sp. z o.o. Page 1 of 2",
+            "nip": null,
+            "regon": null,
+            "przez-pelnomocnika": 0,
+            "pelnomocnik": {
+              "imie_nazwisko": null,
+              "nazwa": null,
+              "mail": null
+            }
+          }
+        ],
+        "Zamawiajacy": [],
+        "ZamowieniePubliczne": {
+          "numer_bzp": null,
+          "numer_postepowania": null,
+          "numer_ted": null,
+          "tytul": null
+        }
+      }
+    },
+    "native-task4/footer-dashes": {
+      "class": "appeal",
+      "output": {
+        "OdwolanieKIO": {
+          "data": null,
+          "czynnosc_dzien": null,
+          "czynnosc_powod_id": null,
+          "czynnosc_opis": null,
+          "miejscowosc": null
+        },
+        "Odwolujacy": [
+          {
+            "krs": null,
+            "nazwa": "Rdest sp. z o.o. — 1 —",
+            "nip": null,
+            "regon": null,
+            "przez-pelnomocnika": 0,
+            "pelnomocnik": {
+              "imie_nazwisko": null,
+              "nazwa": null,
+              "mail": null
+            }
+          }
+        ],
+        "Zamawiajacy": [],
+        "ZamowieniePubliczne": {
+          "numer_bzp": null,
+          "numer_postepowania": null,
+          "numer_ted": null,
+          "tytul": null
+        }
+      }
+    },
+    "native-task22/role-ascii": {
+      "class": null,
+      "output": {}
+    },
+    "native-task22/mail-paren-at": {
+      "class": "appeal",
+      "output": {
+        "OdwolanieKIO": {
+          "data": null,
+          "czynnosc_dzien": null,
+          "czynnosc_powod_id": null,
+          "czynnosc_opis": null,
+          "miejscowosc": null
+        },
+        "Odwolujacy": [
+          {
+            "krs": null,
+            "nazwa": "Studio E-mail: anna (at) firma.example",
+            "nip": null,
+            "regon": null,
+            "przez-pelnomocnika": 0,
+            "pelnomocnik": {
+              "imie_nazwisko": null,
+              "nazwa": null,
+              "mail": null
+            }
+          }
+        ],
+        "Zamawiajacy": [],
+        "ZamowieniePubliczne": {
+          "numer_bzp": null,
+          "numer_postepowania": null,
+          "numer_ted": null,
+          "tytul": null
+        }
+      }
+    },
+    "native-task22/mail-square-at": {
+      "class": "appeal",
+      "output": {
+        "OdwolanieKIO": {
+          "data": null,
+          "czynnosc_dzien": null,
+          "czynnosc_powod_id": null,
+          "czynnosc_opis": null,
+          "miejscowosc": null
+        },
+        "Odwolujacy": [
+          {
+            "krs": null,
+            "nazwa": "Studio E-mail: anna [at] firma.example",
+            "nip": null,
+            "regon": null,
+            "przez-pelnomocnika": 0,
+            "pelnomocnik": {
+              "imie_nazwisko": null,
+              "nazwa": null,
+              "mail": null
+            }
+          }
+        ],
+        "Zamawiajacy": [],
+        "ZamowieniePubliczne": {
+          "numer_bzp": null,
+          "numer_postepowania": null,
+          "numer_ted": null,
+          "tytul": null
+        }
+      }
+    },
+    "native-task22/mail-bare-q": {
+      "class": "appeal",
+      "output": {
+        "OdwolanieKIO": {
+          "data": null,
+          "czynnosc_dzien": null,
+          "czynnosc_powod_id": null,
+          "czynnosc_opis": null,
+          "miejscowosc": null
+        },
+        "Odwolujacy": [
+          {
+            "krs": null,
+            "nazwa": "Studio E-mail: annaQfirma.example",
+            "nip": null,
+            "regon": null,
+            "przez-pelnomocnika": 0,
+            "pelnomocnik": {
+              "imie_nazwisko": null,
+              "nazwa": null,
+              "mail": null
+            }
+          }
+        ],
+        "Zamawiajacy": [],
+        "ZamowieniePubliczne": {
+          "numer_bzp": null,
+          "numer_postepowania": null,
+          "numer_ted": null,
+          "tytul": null
+        }
+      }
+    },
+    "native-task22/mail-crop-q": {
+      "class": "appeal",
+      "output": {
+        "OdwolanieKIO": {
+          "data": null,
+          "czynnosc_dzien": null,
+          "czynnosc_powod_id": null,
+          "czynnosc_opis": null,
+          "miejscowosc": null
+        },
+        "Odwolujacy": [
+          {
+            "krs": null,
+            "nazwa": "Studio E-mail: testQx.example",
+            "nip": null,
+            "regon": null,
+            "przez-pelnomocnika": 0,
+            "pelnomocnik": {
+              "imie_nazwisko": null,
+              "nazwa": null,
+              "mail": null
+            }
+          }
+        ],
+        "Zamawiajacy": [],
+        "ZamowieniePubliczne": {
+          "numer_bzp": null,
+          "numer_postepowania": null,
+          "numer_ted": null,
+          "tytul": null
+        }
+      }
+    },
+    "native-task1/name-case-normalization": {
+      "class": "appeal",
+      "output": {
+        "OdwolanieKIO": {
+          "data": null,
+          "czynnosc_dzien": null,
+          "czynnosc_powod_id": null,
+          "czynnosc_opis": null,
+          "miejscowosc": null
+        },
+        "Odwolujacy": [
+          {
+            "krs": null,
+            "nazwa": "Alfa",
+            "nip": null,
+            "regon": null,
+            "przez-pelnomocnika": 0,
+            "pelnomocnik": {
+              "imie_nazwisko": null,
+              "nazwa": null,
+              "mail": null
+            }
+          }
+        ],
+        "Zamawiajacy": [
+          {
+            "krs": null,
+            "nazwa": "ALFA",
+            "nip": null,
+            "regon": null,
+            "prowadzacy_postepowanie": null
+          }
+        ],
+        "ZamowieniePubliczne": {
+          "numer_bzp": null,
+          "numer_postepowania": null,
+          "numer_ted": null,
+          "tytul": null
+        }
+      }
+    },
+    "native-task1/signer-identity-ordered": {
+      "class": "power_of_attorney",
+      "output": {
+        "mocodawca": [
+          {
+            "data": {
+              "imie_nazwisko": null,
+              "krs": null,
+              "nazwa": "Alfa sp. z o.o.",
+              "nip": null,
+              "typ": "osoba_prawna"
+            },
+            "podpisujacy": [
+              {
+                "imie_nazwisko": "Ewa Próbna"
+              },
+              {
+                "imie_nazwisko": "Iga Próbna"
+              }
+            ]
+          },
+          {
+            "data": {
+              "imie_nazwisko": null,
+              "krs": null,
+              "nazwa": "Beta sp. z o.o.",
+              "nip": null,
+              "typ": "osoba_prawna"
+            },
+            "podpisujacy": [
+              {
+                "imie_nazwisko": "Jan Próbny"
+              },
+              {
+                "imie_nazwisko": "Ola Próbna"
+              }
+            ]
+          }
+        ],
+        "pelnomocnicy": []
+      }
+    },
+    "native-task1/signer-identity-swapped": {
+      "class": "power_of_attorney",
+      "output": {
+        "mocodawca": [
+          {
+            "data": {
+              "imie_nazwisko": null,
+              "krs": null,
+              "nazwa": "Alfa sp. z o.o.",
+              "nip": null,
+              "typ": "osoba_prawna"
+            },
+            "podpisujacy": [
+              {
+                "imie_nazwisko": "Jan Próbny"
+              },
+              {
+                "imie_nazwisko": "Ola Próbna"
+              }
+            ]
+          },
+          {
+            "data": {
+              "imie_nazwisko": null,
+              "krs": null,
+              "nazwa": "Beta sp. z o.o.",
+              "nip": null,
+              "typ": "osoba_prawna"
+            },
+            "podpisujacy": [
+              {
+                "imie_nazwisko": "Ewa Próbna"
+              },
+              {
+                "imie_nazwisko": "Iga Próbna"
+              }
+            ]
+          }
+        ],
+        "pelnomocnicy": []
+      }
+    },
+    "native-task11/identifier-digits": {
+      "class": "power_of_attorney",
+      "output": {
+        "mocodawca": [
+          {
+            "data": {
+              "imie_nazwisko": null,
+              "krs": null,
+              "nazwa": "Fikcyjne Studio sp. z o.o.",
+              "nip": null,
+              "typ": "osoba_prawna"
+            },
+            "podpisujacy": []
+          }
+        ],
+        "pelnomocnicy": [
+          {
+            "imie_nazwisko": "Idzie Wymyślnej",
+            "pesel": "99422967018"
+          }
+        ]
+      }
+    },
+    "native-task11/identifier-spaces-hyphen": {
+      "class": "power_of_attorney",
+      "output": {
+        "mocodawca": [
+          {
+            "data": {
+              "imie_nazwisko": null,
+              "krs": null,
+              "nazwa": "Fikcyjne Studio sp. z o.o.",
+              "nip": null,
+              "typ": "osoba_prawna"
+            },
+            "podpisujacy": []
+          }
+        ],
+        "pelnomocnicy": [
+          {
+            "imie_nazwisko": "Idzie Wymyślnej",
+            "pesel": null
+          }
+        ]
+      }
+    },
+    "native-task11/identifier-hyphen-spaces": {
+      "class": "power_of_attorney",
+      "output": {
+        "mocodawca": [
+          {
+            "data": {
+              "imie_nazwisko": null,
+              "krs": null,
+              "nazwa": "Fikcyjne Studio sp. z o.o.",
+              "nip": null,
+              "typ": "osoba_prawna"
+            },
+            "podpisujacy": []
+          }
+        ],
+        "pelnomocnicy": [
+          {
+            "imie_nazwisko": "Idzie Wymyślnej",
+            "pesel": null
+          }
+        ]
+      }
     }
   }
 }

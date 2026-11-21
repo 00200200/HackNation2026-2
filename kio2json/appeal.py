@@ -82,7 +82,7 @@ LEAD_FOR = re.compile(r"^prowadząc\w*\s+postępowanie.*(?:na rzecz|w imieniu)",
 CONSORTIUM = re.compile(r"\b(?:wspólnie|konsorcjum)\b", re.IGNORECASE)
 
 
-def _parties(lines: list[str]) -> dict[str, list[dict]]:
+def _parties(lines: list[str], ocr_mail_lines: frozenset[int] = frozenset()) -> dict[str, list[dict]]:
     """Keep one name per labelled party or numbered member, through intervening contact lines."""
     parties = {"Zamawiający": [], "Odwołujący": []}
     role = None
@@ -115,7 +115,7 @@ def _parties(lines: list[str]) -> dict[str, list[dict]]:
             parties[role].append(entity)
         name_lines.clear()
 
-    for line in map(str.strip, lines):
+    for index, line in enumerate(map(str.strip, lines)):
         if label := SECTION_RE.match(line):
             finish_name()
             role = "Zamawiający" if label[1].casefold().startswith("zamawiaj") else "Odwołujący"
@@ -161,6 +161,8 @@ def _parties(lines: list[str]) -> dict[str, list[dict]]:
             if entity and ID_LINE_RE.search(line):
                 for key, value in registry_ids(line).items():
                     entity[key] = entity[key] or value
+        elif index in ocr_mail_lines and entity and not name_lines and any(entity[k] for k in ("krs", "nip", "regon")):
+            continue
         elif CONSORTIUM.search(line) and line.endswith((":", "：")):
             name_lines.append(line)
         elif PARTIES_END_RE.match(line) or _ends_party(line) or CHARGE.search(line) or PLACE_DATE_RE.match(line):
@@ -391,9 +393,9 @@ def _appellant_registry(text: str, leader: dict) -> None:
             return
 
 
-def extract(text: str) -> dict:
+def extract(text: str, *, ocr_mail_lines: frozenset[int] = frozenset()) -> dict:
     header = text.split("Działając w imieniu", 1)[0]
-    parties = _parties(header.splitlines())
+    parties = _parties(header.splitlines(), ocr_mail_lines)
     _prose_parties(text, parties)
     place_date = PLACE_DATE_RE.search(header)
     filing_date = re.search(rf"(?im)^data (?:złożenia|wniesienia)(?: odwołania)?:[ \t]*({DATE})", header)
