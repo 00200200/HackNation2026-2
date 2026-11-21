@@ -11,7 +11,7 @@ The extraction path is a rule-based baseline. It uses no language model yet.
 You need Python 3.13+. Scanned PDFs also need the Tesseract binary with Polish data on `PATH`
 (`brew install tesseract tesseract-lang`, `apt install tesseract-ocr tesseract-ocr-pol`, or the
 UB Mannheim installer on Windows). Without Tesseract or its Polish data, PDFs that have a text
-layer still work and the CLI prints a warning.
+layer with readable content still work. The CLI reports which scans failed and why.
 
 ```
 pip install -r requirements.txt
@@ -22,15 +22,15 @@ python -m kio2json --input some/input --output some/output
 Each PDF gets a JSON at the same relative path and file stem. Appeals, powers of attorney and
 bank-transfer confirmations get the organizer's structure. Any other document gets an empty
 file. A PDF that cannot be processed also gets an empty file, is reported on stderr, and makes
-the run exit with status 1.
+the run exit with status 1 after processing the remaining PDFs. This includes required OCR that fails or times out.
 
 ## How it works
 
-1. `kio2json/pdf_text.py` reads the first three pages with pdfplumber. A page without a text
-   layer goes through Tesseract (`pol`, 300 dpi).
-2. `kio2json/classify.py` routes by content: a standalone `ODWOŁANIE` heading plus an appellant
-   and no judgment markers, a `PEŁNOMOCNICTWO` heading, or two account numbers plus the word
-   `przelew`. It rejects anything else, and it never looks at the file name.
+1. `kio2json/pdf_text.py` reads the first three pages with pdfplumber. Pages with no text or
+   only page numbers go through Polish Tesseract at 300 dpi.
+2. `kio2json/classify.py` uses document content. It checks appeal and power-of-attorney
+   headings. For a transfer it looks for two distinct accounts and evidence of confirmation
+   or execution. An invoice asking for payment gets an empty file.
 3. `kio2json/appeal.py`, `power_of_attorney.py` and `bank_transfer.py` extract the fields with
    regular expressions and line-level layout rules.
 
@@ -65,12 +65,15 @@ of how the rules generalize. The hidden test set holds real cases, and this is n
 
 - The rules follow the two layout families in the training data. `input/case1` holds the
   organizer's one real, redacted, scanned appeal, which has a different layout. For that file
-  the baseline finds the class, filing date, place, BZP number and title, and misses both
-  parties and the challenged action. It has no reference JSON, so we checked the output by eye.
+  the baseline finds the class, filing date, place, BZP number and title. OCR puts text from the
+  contracting authority in the appellant block and leaves the challenged action empty. The
+  organizer supplies no reference JSON for this file.
 - Through OCR the rules lose fields. Tesseract misreads characters inside identifiers (`7` as
   `/` in account numbers, `@` in e-mail addresses, `sp. z o.o.` as `sp. z 0.0.`) and drops the
   dotted signature lines that the power-of-attorney rules use to find signers.
   `evals.field_report --force-ocr` shows the affected fields.
+- Transfer confirmations with a masked account can be rejected. Attorney names retain the grammatical
+  case used in the document.
 - Nothing is configuration-driven yet: classes, fields and patterns live in Python modules.
 - UNCONFIRMED: what "empty JSON" means for unrelated documents. We write an empty file, as the
   organizer README words it.

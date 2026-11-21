@@ -1,6 +1,12 @@
 """Extractors and classifier on small synthetic texts (no organizer data needed)."""
 
-from kio2json import appeal, bank_transfer, power_of_attorney
+import sys
+from unittest.mock import MagicMock
+
+import pytest
+
+from kio2json import __main__ as cli
+from kio2json import appeal, bank_transfer, pdf_text, power_of_attorney
 from kio2json.classify import classify
 from kio2json.common import registry_ids, to_iso
 
@@ -120,8 +126,8 @@ adw. Anna Nowak
 
 
 def test_power_of_attorney_accepts_capitalized_and_spelled_out_legal_forms():
-    for name in ("STRABAG Sp. z o.o.", "Budimex Spółka Akcyjna", "Polbud SP. Z O.O."):
-        text = f"PEŁNOMOCNICTWO\n{name}, KRS 0000054588, NIP 1234567890\nudziela pełnomocnictwa adw. Jan Kowalski"
+    for name in ("LUMETRA Sp. z o.o.", "Lunafik Spółka Akcyjna", "Torwika SP. Z O.O."):
+        text = f"PEŁNOMOCNICTWO\n{name}, KRS 9990000471, NIP 1234567890\nudziela pełnomocnictwa adw. Jan Kowalski"
         assert [m["data"]["nazwa"] for m in power_of_attorney.extract(text)["mocodawca"]] == [name]
 
 
@@ -158,8 +164,8 @@ def test_bank_transfer_account_roles_follow_labels_not_order():
 
 
 def test_registry_ids_and_dates():
-    assert registry_ids("KRS: 0000054588, NIP: 526-104-08-28, REGON 012345678") == {
-        "krs": "0000054588",
+    assert registry_ids("KRS: 9990000471, NIP: 526-104-08-28, REGON 012345678") == {
+        "krs": "9990000471",
         "nip": "5261040828",
         "regon": "012345678",
     }
@@ -168,3 +174,191 @@ def test_registry_ids_and_dates():
     assert registry_ids("brak numerów") == {"krs": None, "nip": None, "regon": None}
     assert [to_iso(d) for d in ("2026-03-21", "21.03.2026", "21-03-2026", "21 marca 2026")] == ["2026-03-21"] * 4
     assert to_iso("31.02.2026") is None
+
+
+@pytest.mark.parametrize(
+    "failure",
+    [
+        pdf_text.pytesseract.TesseractNotFoundError(),
+        pdf_text.pytesseract.TesseractError(1, "missing Polish data"),
+        RuntimeError("OCR timed out"),
+        pdf_text.pytesseract.TesseractError(2, "OCR engine failed"),
+    ],
+)
+def test_required_ocr_failure_reports_path_and_continues(tmp_path, monkeypatch, capsys, failure):
+    inputs, outputs = tmp_path / "input", tmp_path / "output"
+    inputs.mkdir()
+    scan = inputs / "first.pdf"
+    scan.touch()
+    negative = inputs / "second.pdf"
+    negative.touch()
+
+    def open_document(path):
+        page = MagicMock()
+        page.extract_text.return_value = "" if path == scan else "Informacja o dostawie"
+        doc = MagicMock()
+        doc.__enter__.return_value.pages = [page]
+        return doc
+
+    monkeypatch.setattr(pdf_text.pdfplumber, "open", open_document)
+    monkeypatch.setattr(pdf_text.pytesseract, "image_to_string", MagicMock(side_effect=failure))
+    monkeypatch.setattr(cli, "ocr_problem", lambda: None)
+    monkeypatch.setattr(sys, "argv", ["kio2json", "--input", str(inputs), "--output", str(outputs)])
+    assert cli.main() == 1
+    stderr = capsys.readouterr().err
+    assert str(scan) in stderr and str(failure) in stderr
+    assert (outputs / "first.json").read_bytes() == (outputs / "second.json").read_bytes() == b""
+    scan.unlink()
+    assert cli.main() == 0
+
+
+@pytest.mark.parametrize("stub", ["Strona 1 z 2", "1 / 2", "– 1 –"])
+def test_page_number_only_layer_uses_ocr(monkeypatch, stub):
+    page = MagicMock()
+    page.extract_text.return_value = stub
+    doc = MagicMock()
+    doc.__enter__.return_value.pages = [page]
+    monkeypatch.setattr(pdf_text.pdfplumber, "open", lambda _: doc)
+    monkeypatch.setattr(pdf_text, "_ocr", lambda _: "Odwołanie skanowane")
+    assert pdf_text.read_pages("test.pdf") == ["Odwołanie skanowane"]
+
+
+def test_transfer_accounts_on_one_line_follow_explicit_roles():
+    sender, recipient = "4" * 26, "5" * 26
+    result = bank_transfer.extract(f"Na rachunek: {recipient}  Z rachunku: {sender}")["przelew_bankowy"]
+    assert (result["z_rachunku"], result["na_rachunek"]) == (sender, recipient)
+
+
+@pytest.mark.parametrize("separator", ["\n", "  "])
+def test_empty_transfer_fields_do_not_consume_another_field(separator):
+    text = separator.join(
+        [
+            "Kwota przelewu: brak",
+            "Opłata: 1,50 PLN",
+            "Data operacji: brak",
+            "Data wydruku: 12.05.2026",
+            "Tytuł:",
+            "Numer transakcji: XZ123456",
+        ]
+    )
+    result = bank_transfer.extract(text)["przelew_bankowy"]
+    assert [result[k] for k in ("kwota", "data_operacji", "tytul", "numer_transakcji")] == [
+        None,
+        None,
+        None,
+        "XZ123456",
+    ]
+
+
+def test_transfer_requires_evidence_of_confirmation():
+    accounts = "4" * 26 + "\n" + "5" * 26
+    for header in ("Faktura VAT\nProsimy o przelew", "Wezwanie do zapłaty przelewem"):
+        assert classify([header + "\n" + accounts]) is None
+    assert classify(["Potwierdzenie wykonania przelewu\n" + accounts]) == "bank_transfer"
+
+
+def test_judgment_citation_in_appeal_body():
+    citation = "W uzasadnieniu przywołuję orzeczenie Sygn. akt KIO 81/26."
+    assert classify([APPEAL + citation]) == "appeal"
+    assert classify(["Sygn. akt KIO 81/26\nWYROK\nODWOŁANIE\nOdwołujący: Firma Fikcyjna"]) is None
+
+
+@pytest.mark.parametrize(
+    ("body", "day"),
+    [
+        (
+            "Zamawiający w dniu 1 marca 2026 opublikował SWZ. Zarzut nr 1 – odrzucenie oferty w dniu 8 marca 2026.",
+            "2026-03-08",
+        ),
+        ("Zarzut nr 1 – odrzucenie oferty. Odwołanie wniesiono 15.05.2026.", None),
+        ("Zarzut nr 1 – odrzucenie oferty. Zamawiający w dniu 8 marca 2026 zmienił treść SWZ.", None),
+    ],
+)
+def test_first_charge_binds_action_and_date(body, day):
+    result = appeal.extract(body)["OdwolanieKIO"]
+    assert (result["czynnosc_powod_id"], result["czynnosc_dzien"]) == (1, day)
+
+
+def test_representative_stays_with_contracting_authority():
+    result = appeal.extract(
+        "Zamawiający: Gmina Fikcyjna\nul. Testowa 3\nreprezentowana przez: adw. Iga Wymyślna\n"
+        "Odwołujący: Fikcyjna Dostawa\nul. Próbna 5\nODWOŁANIE"
+    )
+    party = result["Odwolujacy"][0]
+    assert party["przez-pelnomocnika"] == 0
+    assert all(value is None for value in party["pelnomocnik"].values())
+
+
+def test_name_only_parties_survive_section_changes_and_eof():
+    result = appeal.extract("ODWOŁANIE\nOdwołujący: Fikcyjna Dostawa\nZamawiający:\nGmina Fikcyjna")
+    for role, name in [("Odwolujacy", "Fikcyjna Dostawa"), ("Zamawiajacy", "Gmina Fikcyjna")]:
+        (party,) = result[role]
+        assert party["nazwa"] == name
+        assert party["krs"] is party["nip"] is party["regon"] is None
+
+
+def test_first_signature_heading_can_name_second_principal():
+    text = """PEŁNOMOCNICTWO
+Alfa Wymyślna sp. z o.o., KRS 9990000841 oraz Beta Fikcyjna sp. z o.o., KRS 9990000842 udzielają pełnomocnictwa.
+W imieniu Beta Fikcyjna sp. z o.o.:
+......................
+Ewa Próbna
+W imieniu Alfa Wymyślna sp. z o.o.:
+......................
+Iga Wymyślna"""
+    principals = power_of_attorney.extract(text)["mocodawca"]
+    assert [[s["imie_nazwisko"] for s in p["podpisujacy"]] for p in principals] == [["Iga Wymyślna"], ["Ewa Próbna"]]
+
+
+@pytest.mark.parametrize("ids", ["", ", KRS 9990000841"])
+def test_only_the_grantor_is_a_principal_even_without_ids(ids):
+    text = (
+        f"PEŁNOMOCNICTWO\nAlfa Wymyślna sp. z o.o.{ids} udziela pełnomocnictwa adw. Iga Wymyślna. "
+        "Postępowanie prowadzi Beta Fikcyjna sp. z o.o., KRS 9990000842."
+    )
+    (principal,) = power_of_attorney.extract(text)["mocodawca"]
+    assert principal["data"]["nazwa"] == "Alfa Wymyślna sp. z o.o."
+    assert principal["data"]["krs"] == ("9990000841" if ids else None)
+    assert principal["data"]["nip"] is None
+
+
+def test_authority_can_be_named_before_the_grant():
+    authority = "Beta Fikcyjna sp. z o.o., KRS 9990000842"
+    for text in (
+        f"Zamawiający: {authority}\nMocodawca: Alfa Wymyślna sp. z o.o.\nudziela pełnomocnictwa",
+        f"Alfa Wymyślna sp. z o.o., w postępowaniu prowadzonym przez {authority}, udziela pełnomocnictwa",
+    ):
+        (principal,) = power_of_attorney.extract(text)["mocodawca"]
+        assert principal["data"]["nazwa"] == "Alfa Wymyślna sp. z o.o."
+        assert principal["data"]["krs"] is None
+
+
+def test_blank_title_followed_by_fee_and_multiline_payment_title():
+    assert bank_transfer.extract("Tytuł:\nOpłata: 12,00 PLN")["przelew_bankowy"]["tytul"] is None
+    assert (
+        bank_transfer.extract("Tytuł:\nopłata skarbowa za odbiór")["przelew_bankowy"]["tytul"]
+        == "opłata skarbowa za odbiór"
+    )
+
+
+def test_fee_and_printed_on_prose_do_not_supply_transaction_values():
+    result = bank_transfer.extract(
+        "Opłata w kwocie 8,00 PLN\nWydrukowano w dniu 18.09.2026\nTytuł:\nProwizja: 8,00 PLN"
+    )
+    transfer = result["przelew_bankowy"]
+    assert transfer["kwota"] is transfer["data_operacji"] is transfer["tytul"] is None
+
+
+def test_invoice_requesting_confirmation_is_still_a_negative():
+    text = "FAKTURA VAT\nProsimy o potwierdzenie przelewu na jeden z rachunków.\n" + "4" * 26 + "\n" + "5" * 26
+    assert classify([text]) is None
+
+
+def test_reference_dates_do_not_date_an_undated_charge():
+    for text in (
+        "Zarzut nr 1 – odrzucenie oferty. odwołanie wniesiono 11.04.2026.",
+        "Zarzut nr 1 – odrzucenie oferty z naruszeniem ustawy z dnia 11.04.2026.",
+    ):
+        action = appeal.extract(text)["OdwolanieKIO"]
+        assert action["czynnosc_powod_id"] == 1
+        assert action["czynnosc_dzien"] is None

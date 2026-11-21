@@ -52,6 +52,8 @@ SENTENCE_END_RE = re.compile(rf"(?:(?<=[{UPPER}{LOWER})]{{3}})\.|\.\.)\s+(?=[{UP
 ALLEGATIONS_START_RE = re.compile(r"Zaskarżonym\s+czynnościom|Zarzut\s+nr\s+1\b")
 FIRST_ITEM_RE = re.compile(r"polegających\s+na:\s*1\)\s*(.+?);")
 FIRST_ALLEGATION_RE = re.compile(r"Zarzut\s+nr\s+1\b(.+?)(?=Zarzut\s+nr\s+2|$)")
+CHARGE_END_RE = re.compile(r"[;!?]|(?<=[\w]{3})\.(?<!art\.)(?<!ust\.)(?<!pkt\.)(?<!lit\.)\s+", re.IGNORECASE)
+STATUTE_DATE_RE = re.compile(rf"\b(?:ustaw\w*|rozporządzeni\w*|dyrektyw\w*)\s+z\s+dnia\s+{DATE}", re.IGNORECASE)
 
 
 def _parties(lines: list[str]) -> dict[str, list[dict]]:
@@ -61,9 +63,18 @@ def _parties(lines: list[str]) -> dict[str, list[dict]]:
     in_wrapped_label = False
     sublabel = ""
     name_lines = []
+
+    def finish_name():
+        if section and name_lines:
+            parties[section].append(
+                {"nazwa": squash(" ".join(name_lines)), "sublabel": sublabel, "krs": None, "nip": None, "regon": None}
+            )
+        name_lines.clear()
+
     for line in map(str.strip, lines):
         label = SECTION_RE.match(line)
         if label:
+            finish_name()
             section, sublabel = label.group(1).capitalize(), ""
             inline_name = line.split(":", 1)[1].strip() if ":" in line else ""
             name_lines = [inline_name] if inline_name else []
@@ -76,40 +87,48 @@ def _parties(lines: list[str]) -> dict[str, list[dict]]:
             continue
         heading = re.sub(r"\s", "", line).upper()
         if PARTIES_END_RE.match(line) or heading == "ODWOŁANIE" or PLACE_DATE_RE.match(line):
+            finish_name()
             section = None
         elif line.endswith(":"):
             if re.match(r"\d+[).]", line):
-                sublabel, name_lines = line, []
+                finish_name()
+                sublabel = line
             elif name_lines:
                 name_lines = []  # tail of a label that wrapped onto this line
             else:
                 section = None  # a block for some other party
         elif ADDRESS_RE.match(line) or ID_LINE_RE.search(line):
-            if name_lines:
-                parties[section].append(
-                    {
-                        "nazwa": squash(" ".join(name_lines)),
-                        "sublabel": sublabel,
-                        "krs": None,
-                        "nip": None,
-                        "regon": None,
-                    }
-                )
-                name_lines = []
+            finish_name()
             if parties[section] and ID_LINE_RE.search(line):
                 entity = parties[section][-1]
                 for key, value in registry_ids(line).items():
                     entity[key] = entity[key] or value
         elif "@" in line:
-            name_lines = []
-        else:
+            finish_name()
+        elif line:
             name_lines.append(line)
+    finish_name()
     return parties
 
 
 def _representative(text: str) -> dict | None:
     """The appellant's first-named attorney, the firm in the correspondence address, and its e-mail."""
-    intro = re.search(r"reprezentowan\w*\s+przez:?", text)
+    # Restrict correspondence details to the appellant's own party block.
+    lines = []
+    appellant = False
+    for line in text.splitlines():
+        label = SECTION_RE.match(line.strip())
+        if label:
+            appellant = label.group(1).casefold() == "odwołujący"
+        elif (
+            re.match(r"\s*(?:Wykonawca wybrany|dotyczy)", line, re.IGNORECASE)
+            or squash(line).replace(" ", "").upper() == "ODWOŁANIE"
+        ):
+            appellant = False
+        if appellant:
+            lines.append(line)
+    text = "\n".join(lines)
+    intro = re.search(r"reprezentowan\w*\s+przez:?", text, re.IGNORECASE)
     if not intro:
         return None
     after = text[intro.end() :]
@@ -129,25 +148,28 @@ def _reason(passage: str) -> int | None:
 
 
 def _challenged_action(text: str) -> tuple[str | None, int | None]:
-    """(date, reason id) of the act behind the first allegation.
-
-    Preferred evidence is the sentence 'Zamawiający w dniu <date> ...' that precedes the
-    allegations. Fallbacks: the first item of 'polegających na: 1) ...', then 'Zarzut nr 1'."""
+    """Use a dated first charge, otherwise its introductory account of the challenged act."""
     flat = squash(text)
-    action_date = reason = None
-    action = ACTION_RE.search(flat)
-    if action:
-        paragraph = ALLEGATIONS_START_RE.split(flat[action.start() : action.start() + 700], maxsplit=1)[0]
-        sentence = SENTENCE_END_RE.split(paragraph, maxsplit=1)[0]
-        action_date, reason = to_iso(action.group(1)), _reason(sentence)
-    for fallback in (FIRST_ITEM_RE, FIRST_ALLEGATION_RE):
-        if action_date and reason:
-            break
-        passage = fallback.search(flat)
-        if passage:
-            action_date = action_date or find_date(passage.group(1))
-            reason = reason or _reason(passage.group(1)[:400])
-    return action_date, reason
+    charge = FIRST_ALLEGATION_RE.search(flat)
+    opening = CHARGE_END_RE.split(charge.group(1), maxsplit=1)[0] if charge else ""
+    reason = _reason(opening)
+    day = find_date(STATUTE_DATE_RE.sub("", opening))
+    if reason and day:
+        return day, reason
+
+    introduction = ALLEGATIONS_START_RE.split(flat, maxsplit=1)[0]
+    for action in reversed(list(ACTION_RE.finditer(introduction))):
+        sentence = SENTENCE_END_RE.split(introduction[action.start() :], maxsplit=1)[0]
+        action_reason = _reason(sentence)
+        if action_reason:
+            return to_iso(action.group(1)), action_reason
+    item = FIRST_ITEM_RE.search(introduction)
+    if item:
+        item_opening = SENTENCE_END_RE.split(item.group(1), maxsplit=1)[0]
+        item_reason = _reason(item_opening)
+        if item_reason:
+            return find_date(item_opening), item_reason
+    return None, reason
 
 
 def _procurement(text: str) -> dict:

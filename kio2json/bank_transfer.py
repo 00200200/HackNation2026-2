@@ -9,12 +9,19 @@ ACCOUNT_RE = re.compile(r"(?<![\d])(?:PL\s?)?(\d{2}(?:[ \n]?\d{4}){6})(?!\d)")
 SENDER_RE = re.compile(r"nadawc|zleceniodawc|płatnik|obciąż|z rachunku")
 RECIPIENT_RE = re.compile(r"odbiorc|beneficjent|adresat|uznawan|na rachunek")
 
-MONEY_RE = re.compile(r"(?<![\d.,])(\d{1,3}(?:[ .\u00a0]\d{3})+[.,]\d{2}|\d+[.,]\d{2})(?![.,]?\d)")
-AMOUNT_LABEL_RE = re.compile(r"kwo[tc]|wartość", re.IGNORECASE)
-DATE_LABEL_RE = re.compile(
-    rf"(?:data\s+(?:operacji|transakcji|realizacji|wykonania|księgowania|zlecenia)|w\s+dniu)(?:(?!{DATE}).)*?({DATE})",
-    re.IGNORECASE | re.DOTALL,
+MONEY = r"(?<![\d.,])(?:\d{1,3}(?:[ .\u00a0]\d{3})+[.,]\d{2}|\d+[.,]\d{2})(?![.,]?\d)"
+AMOUNT_LABEL = r"\b(?:kwota(?:\s+(?:operacji|przelewu))?|wykonano\s+przelew(?:\s+\w+)?\s+w\s+kwocie|wartość)\b"
+DATE_LABEL = (
+    r"\b(?:data\s+(?:operacji|transakcji|realizacji|wykonania|księgowania|zlecenia)|potwierdza,?\s+że\s+w\s+dniu)\b"
 )
+# Tabular statements print both column headings above a single row of values.
+AMOUNT_DATE_ROW_RE = re.compile(
+    rf"{AMOUNT_LABEL}[ \t]+{DATE_LABEL}[ \t]*\n\s*(?:PLN\s*)?({MONEY})(?:\s*(?:PLN|zł))?\s+({DATE})",
+    re.IGNORECASE,
+)
+FIELD_PADDING = r"[\s.:]*"
+AMOUNT_RE = re.compile(rf"{AMOUNT_LABEL}{FIELD_PADDING}(?:PLN\s*)?({MONEY})", re.IGNORECASE)
+OPERATION_DATE_RE = re.compile(rf"{DATE_LABEL}{FIELD_PADDING}({DATE})", re.IGNORECASE)
 REFERENCE_RE = re.compile(
     r"(?i:nr\s*ref\.?|numer\s+referencyjny|numer\s+transakcji|identyfikator\s+(?:operacji|transakcji))"
     r"(?i:\s+operacji)?[\s.:]*([A-Z]*\d[A-Z0-9/\-]{5,})"
@@ -22,16 +29,16 @@ REFERENCE_RE = re.compile(
 TITLE_LABEL_RE = re.compile(r"^(?:Tytuł przelewu|Tytułem|Tytuł|Opis)\b\s*:?\s*(.*)$", re.IGNORECASE)
 # A line starting with another field label ends a wrapped title.
 NEXT_FIELD_RE = re.compile(
-    r"^(?:kwota|wartość|data|numer|nr|identyfikator|status|waluta|typ|kanał|opłata|tryb|nadawca|dane|"
+    r"^(?:kwota|wartość|data|numer|nr|identyfikator|status|waluta|typ|kanał|opłata(?=\s*[:.\d]|$)|tryb|nadawca|dane|"
     r"beneficjent|adresat|odbiorca|zleceniodawca|płatnik|rachunek|wydrukowano|bank|potwierdzenie|"
-    r"dokument|zrealizowano|-{5,}|\*{3})",
+    r"dokument|zrealizowano|-{5,}|\*{3}|[^\W\d_][\w -]{0,40}:)",
     re.IGNORECASE,
 )
 
 
 def _accounts(text: str) -> tuple[str | None, str | None]:
     """(sender, recipient). Each account takes the role of the nearest label before it.
-    Sender-first order is the fallback, and it also holds for two accounts on one line.
+    Sender-first order is the fallback when labels do not establish the roles.
     When only one account has a label, the label counts only if it is on that account's line:
     in a two-column header ("Płatnik Beneficjent") the nearest label is just the right-hand column."""
     found = {}  # account number -> its first match, in reading order
@@ -53,22 +60,25 @@ def _accounts(text: str) -> tuple[str | None, str | None]:
     same_line = "\n" not in text[matches[0].end() : matches[1].start()]
     both_reversed = roles == ["recipient", "sender"]
     one_reversed = (roles == ["recipient", None] and on_own_line[0]) or (roles == [None, "sender"] and on_own_line[1])
-    if not same_line and (both_reversed or one_reversed):
+    if both_reversed or (not same_line and one_reversed):
         numbers.reverse()
     return numbers[0], numbers[1]
 
 
-def _amount(text: str) -> float | None:
-    label = AMOUNT_LABEL_RE.search(text)
-    match = MONEY_RE.search(text, label.end()) if label else None
-    if not match:
-        return None
-    digits = re.sub(r"[ \u00a0]", "", match.group(1))
+def _amount(raw: str) -> float:
+    digits = re.sub(r"[ \u00a0]", "", raw)
     whole, cents = digits[:-3], digits[-2:]
     return float(re.sub(r"[.,]", "", whole) + "." + cents)
 
 
 def _title(text: str) -> str | None:
+    # Explicit inline labels also delimit fields in flattened PDF tables.
+    text = re.sub(
+        r"[ \t]+(?=(?:tytuł(?: przelewu)?|numer transakcji|nr ref\.|data \w+|kwota|opłata)\s*:)",
+        "\n",
+        text,
+        flags=re.IGNORECASE,
+    )
     lines = text.splitlines()
     for index, line in enumerate(lines):
         label = TITLE_LABEL_RE.match(line.strip())
@@ -76,8 +86,7 @@ def _title(text: str) -> str | None:
             continue
         parts = [label.group(1)]
         for following in lines[index + 1 :]:
-            # The value may start on the line after its label; only later lines can end it.
-            if any(parts) and NEXT_FIELD_RE.match(following.strip()):
+            if NEXT_FIELD_RE.match(following.strip()):
                 break
             parts.append(following)
         title = squash(" ".join(parts))
@@ -88,12 +97,15 @@ def _title(text: str) -> str | None:
 
 def extract(text: str) -> dict:
     sender, recipient = _accounts(text)
-    labelled_date = DATE_LABEL_RE.search(text)
+    row = AMOUNT_DATE_ROW_RE.search(text)
+    amount = row or AMOUNT_RE.search(text)
+    date = OPERATION_DATE_RE.search(text)
+    raw_date = row.group(2) if row else date.group(1) if date else None
     reference = REFERENCE_RE.search(text)
     return {
         "przelew_bankowy": {
-            "data_operacji": to_iso(labelled_date.group(1)) if labelled_date else None,
-            "kwota": _amount(text),
+            "data_operacji": to_iso(raw_date) if raw_date else None,
+            "kwota": _amount(amount.group(1)) if amount else None,
             "na_rachunek": recipient,
             "numer_transakcji": reference.group(1) if reference else None,
             "tytul": _title(text),

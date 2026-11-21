@@ -12,13 +12,15 @@ OCR_DPI = 300
 OCR_TIMEOUT_SECONDS = 60
 
 
+PAGE_NUMBER_RE = re.compile(
+    r"\s*[-–—]?\s*(?:(?:strona|str\.|page)\s*)?\d+(?:\s*(?:z|/|of)\s*\d+)?\s*[-–—]?\s*", re.IGNORECASE
+)
+
+
 def _ocr(page) -> str:
-    """OCR one page; empty when Tesseract is missing, fails or times out."""
+    """OCR one page. Engine failures propagate to the batch error handler."""
     image = page.to_image(resolution=OCR_DPI).original
-    try:
-        text = pytesseract.image_to_string(image, lang="pol", timeout=OCR_TIMEOUT_SECONDS)
-    except (pytesseract.TesseractNotFoundError, pytesseract.TesseractError, RuntimeError):
-        return ""
+    text = pytesseract.image_to_string(image, lang="pol", timeout=OCR_TIMEOUT_SECONDS)
     # Tesseract separates paragraphs with blank lines; the text layer does not, and the rules expect that.
     return "\n".join(line for line in text.splitlines() if line.strip())
 
@@ -29,7 +31,8 @@ def read_pages(pdf_path: Path, max_pages: int = MAX_PAGES, force_ocr: bool = Fal
     with pdfplumber.open(pdf_path) as pdf:
         for page in pdf.pages[:max_pages]:
             text = "" if force_ocr else page.extract_text() or ""
-            pages.append(text if text.strip() else _ocr(page))
+            has_content = any(line.strip() and not PAGE_NUMBER_RE.fullmatch(line) for line in text.splitlines())
+            pages.append(text if has_content else _ocr(page))
     return pages
 
 

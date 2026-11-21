@@ -40,6 +40,15 @@ def _company_name(raw: str) -> str:
 
 
 def _principals(text: str) -> list[dict]:
+    declaration = re.split(r"\b(?:udziela|ustanawia|upoważnia)(?:m|my|ją)?\b", text, maxsplit=1, flags=re.IGNORECASE)[0]
+    # A form can list the authority before the grantor. Drop its block through the next grantor heading.
+    text = re.sub(
+        r"^[ \t]*(?:Zamawiający|Pełnomocnicy)\b.*?(?=^[ \t]*Mocodawc[ąa]\b|\Z)",
+        "",
+        declaration,
+        flags=re.IGNORECASE | re.MULTILINE | re.DOTALL,
+    )
+    text = re.split(r"\b(?:prowadzon\w+\s+przez|postępowanie\s+prowadzi)\b", text, maxsplit=1, flags=re.IGNORECASE)[0]
     sole_trader = SOLE_TRADER_RE.search(text)
     if sole_trader:
         person = re.search(rf"podpisan\w*\s+({PERSON})", text)
@@ -59,8 +68,6 @@ def _principals(text: str) -> list[dict]:
     for index, match in enumerate(companies):
         window_end = companies[index + 1].start() if index + 1 < len(companies) else len(text)
         ids = registry_ids(text[match.end() : min(window_end, match.end() + ID_WINDOW)])
-        if not (ids["krs"] or ids["nip"]):
-            continue  # a company named without registry numbers is not the principal
         name = _company_name(match.group(1))
         principals.setdefault(
             name,
@@ -93,11 +100,13 @@ def _signers(text: str, principal_names: list[str], attorney_names: set[str]) ->
     signature_start = SIGNATURE_LINE_RE.search(text)
     if not signature_start or not principal_names:
         return signers
+    # The first principal heading can precede the first signature line and wrap in a PDF.
+    before = squash(text[: signature_start.start()]).rstrip(" :").casefold()
+    current = next((i for i, name in enumerate(principal_names) if before.endswith(name.casefold())), 0)
     zone = text[signature_start.start() :]
     for index, name in enumerate(principal_names):
-        zone = re.sub(r"\s+".join(map(re.escape, name.split(" "))), f"\n@@{index}@@\n", zone)
+        zone = re.sub(r"\s+".join(map(re.escape, name.split(" "))), f"\n@@{index}@@\n", zone, flags=re.IGNORECASE)
 
-    current = 0
     for line in zone.splitlines():
         marker = re.fullmatch(r"@@(\d+)@@", line.strip())
         if marker:
