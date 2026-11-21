@@ -493,5 +493,14 @@
   ],
   "simple/grant-15": [
     "PEŁNOMOCNICTWO SZCZEGÓLNE\nMocodawca: Barwna Sonda S.A.\nKRS: 0000841237\nUpoważniamy adw. Idzie Płaskiej do reprezentacji.\nW imieniu Barwna Sonda S.A.\n........................\nOlga Drobna"
+  ],
+  "review47/booking-after-executed-payment": [
+    "Potwierdzenie wykonania przelewu\nBank potwierdza, że w dniu 14.06.2031 z rachunku 80193000000000000000003145 wykonano przelew w kwocie 350,25 PLN na rachunek 68214000000000000000002193.\nData księgowania: 16.06.2031\nTytuł: Konserwacja zegara"
+  ],
+  "review47/instruction-before-execution-with-labelled-amount": [
+    "Potwierdzenie wykonania przelewu\nData zlecenia: 10.04.2032\nKwota przelewu: 81,30 PLN\nBank potwierdza, że w dniu 12.04.2032 z rachunku 80193000000000000000003145 prowadzonego dla nadawcy wykonano przelew w kwocie 81,30 PLN na rachunek 68214000000000000000002193.\nTytuł: Naprawa metronomu"
+  ],
+  "review47/execution-label-and-later-booking": [
+    "Potwierdzenie przelewu\nRachunek nadawcy: 80193000000000000000003145\nRachunek odbiorcy: 68214000000000000000002193\nData wykonania: 04.07.2033\nData księgowania: 05.07.2033\nKwota: 74,12 PLN\nTytuł: Strojenie instrumentu"
   ]
 }
