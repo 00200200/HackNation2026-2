@@ -29,7 +29,7 @@ from evals.metrics import DocResult, load_json, score_doc, summarise
 ROOT = Path(__file__).resolve().parent.parent
 DATA = ROOT / "data" / "uzp" / "dane"
 RESULTS = ROOT / "evals" / "results" / "latest.json"
-DEFAULT_CMD = "uv run python -m odwolania2json --input {input} --output {output}"
+DEFAULT_CMD = "uv run python -m kio2json --input {input} --output {output}"
 GOLD_FOR = {"odwolanie.pdf": "odwolanie.json", "pelnomocnictwo.pdf": "pelnomocnictwo.json"}
 GOLD_FOR["potwierdzenie_przelewu.pdf"] = "przelew.json"
 QUICK = {"przyklad_01", "przyklad_02", "przyklad_03", "przyklad_04", "przyklad_05", "przyklad_24", "negatywne"}

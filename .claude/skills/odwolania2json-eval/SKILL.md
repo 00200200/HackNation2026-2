@@ -32,7 +32,7 @@ uv run pytest -q tests/test_eval_metrics.py              # metric code only
 ```
 
 The app is called with the jury's contract: `--cmd` or `ODW_CMD` (default
-`uv run python -m odwolania2json --input {input} --output {output}`; change it once the CLI exists). The eval
+`uv run python -m kio2json --input {input} --output {output}`). The eval
 copies each case to `input/<case>/dokument_NN.pdf` in shuffled order, so the app cannot classify by file name, and
 reads `output/<case>/dokument_NN.json`. `ODW_TIMEOUT_S` bounds the run (default 3600 s). Exit code 1 when a
 required metric fails or is unknown.
