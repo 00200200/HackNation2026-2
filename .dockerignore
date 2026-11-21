@@ -1,0 +1,14 @@
+.git
+.venv
+.cache
+data
+evals
+tests
+input
+output
+docs
+frontend
+**/__pycache__
+**/*.egg-info
+packaging/polish_ocr_data/build
+.env*
