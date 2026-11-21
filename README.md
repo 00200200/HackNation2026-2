@@ -235,7 +235,7 @@ current rules, select `KIO_OCR_ENGINE=tesseract-dpi` and run
 
 ## Rules on real documents and organizer scans
 
-These runs used local rules with the three endpoint variables unset. The two local datasets contain real documents and use whole-case splits. Corpus 1 dev has 22 PDFs from 14 cases. Corpus 2 dev has 39 PDFs from 14 cases. The held-out splits remain reserved until a model is selected. The organizer supplied a separate set of 30 labelled scans, ten per target class. The scan command stages the committed PDF/reference pairs as one batch with neutral filenames. [Organizer scan set at the measured revision](https://github.com/Urzad-Zamowien-Publicznych/hacknation-2026/tree/0b360a9da4b482a6a280696df6714404e0953505/dane/skany)
+The integration baseline used local rules with the three endpoint variables unset. The two local datasets contain real documents and use whole-case splits. Corpus 1 dev has 22 PDFs from 14 cases. Corpus 2 dev has 39 PDFs from 14 cases. The table records the integration baseline before the scanned-transfer changes. The organizer supplied a separate set of 30 labelled scans, ten per target class. The scan command stages the committed PDF/reference pairs as one batch with neutral filenames. [Organizer scan set at the measured revision](https://github.com/Urzad-Zamowien-Publicznych/hacknation-2026/tree/0b360a9da4b482a6a280696df6714404e0953505/dane/skany)
 
 | Dataset | PDFs | Micro F1 | Macro F1 by class | Appeal | Power of attorney | Transfer | Correct routes (appeal / power / transfer) | Empty negatives | Wall s/PDF |
 |---|---:|---:|---:|---:|---:|---:|---|---:|---:|
@@ -278,7 +278,7 @@ rules. [OCR results](evals/results/ocr-engines.json)
 
 ## Known limits
 
-- On corpus 2 dev, rules routed only one of ten transfers. A missing route makes every reference field in that document a miss.
+- A receipt that shows only acceptance for future execution can remain unclassified. On damaged scans, a booking date and debit can establish a completed payment even when the account roles are unreadable. The affected account fields stay null.
 - A model can cite the wrong party’s valid source text. The integration measurements above cover the rules-only profile.
 
 - Appeal extraction reads the first three pages. A signature or dated notice later in the PDF can be missed.

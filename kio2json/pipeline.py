@@ -29,11 +29,19 @@ def _route_receipt(
     if evidence is not None and cells:
         # A source cell keeps its owner even if the linear transcript interleaves the columns.
         roles = {}
+        prefixed = set(evidence.prefixed_roles)
         for label, role in (("Rachunek nadawcy", "sender"), ("Rachunek odbiorcy", "recipient")):
             if label in cells:
                 raw = "".join(cells[label].split())
-                roles[role] = raw if raw.isdigit() else None
-        evidence = replace(evidence, **roles, declared=evidence.declared | roles.keys())
+                digits = raw.removeprefix("PL")
+                roles[role] = digits if digits.isdigit() else None
+                if raw.startswith("PL"):
+                    prefixed.add(role)
+                else:
+                    prefixed.discard(role)
+        evidence = replace(
+            evidence, **roles, declared=evidence.declared | roles.keys(), prefixed_roles=frozenset(prefixed)
+        )
     return route(pages, definitions, ocr_accounts=evidence, rules_only=True), evidence
 
 

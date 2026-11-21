@@ -9,6 +9,7 @@ from statistics import median
 from rapidfuzz.distance import Levenshtein
 from stdnum import iban
 
+from .bank_transfer import REFERENCE_RE
 from .common import DATE_RE
 from .ocr_normalize import normalize_ocr
 from .pdf_text import WordBox
@@ -104,7 +105,7 @@ MONEY_CELL = re.compile(
 @lru_cache(maxsize=2048)
 def _label_words(token: str, ocr: bool) -> tuple[str, ...]:
     word = token.strip("|:/.,").casefold()
-    if not ocr or word in VOCABULARY or len(word) < 4 or not word.isalpha():
+    if not ocr or word in VOCABULARY or len(word) <= 4 or not word.isalpha():
         return (word,)
     # Resolve equally close spellings only when the complete phrase gives one field.
     cutoff = 1 if len(word) < 9 else 2
@@ -114,7 +115,8 @@ def _label_words(token: str, ocr: bool) -> tuple[str, ...]:
 
 
 def booking_heading(line: str, *, ocr: bool = False) -> bool:
-    tokens = line.strip(" |:/.-").split()
+    heading = re.split(r"(?i)\s+suma kontrolna dokumentu\s*:", line, maxsplit=1)[0]
+    tokens = heading.strip(" |:/.-").split()
     if len(tokens) != 3:
         return False
     words = [set(_label_words(w, ocr)) for w in tokens]
@@ -198,7 +200,10 @@ def _cell_value(field: str, cell: str, ocr: bool) -> str | None:
             compact = normalize_ocr(compact)
             if len(compact) == 26 and sum(c.isdigit() for c in compact) == 25:
                 compact = re.sub(r"[^0-9]", "?", compact)
-            return validated_account(compact) if re.fullmatch(r"[0-9?]{26}", compact) else None
+            value = validated_account(compact) if re.fullmatch(r"[0-9?]{26}", compact) else None
+            if value and re.match(r"(?:IBAN[ :]+)?PL", cell):
+                return "PL" + value
+            return value
         return compact if re.fullmatch(r"[0-9]{26}", compact) else None
     if field.startswith("Data"):
         day = DATE_RE.match(cell)
@@ -220,7 +225,13 @@ def _row_headers(row: list[WordBox], following: list[WordBox], height: float, oc
     headers = [
         (start, stop, field)
         for start, stop, field in _headers([w.text for w in row], ocr)
-        if start == 0 or row[start].x0 - row[start - 1].x1 > height * 0.75
+        if (start == 0 or row[start].x0 - row[start - 1].x1 > height * 0.75)
+        and not (
+            ocr
+            and row[start].text.casefold() == "opłata"
+            and stop < len(row)
+            and row[stop].text.casefold() == "skarbowa"
+        )
     ]
     # On a header row, a visually separate phrase with its own data column is a cell
     # boundary even when the bank uses a heading outside our extraction vocabulary.
@@ -231,6 +242,8 @@ def _row_headers(row: list[WordBox], following: list[WordBox], height: float, oc
         return headers
     label_tokens = {i for start, stop, _ in headers for i in range(start, stop)}
     for i, word in enumerate(row):
+        if headers[0][2] == "Tytuł" and word.text.casefold() in {"wpis", "opłata", "zapłata"}:
+            continue
         if i in label_tokens or (i and word.x0 - row[i - 1].x1 <= 2 * height):
             continue
         if any(abs(value.x0 - word.x0) <= height for value in following):
@@ -238,13 +251,39 @@ def _row_headers(row: list[WordBox], following: list[WordBox], height: float, oc
     return sorted(headers)
 
 
+def _level_scan_rows(boxes: list[WordBox]) -> list[WordBox]:
+    # OCR supplies words in reading order. Long left-to-right runs estimate the tilt
+    # more reliably than adjacent glyphs with different ascenders and descenders.
+    slopes = []
+    first = previous = None
+    for word in boxes:
+        if previous is None or word.page != previous.page or word.x0 <= previous.x0:
+            first = word
+        span = (word.x0 + word.x1 - first.x0 - first.x1) / 2
+        if span > 75:
+            slopes.append((word.y0 + word.y1 - first.y0 - first.y1) / (2 * span))
+        previous = word
+    slope = median(slopes) if slopes else 0
+    if not 0.01 < abs(slope) < 0.12:
+        return boxes
+    return [
+        word._replace(y0=word.y0 - slope * (word.x0 + word.x1) / 2, y1=word.y1 - slope * (word.x0 + word.x1) / 2)
+        for word in boxes
+    ]
+
+
 def receipt_cell_fields(boxes: list[WordBox], *, ocr: bool = False) -> dict[str, str]:
-    rows, height = _word_rows(boxes)
+    rows, height = _word_rows(_level_scan_rows(boxes) if ocr else boxes)
     labels = [_row_headers(row, following, height, ocr) for row, following in zip(rows, rows[1:] + [[]])]
     evidence = defaultdict(set)
     for index, (row, headers) in enumerate(zip(rows, labels)):
         if not headers or headers[0][0] != 0:
             continue
+        if ocr:
+            # An institution-qualified reference and a neighbouring date may share a physical line.
+            reference = REFERENCE_RE.match(" ".join(word.text for word in row))
+            if reference:
+                evidence["Numer transakcji"].add(reference[1])
         # Stop at the next heading or visual break. All columns share a block boundary,
         # while each field can bind independently within that block.
         below = []

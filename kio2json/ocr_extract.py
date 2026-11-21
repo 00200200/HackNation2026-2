@@ -29,7 +29,11 @@ def _account_fields(text: str, ocr: bool, receipt: AccountEvidence | None = None
     if ocr:
         evidence = receipt or account_evidence(text)
         values = {"sender": evidence.sender, "recipient": evidence.recipient}
-        return {k: v for k, v in values.items() if v is not None or k in evidence.declared}
+        return {
+            role: "PL" + value if value and role in evidence.prefixed_roles else value
+            for role, value in values.items()
+            if value is not None or role in evidence.declared
+        }
     sender, recipient = bank_transfer._accounts(text)
     lower = text.casefold()
     fields = {}
@@ -69,8 +73,11 @@ def extract_bank_transfer(
             number = next(iter(candidates))
             if (
                 number
-                and number != fields.get(opposite)
-                and (opposite in fields or number not in supplements[opposite])
+                and number.removeprefix("PL") != (fields.get(opposite) or "").removeprefix("PL")
+                and (
+                    opposite in fields
+                    or all(number.removeprefix("PL") != (v or "").removeprefix("PL") for v in supplements[opposite])
+                )
             ):
                 fields[role] = number
     record["przelew_bankowy"].update(z_rachunku=fields.get("sender"), na_rachunek=fields.get("recipient"))

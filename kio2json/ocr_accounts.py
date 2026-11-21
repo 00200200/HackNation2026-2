@@ -5,8 +5,8 @@ from dataclasses import dataclass
 
 from stdnum import iban
 
-from .bank_transfer import BOUNDARY_RE, printed_accounts
-from .common import to_iso
+from .bank_transfer import AMOUNT_LABEL, BOUNDARY_RE, completed_value_block, posted_party_debit, printed_accounts
+from .common import DATE, to_iso
 from .receipt_layout import validated_account
 
 # 26-digit Polish account number, optionally 'PL'-prefixed, grouped or wrapped across lines.
@@ -32,22 +32,37 @@ class AccountEvidence:
     distinct_numbers: int
     masked_pair: bool
     declared: frozenset[str]
+    prefixed_roles: frozenset[str] = frozenset()
 
 
 def account_evidence(text: str) -> AccountEvidence:
     """Bind complete numbers or masks to their printed field or ordered table column."""
     numbers = set()
+    prefixed = set()
 
     def compact(match: re.Match) -> str:
         number = "".join(match[1].split())
         numbers.add(number)
-        return number
+        return ("PL" if match[0].startswith("PL") else "") + number
+
+    # A party block can contain a name/address and account column on one physical row.
+    table_roles = {}
+    for header in re.finditer(r"(?im)^dane (nadawcy|odbiorcy)\s*\n[^\n]*\bnumer rachunku\b[^\n]*\n([^\n]+)", text):
+        row = list(ACCOUNT_RE.finditer(header[2]))
+        if len(row) == 1:
+            role = "sender" if header[1].casefold() == "nadawcy" else "recipient"
+            number = "".join(row[0][1].split())
+            table_roles.setdefault(role, set()).add(number)
+            if row[0][0].startswith("PL"):
+                prefixed.add((role, number))
 
     text = ACCOUNT_RE.sub(compact, text)
     # Preserve inline columns and the two explicit account clauses in bank letters.
     text = re.sub(rf"(?:(?<=[\d*:—–-])|(?<=XXX))[ \t]+(?={ACCOUNT_LABEL.pattern})", "\n", text, flags=re.IGNORECASE)
-    text = re.sub(r"(?i)\b(z rachunku|na rachunek) nr (?=\d{26}\b)", r"\n\1 ", text)
+    text = re.sub(r"(?i)\b(z rachunku|na rachunek) nr (?=(?:PL)?\d{26}\b)", r"\n\1 ", text)
     values = {"sender": set(), "recipient": set(), "generic": set()}
+    for role, cells in table_roles.items():
+        values[role].update(cells)
     declared = set()
     strict = []
     roles = []
@@ -100,6 +115,9 @@ def account_evidence(text: str) -> AccountEvidence:
                 # on the following line. Consume at most one company row.
                 participant = False
                 continue
+        for role, token in zip(roles[len(cells) :], matches):
+            if token[0].startswith("PL"):
+                prefixed.add((role, token[1]))
         cells.extend(match[1] for match in matches)  # A mask occupies its own cell with value None.
         if len(cells) == len(roles):
             if field and not table and ACCOUNT_VALUE.fullmatch(line):
@@ -132,7 +150,16 @@ def account_evidence(text: str) -> AccountEvidence:
         sender = printed.get("sender", sender)
     if "recipient" not in declared:
         recipient = printed.get("recipient", recipient)
-    return AccountEvidence(sender, recipient, len(numbers), masked_pair, frozenset(declared | printed.keys()))
+    if sender is None and posted_party_debit(text):
+        # A bank can restate the holder's own account in international format below the debit.
+        owner = re.findall(r"(?im)^numer IBAN tego rachunku[ :]+PL(\d{26})\b", text)
+        if len(set(owner)) == 1 and iban.is_valid("PL" + owner[0]):
+            sender = owner[0]
+            prefixed.add(("sender", sender))
+    formats = frozenset(
+        role for role, value in (("sender", sender), ("recipient", recipient)) if (role, value) in prefixed
+    )
+    return AccountEvidence(sender, recipient, len(numbers), masked_pair, frozenset(declared | printed.keys()), formats)
 
 
 # Normalize only complete account tokens and calendar dates read by OCR on a receipt.
@@ -145,10 +172,41 @@ def normalize_receipt(text: str) -> str:
         compact = "".join(match[1].split())
         if iban.is_valid("PL" + compact):
             return match[0]
-        return validated_account(compact) or "?"
+        repaired = validated_account(compact)
+        return ("PL" if match[0].startswith("PL") else "") + repaired if repaired else "?"
 
     def date(match: re.Match) -> str:
         candidate = ".".join(match.groups())
         return candidate if to_iso(candidate) else match[0]
 
+    # Ignore a section title in front of the three booking columns. The typed row
+    # parser still requires a date in both date columns and exactly one debit.
+    text = re.sub(
+        r"(?im)^[^\n]*\bda[łt]a waluty[ \t]+data księgowania[ \t]+kwota[ \t]*$",
+        "Data waluty Data księgowania Kwota",
+        text,
+    )
+    text = re.sub(r"(?im)^[|/–-]+[ \t]*(?=potwierdzenie\b)", "", text)
+    text = re.sub(
+        rf"(?im)^({AMOUNT_LABEL}[ :]+[−-]?[\d \u00a0]+?)[ \t]*([,.])[ \t]*(\d{{2}})(?=[ \t]*(?:PLN|zł)\b)",
+        r"\1\2\3",
+        text,
+    )
+    text = re.sub(r"(?im)^(tytu[łl])[ :]+[;| \t]+(?:[a-z])?[ \t]*$", r"\1:", text)
+    text = re.sub(r"(?im)^((?:typ|rodzaj) transakcji) ", r"\1: ", text)
+    # A reference value can share a line with the next date column.
+    text = re.sub(r"(?im)^(\d+)[ \t]+(?=data księgowania\b)", r"\1\n", text)
+    block = completed_value_block(text)
+    if block:
+        day, amount = block
+        text += f"\nData operacji: {day}\nKwota: {amount}"
+    text = re.sub(r'(?im)^(data operacji)\s+["„](?=\d)', r"\1 ", text)
+    text = re.sub(r"(?im)^rachunk(?= odbiorcy\b)", "Rachunek", text)
+    text = re.sub(rf"(?im)^data[ :]+({DATE})[ \t]*\nwykonania\b", r"Data wykonania: \1", text)
+    text = re.sub(r"(?im)^[+| \t]*numer[ :]+(\d+)[ \t]*\ntransakcji[ |\t]*$", r"Numer transakcji: \1", text)
+    if re.search(r"(?im)^typ zlecenia[ :]+przelew\b", text):
+        # A ruled form can leave a short uppercase artefact beside a complete execution state.
+        text = re.sub(r"(?m)^[|][ \t]*(?!NIE\b)[A-Z]{1,2}[ \t]+(wykonan[aye])[ \t]*$", r"Status: \1", text)
+        if re.search(r"(?im)^status[ :]+wykonan[aye]\b", text) and re.search(r"(?im)^rachunek zleceniodawcy\b", text):
+            text = re.sub(r"(?im)^rachunek kontrahenta[ :|–-]+", "Rachunek odbiorcy: ", text)
     return OCR_NRB.sub(number, OCR_DATE.sub(date, text))
