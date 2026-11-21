@@ -1,0 +1,724 @@
+{
+  "product_commit": "34da9ca97a6529e5be9fe2ffe8e383746780039b",
+  "base_commit": "dbda1511d72b8e79deab00fa4ebae1dce5c06ff5",
+  "method": "Rules-only CLI. Corpus 1 all (39), corpus 2 dev (39), organizer scans (30), synthetic training (196). Field F1 pools normalized leaves, including null. Exact JSON preserves values and list order. Steps used neutral file names and the same inputs. OCR-only step reran appeals on the private sets and organizer scans; other outputs were carried over. Timing uses a separate fresh CLI invocation.",
+  "extraction_commit": "2c57d5c73cb9db0a4df36436ef0316ae0c42ed47",
+  "load_recheck": {
+    "corpus_1_initial_micro": 0.8811777076761304,
+    "corpus_1_initial_routed_appeals": 12,
+    "method": "A damaged native appeal whose extractor was unchanged exhausted the optional OCR deadline under concurrent host activity. An isolated single-job CLI rerun restored the baseline bytes. The verified stage includes that rerun."
+  },
+  "diagnosis": "Each unmatched gold/predicted leaf pair at the same field path counts once. Absent list records count their missing leaves. The four missed receipts account for 24 routing errors. Error cause is the primary mechanism judged from the document and transcription.",
+  "baseline_field_error_counts": {
+    "one": {
+      "missing value": 17,
+      "wrong span": 5,
+      "routing": 18,
+      "layout/reading order": 7,
+      "OCR misread": 23,
+      "convention": 6,
+      "extra value against a null": 1
+    },
+    "two": {
+      "OCR misread": 11,
+      "layout/reading order": 10,
+      "missing value": 20,
+      "routing": 6,
+      "convention": 2,
+      "wrong span": 4
+    }
+  },
+  "baseline_errors_by_class_and_field": {
+    "one": {
+      "odwolanie": {
+        "OdwolanieKIO.czynnosc_dzien": {
+          "missing value": 4
+        },
+        "OdwolanieKIO.czynnosc_opis": {
+          "wrong span": 1
+        },
+        "OdwolanieKIO.czynnosc_powod_id": {
+          "wrong span": 1
+        },
+        "ZamowieniePubliczne.numer_postepowania": {
+          "missing value": 1,
+          "OCR misread": 1
+        },
+        "Zamawiajacy[].regon": {
+          "missing value": 1
+        },
+        "Odwolujacy[].nazwa": {
+          "wrong span": 1,
+          "layout/reading order": 2,
+          "OCR misread": 1
+        },
+        "ZamowieniePubliczne.numer_ted": {
+          "missing value": 1
+        },
+        "Odwolujacy[].pelnomocnik.imie_nazwisko": {
+          "missing value": 2,
+          "layout/reading order": 1
+        },
+        "Odwolujacy[].przez-pelnomocnika": {
+          "missing value": 1,
+          "layout/reading order": 1
+        },
+        "OdwolanieKIO.data": {
+          "OCR misread": 1
+        },
+        "OdwolanieKIO.miejscowosc": {
+          "OCR misread": 1
+        },
+        "Odwolujacy[].pelnomocnik.mail": {
+          "layout/reading order": 1
+        },
+        "Zamawiajacy[].nazwa": {
+          "wrong span": 1,
+          "convention": 2,
+          "OCR misread": 3
+        },
+        "ZamowieniePubliczne.tytul": {
+          "wrong span": 1,
+          "OCR misread": 3
+        },
+        "Odwolujacy[].nip": {
+          "missing value": 1,
+          "OCR misread": 1
+        },
+        "Odwolujacy[].regon": {
+          "missing value": 2,
+          "OCR misread": 1
+        },
+        "Odwolujacy[].pelnomocnik.nazwa": {
+          "missing value": 2,
+          "extra value against a null": 1
+        },
+        "Odwolujacy[].krs": {
+          "OCR misread": 1
+        }
+      },
+      "przelew": {
+        "przelew_bankowy.data_operacji": {
+          "routing": 3
+        },
+        "przelew_bankowy.kwota": {
+          "routing": 3,
+          "layout/reading order": 1,
+          "OCR misread": 2
+        },
+        "przelew_bankowy.na_rachunek": {
+          "routing": 3,
+          "OCR misread": 2
+        },
+        "przelew_bankowy.numer_transakcji": {
+          "routing": 3,
+          "missing value": 1,
+          "OCR misread": 1
+        },
+        "przelew_bankowy.tytul": {
+          "routing": 3,
+          "OCR misread": 3,
+          "missing value": 1,
+          "layout/reading order": 1,
+          "convention": 1
+        },
+        "przelew_bankowy.z_rachunku": {
+          "routing": 3,
+          "convention": 1
+        }
+      },
+      "pelnomocnictwo": {
+        "pelnomocnicy[].imie_nazwisko": {
+          "convention": 1
+        },
+        "mocodawca[].podpisujacy[].imie_nazwisko": {
+          "convention": 1,
+          "OCR misread": 2
+        }
+      }
+    },
+    "two": {
+      "pelnomocnictwo": {
+        "mocodawca[].podpisujacy[].imie_nazwisko": {
+          "OCR misread": 1
+        }
+      },
+      "przelew": {
+        "przelew_bankowy.tytul": {
+          "layout/reading order": 2,
+          "routing": 1,
+          "OCR misread": 1,
+          "convention": 2
+        },
+        "przelew_bankowy.data_operacji": {
+          "routing": 1
+        },
+        "przelew_bankowy.kwota": {
+          "routing": 1
+        },
+        "przelew_bankowy.na_rachunek": {
+          "routing": 1,
+          "OCR misread": 1
+        },
+        "przelew_bankowy.numer_transakcji": {
+          "routing": 1
+        },
+        "przelew_bankowy.z_rachunku": {
+          "routing": 1,
+          "OCR misread": 1
+        }
+      },
+      "odwolanie": {
+        "Odwolujacy[].nip": {
+          "OCR misread": 1,
+          "missing value": 1
+        },
+        "Odwolujacy[].pelnomocnik.imie_nazwisko": {
+          "OCR misread": 2,
+          "missing value": 3
+        },
+        "Odwolujacy[].przez-pelnomocnika": {
+          "missing value": 5
+        },
+        "Odwolujacy[].regon": {
+          "OCR misread": 1,
+          "missing value": 1
+        },
+        "Odwolujacy[].pelnomocnik.mail": {
+          "OCR misread": 2
+        },
+        "Odwolujacy[].pelnomocnik.nazwa": {
+          "layout/reading order": 2,
+          "missing value": 3
+        },
+        "Zamawiajacy[].krs": {
+          "layout/reading order": 1
+        },
+        "Zamawiajacy[].nazwa": {
+          "layout/reading order": 2
+        },
+        "Zamawiajacy[].nip": {
+          "layout/reading order": 1
+        },
+        "Zamawiajacy[].prowadzacy_postepowanie": {
+          "layout/reading order": 1
+        },
+        "Zamawiajacy[].regon": {
+          "layout/reading order": 1
+        },
+        "ZamowieniePubliczne.tytul": {
+          "wrong span": 3,
+          "missing value": 2
+        },
+        "OdwolanieKIO.czynnosc_dzien": {
+          "missing value": 4
+        },
+        "Odwolujacy[].nazwa": {
+          "OCR misread": 1,
+          "wrong span": 1
+        },
+        "ZamowieniePubliczne.numer_ted": {
+          "missing value": 1
+        }
+      }
+    }
+  },
+  "remaining_field_error_counts": {
+    "one": {
+      "missing value": 13,
+      "wrong span": 5,
+      "OCR misread": 24,
+      "layout/reading order": 6,
+      "convention": 6,
+      "extra value against a null": 1
+    },
+    "two": {
+      "OCR misread": 11,
+      "layout/reading order": 10,
+      "missing value": 18,
+      "convention": 2,
+      "wrong span": 4
+    }
+  },
+  "steps": {
+    "base": {
+      "one": {
+        "docs": 39,
+        "micro": 0.8607329842931937,
+        "macro": 0.77853284936226,
+        "per_class": {
+          "odwolanie": 0.8909574468085106,
+          "pelnomocnictwo": 0.9557522123893806,
+          "przelew": 0.4888888888888889
+        },
+        "counts": {
+          "tp": 411,
+          "fp": 56,
+          "fn": 77
+        },
+        "exact": {
+          "pelnomocnictwo": 2,
+          "negatywny": 11,
+          "odwolanie": 3
+        },
+        "routing": {
+          "odwolanie": 13,
+          "pelnomocnictwo": 6,
+          "przelew": 6,
+          "negatywny": 11
+        }
+      },
+      "two": {
+        "docs": 39,
+        "micro": 0.8788659793814433,
+        "macro": 0.8950957641016121,
+        "per_class": {
+          "odwolanie": 0.8712522045855379,
+          "pelnomocnictwo": 0.9894736842105263,
+          "przelew": 0.8245614035087719
+        },
+        "counts": {
+          "tp": 341,
+          "fp": 41,
+          "fn": 53
+        },
+        "exact": {
+          "odwolanie": 2,
+          "negatywny": 11,
+          "pelnomocnictwo": 4,
+          "przelew": 4
+        },
+        "routing": {
+          "odwolanie": 13,
+          "pelnomocnictwo": 5,
+          "przelew": 9,
+          "negatywny": 11
+        }
+      },
+      "scans": {
+        "docs": 30,
+        "micro": 0.9974226804123711,
+        "macro": 0.9944444444444445,
+        "per_class": {
+          "odwolanie": 1.0,
+          "pelnomocnictwo": 1.0,
+          "przelew": 0.9833333333333333
+        },
+        "counts": {
+          "tp": 387,
+          "fp": 1,
+          "fn": 1
+        },
+        "exact": {
+          "odwolanie": 10,
+          "pelnomocnictwo": 10,
+          "przelew": 9
+        },
+        "routing": {
+          "odwolanie": 10,
+          "pelnomocnictwo": 10,
+          "przelew": 10
+        }
+      },
+      "training": {
+        "docs": 196,
+        "micro": 1.0,
+        "macro": 1.0,
+        "per_class": {
+          "odwolanie": 1.0,
+          "pelnomocnictwo": 1.0,
+          "przelew": 1.0
+        },
+        "counts": {
+          "tp": 2316,
+          "fp": 0,
+          "fn": 0
+        },
+        "exact": {
+          "negatywny": 16,
+          "odwolanie": 60,
+          "pelnomocnictwo": 60,
+          "przelew": 60
+        },
+        "routing": {
+          "negatywny": 16,
+          "odwolanie": 60,
+          "pelnomocnictwo": 60,
+          "przelew": 60
+        }
+      }
+    },
+    "fields": {
+      "one": {
+        "docs": 39,
+        "micro": 0.8712041884816754,
+        "macro": 0.79600723864516,
+        "per_class": {
+          "odwolanie": 0.898936170212766,
+          "pelnomocnictwo": 0.9557522123893806,
+          "przelew": 0.5333333333333333
+        },
+        "counts": {
+          "tp": 416,
+          "fp": 51,
+          "fn": 72
+        },
+        "exact": {
+          "pelnomocnictwo": 2,
+          "negatywny": 11,
+          "przelew": 1,
+          "odwolanie": 3
+        },
+        "routing": {
+          "odwolanie": 13,
+          "pelnomocnictwo": 6,
+          "przelew": 6,
+          "negatywny": 11
+        },
+        "byte_matches": 36
+      },
+      "two": {
+        "docs": 39,
+        "micro": 0.884020618556701,
+        "macro": 0.8974473220087255,
+        "per_class": {
+          "odwolanie": 0.8783068783068783,
+          "pelnomocnictwo": 0.9894736842105263,
+          "przelew": 0.8245614035087719
+        },
+        "counts": {
+          "tp": 343,
+          "fp": 39,
+          "fn": 51
+        },
+        "exact": {
+          "odwolanie": 2,
+          "negatywny": 11,
+          "pelnomocnictwo": 4,
+          "przelew": 4
+        },
+        "routing": {
+          "odwolanie": 13,
+          "pelnomocnictwo": 5,
+          "przelew": 9,
+          "negatywny": 11
+        },
+        "byte_matches": 38
+      },
+      "scans": {
+        "docs": 30,
+        "micro": 0.9974226804123711,
+        "macro": 0.9944444444444445,
+        "per_class": {
+          "odwolanie": 1.0,
+          "pelnomocnictwo": 1.0,
+          "przelew": 0.9833333333333333
+        },
+        "counts": {
+          "tp": 387,
+          "fp": 1,
+          "fn": 1
+        },
+        "exact": {
+          "odwolanie": 10,
+          "pelnomocnictwo": 10,
+          "przelew": 9
+        },
+        "routing": {
+          "odwolanie": 10,
+          "pelnomocnictwo": 10,
+          "przelew": 10
+        },
+        "byte_matches": 30
+      },
+      "training": {
+        "docs": 196,
+        "micro": 1.0,
+        "macro": 1.0,
+        "per_class": {
+          "odwolanie": 1.0,
+          "pelnomocnictwo": 1.0,
+          "przelew": 1.0
+        },
+        "counts": {
+          "tp": 2316,
+          "fp": 0,
+          "fn": 0
+        },
+        "exact": {
+          "negatywny": 16,
+          "odwolanie": 60,
+          "pelnomocnictwo": 60,
+          "przelew": 60
+        },
+        "routing": {
+          "negatywny": 16,
+          "odwolanie": 60,
+          "pelnomocnictwo": 60,
+          "przelew": 60
+        },
+        "byte_matches": 196
+      }
+    },
+    "ocr": {
+      "one": {
+        "docs": 39,
+        "micro": 0.8774869109947644,
+        "macro": 0.798666813113245,
+        "per_class": {
+          "odwolanie": 0.9069148936170213,
+          "pelnomocnictwo": 0.9557522123893806,
+          "przelew": 0.5333333333333333
+        },
+        "counts": {
+          "tp": 419,
+          "fp": 48,
+          "fn": 69
+        },
+        "exact": {
+          "pelnomocnictwo": 2,
+          "negatywny": 11,
+          "przelew": 1,
+          "odwolanie": 3
+        },
+        "routing": {
+          "odwolanie": 13,
+          "pelnomocnictwo": 6,
+          "przelew": 6,
+          "negatywny": 11
+        },
+        "byte_matches": 35
+      },
+      "two": {
+        "docs": 39,
+        "micro": 0.884020618556701,
+        "macro": 0.8974473220087255,
+        "per_class": {
+          "odwolanie": 0.8783068783068783,
+          "pelnomocnictwo": 0.9894736842105263,
+          "przelew": 0.8245614035087719
+        },
+        "counts": {
+          "tp": 343,
+          "fp": 39,
+          "fn": 51
+        },
+        "exact": {
+          "odwolanie": 2,
+          "negatywny": 11,
+          "pelnomocnictwo": 4,
+          "przelew": 4
+        },
+        "routing": {
+          "odwolanie": 13,
+          "pelnomocnictwo": 5,
+          "przelew": 9,
+          "negatywny": 11
+        },
+        "byte_matches": 38
+      },
+      "scans": {
+        "docs": 30,
+        "micro": 0.9974226804123711,
+        "macro": 0.9944444444444445,
+        "per_class": {
+          "odwolanie": 1.0,
+          "pelnomocnictwo": 1.0,
+          "przelew": 0.9833333333333333
+        },
+        "counts": {
+          "tp": 387,
+          "fp": 1,
+          "fn": 1
+        },
+        "exact": {
+          "odwolanie": 10,
+          "pelnomocnictwo": 10,
+          "przelew": 9
+        },
+        "routing": {
+          "odwolanie": 10,
+          "pelnomocnictwo": 10,
+          "przelew": 10
+        },
+        "byte_matches": 30
+      },
+      "training": {
+        "docs": 196,
+        "micro": 1.0,
+        "macro": 1.0,
+        "per_class": {
+          "odwolanie": 1.0,
+          "pelnomocnictwo": 1.0,
+          "przelew": 1.0
+        },
+        "counts": {
+          "tp": 2316,
+          "fp": 0,
+          "fn": 0
+        },
+        "exact": {
+          "negatywny": 16,
+          "odwolanie": 60,
+          "pelnomocnictwo": 60,
+          "przelew": 60
+        },
+        "routing": {
+          "negatywny": 16,
+          "odwolanie": 60,
+          "pelnomocnictwo": 60,
+          "przelew": 60
+        },
+        "byte_matches": 196
+      }
+    },
+    "verified": {
+      "one": {
+        "docs": 39,
+        "micro": 0.8900308324768756,
+        "macro": 0.8554569365700352,
+        "per_class": {
+          "odwolanie": 0.9069148936170213,
+          "pelnomocnictwo": 0.9557522123893806,
+          "przelew": 0.7037037037037037
+        },
+        "counts": {
+          "tp": 433,
+          "fp": 52,
+          "fn": 55
+        },
+        "exact": {
+          "pelnomocnictwo": 2,
+          "przelew": 2,
+          "negatywny": 11,
+          "odwolanie": 3
+        },
+        "routing": {
+          "odwolanie": 13,
+          "pelnomocnictwo": 6,
+          "przelew": 9,
+          "negatywny": 11
+        },
+        "byte_matches": 31
+      },
+      "two": {
+        "docs": 39,
+        "micro": 0.8925831202046036,
+        "macro": 0.9170379652835793,
+        "per_class": {
+          "odwolanie": 0.8783068783068783,
+          "pelnomocnictwo": 0.9894736842105263,
+          "przelew": 0.8833333333333333
+        },
+        "counts": {
+          "tp": 349,
+          "fp": 39,
+          "fn": 45
+        },
+        "exact": {
+          "odwolanie": 2,
+          "negatywny": 11,
+          "przelew": 5,
+          "pelnomocnictwo": 4
+        },
+        "routing": {
+          "odwolanie": 13,
+          "pelnomocnictwo": 5,
+          "przelew": 10,
+          "negatywny": 11
+        },
+        "byte_matches": 37
+      },
+      "scans": {
+        "docs": 30,
+        "micro": 0.9974226804123711,
+        "macro": 0.9944444444444445,
+        "per_class": {
+          "odwolanie": 1.0,
+          "pelnomocnictwo": 1.0,
+          "przelew": 0.9833333333333333
+        },
+        "counts": {
+          "tp": 387,
+          "fp": 1,
+          "fn": 1
+        },
+        "exact": {
+          "odwolanie": 10,
+          "pelnomocnictwo": 10,
+          "przelew": 9
+        },
+        "routing": {
+          "odwolanie": 10,
+          "pelnomocnictwo": 10,
+          "przelew": 10
+        },
+        "byte_matches": 30
+      },
+      "training": {
+        "docs": 196,
+        "micro": 1.0,
+        "macro": 1.0,
+        "per_class": {
+          "odwolanie": 1.0,
+          "pelnomocnictwo": 1.0,
+          "przelew": 1.0
+        },
+        "counts": {
+          "tp": 2316,
+          "fp": 0,
+          "fn": 0
+        },
+        "exact": {
+          "negatywny": 16,
+          "odwolanie": 60,
+          "pelnomocnictwo": 60,
+          "przelew": 60
+        },
+        "routing": {
+          "negatywny": 16,
+          "odwolanie": 60,
+          "pelnomocnictwo": 60,
+          "przelew": 60
+        },
+        "byte_matches": 196
+      }
+    }
+  },
+  "targeted_model": {
+    "model": "ministral-3b-2512",
+    "field": "przelew_bankowy.tytul",
+    "calls": 12,
+    "selection": "Every routed real-development receipt with a nonempty rule title of at least three words. Sent only the rule title. Accepted a candidate only if its characters excluding whitespace matched the input.",
+    "baseline_correct": 4,
+    "trial_correct": 3,
+    "new_correct": 0,
+    "lost_correct": 1,
+    "net_false_positives": 1,
+    "policy": "discarded"
+  },
+  "timing": {
+    "seconds": 83.27560379216447,
+    "pdfs": 150,
+    "outputs": 150,
+    "workers": 4,
+    "initial_load": [
+      38.1728515625,
+      35.361328125,
+      30.10791015625
+    ],
+    "final_load": [
+      24.31494140625,
+      32.00439453125,
+      29.349609375
+    ],
+    "exit": 0,
+    "baseline_byte_matches": 150
+  },
+  "organizer_scan_batch": {
+    "workers": 2,
+    "seconds": 144.39191395929083,
+    "conditions": "Shared M1 with concurrent OCR activity, initial uninterrupted 30-PDF run. All 30 scan outputs matched baseline bytes on that uninterrupted run."
+  },
+  "corpus_2_test_scored": false
+}
