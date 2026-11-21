@@ -1,7 +1,9 @@
 """PDF -> (document class, canonical JSON)."""
 
 import os
-from functools import partial
+import sys
+from collections.abc import Callable
+from functools import cache, partial
 from pathlib import Path
 
 from . import appeal, bank_transfer, ocr_extract, power_of_attorney
@@ -13,17 +15,49 @@ from .pdf_text import DEFAULT_OCR_ENGINE, NoReadableTextError, OCRRecognitionErr
 
 
 def process_pdf(
-    pdf_path: Path, force_ocr: bool = False, *, classes: list[DocumentClass] | None = None
+    pdf_path: Path,
+    force_ocr: bool = False,
+    *,
+    classes: list[DocumentClass] | None = None,
+    on_recovery: Callable[[str], None] | None = None,
 ) -> tuple[str | None, dict]:
-    """Class and JSON for one PDF. Any other document gives (None, {}). Raises on a PDF it cannot read."""
+    """Return the class and JSON, using local recovery for a failed keyed organizer document."""
     definitions = classes if classes is not None else load_classes()
+
+    @cache
+    def read(engine: str) -> tuple[list[str], list[int]]:
+        scanned = []
+        pages = read_pages(pdf_path, force_ocr=force_ocr, engine=engine, ocr_pages=scanned)
+        return pages, scanned
+
+    try:
+        return _process(pdf_path, definitions, read)
+    except Exception:  # The PDF, OCR and model libraries raise unrelated per-document errors.
+        if not any(d.enabled and d.profile.keyed for d in definitions):
+            raise
+    result = None, {}
+    message = "Could not read document. Returning empty output."
+    if read.cache_info().currsize:
+        try:
+            result = _process(pdf_path, [d.rules_only for d in definitions if d.profile.keyed], read)
+            message = "Used rules after document processing failed."
+        except Exception:  # noqa: BLE001 - a failed per-document rule retry must yield an empty output
+            message = "Document processing and rule recovery failed. Returning empty output."
+    print(f"{str(pdf_path)!r}: {message}", file=sys.stderr)
+    if on_recovery:
+        on_recovery(message)
+    return result
+
+
+def _process(
+    pdf_path: Path, definitions: list[DocumentClass], read: Callable[[str], tuple[list[str], list[int]]]
+) -> tuple[str | None, dict]:
     selected = os.getenv("KIO_OCR_ENGINE", DEFAULT_OCR_ENGINE)
     engines = ("tesseract-dpi", "rapidocr") if selected == "hybrid" else (selected,)
     readable = False
     for engine in engines:
-        ocr_pages = []
         try:
-            pages = read_pages(pdf_path, force_ocr=force_ocr, engine=engine, ocr_pages=ocr_pages)
+            pages, ocr_pages = read(engine)
         except NoReadableTextError:
             if engine == engines[-1] and not readable:
                 raise

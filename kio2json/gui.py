@@ -149,6 +149,10 @@ def server(input: Inputs, output: Outputs, session: Session):
         result = selected().result
         if result.error:
             return "Nie udało się odczytać dokumentu"
+        if result.used_recovery:
+            if result.label is None:
+                return "Brak wyniku po awaryjnej próbie odczytu regułami"
+            return f"{CLASS_NAMES.get(result.label, result.label)} (reguły awaryjne)"
         if result.label is None:
             return "Dokument poza obsługiwanymi klasami"
         return CLASS_NAMES.get(result.label, result.label.replace("_", " "))

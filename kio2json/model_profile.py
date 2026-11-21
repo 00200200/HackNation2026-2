@@ -13,6 +13,7 @@ class Profile(NamedTuple):
     mode: Mode = "R"
     routing: RoutingPolicy = "rules"
     dual_ocr: bool = False
+    keyed: bool = False
 
 
 class ProfileSettings(BaseSettings):
@@ -26,5 +27,7 @@ class ProfileSettings(BaseSettings):
 
     def profile(self) -> Profile:
         if self.base_url.strip() and self.model.strip() and self.api_key.get_secret_value().strip():
-            return Profile(self.mode, self.routing, self.dual_ocr and (self.mode != "R" or self.routing != "rules"))
+            return Profile(
+                self.mode, self.routing, self.dual_ocr and (self.mode != "R" or self.routing != "rules"), True
+            )
         return Profile()
