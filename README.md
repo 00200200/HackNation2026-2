@@ -183,7 +183,8 @@ document yields an empty file. Custom class directories use the engine chains in
 
 ```
 uv run python -m evals.run --quick            # dev subset, before a push
-uv run python -m evals.run                    # all 60 training cases and the negatives
+uv run python -m evals.run                    # all 60 synthetic training cases and the negatives
+uv run python -m evals.run --organizer-scans  # 30 separately labelled scans
 uv run python -m evals.field_report --errors  # which fields fail, with list items paired inside their parent
 uv run python -m evals.field_report --force-ocr --errors   # ignore the text layer: what OCR costs
 make eval-real HN_REAL_SPLIT=dev              # /Users/domin/hn2-real-eval, or set HN_REAL_CORPUS
@@ -203,7 +204,7 @@ Training mode checks selected files against the organizer inventory committed in
 positive reference needs fields for its expected class. The negative-output target requires zero-byte predictions.
 For a case-level split, put `{"dev": [...], "test": [...]}` in `SPLIT.json` at the corpus root. Each list
 contains case folder names. The default `--split all` scores the whole corpus, including corpora without a split.
-Inspect field errors on dev. Use aggregate scores to evaluate test.
+Inspect field errors on dev. Use aggregate scores to evaluate test. The organizer scan mode validates the committed PDF/reference pairs in `data/uzp/dane/skany` and writes `evals/results/organizer-scans.json`. The synthetic training and scan scores have separate result files.
 
 `evals.run` reports pooled micro F1 and macro F1 by document, class and field path.
 The working definitions are in `evals/metrics.py`. The organizer's formula is UNCONFIRMED.
@@ -234,15 +235,19 @@ current rules, select `KIO_OCR_ENGINE=tesseract-dpi` and run
 
 ## Rules on real documents and organizer scans
 
-These runs used local rules with the three endpoint variables unset. The two local datasets contain real documents and use whole-case splits. Corpus 1 dev has 22 PDFs from 14 cases. Corpus 2 dev has 39 PDFs from 14 cases. The held-out splits remain reserved until a model is selected. The organizer supplied a separate set of 30 labelled scans, ten per target class. For the scan run, the harness received the 30 PDF/reference pairs as one batch with neutral filenames. [Organizer scan set at the measured revision](https://github.com/Urzad-Zamowien-Publicznych/hacknation-2026/tree/0b360a9da4b482a6a280696df6714404e0953505/dane/skany)
+These runs used local rules with the three endpoint variables unset. The two local datasets contain real documents and use whole-case splits. Corpus 1 dev has 22 PDFs from 14 cases. Corpus 2 dev has 39 PDFs from 14 cases. The held-out splits remain reserved until a model is selected. The organizer supplied a separate set of 30 labelled scans, ten per target class. The scan command stages the committed PDF/reference pairs as one batch with neutral filenames. [Organizer scan set at the measured revision](https://github.com/Urzad-Zamowien-Publicznych/hacknation-2026/tree/0b360a9da4b482a6a280696df6714404e0953505/dane/skany)
 
 | Dataset | PDFs | Micro F1 | Macro F1 by class | Appeal | Power of attorney | Transfer | Correct routes (appeal / power / transfer) | Empty negatives | Wall s/PDF |
 |---|---:|---:|---:|---:|---:|---:|---|---:|---:|
 | Local corpus 1, dev | 22 | 0.6973 | 0.6628 | 0.7056 | 0.7273 | 0.5556 | 8/8 / 3/3 / 2/4 | 7/7 | 6.69 |
 | Local corpus 2, dev | 39 | 0.5248 | 0.3619 | 0.6008 | 0.3333 | 0.1515 | 12/13 / 4/5 / 1/10 | 11/11 | 3.61 |
-| Organizer scans | 30 | 0.5633 | 0.4711 | 0.6123 | 0.6065 | 0.1944 | 9/10 / 10/10 / 2/10 | n/a | 5.69 |
+| Organizer scans | 30 | 0.5633 | 0.4711 | 0.6123 | 0.6065 | 0.1944 | 9/10 / 10/10 / 2/10 | n/a | 4.35 |
 
-Micro F1 pools field matches across documents. Macro F1 averages the three class scores. The routing columns count correctly classified documents in each target class. The negatives column counts zero-byte outputs. Timing includes OCR and extraction on a shared host. [Aggregate reports, run commits and timing method](evals/results/integration-rules.json)
+Micro F1 pools field matches across documents. Macro F1 averages the three class scores. The routing columns count correctly classified documents in each target class. The negatives column counts zero-byte outputs. Timing includes OCR and extraction on a shared host. [Real development reports](evals/results/integration-rules.json) · [Organizer scan report](evals/results/organizer-scans.json)
+
+The organizer allows 45 minutes for its 150-PDF batch, an average budget of 18 seconds per PDF.
+The reported times cover these local datasets. OCR runs locally. Under the updated rules, a remote
+OCR service would count toward model parameters. [Organizer evaluation rules](data/uzp/README.md)
 
 ## OCR on real development documents
 
@@ -296,7 +301,7 @@ rules. [OCR results](evals/results/ocr-engines.json)
   is null. OCR also supports fully masked fields. Digit repairs apply only to OCR text and require a
   single checksum-valid candidate. A number printed in a native text layer keeps its printed digits.
 - Grant extraction handles numbered or bulleted declarations and current appointments in notarial deeds.
-  A signer's name needs an identifiable owner and evidence of signing. A labelled nominative can resolve
+  A signer's name needs an identifiable owner and evidence of signing. The organizer requests nominative forms for attorney and individual grantor names. A labelled nominative can resolve
   an inflected appointee when the identity is unambiguous. Unreadable signatures and ambiguous identities
   can leave fields empty.
 - UNCONFIRMED: what "empty JSON" means for unrelated documents. We write an empty file, as the

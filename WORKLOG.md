@@ -20,15 +20,15 @@ These runs used local rules with the three endpoint variables unset. The two loc
 |---|---:|---:|---:|---:|---:|---:|---|---:|---:|
 | Local corpus 1, dev | 22 | 0.6973 | 0.6628 | 0.7056 | 0.7273 | 0.5556 | 8/8 / 3/3 / 2/4 | 7/7 | 6.69 |
 | Local corpus 2, dev | 39 | 0.5248 | 0.3619 | 0.6008 | 0.3333 | 0.1515 | 12/13 / 4/5 / 1/10 | 11/11 | 3.61 |
-| Organizer scans | 30 | 0.5633 | 0.4711 | 0.6123 | 0.6065 | 0.1944 | 9/10 / 10/10 / 2/10 | n/a | 5.69 |
+| Organizer scans | 30 | 0.5633 | 0.4711 | 0.6123 | 0.6065 | 0.1944 | 9/10 / 10/10 / 2/10 | n/a | 4.35 |
 
-[Rules-only aggregate measurements](evals/results/integration-rules.json)
+[Real dev aggregates](evals/results/integration-rules.json) · [Organizer scan aggregate](evals/results/organizer-scans.json)
 
 ## Next
 
 | Item | Owner |
 |---|---|
-| Select a smaller open-weight model and verify it on the intended EU/EEA endpoint using dev | Open |
+| Evaluate the planned Mistral API model (at most 8B parameters) on dev | Open |
 | Score the held-out splits after selecting and freezing the final profile | Open |
 | Improve receipt routing and recover damaged party names on development inputs | Open |
 | Confirm the organizer’s F1 formula and Stage II weights with UZP | Open |
@@ -84,4 +84,4 @@ These runs used local rules with the three endpoint variables unset. The two loc
 - 21.11.2026 · Codex · Merged OCR page provenance through `5c4eff2` into the appeal fixes. Verified 155 invented differential inputs and 175 native PDFs against integration base `3210643`, with each intentional correction recorded by input and field. All 196 training PDFs retained the same routing, paths and bytes, and all 873 tests passed.
 
 - 21.11.2026 · Merged the OCR integration at `e051dfa` and selected model-first extraction with rules filling gaps and model routing on rule rejection. On 22 dev PDFs, DeepSeek Flash with two OCR readings scored 0.6951 micro-F1 against 0.4356 for rules.
-- 21.11.2026 · Codex · Integrated PRs #20, #18 and #22, verified training byte parity and measured local rules on both dev corpora and the organizer scans at `d177cbc7`.
+- 21.11.2026 · Codex · Integrated PRs #20, #18 and #22, verified training byte parity and measured both dev corpora at `d177cbc7`. Refreshed organizer revision `0b360a9` in `cf98ef3` and verified synthetic training and the dedicated scan evaluation at `8d79e66`.
