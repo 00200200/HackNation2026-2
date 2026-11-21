@@ -8,10 +8,12 @@ The extraction path is a rule-based baseline. It uses no language model yet.
 
 ## Run
 
-You need Python 3.13+. Scanned PDFs also need the Tesseract binary with Polish data on `PATH`
-(`brew install tesseract tesseract-lang`, `apt install tesseract-ocr tesseract-ocr-pol`, or the
-UB Mannheim installer on Windows). Without Tesseract or its Polish data, PDFs that have a text
-layer with readable content still work. The CLI reports which scans failed and why.
+From the repository root, use 64-bit CPython 3.13 and a virtual environment. pip installs
+the Tesseract library from the tesserocr wheel. While building the local language-data wheel,
+pip downloads the Polish and English fast models (8.9 MB combined) from a pinned upstream
+revision and verifies their SHA-256 hashes. Installation needs internet access. Once installed,
+the CLI reads scans offline. The Windows x64, Linux x64 and macOS wheels are listed on PyPI.
+[Wheel files](https://pypi.org/project/tesserocr/2.13.0/#files)
 
 ```
 pip install -r requirements.txt
@@ -27,10 +29,14 @@ the run exit with status 1 after processing the remaining PDFs. This includes re
 ## How it works
 
 1. `kio2json/pdf_text.py` reads the first three pages with pdfplumber. Pages with no text or
-   only page numbers go through Polish Tesseract at 300 dpi.
+   only page numbers go through Polish Tesseract at 300 dpi. If an address appears to have lost
+   its `@`, an English single-word pass rereads that crop. The extractor accepts the separator
+   only when the rest of both readings agrees. Call `read_pages(path, word_boxes=boxes)` with
+   an empty list to collect raw words and their rectangles alongside the page strings. Coordinates
+   are PDF points from the top left, with one-based page numbers.
 2. `kio2json/classify.py` uses document content. It checks appeal and power-of-attorney
-   headings. For a transfer it looks for two distinct accounts and evidence of confirmation
-   or execution. An invoice asking for payment gets an empty file.
+   headings. For a transfer it looks for evidence of confirmation or execution together with
+   two accounts, or the masked-account evidence described below. An invoice gets an empty file.
 3. `kio2json/appeal.py`, `power_of_attorney.py` and `bank_transfer.py` extract the fields with
    regular expressions and line-level layout rules.
 
@@ -65,15 +71,16 @@ of how the rules generalize. The hidden test set holds real cases, and this is n
 
 - The rules follow the two layout families in the training data. `input/case1` holds the
   organizer's one real, redacted, scanned appeal, which has a different layout. For that file
-  the baseline finds the class, filing date, place, BZP number and title. OCR puts text from the
-  contracting authority in the appellant block and leaves the challenged action empty. The
-  organizer supplies no reference JSON for this file.
-- Through OCR the rules lose fields. Tesseract misreads characters inside identifiers (`7` as
-  `/` in account numbers, `@` in e-mail addresses, `sp. z o.o.` as `sp. z 0.0.`) and drops the
-  dotted signature lines that the power-of-attorney rules use to find signers.
-  `evals.field_report --force-ocr` shows the affected fields.
-- Transfer confirmations with a masked account can be rejected. Attorney names retain the grammatical
-  case used in the document.
+  the extractor finds the class, filing date, place, procurement reference, BZP number and title.
+  Both party lists and the challenged action are empty. The organizer supplies no reference JSON
+  for this file.
+- OCR can still lose accented letters, split a notice number or reorder columns. Scans with a
+  noisy but nonempty text layer follow the native-text path. A Polish account containing OCR
+  glyphs is repaired only if a unique candidate passes the IBAN mod-97 check. A fully printed
+  digit string is retained as read, including when the printed checksum is invalid. Ambiguous
+  signatures and e-mail addresses can remain missing.
+- A masked-account receipt needs a confirmation heading, both payment roles and a dated amount.
+  Attorney names retain the grammatical case used in the document.
 - Nothing is configuration-driven yet: classes, fields and patterns live in Python modules.
 - UNCONFIRMED: what "empty JSON" means for unrelated documents. We write an empty file, as the
   organizer README words it.
