@@ -8,7 +8,7 @@ and keep working on what does not depend on it.
 
 Odwołania2json (UZP): classify the PDFs of a KIO appeal case by content and write one JSON per PDF in the
 organizer's schema. Facts, sources and open questions: `docs/task/BRIEF.md` (FAQ: `docs/task/FAQ.md`, details PDF:
-`docs/task/odwolania2json-szczegoly.pdf`). Organizer data and schemas: `make data` → `data/uzp/` (not committed).
+`docs/task/odwolania2json-szczegoly.pdf`). Organizer data and schemas: `data/uzp/` (a committed copy of their repo; `make data` refreshes it).
 Stage I is 100% F1 on a hidden set of real cases, so every extraction change goes through the eval.
 
 ## Worklog

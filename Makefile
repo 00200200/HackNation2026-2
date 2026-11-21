@@ -6,10 +6,15 @@ help: ## List targets
 install: ## Install Python dependencies
 	uv sync
 
-data: ## Clone or update the organizer repo (training data, schemas) into data/uzp
-	@if [ -d data/uzp/.git ]; then git -C data/uzp pull --ff-only; \
-	else git clone --depth 1 https://github.com/Urzad-Zamowien-Publicznych/hacknation-2026 data/uzp; fi
-	@git -C data/uzp log --oneline -n 1
+UZP_REPO := https://github.com/Urzad-Zamowien-Publicznych/hacknation-2026
+UZP_CACHE := .cache/uzp
+
+data: ## Refresh data/uzp from the organizer repo (review git diff data/uzp, then commit)
+	@if [ -d $(UZP_CACHE)/.git ]; then git -C $(UZP_CACHE) pull -q --ff-only; \
+	else git clone -q --depth 1 $(UZP_REPO) $(UZP_CACHE); fi
+	rsync -a --delete --exclude .git --exclude UPSTREAM $(UZP_CACHE)/ data/uzp/
+	git -C $(UZP_CACHE) log -n 1 --format='%H %cI' > data/uzp/UPSTREAM
+	@cat data/uzp/UPSTREAM; git status --short data/uzp | head -20
 
 requirements: ## Regenerate requirements.txt from uv.lock (the jury installs with pip)
 	uv export --quiet --frozen --no-hashes --no-dev --no-emit-project -o requirements.txt

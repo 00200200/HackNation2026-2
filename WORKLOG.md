@@ -4,7 +4,8 @@ Shared state of the project. Rules: `CLAUDE.md` → Worklog.
 
 ## Now
 
-- Task brief, FAQ and details PDF in `docs/task/`; organizer data via `make data`.
+- Task brief, FAQ and details PDF in `docs/task/`; organizer repo copied into `data/uzp` (`make data` refreshes);
+  template example in `input/case1`.
 - Eval harness (`evals/`, field-level F1 on the training cases, working definition) with tests. No app yet:
   the eval's default command (`uv run python -m odwolania2json`) does not exist.
 - Claude Code setup: skills `hacknation-judging`, `odwolania2json-eval`, `build`, `verify`, `humanizer`;
@@ -30,4 +31,5 @@ None yet.
 
 ## Log
 
-- 21.11.2026 · Claude · brief, eval harness, judge/eval skills, pre-push hook · uncommitted
+- 21.11.2026 · Claude · brief, eval harness, judge/eval skills, pre-push hook · f6db304
+- 21.11.2026 · Claude · stricter F1 normalisation (types, formats), invented test fixture, organizer data copied into the repo (UZP e8b7a67)

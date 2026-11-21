@@ -8,12 +8,12 @@ from evals.run import DATA, GOLD_FOR, load_cases
 
 GOLD = {
     "przelew_bankowy": {
-        "data_operacji": "2026-03-21",
-        "kwota": 200.0,
-        "na_rachunek": "68438223049992295262834736",
+        "data_operacji": "2030-01-15",
+        "kwota": 123.45,
+        "na_rachunek": "11222233334444555566667777",
         "numer_transakcji": None,
-        "tytul": "Wpis od odwołania",
-        "z_rachunku": "05470680287581539721455024",
+        "tytul": "Wpis testowy",
+        "z_rachunku": "99888877776666555544443333",
     }
 }
 
@@ -25,11 +25,20 @@ def test_perfect_prediction_scores_one():
 def test_normalisation_ignores_spacing_case_and_number_format():
     pred = json.loads(json.dumps(GOLD))
     pred["przelew_bankowy"].update(
-        kwota=200, na_rachunek="68 4382 2304 9992 2952 6283 4736", tytul=" WPIS OD  ODWOŁANIA "
+        kwota=123.450, na_rachunek="11 2222 3333 4444 5555 6666 7777", tytul=" WPIS  TESTOWY "
     )
     assert compare(pred, GOLD).f1 == 1.0
-    assert normalise(10000.00) == normalise(10000) == "10000"
-    assert normalise(85120133547) == normalise("85120133547")
+    assert normalise(10000.00) == normalise(10000) == "num:10000"
+    assert normalise(85120133547, "pesel") == normalise("851 201-33547", "pesel")
+
+
+def test_types_and_formats_are_not_normalised_away():
+    assert normalise("3") != normalise(3)
+    assert normalise("2030-01-15") != normalise("20300115")
+    assert normalise("123456-2030", "numer_ted") != normalise("1234562030", "numer_ted")
+    pred = json.loads(json.dumps(GOLD))
+    pred["przelew_bankowy"]["data_operacji"] = "15.01.2030"
+    assert compare(pred, GOLD).f1 < 1.0
 
 
 def test_wrong_and_hallucinated_values_cost_precision_and_recall():

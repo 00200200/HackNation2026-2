@@ -11,8 +11,9 @@ is judged by this eval, not by eyeballing one document.
 
 ## Data
 
-`make data` clones or updates https://github.com/Urzad-Zamowien-Publicznych/hacknation-2026 into `data/uzp`
-(ignored by git; the organizer was still committing on 21.11.2026, so update before a full run and note the commit).
+`data/uzp` is a committed copy of https://github.com/Urzad-Zamowien-Publicznych/hacknation-2026 (source commit in
+`data/uzp/UPSTREAM`). The organizer was still fixing gold files on 21.11.2026: run `make data` before a full run,
+check `git diff data/uzp`, commit it, and compare F1 only between runs on the same data commit.
 
 - `data/uzp/dane/przyklad_01..60/`: `odwolanie.pdf`, `pelnomocnictwo.pdf`, `potwierdzenie_przelewu.pdf` and gold
   `odwolanie.json`, `pelnomocnictwo.json`, `przelew.json`. The training cases are synthetic; the test set is real
@@ -46,8 +47,9 @@ The organizer has not published the formula: **UNCONFIRMED**, ask at the UZP sta
 this section when they answer. Working definition:
 
 - Each JSON is flattened to `(path, value)` leaf pairs; list indices become `[]`, so lists compare as multisets.
-- Values are normalised (whitespace, case, numbers `10000.00 == 10000`, digit strings without spaces/dashes).
-  Format rules from the schema comments (ISO dates, `YYYY/BZP########`, TED `NNNNNN-YYYY`, `czynnosc_opis` exactly
+- Values are normalised: whitespace and case; numbers by value (`10000.00 == 10000`); identifier fields (`krs`,
+  `nip`, `regon`, `pesel`, `na_rachunek`, `z_rachunku`) as digits only, string or number. Types (`"3" != 3`) and
+  format rules from the schema comments (ISO dates, `YYYY/BZP########`, TED `NNNNNN-YYYY`, `czynnosc_opis` exactly
   as in the dictionary) are **not** normalised away: the product must emit them.
 - `null` leaves count: null where gold is null is a hit; an invented value is a FP and a FN. Never fill a field the
   document does not state (FAQ 6). `micro_f1_non_null` shows the variant that ignores gold-null fields.

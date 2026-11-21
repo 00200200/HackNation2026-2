@@ -5,9 +5,10 @@ Task of HackNation 2026 set by Urząd Zamówień Publicznych (UZP). Main prize: 
 Sources (read 21.11.2026):
 - Task details PDF: `docs/task/odwolania2json-szczegoly.pdf` (from hacknation.pl/zadania).
 - FAQ v1.0: `docs/task/FAQ.md` (Polish original, pasted by the team).
-- Organizer repo: https://github.com/Urzad-Zamowien-Publicznych/hacknation-2026 (local clone in `data/uzp`,
-  `make data`). The repo was still changing on 21.11.2026 (last commit read: `de135d2`, 12:10 UTC); re-read
-  `data/uzp/README.md` and `data/uzp/oczekiwane-json/` after every `make data`.
+- Organizer repo: https://github.com/Urzad-Zamowien-Publicznych/hacknation-2026, copied into `data/uzp` (without
+  `.git`; source commit in `data/uzp/UPSTREAM`). The organizer was still committing on 21.11.2026: `make data`
+  refreshes the copy, then review `git diff data/uzp` (gold fixes change the eval) and commit it.
+- Template example `szablon-aplikacja/input/case1` (one appeal, one negative) is also in our `input/case1`.
 
 Where the sources disagree, the organizer repo README is the most detailed and most recent; this is noted per item.
 

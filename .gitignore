@@ -227,9 +227,13 @@ __marimo__/
 CLAUDE.local.md
 !.claude/skills/build/
 
-# Organizer data (make data) and local runs
-data/
+
+# Local runs (input/case1 is the organizer template example)
 input/*
-output/*
 !input/.gitkeep
+!input/case1/
+output/*
 !output/.gitkeep
+
+# make data cache
+.cache/

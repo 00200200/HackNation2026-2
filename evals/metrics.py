@@ -5,7 +5,9 @@ The organizer has not published how F1 is computed (UNCONFIRMED). Working defini
   as multisets and item order does not matter.
 - `null` leaves count as pairs: predicting null where gold has null is a hit, a value where gold has null is a
   false positive plus a false negative. `micro_f1_non_null` reports the variant that ignores gold-null fields.
-- Values are normalised (whitespace, case, number formatting) before comparison.
+- Values are normalised before comparison: whitespace and case; numbers by value (`200 == 200.0`); identifier
+  fields (KRS, NIP, REGON, PESEL, account numbers) as digits only. Types and formats are not normalised away:
+  `"3" != 3`, `2026-03-21 != 20260321`, `123456-2026 != 1234562026`.
 - A negative document has an empty gold file: every predicted pair is a false positive.
 - A missing or unreadable prediction scores as all gold pairs missed.
 """
@@ -49,17 +51,23 @@ def doc_class(data: dict | None) -> str | None:
     return "unknown"
 
 
-def normalise(value: object) -> str:
+# Identifier fields: compared as digits only, whatever the type (the schema example has PESEL as a number,
+# the gold files as a string) and however the document spaces or dashes them.
+IDENTIFIER_KEYS = {"krs", "nip", "regon", "pesel", "na_rachunek", "z_rachunku"}
+
+
+def normalise(value: object, key: str = "") -> str:
+    """Comparable form of a leaf. Types stay distinct (`"3"` != `3`), and formats such as ISO dates or TED numbers
+    are kept as written; only whitespace and case are ignored, plus spacing inside identifier fields."""
     if value is None:
         return "null"
+    if key in IDENTIFIER_KEYS and isinstance(value, int | str) and re.fullmatch(r"[\d\s-]+", str(value).strip()):
+        return "id:" + re.sub(r"[\s-]", "", str(value))
     if isinstance(value, bool):
-        return str(value).lower()
+        return f"bool:{value}".lower()
     if isinstance(value, int | float):
-        return f"{float(value):.2f}".rstrip("0").rstrip(".")
-    text = re.sub(r"\s+", " ", str(value)).strip().casefold()
-    if re.fullmatch(r"[\d\s-]+", text):  # account numbers, NIP, PESEL written with spaces or dashes
-        text = re.sub(r"[\s-]", "", text)
-    return text
+        return "num:" + f"{float(value):.2f}".rstrip("0").rstrip(".")
+    return re.sub(r"\s+", " ", str(value)).strip().casefold()
 
 
 def flatten(data: object, path: str = "") -> Counter:
@@ -71,7 +79,7 @@ def flatten(data: object, path: str = "") -> Counter:
         for item in data:
             pairs += flatten(item, f"{path}[]")
     else:
-        pairs[(path, normalise(data))] += 1
+        pairs[(path, normalise(data, path.rsplit(".", 1)[-1].removesuffix("[]")))] += 1
     return pairs
 
 
