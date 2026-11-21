@@ -22,9 +22,14 @@ Shared state of the project. Rules: `CLAUDE.md` → Worklog.
 sight of these documents, cases 53-60 included, so this is a regression check and the 51-60 figure is not an
 unseen-case estimate for this baseline.
 
-21.11.2026, local real corpus at `946a550` (`evals/results/corpus-latest.json`), 37 PDFs in 20 cases.
-Micro F1 was 0.403. Macro F1 was 0.333 by document, 0.368 across all three target classes and 0.398 by field.
-All PDFs had outputs and every negative was empty. Classification accuracy on positive documents was 0.778.
+21.11.2026, local real corpus. The all-corpus report is in commit `00626a5`. Both splits ran at `f93b908`.
+All three target classes entered each class average. Every PDF had an output and every negative was empty.
+
+| Split | Cases | PDFs | Micro F1 | Macro by document | Macro by class | Macro by field | Positive classification accuracy |
+|---|---:|---:|---:|---:|---:|---:|---:|
+| All | 20 | 37 | 0.4025 | 0.3327 | 0.3681 | 0.3978 | 0.7778 |
+| Dev | 13 | 20 | 0.4352 | 0.3715 | 0.4189 | 0.4034 | 0.7857 |
+| Test | 7 | 17 | 0.3675 | 0.2909 | 0.3065 | 0.3940 | 0.7692 |
 
 ## Next
 
@@ -57,4 +62,4 @@ All PDFs had outputs and every negative was empty. Classification accuracy on po
 - 21.11.2026 · Claude · stricter F1 normalisation (types, formats), invented test fixture, organizer data copied into the repo (UZP e8b7a67)
 - 21.11.2026 · Claude · rule-based baseline `kio2json`, field report, data refresh to UZP 7590db8 (reason 6 description is now `Odpowiedzi/wyjaśnienia do SWZ`); full eval `micro_f1` 1.000 on training data
 - 21.11.2026 · Codex · fixed OCR failure reporting, payment and party roles, first-charge dates and field-report matching. Added regressions with invented fixtures. Extraction fixes in `0ecd41c`.
-- 21.11.2026 · Codex · added corpus scoring and macro F1, then measured the 37-document local corpus at `946a550`.
+- 21.11.2026 · Codex · added corpus scoring and macro F1, then measured the whole-case dev and test splits at `f93b908`.
