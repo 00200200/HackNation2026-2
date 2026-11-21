@@ -29,6 +29,9 @@ services:
   gui:
     <<: *jury
     command: ["uvicorn", "kio2json.jury_web:app", "--host", "0.0.0.0", "--port", "8000"]
+    # Allow time for OCR on a jury laptop when uploading scanned appeals.
+    environment:
+      KIO_WEB_DOC_TIMEOUT_S: "300"
     ports:
       - "127.0.0.1:8000:8000"
     volumes:
