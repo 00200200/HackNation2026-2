@@ -2,6 +2,7 @@
 #    uv export --frozen --no-hashes --no-dev --no-emit-project -o requirements.txt
 ./packaging/polish_ocr_data
 aiofile==3.12.3
+annotated-doc==0.0.7
 annotated-types==0.8.0
 anthropic==2.12.0
 anyio==4.16.0
@@ -18,7 +19,7 @@ certifi==2026.11.20
 cffi==2.1.1 ; platform_python_implementation != 'PyPy'
 charset-normalizer==3.5.2
 click==8.5.1
-colorama==0.4.6 ; platform_system == 'Windows' or sys_platform == 'win32'
+colorama==0.4.6 ; sys_platform == 'win32'
 colorlog==6.12.0
 cryptography==50.0.2
 distro==1.9.0
@@ -27,6 +28,7 @@ docstring-parser==0.18.0
 email-validator==2.4.0
 exceptiongroup==1.3.2
 executing==2.3.0
+fastapi==0.165.0
 fastmcp-slim==4.2.4
 flatbuffers==25.12.19
 genai-prices==0.2.5
@@ -104,7 +106,7 @@ python-multipart==0.0.34
 python-stdnum==2.2
 pywin32==312 ; sys_platform == 'win32'
 pyyaml==6.0.4
-questionary==2.1.1 ; platform_system != 'Emscripten'
+questionary==2.1.1 ; sys_platform != 'emscripten'
 rapidfuzz==3.14.6
 rapidocr==3.10.0
 referencing==0.37.0
@@ -129,7 +131,7 @@ typing-extensions==4.16.0
 typing-inspection==0.4.5
 urllib3==2.8.0
 uvicorn==0.54.0
-watchfiles==1.3.0 ; platform_system != 'Emscripten'
+watchfiles==1.3.0 ; sys_platform != 'emscripten'
 wcwidth==0.9.4
 websockets==17.4
 wrapt==2.5.2
