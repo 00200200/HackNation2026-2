@@ -3,7 +3,7 @@ from pathlib import Path
 
 import pytest
 
-from evals.metrics import NEGATIVE, compare, doc_class, flatten, load_json, normalise, score_doc, summarise
+from evals.metrics import NEGATIVE, compare, doc_class, flatten, load_prediction, normalise, score_doc, summarise
 from evals.run import DATA, GOLD_FOR, load_cases
 
 GOLD = {
@@ -60,7 +60,7 @@ def test_lists_are_order_insensitive():
 def test_negative_document_must_be_empty(tmp_path: Path):
     empty = tmp_path / "neg.json"
     empty.write_text("")
-    assert load_json(empty) == {}
+    assert load_prediction(empty) == ({}, True)
     assert doc_class({}) == NEGATIVE
     ok = score_doc("negatywne", "x.pdf", empty, {})
     assert (ok.counts.tp, ok.counts.fp, ok.counts.fn) == (0, 0, 0)
@@ -91,3 +91,72 @@ def test_gold_outputs_score_one_on_training_data(tmp_path: Path):
     assert summary["micro_f1"] == 1.0
     assert summary["negatives_empty"] == summary["classification_accuracy"] == 1.0
     assert set(GOLD_FOR) <= {name for items in cases.values() for name in items}
+
+
+def test_macro_f1_units_and_document_boundaries(tmp_path):
+    appeal = {"OdwolanieKIO": {"tags": [1, 1, 2]}}
+    samples = [
+        (appeal, appeal),
+        ({"OdwolanieKIO": {"tags": [1]}}, None),
+        ({"mocodawca": "left"}, {"mocodawca": "right"}),
+        ({"przelew_bankowy": 5}, {"przelew_bankowy": 5}),
+        ({}, {"extra": True}),
+        ({}, {}),
+    ]
+    docs = []
+    for i, (gold, pred) in enumerate(samples):
+        path = tmp_path / f"{i}.json"
+        if pred is not None:
+            path.write_text(json.dumps(pred))
+        docs.append(score_doc("invented", f"{i}.pdf", path, gold))
+
+    scores = summarise(docs)
+    assert scores["micro_f1"] == pytest.approx(8 / 12)
+    assert scores["macro_f1_documents"] == pytest.approx(2 / 5)
+    assert scores["macro_f1_classes"] == pytest.approx((6 / 7 + 1) / 3)
+    assert scores["macro_f1_fields"] == pytest.approx((6 / 7 + 1) / 4)
+
+
+def test_empty_macro_averages():
+    scores = summarise([])
+    assert all(scores[key] is None for key in ("micro_f1", "macro_f1_documents", "macro_f1_classes", "macro_f1_fields"))
+
+
+def test_class_macro_counts_predicted_only_class_and_misrouting(tmp_path):
+    out = tmp_path / "doc.json"
+    out.write_text(json.dumps({"mocodawca": "invented"}))
+    docs = [
+        score_doc("one", "right.pdf", out, {"mocodawca": "invented"}),
+        score_doc("one", "wrong.pdf", out, {"OdwolanieKIO": "missed"}),
+    ]
+    out.write_text(json.dumps({"przelew_bankowy": "spurious"}))
+    docs.append(score_doc("one", "unrelated.pdf", out, {}))
+    scores = summarise(docs)
+    assert scores["per_class_f1"] == {"odwolanie": 0, "pelnomocnictwo": 2 / 3, "przelew": 0}
+    assert scores["macro_f1_class_count"] == 3
+    assert scores["macro_f1_classes"] == pytest.approx(2 / 9)
+
+
+def test_invalid_utf8_prediction_is_incomplete_and_misses_reference(tmp_path):
+    output = tmp_path / "invented.json"
+    output.write_bytes(bytes([255]))
+    doc = score_doc("invented", "one.pdf", output, {"mocodawca": {"a": 1, "b": 2}})
+    summary = summarise([doc])
+    assert summary["outputs_complete"] == 0
+    assert summary["counts"] == {"tp": 0, "fp": 0, "fn": 2}
+
+
+def test_large_integer_prediction_scores_a_mismatch(tmp_path):
+    prediction = tmp_path / "number.json"
+    prediction.write_text(json.dumps({"amount": 10**399 + 1}))
+    result = score_doc("invented", "doc.pdf", prediction, {"amount": 10**399})
+    assert (result.counts.tp, result.counts.fp, result.counts.fn) == (0, 1, 1)
+
+
+def test_negative_output_contract_requires_zero_bytes(tmp_path):
+    prediction = tmp_path / "negative.json"
+    for contents, expected in [(b"{}", 0), (b"", 1)]:
+        prediction.write_bytes(contents)
+        detail = summarise([score_doc("invented", "unrelated.pdf", prediction, {})])
+        assert detail["outputs_complete"] == 1
+        assert detail["negatives_empty"] == expected

@@ -91,16 +91,21 @@
 
 % ---------------------------------------------------------------- left column: in progress
 \node[planned=5.2cm, anchor=east] (ocr) at ($(engines.west |- text)+(-12mm,0)$)
-  {\textbf{In progress: OCR engine}\\[2pt] a pip-installable engine chosen\\ by measurement, so scans work\\
-   without a separate install};
+  {\textbf{In review: OCR from pip}\\[2pt] an engine installed with the\\ requirements, so scans work\\
+   without a separate install (PR 12)};
 
-\node[planned=5.2cm] (config) at (ocr |- classify)
-  {\textbf{In progress: classes as config}\\[2pt] \fname{config/classes/*}: routing cues,\\ fields, types, engine;\\
+\node[box=5.2cm] (config) at (ocr |- classify)
+  {\textbf{Classes as configuration}\\[2pt] \fname{config/classes/*.toml}: router,\\ fields, types, engines;\\
    a new class needs no code};
 
 \node[planned=5.2cm] (llm) at (ocr |- poa)
-  {\textbf{In progress: model engine}\\[2pt] open-weight model over an EU API\\ for layouts the rules do not know;\\
-   every value needs a quote\\ from the page};
+  {\textbf{Opt-in: model engine}\\[2pt] open-weight model over an EU API\\ for layouts the rules do not know;\\
+   every value needs a quote from\\ the page; off without an API key};
+
+\node[box=4.9cm, draw=ink, fill=white] (gui) at (failure |- input)
+  {\textbf{GUI and start scripts}\\[2pt] \fname{start.bat}, \fname{start.sh}, \fname{kio2json.gui}:\\
+   page next to JSON, results as .zip};
+\draw[->, line width=0.7pt, draw=ink] (gui) -- (input);
 
 % ---------------------------------------------------------------- arrows
 \draw[arrow] (input) -- (text);
@@ -121,7 +126,7 @@
 \draw[failarrow] (failure.east) -- ++(7mm,0) |- (empty.east);
 
 \draw[plannedarrow] (ocr) -- (text);
-\draw[plannedarrow] (config) -- (classify);
+\draw[arrow] (config) -- (classify);
 \draw[plannedarrow] (llm.east) -- (llm.east -| engines.west);
 \draw[plannedarrow] (config.south) -- (llm.north);
 
@@ -129,13 +134,13 @@
 \node[font=\sffamily\bfseries\large, anchor=south west] (ttl) at ($(ocr.west |- input.north)+(0,9mm)$)
   {Odwołania2json: from a case folder of PDFs to one JSON per document};
 \node[note, anchor=north west] at ($(ttl.south west)+(0,-0.5mm)$)
-  {State of branch \texttt{baseline/rule-based-extraction} on 21 November 2026.
-   Rules only: no language model is in the path yet.};
+  {State of the integration branch \texttt{baseline/rule-based-extraction} on 21 November 2026.
+   The three organizer classes run on rules; the model engine is opt-in and not measured yet.};
 
 \node[note, anchor=north west] at ($(ocr.west |- eval.south)+(0,-6mm)$)
   {\tikz[baseline=-0.6ex]{\draw[draw=flow, fill=flowfill, rounded corners=1.5pt] (0,-0.12) rectangle (0.42,0.12);}\ \ implemented step\qquad
    \tikz[baseline=-0.6ex]{\draw[draw=ok, fill=okfill, rounded corners=1.5pt] (0,-0.12) rectangle (0.42,0.12);}\ \ files in and out\qquad
    \tikz[baseline=-0.6ex]{\draw[draw=warn, fill=warnfill, rounded corners=1.5pt] (0,-0.12) rectangle (0.42,0.12);}\ \ rejected or failed\qquad
-   \tikz[baseline=-0.6ex]{\draw[draw=plan, fill=planfill, dashed, rounded corners=1.5pt] (0,-0.12) rectangle (0.42,0.12);}\ \ being built on other branches, not merged};
+   \tikz[baseline=-0.6ex]{\draw[draw=plan, fill=planfill, dashed, rounded corners=1.5pt] (0,-0.12) rectangle (0.42,0.12);}\ \ not in the default path yet: in review, or opt-in};
 \end{tikzpicture}
 \end{document}
