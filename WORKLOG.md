@@ -12,6 +12,8 @@ The opt-in small-model profile uses Mistral’s regional API, compact source spa
 
 ## Last eval
 
+The measured Ministral 3B profile uses the integrated rules, evidence-gated routing, selective native gap filling and first-charge verification. Against the rules at `eabbb31`, it raised strict micro F1 on the 91-PDF development pool from .5858 to .7146. A fresh 150-PDF CLI run took 335.64 seconds and scored .7208 micro F1 on its 91-PDF development subset. All 196 organizer training outputs matched the rules byte for byte in keyed and keyless runs. [Per-field results and timing](evals/results/small-model.json)
+
 The full synthetic run matched 196/196 CLI outputs against the baseline by path, class and bytes,
 including 16 empty negatives. The field report matched all 2,316 fields. Training micro F1 and the
 cases 51–60 regression score were both 1.000. [Full training run](evals/results/latest.json)
@@ -30,8 +32,8 @@ These runs used local rules with the three endpoint variables unset. The two loc
 
 | Item | Owner |
 |---|---|
-| Evaluate the planned Mistral API model (at most 8B parameters) on dev | Open |
-| Score the held-out splits after selecting and freezing the final profile | Open |
+| Obtain an EU/EEA-only processing commitment for Mistral or deploy the same weights within the EEA | Deployment |
+| Score corpus 2 test once after the class rules and small-model profile are integrated | Coordinator |
 | Improve receipt routing and recover damaged party names on development inputs | Open |
 | Confirm the organizer’s F1 formula and Stage II weights with UZP | Open |
 
