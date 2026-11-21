@@ -85,3 +85,5 @@ These runs used local rules with the three endpoint variables unset. The two loc
 
 - 21.11.2026 · Merged the OCR integration at `e051dfa` and selected model-first extraction with rules filling gaps and model routing on rule rejection. On 22 dev PDFs, DeepSeek Flash with two OCR readings scored 0.6951 micro-F1 against 0.4356 for rules.
 - 21.11.2026 · Codex · Integrated PRs #20, #18 and #22, verified training byte parity and measured both dev corpora at `d177cbc7`. Refreshed organizer revision `0b360a9` in `cf98ef3` and verified synthetic training and the dedicated scan evaluation at `8d79e66`.
+
+- 21.11.2026 · Codex · Recovered officers, multiple appointments and register digits on scanned grants, and named signers from embedded certificates on real grants. All 10 organizer grants matched exactly in rules-only mode.

@@ -300,10 +300,11 @@ rules. [OCR results](evals/results/ocr-engines.json)
   passes the Polish IBAN checksum, and the confirmation supplies the amount and date. The masked number
   is null. OCR also supports fully masked fields. Digit repairs apply only to OCR text and require a
   single checksum-valid candidate. A number printed in a native text layer keeps its printed digits.
-- Grant extraction handles numbered or bulleted declarations and current appointments in notarial deeds.
-  A signer's name needs an identifiable owner and evidence of signing. The organizer requests nominative forms for attorney and individual grantor names. A labelled nominative can resolve
-  an inflected appointee when the identity is unambiguous. Unreadable signatures and ambiguous identities
-  can leave fields empty.
+- Grant extraction reads numbered and coordinated appointments, officers in representation clauses,
+  and digital approval signatures. Where a name is inflected, rules use a compatible printed form
+  or a unique case- and gender-compatible personal-name reading from Morfeusz2. Ambiguous readings
+  retain the printed spelling. A damaged or handwritten signature can still leave the signer missing.
+  PDF signer names are extracted from embedded CMS certificates without validating trust or revocation.
 - UNCONFIRMED: what "empty JSON" means for unrelated documents. We write an empty file, as the
   organizer README words it.
 - UNCONFIRMED: value types. `pesel` is a number in the organizer's annotated example and a string
