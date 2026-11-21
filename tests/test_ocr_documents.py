@@ -100,6 +100,10 @@ def test_explicit_tesseract_dpi_overrides_environment(tmp_path, monkeypatch):
     seen.clear()
     assert pdf_text.read_pages(path, engine="tesseract") == ["PLAN SALI"]
     assert seen == ["image"]
+    seen.clear()
+    monkeypatch.delenv("KIO_OCR_ENGINE")
+    assert pdf_text.read_pages(path) == ["PLAN SALI"]
+    assert seen == ["image", 300]
 
 
 @pytest.fixture

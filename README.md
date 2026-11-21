@@ -29,17 +29,20 @@ python -m kio2json                                   # reads ./input, writes ./o
 python -m kio2json --input some/input --output some/output
 ```
 
-The default setting is `KIO_OCR_ENGINE=tesseract`. To use RapidOCR v6, install the optional
-CPU runtime and set `KIO_OCR_ENGINE=rapidocr` in the environment before invoking the same CLI.
-Use `export KIO_OCR_ENGINE=rapidocr` in a POSIX shell or `$env:KIO_OCR_ENGINE = "rapidocr"`
-in PowerShell. The RapidOCR wheel includes its recognition and detection models, so the first
-run can also be offline.
+The default OCR setting is `tesseract-dpi`. Set `KIO_OCR_ENGINE` to choose another mode for the CLI or viewer.
 
-```
-python -m pip install "rapidocr==3.10.0" "onnxruntime==1.32.0"
-```
+| Setting | Pages requiring OCR |
+|---|---|
+| `tesseract-dpi` | Polish Tesseract with the source resolution set to the 300 dpi render, including e-mail crops. |
+| `tesseract` | Polish Tesseract with automatic source-resolution estimation. |
+| `rapidocr` | RapidOCR v6 on CPU. |
+| `hybrid` | Start with `tesseract-dpi`. Retry OCR pages with RapidOCR when the document is unreadable or fails to match a class. |
 
-With uv, `uv run --group rapidocr python -m kio2json` uses the pinned optional dependencies.
+Both RapidOCR modes require the optional CPU packages. Their wheels include the models and support an offline first run.
+Install them with `python -m pip install "rapidocr==3.10.0" "onnxruntime==1.32.0"`. With uv, use
+`uv run --group rapidocr python -m kio2json` after selecting the engine.
+For example, use `export KIO_OCR_ENGINE=rapidocr` in a POSIX shell or
+`$env:KIO_OCR_ENGINE = "rapidocr"` in PowerShell.
 
 Each PDF gets a JSON at the same relative path and file stem. Appeals, powers of attorney and
 bank-transfer confirmations get the organizer's structure. Any other document gets an empty
@@ -68,7 +71,9 @@ works offline. The pipeline does not report which pages used OCR.
    a possible e-mail address with a missing `@`, an English single-word pass rereads that crop. The extractor accepts the separator
    only when the rest of both readings agrees. Call `read_pages(path, word_boxes=boxes)` with
    an empty list to collect raw words and their rectangles alongside the page strings. Coordinates
-   are PDF points from the top left, with one-based page numbers.
+   are PDF points from the top left, with one-based page numbers. Polish Tesseract has 60 seconds per
+   recognition call and each English verification crop has one second. RapidOCR runs in a reusable
+   child process. A 60-second page deadline kills a stalled worker so processing can continue.
 2. The CLI loads `config/classes/*.toml` once per batch. `kio2json/class_config.py` matches the
    page text against enabled definitions in ascending `priority`, then class ID order. The first
    match wins. The three organizer classes share the content classifier in `kio2json/classify.py`.
@@ -213,14 +218,33 @@ Read these as a regression check. The rules were written by looking at these sam
 documents, cases 51-60 included, so no case here is unseen and the 51-60 figure is no estimate
 of how the rules generalize. The hidden test set holds real cases, and this is not its score.
 
-On the extraction rules at `c2bf060`, the default engine scored **0.897** strict field F1 on the
-196 documents rendered as 307 images. RapidOCR v6 transcripts scored **0.828** with the same rules.
-Run `uv run python -m evals.field_report --force-ocr --errors` to repeat the default OCR run.
+Forced OCR on all 196 training PDFs (307 rendered pages) gave strict field F1 **0.900**
+with automatic source resolution and **0.884** with explicit 300 dpi. To repeat the
+explicit-DPI run, select `KIO_OCR_ENGINE=tesseract-dpi` and run
+`uv run python -m evals.field_report --force-ocr --errors`. [OCR measurements](evals/results/ocr-engines.json)
 
-With those rules on 17 real development scans (34 pages), Tesseract scored **0.331** and RapidOCR v6 scored
-**0.419**. The runs took 2.78 and 15.45 CPU seconds per page respectively on an Apple M1.
-Across all 20 development documents with natural text-layer routing, corpus micro-F1 was
-0.3864 with Tesseract and 0.4588 with RapidOCR.
+## OCR on real development documents
+
+All five runs used the same frozen extraction rules and 20 real development PDFs. Native text was
+used where available. Tesseract's explicit-DPI mode gained **0.0301** dev micro-F1 over automatic DPI.
+The hybrid improved on explicit DPI by **0.0133**, below the **0.0300** required to add RapidOCR to
+every installation. The shipped setting is `tesseract-dpi`. [Scores and measurement method](evals/results/ocr-engines.json)
+
+| Variant | Field micro-F1 | Macro-F1 | Routed correctly, appeal / power / transfer / other | Wall s / OCR page | CPU s / OCR page | Peak RSS, MiB | Installed MB |
+|---|---:|---:|---|---:|---:|---:|---:|
+| T0 | 0.3864 | 0.2794 | 7/7 / 2/3 / 0/4 / 6/6 | 3.07 | 2.32 | 493 | 221.27 |
+| T1 | 0.4164 | 0.2915 | 7/7 / 2/3 / 0/4 / 6/6 | 5.98 | 3.02 | 312 | 221.27 |
+| T1-PNG | 0.4164 | 0.2915 | 7/7 / 2/3 / 0/4 / 6/6 | 1.78 | 1.73 | 425 | 221.27 |
+| R | 0.4588 | 0.3693 | 7/7 / 2/3 / 2/4 / 6/6 | 14.27 | 15.19 | 1035 | 434.15 |
+| TR | 0.4297 | 0.3841 | 7/7 / 2/3 / 2/4 / 6/6 | 10.11 | 8.79 | 984 | 434.15 |
+
+T0 uses automatic source resolution. T1 sets 300 dpi. T1-PNG isolates lossless PNG ingestion.
+R runs RapidOCR throughout. TR retries an unrouted or unreadable T1 document with RapidOCR.
+Macro-F1 averages the three target classes. Timing includes the whole batch on a shared Apple
+M1, divided by its 34 distinct OCR pages. TR retried 9 documents (14 additional OCR pages).
+Peak RSS covers the process tree. Installed sizes are decimal MB excluding pip, bytecode and
+the interpreter. The six unrelated documents contribute routing outcomes. No private test cases
+were scored for this comparison.
 
 ## Known limits
 
