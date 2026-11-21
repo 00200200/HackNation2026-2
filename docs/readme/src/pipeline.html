@@ -14,7 +14,7 @@ h2 { font-size: 34px; font-weight: 600; letter-spacing: -.035em; }
 .model b { color: #fff; font-weight: 600; }
 </style></head><body>
 <h2>How a PDF becomes JSON</h2>
-<p class="sub">The CLI, the desktop viewer and doc2json.pl share one pipeline: <span class="mono">kio2json.pipeline</span></p>
+<p class="sub">The CLI, the local viewer and doc2json.pl share one pipeline: <span class="mono">kio2json.pipeline</span></p>
 <div class="flow">
   <div class="panel node"><div class="n">1</div><h3>Read</h3><p>pdfplumber reads the first pages. Pages without text go through Tesseract OCR at 300 dpi.</p></div>
   <div class="panel node"><div class="n">2</div><h3>Route</h3><p>Each class in <code>config/classes/*.toml</code> checks the text. First match wins.</p></div>

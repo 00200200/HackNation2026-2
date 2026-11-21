@@ -71,12 +71,12 @@ python -m kio2json                                    # reads ./input/<case>/*.p
 | | Windows | Linux or macOS |
 |---|---|---|
 | CLI on `input/` → `output/` | `.\start.bat` | `./start.sh` |
-| Desktop viewer: pages next to the JSON | `.\start.bat gui` | `./start.sh gui` |
+| Local viewer in the browser (127.0.0.1:8000): pages next to the JSON | `.\start.bat gui` | `./start.sh gui` |
 | Web app | [doc2json.pl](https://doc2json.pl) | [doc2json.pl](https://doc2json.pl) |
 
 <p align="center">
-  <img src="docs/gui/appeal.png" alt="Desktop viewer with an appeal" width="49%">
-  <img src="docs/gui/transfer.png" alt="Desktop viewer with a transfer confirmation" width="49%">
+  <img src="docs/gui/appeal.png" alt="Local viewer with an appeal" width="49%">
+  <img src="docs/gui/transfer.png" alt="Local viewer with a transfer confirmation" width="49%">
 </p>
 
 OCR engines, offline install of the language data, the optional model endpoint and every setting are in the
