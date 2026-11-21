@@ -11,14 +11,15 @@ Shared state of the project. Rules: `CLAUDE.md` → Worklog.
 - App: `kio2json/`, a rule-based baseline with no language model. CLI `python -m kio2json --input input --output output`;
   content-based classification with a rejection path; regex and line-layout extraction per class; pdfplumber text
   with wheel-packaged Tesseract for blank or page-number-only text layers. Installation fetches and verifies the
-  language models. Scans run offline and callers can request raw word boxes in PDF points. Branch `feat/ocr-engine`.
+  language models. Set `KIO_OCR_ENGINE=rapidocr` to use the optional RapidOCR v6 group. Both engines run offline
+  and return word boxes in PDF points on request. Branch `feat/ocr-engine`.
 - Research notes on OCR, schema extraction and Polish legal NLP: `docs/kio-extraction-research.md`.
 - Claude Code setup: skills `hacknation-judging`, `odwolania2json-eval`, `build`, `verify`, `humanizer`;
   agents `judge`, `builder`, `reviewer`, `researcher`; pre-push hook in `.githooks/`.
 
 ## Last eval
 
-21.11.2026, full clean run at `3c674f8`, pip-installed OCR (`evals/results/latest.json`): `micro_f1` 1.000, cases 51-60 1.000,
+21.11.2026, full clean run at `74987f2`, pip-installed OCR (`evals/results/latest.json`): `micro_f1` 1.000, cases 51-60 1.000,
 `classification_accuracy` 1.000, `negatives_empty` 1.000. Training data (synthetic). The rules were written with
 sight of these documents, cases 53-60 included, so this is a regression check and the 51-60 figure is not an
 unseen-case estimate for this baseline.

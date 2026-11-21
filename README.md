@@ -21,6 +21,18 @@ python -m kio2json                                   # reads ./input, writes ./o
 python -m kio2json --input some/input --output some/output
 ```
 
+The default setting is `KIO_OCR_ENGINE=tesseract`. To use RapidOCR v6, install the optional
+CPU runtime and set `KIO_OCR_ENGINE=rapidocr` in the environment before invoking the same CLI.
+Use `export KIO_OCR_ENGINE=rapidocr` in a POSIX shell or `$env:KIO_OCR_ENGINE = "rapidocr"`
+in PowerShell. The RapidOCR wheel includes its recognition and detection models, so the first
+run can also be offline.
+
+```
+python -m pip install "rapidocr==3.10.0" "onnxruntime==1.32.0"
+```
+
+With uv, `uv run --group rapidocr python -m kio2json` uses the pinned optional dependencies.
+
 Each PDF gets a JSON at the same relative path and file stem. Appeals, powers of attorney and
 bank-transfer confirmations get the organizer's structure. Any other document gets an empty
 file. A PDF that cannot be processed also gets an empty file, is reported on stderr, and makes
@@ -29,13 +41,13 @@ the run exit with status 1 after processing the remaining PDFs. This includes re
 ## How it works
 
 1. `kio2json/pdf_text.py` reads the first three pages with pdfplumber. Pages with no text or
-   only page numbers go through Polish Tesseract at 300 dpi. If an address appears to have lost
+   only page numbers go through the selected OCR engine at 300 dpi. With default Tesseract, if an address appears to have lost
    its `@`, an English single-word pass rereads that crop. The extractor accepts the separator
    only when the rest of both readings agrees. Call `read_pages(path, word_boxes=boxes)` with
    an empty list to collect raw words and their rectangles alongside the page strings. Coordinates
    are PDF points from the top left, with one-based page numbers.
 2. `kio2json/classify.py` uses document content. It checks appeal and power-of-attorney
-   headings in reading order. A transfer needs two distinct accounts, a confirmation heading
+   headings in reading order. A transfer normally needs two distinct accounts, a confirmation heading
    or execution status, and the transaction’s own amount or date. A rejected payment or an
    invoice asking for confirmation gets an empty file.
 3. `kio2json/appeal.py`, `power_of_attorney.py` and `bank_transfer.py` extract the fields with
@@ -86,9 +98,11 @@ four-page run measured 727 MiB for the OCR interpreter. Run
   glyphs is repaired only if a unique candidate passes the IBAN mod-97 check. A fully printed
   digit string is retained as read, including when the printed checksum is invalid. Ambiguous
   signatures and e-mail addresses can remain missing.
-- A masked-account receipt needs a confirmation heading, both payment roles and a dated amount.
+- A receipt with one masked account must have a confirmation heading, a transaction amount and date,
+  and two explicitly labelled accounts: one fully masked by asterisks and the other checksum-valid.
+  Unlabelled or conflicting roles can leave account fields empty.
   Attorney names retain the grammatical case used in the document.
-- Nothing is configuration-driven yet: classes, fields and patterns live in Python modules.
+- Classes, fields and extraction patterns live in Python modules.
 - UNCONFIRMED: what "empty JSON" means for unrelated documents. We write an empty file, as the
   organizer README words it.
 - UNCONFIRMED: value types. `pesel` is a number in the organizer's annotated example and a string
