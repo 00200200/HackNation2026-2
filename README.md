@@ -47,15 +47,15 @@ For example, use `export KIO_OCR_ENGINE=rapidocr` in a POSIX shell or
 Each PDF gets a JSON at the same relative path and file stem. Appeals, powers of attorney and
 bank-transfer confirmations get the organizer's structure. Any other document gets an empty
 file. A PDF that cannot be processed also gets an empty file, is reported on stderr, and makes
-the run exit with status 1 after processing the remaining PDFs. An image-only document with no readable text on any inspected page reports
-`no readable text after OCR`. A blank separator beside a readable page is accepted.
+the run exit with status 1 after processing the remaining PDFs. A nonblank scan that yields fewer than two alphabetic words after page counters are removed
+reports `no readable text after OCR`. Blank pages may stand alone or appear beside a readable page.
 
 To open the Polish document viewer, run `python -m kio2json.gui`. It opens a browser on
 `127.0.0.1:8000`. Select PDFs and name the case, or enter a folder containing cases. Click
 **Analizuj dokumenty**, choose a document and compare its pages with the JSON. **Pobierz wyniki (.zip)**
 downloads one JSON per PDF under its case folder. Failed documents show the reason and get an
 empty file. The viewer keeps temporary copies for the current session. The default configuration
-works offline. The pipeline does not report which pages used OCR.
+works offline. Page provenance is used internally and the output follows the organizer’s JSON schema.
 
 | Start from the repository | Windows | Linux or macOS |
 |---|---|---|
@@ -66,8 +66,10 @@ works offline. The pipeline does not report which pages used OCR.
 
 ## How it works
 
-1. `kio2json/pdf_text.py` reads the first three pages with pdfplumber. Pages with no text or
-   only page numbers go through the selected OCR engine at 300 dpi. When Tesseract reads
+1. `kio2json/pdf_text.py` reads the first three pages with pdfplumber for extraction.
+   Pages with no usable text, including scans with a selectable page counter, go through OCR at 300 dpi.
+   If those pages require OCR and appear unreadable, the reader checks later pages for readable text
+   before reporting a document error. When Tesseract reads
    a possible e-mail address with a missing `@`, an English single-word pass rereads that crop. The extractor accepts the separator
    only when the rest of both readings agrees. Call `read_pages(path, word_boxes=boxes)` with
    an empty list to collect raw words and their rectangles alongside the page strings. Coordinates
@@ -81,8 +83,10 @@ works offline. The pipeline does not report which pages used OCR.
    heading or execution status, and a transaction amount or date. Rejected payments and payment
    requests get an empty file.
 3. `kio2json/engines.py` sends the joined page text to the selected extractor. The three jury
-   classes use `python` with a dotted path to the existing rule function. Each function retains
-   its field order and normalization. `labelled_fields` extracts values by pattern. `llm`
+   classes use `python` with a dotted path to the existing rule function. Native pages follow
+   the integration baseline. The reader records which pages needed OCR so account repair,
+   damaged e-mail handling and signature recovery can use the source of each field.
+   A scanned attachment does not enable masked-account routing on a native receipt. `labelled_fields` extracts values by pattern. `llm`
    generates a Pydantic AI output model from the same field definitions.
 
 ## Enable the fourth class
@@ -218,9 +222,14 @@ Read these as a regression check. The rules were written by looking at these sam
 documents, cases 51-60 included, so no case here is unseen and the 51-60 figure is no estimate
 of how the rules generalize. The hidden test set holds real cases, and this is not its score.
 
+A separate native-text differential test compares the class and serialized fields of 175 invented PDFs
+with a snapshot from integration base `3210643`. It includes 135 review cases and 40 additional
+documents. The grant and transfer suite extends this comparison to 237 invented PDFs. Each
+permitted field change records the original value, its replacement and a reason. [Fixtures and regeneration command](tests/snapshots/README.md)
+
 Forced OCR on all 196 training PDFs (307 rendered pages) gave strict field F1 **0.900**
-with automatic source resolution and **0.884** with explicit 300 dpi. To repeat the
-explicit-DPI run, select `KIO_OCR_ENGINE=tesseract-dpi` and run
+with automatic source resolution and **0.884** with explicit 300 dpi. The comparison used the rules recorded in the measurement file. To run the
+current rules, select `KIO_OCR_ENGINE=tesseract-dpi` and run
 `uv run python -m evals.field_report --force-ocr --errors`. [OCR measurements](evals/results/ocr-engines.json)
 
 ## OCR on real development documents
@@ -246,6 +255,11 @@ Peak RSS covers the process tree. Installed sizes are decimal MB excluding pip, 
 the interpreter. The six unrelated documents contribute routing outcomes. No private test cases
 were scored for this comparison.
 
+The default engine was measured again after the extraction rules began tracking page sources.
+The result for those frozen extraction rules is in [the corpus report](evals/results/corpus-latest.json). The
+`provenance_check` entry records the paired native-text and forced-OCR checks on the same
+rules. [OCR results](evals/results/ocr-engines.json)
+
 ## Known limits
 
 - Appeal extraction follows the two layout families in the training data. `input/case1` holds the
@@ -253,23 +267,23 @@ were scored for this comparison.
   the extractor finds the class, filing date, place, procurement reference, BZP number and title.
   The appellant name contains OCR noise. The contracting-authority list is empty and the challenged
   action is missing. The organizer supplies no reference JSON for this file.
-- OCR can still lose accented letters, split a notice number or reorder columns. Scans with a
-  noisy but nonempty text layer follow the native-text path. On an executed receipt with detached
-  label and value columns, the extractor uses first-page word positions to restore the rows.
-  It also reads side-by-side party accounts and payment details from their own columns.
-  If explicit-DPI Tesseract reads a booking heading and transaction labels but cannot route the
-  scan, the extractor retries its first page with Tesseract’s automatic source resolution.
-  OCR substitutions can still change an amount, damage a reference, or split a word in a title.
-- Booking forms and accounts read by OCR use the Polish IBAN checksum. A single-character repair
-  requires exactly one valid candidate. Ambiguous accounts produce null. The original native-text
-  layouts preserve fully printed numbers, including synthetic identifiers with an invalid checksum.
-- A receipt with one masked account needs a confirmation heading, a transaction amount and date,
-  and two explicitly labelled accounts. One must be fully masked by asterisks and the other checksum-valid.
-  The classifier passes that account evidence to the extractor. Unlabelled or conflicting roles can leave account fields empty.
-- Joint declarations can identify each signing officer and company in the same numbered entry.
-  Stamps and electronic signatures need a readable name and an identifiable grantor. An explicitly
-  illegible signature produces a null name. An unidentifiable signature can be omitted.
-  Attorneys keep the printed grammatical case unless a labelled name identifies the same PESEL.
+- Receipt routing uses evidence that a payment was executed, its amount or date, and the participating
+  accounts. A booking table or bank letter needs both an amount and a date. The extractor binds payer
+  and payee separately from fee and refund accounts. Explicit operation dates and transaction IDs take
+  precedence over posting dates and daily sequence numbers. An unclear role or conflicting value can
+  leave a field empty.
+- First-page word positions can recover fields whose labels and values occupy different rows or columns.
+  OCR can still split a title or change an amount. For an unrouted scan with confirmation and transaction
+  evidence, the default engine can reread the first page at automatic resolution. Conflicting dates,
+  amounts or transaction IDs prevent that retry from supplying a result.
+- A partially masked account can identify a payment role when its field is explicit, the other account
+  passes the Polish IBAN checksum, and the confirmation supplies the amount and date. The masked number
+  is null. OCR also supports fully masked fields. Digit repairs apply only to OCR text and require a
+  single checksum-valid candidate. A number printed in a native text layer keeps its printed digits.
+- Grant extraction handles numbered or bulleted declarations and current appointments in notarial deeds.
+  A signer's name needs an identifiable owner and evidence of signing. A labelled nominative can resolve
+  an inflected appointee when the identity is unambiguous. Unreadable signatures and ambiguous identities
+  can leave fields empty.
 - UNCONFIRMED: what "empty JSON" means for unrelated documents. We write an empty file, as the
   organizer README words it.
 - UNCONFIRMED: value types. `pesel` is a number in the organizer's annotated example and a string

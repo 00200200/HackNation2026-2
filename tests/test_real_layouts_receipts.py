@@ -32,21 +32,30 @@ def test_execution_fields_inside_a_different_document(heading):
     assert classify([heading + "\n" + RECEIPT]) is None
 
 
-def test_booking_form_uses_unique_checksum_repairs_and_abstains_on_ambiguity():
-    repaired = RECEIPT.replace("78351200009981234567890123", "76351200009981234567890123")
-    assert bank_transfer.extract(repaired)["przelew_bankowy"]["na_rachunek"] == "78351200009981234567890123"
-    assert (
-        bank_transfer.extract(RECEIPT.replace("78351200009981234567890123", "7?351200009981234567890123"))[
-            "przelew_bankowy"
-        ]["na_rachunek"]
-        == "78351200009981234567890123"
-    )
-    assert (
-        bank_transfer.extract(RECEIPT.replace("78351200009981234567890123", "79351200009981234567890123"))[
-            "przelew_bankowy"
-        ]["na_rachunek"]
-        is None
-    )
+@pytest.mark.parametrize(
+    ("printed", "expected"),
+    [
+        ("76351200009981234567890123", "78351200009981234567890123"),
+        ("7?351200009981234567890123", "78351200009981234567890123"),
+        ("79351200009981234567890123", None),
+    ],
+)
+def test_only_ocr_repairs_an_uncertain_account(monkeypatch, printed, expected):
+    from kio2json import pipeline
+
+    text = RECEIPT.replace("78351200009981234567890123", printed)
+
+    def read(path, *, ocr_pages=None, **kwargs):
+        if ocr_pages is not None:
+            ocr_pages.append(1)
+        return [text]
+
+    monkeypatch.setattr(pipeline, "read_pages", read)
+    kind, data = pipeline.process_pdf("invented.pdf")
+    assert kind == "bank_transfer"
+    assert data["przelew_bankowy"]["na_rachunek"] == expected
+    if printed.isdigit():
+        assert bank_transfer.extract(text)["przelew_bankowy"]["na_rachunek"] == printed
 
 
 def test_pdf_columns_restore_labels_opposite_their_values(monkeypatch):
@@ -85,7 +94,9 @@ def test_pdf_columns_restore_labels_opposite_their_values(monkeypatch):
     }
 
 
-def test_debit_table_uses_booking_date_and_account_holder_direction():
+def test_debit_table_uses_booking_date_and_account_holder_direction(monkeypatch):
+    from kio2json import pipeline
+
     text = """Potwierdzenie wykonanej operacji
 Dane właściciela rachunku
 Rachunek właściciela 56458700991234567801234567
@@ -95,8 +106,16 @@ Data waluty Data księgowania Kwota
 13.07.2024 15.072024 09:56:04 -72,10 PLN
 Referencje banku
 741332531"""
-    assert classify([text]) == "bank_transfer"
-    values = bank_transfer.extract(text)["przelew_bankowy"]
+
+    def read(path, *, ocr_pages=None, **kwargs):
+        if ocr_pages is not None:
+            ocr_pages.append(1)
+        return [text]
+
+    monkeypatch.setattr(pipeline, "read_pages", read)
+    kind, data = pipeline.process_pdf("invented.pdf")
+    assert kind == "bank_transfer"
+    values = data["przelew_bankowy"]
     assert (values["z_rachunku"], values["na_rachunek"]) == ("56458700991234567801234567", "78351200009981234567890123")
     assert (values["data_operacji"], values["kwota"], values["numer_transakcji"]) == ("2024-07-15", 72.10, "741332531")
 
@@ -113,8 +132,9 @@ def test_operation_date_precedes_booking_date_even_when_printed_second():
 def test_ocr_repairs_a_unique_digit_in_an_ordinary_confirmation(monkeypatch):
     from kio2json import pipeline
 
-    def read(path, *, ocr_pages, **kwargs):
-        ocr_pages.append(1)
+    def read(path, *, ocr_pages=None, **kwargs):
+        if ocr_pages is not None:
+            ocr_pages.append(1)
         return [
             (
                 "Potwierdzenie przelewu\nRachunek nadawcy: 56458700991234567801234567\n"

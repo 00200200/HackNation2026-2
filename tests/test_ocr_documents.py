@@ -1,8 +1,10 @@
 """Synthetic controls for document-level OCR outcomes."""
 
+import ctypes
 import sys
 from unittest.mock import MagicMock
 
+import pypdfium2 as pdfium
 import pytest
 from PIL import Image, ImageDraw, ImageFilter, ImageFont
 
@@ -39,41 +41,166 @@ def test_empty_ocr_next_to_native_text_and_empty_document(monkeypatch):
     doc = MagicMock()
     blank, native = MagicMock(page_number=1), MagicMock(page_number=2)
     blank.extract_text.return_value = ""
-    native.extract_text.return_value = "Informacja dla uczestników"
+    native.extract_text.return_value = "Informacja"
     doc.__enter__.return_value.pages = [blank, native]
     monkeypatch.setattr(pdf_text.pdfplumber, "open", lambda _: doc)
     monkeypatch.setattr(pdf_text, "_ocr", lambda page, words: "")
     attempted = []
-    assert pdf_text.read_pages("mixed.pdf", ocr_pages=attempted) == ["", "Informacja dla uczestników"]
+    assert pdf_text.read_pages("mixed.pdf", ocr_pages=attempted) == ["", "Informacja"]
     assert attempted == [1]
     doc.__enter__.return_value.pages = []
     assert pdf_text.read_pages("empty.pdf") == []
 
 
-def test_page_counter_after_ocr_is_unreadable_but_a_short_label_is_readable(tmp_path):
+def test_native_footer_alone_cannot_make_a_mixed_scan_readable(tmp_path, monkeypatch):
+    path = tmp_path / "mixed.pdf"
+    scan(path, "Strona nr 1 z 2", "Druga strona", blur=30)
+    monkeypatch.setattr(
+        pdf_text.pdfplumber.page.Page, "extract_text", lambda page: "Strona nr 1 z 2" if page.page_number == 1 else ""
+    )
+    monkeypatch.setattr(pdf_text.pdfplumber.page.Page, "images", [])
+    attempted = []
+    with pytest.raises(pdf_text.NoReadableTextError):
+        pdf_text.read_pages(path, engine="tesseract", ocr_pages=attempted)
+    assert attempted == [2]
+
+
+@pytest.mark.parametrize(("paper", "ink"), [(0, 0), (242, 239)])
+def test_uniform_dark_or_faint_nonblank_scan_with_empty_ocr_is_unreadable(tmp_path, monkeypatch, paper, ink):
+    path = tmp_path / "dark.pdf"
+    image = Image.new("L", (600, 320), paper)
+    ImageDraw.Draw(image).text((30, 30), "Niewyrazny druk", font=ImageFont.load_default(size=48), fill=ink)
+    image.save(path, resolution=150)
+    monkeypatch.setattr(pdf_text, "_ocr", lambda page, words: "")
+    with pytest.raises(pdf_text.NoReadableTextError):
+        pdf_text.read_pages(path)
+
+
+@pytest.mark.parametrize("counter", ["Strona nr 1 z 1", "Strona numer 1 z 1", "Page number 1 of 1"])
+def test_extended_page_counter_after_ocr_is_unreadable_but_a_short_phrase_is_readable(tmp_path, counter):
     attempted = []
     pdf = tmp_path / "scan.pdf"
-    scan(pdf, "Strona 1 z 1")
+    image = Image.new("RGB", (1000, 320), "white")
+    font = ImageFont.load_default(size=48)
+    ImageDraw.Draw(image).text((45, 40), "Niewyrazny dokument", font=font, fill="black")
+    image = image.filter(ImageFilter.GaussianBlur(30))
+    ImageDraw.Draw(image).text((60, 215), counter, font=font, fill="black")
+    image.save(pdf, resolution=150)
     with pytest.raises(pdf_text.NoReadableTextError, match="no readable text after OCR"):
         pdf_text.read_pages(pdf, engine="tesseract", ocr_pages=attempted)
     assert attempted == [1]
-    scan(pdf, "Sala 42")
-    assert pdf_text.read_pages(pdf, engine="tesseract") == ["Sala 42"]
+    scan(pdf, "Sala obrad 42")
+    assert pdf_text.read_pages(pdf, engine="tesseract") == ["Sala obrad 42"]
 
 
-def test_scanned_numeric_identifier_is_readable(tmp_path):
+def test_numeric_transcript_alone_does_not_establish_readability(tmp_path):
     path = tmp_path / "identifier.pdf"
     scan(path, "2026112107046839")
-    (text,) = pdf_text.read_pages(path, engine="tesseract")
-    assert sum(c.isdigit() for c in text) >= 14
+    with pytest.raises(pdf_text.NoReadableTextError):
+        pdf_text.read_pages(path, engine="tesseract")
 
 
 @pytest.mark.parametrize(
-    ("transcript", "expected"),
-    [("202611210/7046839", True), ("2026112107046839", True), ("12 / 45", False), ("— 23 —", False)],
+    "footer",
+    [
+        "Strona nr 1z 1",
+        "Blatt Nr. 4/9",
+        "Leaf No. 3",
+        "Feuillet n° 3 sur 7",
+        "12 / 45",
+        "— 23 —",
+        "1 / 3 — numbered leaves",
+        "Numer strony 2/5",
+        "1 of 3 pages",
+        "Strona numer 8",
+        "7 No. Blatt",
+    ],
 )
-def test_long_identifiers_and_bare_page_counters(transcript, expected):
-    assert pdf_text._readable(transcript) is expected
+def test_footer_and_one_word_of_ocr_noise_do_not_establish_readability(tmp_path, monkeypatch, footer):
+    path = tmp_path / "faint.pdf"
+    scan(path, "Kontrola zalacznikow", blur=15)
+    monkeypatch.setattr(pdf_text, "_ocr", lambda page, words: "szum\n" + footer)
+    with pytest.raises(pdf_text.NoReadableTextError):
+        pdf_text.read_pages(path)
+
+
+@pytest.mark.parametrize(
+    "statement",
+    [
+        "Faktura VAT 123",
+        "Limit dni 10",
+        "Faktura 12 VAT 123",
+        "Faktura VAT 12/2025",
+        "Faktura numer 12/2025",
+        "Invoice number 123",
+        "Godziny pracy 8–16",
+        "Kwota netto 1-2",
+    ],
+)
+def test_two_word_numeric_statement_is_readable(tmp_path, statement):
+    path = tmp_path / "statement.pdf"
+    scan(path, statement)
+    assert not pdf_text._is_page_counter(statement)
+    (transcript,) = pdf_text.read_pages(path, engine="tesseract")
+    assert transcript.startswith(statement.split()[0])
+
+
+def test_readability_checks_later_pages_without_returning_extra_text_or_ocr_boxes(tmp_path):
+    path = tmp_path / "late.pdf"
+    scan(path, "", "Strona nr 2 z 4", "", "PLAN SALI")
+    attempted, words = [], []
+    pages = pdf_text.read_pages(path, engine="tesseract", ocr_pages=attempted, word_boxes=words)
+    assert len(pages) == 3
+    assert attempted == [1, 2, 3]
+    assert all(word.page <= 3 for word in words)
+
+
+def test_three_blank_pages_do_not_hide_later_illegible_page(tmp_path):
+    path = tmp_path / "late.pdf"
+    scan(path, "", "", "", "Niewyrazny dokument", blur=30)
+    with pytest.raises(pdf_text.NoReadableTextError):
+        pdf_text.read_pages(path, engine="tesseract")
+
+
+@pytest.mark.parametrize("placement", ["full", "bordered", "logo", "clipped"])
+def test_selectable_footer_over_a_scan_requires_ocr_but_small_visible_images_keep_native_text(tmp_path, placement):
+    image_pdf, combined = tmp_path / "image.pdf", tmp_path / "footer.pdf"
+    scan(image_pdf, "PLAN SALI")
+    with pdfium.PdfDocument(image_pdf) as document:
+        page = document[0]
+        (image,) = page.get_objects()
+        width, height = page.get_size()
+        if placement == "logo":
+            image.set_matrix(pdfium.PdfMatrix().scale(16, 16))
+        elif placement == "bordered":
+            image.set_matrix(pdfium.PdfMatrix().scale(0.75 * width, 0.75 * height).translate(width / 8, height / 8))
+        elif placement == "clipped":
+            image.set_matrix(pdfium.PdfMatrix().scale(width, height).translate(width - 16, height - 16))
+        text = "Strona nr 1 z 1"
+        footer = pdfium.raw.FPDFPageObj_NewTextObj(document, b"Helvetica", 9)
+        assert pdfium.raw.FPDFText_SetCharcodes(footer, (ctypes.c_uint * len(text))(*map(ord, text)), len(text))
+        pdfium.raw.FPDFPageObj_Transform(footer, 1, 0, 0, 1, 30, 6)
+        pdfium.raw.FPDFPage_InsertObject(page, footer)
+        page.gen_content()
+        document.save(combined)
+    attempted = []
+    (transcript,) = pdf_text.read_pages(combined, engine="tesseract", ocr_pages=attempted)
+    if placement in {"logo", "clipped"}:
+        assert attempted == [] and transcript == text
+    else:
+        assert attempted == [1] and "PLAN SALI" in transcript
+
+
+def test_readable_words_can_span_two_scanned_pages(tmp_path):
+    path = tmp_path / "plan.pdf"
+    scan(path, "PLAN", "SALI")
+    assert pdf_text.read_pages(path, engine="tesseract") == ["PLAN", "SALI"]
+
+
+def test_joined_lines_keep_source_page_numbers_through_repeated_headers_and_footers():
+    pages = ["Nagłówek\nA\n\nStrona 1 z 2", "Nagłówek\nB\nStrona 2 z 2"]
+    assert list(pdf_text.iter_page_lines(pages)) == [(1, "Nagłówek"), (1, "A"), (1, ""), (2, "B")]
+    assert pdf_text.join_pages(pages) == "Nagłówek\nA\n\nB"
 
 
 def test_explicit_tesseract_dpi_overrides_environment(tmp_path, monkeypatch):
@@ -128,7 +255,7 @@ def test_rapidocr_timeout_kills_the_stalled_worker_and_next_request_recovers(tmp
         "    def __init__(self, params): print('model loaded', flush=True)\n"
         "    def __call__(self, image, return_word_box):\n"
         "        if Path(os.environ['TEST_STALL_FILE']).exists(): time.sleep(30)\n"
-        "        return SimpleNamespace(txts=['Model ' + str(os.getpid())], word_results=[])\n"
+        "        return SimpleNamespace(txts=['Model testowy ' + str(os.getpid())], word_results=[])\n"
     )
     monkeypatch.setenv("PYTHONPATH", os.pathsep.join([str(tmp_path), os.environ.get("PYTHONPATH", "")]))
     monkeypatch.setenv("TEST_STALL_FILE", str(control))

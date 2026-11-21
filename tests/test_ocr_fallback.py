@@ -47,7 +47,7 @@ def test_hybrid_reports_two_unreadable_transcripts(monkeypatch):
     assert engines == ["tesseract-dpi", "rapidocr"]
 
 
-def test_shared_cli_and_gui_reader_explains_unreadable_scan(tmp_path, monkeypatch):
+def test_shared_cli_and_gui_reader_accepts_a_blank_scan(tmp_path, monkeypatch):
     from PIL import Image
 
     from kio2json.batch import read_document
@@ -57,7 +57,7 @@ def test_shared_cli_and_gui_reader_explains_unreadable_scan(tmp_path, monkeypatc
     path = tmp_path / "blank.pdf"
     Image.new("RGB", (300, 180), "white").save(path, resolution=150)
     result = read_document(path, load_classes())
-    assert result.error == "no readable text after OCR"
+    assert result.error is None
     assert result.text == ""
 
 
