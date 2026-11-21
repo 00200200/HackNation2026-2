@@ -26,8 +26,8 @@ BASE_OUTPUTS = NATIVE["outputs"] | EXTRA["outputs"]
 
 def test_base_snapshot_coverage():
     assert NATIVE["base"] == NATIVE_BASE and EXTRA["base"] == BASE
-    parity_cases = {k for k in INPUTS if k.startswith(("task40/", "simple/"))}
-    assert len(parity_cases) == 42 and parity_cases.isdisjoint(INTENDED_CHANGES)
+    parity_cases = {k for k in INPUTS if k.startswith(("task40/", "simple/", "review47/"))}
+    assert len(parity_cases) == 45 and parity_cases.isdisjoint(INTENDED_CHANGES)
     assert all(BASE_OUTPUTS[k][0] is not None for k in parity_cases)
     assert INPUTS.keys() == BASE_OUTPUTS.keys()
     assert set(INTENDED_CHANGES) <= INPUTS.keys()

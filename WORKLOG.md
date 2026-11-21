@@ -14,7 +14,7 @@ The full synthetic run matched 196/196 CLI outputs against the baseline by path,
 including 16 empty negatives. The field report matched all 2,316 fields. Training micro F1 and the
 cases 51–60 regression score were both 1.000. [Full training run](evals/results/latest.json)
 
-These runs used local rules with the three endpoint variables unset. The two local datasets contain real documents and use whole-case splits. Corpus 1 dev has 22 PDFs from 14 cases. Corpus 2 dev has 39 PDFs from 14 cases. The held-out splits remain reserved until a model is selected. The organizer supplied a separate set of 30 labelled scans, ten per target class, in revision `0b360a9`.
+These runs used local rules with the three endpoint variables unset. The two local datasets contain real documents and use whole-case splits. Corpus 1 dev has 22 PDFs from 14 cases. Corpus 2 dev has 39 PDFs from 14 cases. Held-out evaluation of the integrated configuration on both corpora is pending model selection. The earlier model-engine branch evaluated two profiles on the 17-PDF corpus 1 held-out split. [Historical model results](evals/results/llm-real-docs.json) The organizer supplied a separate set of 30 labelled scans, ten per target class, in revision `0b360a9`.
 
 | Dataset | PDFs | Micro F1 | Macro F1 by class | Appeal | Power of attorney | Transfer | Correct routes (appeal / power / transfer) | Empty negatives | Wall s/PDF |
 |---|---:|---:|---:|---:|---:|---:|---|---:|---:|
@@ -85,3 +85,4 @@ These runs used local rules with the three endpoint variables unset. The two loc
 
 - 21.11.2026 · Merged the OCR integration at `e051dfa` and selected model-first extraction with rules filling gaps and model routing on rule rejection. On 22 dev PDFs, DeepSeek Flash with two OCR readings scored 0.6951 micro-F1 against 0.4356 for rules.
 - 21.11.2026 · Codex · Integrated PRs #20, #18 and #22, verified training byte parity and measured both dev corpora at `d177cbc7`. Refreshed organizer revision `0b360a9` in `cf98ef3` and verified synthetic training and the dedicated scan evaluation at `8d79e66`.
+- 21.11.2026 · Codex · Fixed the execution-date regression reported on PR #23, added three native receipts with baseline outputs, and recognized three additional completed payment statuses.

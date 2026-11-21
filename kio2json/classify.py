@@ -25,6 +25,7 @@ CONFIRMATION_HEADING = re.compile(
 EXECUTED = re.compile(
     r"^(?:status[\s.:]*)?(?:przelew\s+)?(?:zrealizowan[yaoe]|wykonan[yaoe]|zaksięgowan[yaoe])\b", re.IGNORECASE
 )
+COMPLETED_STATUS = re.compile(r"(?:rozliczon|zakończon|zapłacon)[ayeo]\.?", re.IGNORECASE)
 BANK_FIELDS = re.compile(
     r"\b(?:kwot[ayęą]|wartość|(?:nr|numer|identyfikator) (?:transakcji|operacji)|"
     r"data (?:operacji|księgowania|transakcji|obciążenia)|rachun(?:ek|ku)|IBAN|nadawc[ay]|odbiorc[ay]|beneficjent\w*)\b",
@@ -49,7 +50,7 @@ def _nonexecuted(lines: list[str]) -> bool:
         if line.casefold().startswith("stan"):
             if NONEXECUTED_STATE.match(state["value"]):
                 return True
-        elif not EXECUTED.match(state["value"]):
+        elif not (EXECUTED.match(state["value"]) or COMPLETED_STATUS.fullmatch(state["value"])):
             return True
     return False
 

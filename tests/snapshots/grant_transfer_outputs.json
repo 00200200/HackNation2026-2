@@ -1600,6 +1600,45 @@
           }
         ]
       }
+    ],
+    "review47/booking-after-executed-payment": [
+      "bank_transfer",
+      {
+        "przelew_bankowy": {
+          "data_operacji": "2031-06-14",
+          "kwota": 350.25,
+          "na_rachunek": "68214000000000000000002193",
+          "numer_transakcji": null,
+          "tytul": "Konserwacja zegara",
+          "z_rachunku": "80193000000000000000003145"
+        }
+      }
+    ],
+    "review47/instruction-before-execution-with-labelled-amount": [
+      "bank_transfer",
+      {
+        "przelew_bankowy": {
+          "data_operacji": "2032-04-12",
+          "kwota": 81.3,
+          "na_rachunek": "68214000000000000000002193",
+          "numer_transakcji": null,
+          "tytul": "Naprawa metronomu",
+          "z_rachunku": "80193000000000000000003145"
+        }
+      }
+    ],
+    "review47/execution-label-and-later-booking": [
+      "bank_transfer",
+      {
+        "przelew_bankowy": {
+          "data_operacji": "2033-07-04",
+          "kwota": 74.12,
+          "na_rachunek": "68214000000000000000002193",
+          "numer_transakcji": null,
+          "tytul": "Strojenie instrumentu",
+          "z_rachunku": "80193000000000000000003145"
+        }
+      }
     ]
   }
 }

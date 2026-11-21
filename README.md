@@ -226,7 +226,7 @@ of how the rules generalize. The hidden test set holds real cases, and this is n
 
 A separate native-text differential test compares the class and serialized fields of 175 invented PDFs
 with a snapshot from integration base `3210643`. It includes 135 review cases and 40 additional
-documents. Two suites compare 279 invented grant, receipt and routing PDFs and 205 appeal and routing inputs with integration base `e051dfa`. Each expected change records the original value, replacement and reason. [Fixtures and regeneration commands](tests/snapshots/README.md)
+documents. Two suites compare 282 invented grant, receipt and routing PDFs and 205 appeal and routing inputs with integration base `e051dfa`. Each expected change records the original value, replacement and reason. [Fixtures and regeneration commands](tests/snapshots/README.md)
 
 Forced OCR on all 196 training PDFs (307 rendered pages) gave strict field F1 **0.900**
 with automatic source resolution and **0.884** with explicit 300 dpi. The comparison used the rules recorded in the measurement file. To run the
@@ -235,7 +235,7 @@ current rules, select `KIO_OCR_ENGINE=tesseract-dpi` and run
 
 ## Rules on real documents and organizer scans
 
-These runs used local rules with the three endpoint variables unset. The two local datasets contain real documents and use whole-case splits. Corpus 1 dev has 22 PDFs from 14 cases. Corpus 2 dev has 39 PDFs from 14 cases. The held-out splits remain reserved until a model is selected. The organizer supplied a separate set of 30 labelled scans, ten per target class. The scan command stages the committed PDF/reference pairs as one batch with neutral filenames. [Organizer scan set at the measured revision](https://github.com/Urzad-Zamowien-Publicznych/hacknation-2026/tree/0b360a9da4b482a6a280696df6714404e0953505/dane/skany)
+These runs used local rules with the three endpoint variables unset. The two local datasets contain real documents and use whole-case splits. Corpus 1 dev has 22 PDFs from 14 cases. Corpus 2 dev has 39 PDFs from 14 cases. Held-out evaluation of the integrated configuration on both corpora is pending model selection. The earlier model-engine branch evaluated two profiles on the 17-PDF corpus 1 held-out split. [Historical model results](evals/results/llm-real-docs.json) The organizer supplied a separate set of 30 labelled scans, ten per target class. The scan command stages the committed PDF/reference pairs as one batch with neutral filenames. [Organizer scan set at the measured revision](https://github.com/Urzad-Zamowien-Publicznych/hacknation-2026/tree/0b360a9da4b482a6a280696df6714404e0953505/dane/skany)
 
 | Dataset | PDFs | Micro F1 | Macro F1 by class | Appeal | Power of attorney | Transfer | Correct routes (appeal / power / transfer) | Empty negatives | Wall s/PDF |
 |---|---:|---:|---:|---:|---:|---:|---|---:|---:|
