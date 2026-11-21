@@ -31,35 +31,95 @@ def test_hidden_repeat_cannot_establish_role_or_complete_clipped_token():
     assert grounded(field, {"value": "ABC", "quote": "ABC"}, "Reference ABCD\nABC", "Reference ABC") is None
 
 
-def test_reasoning_budget_depends_on_explicit_provider_model_and_task(monkeypatch):
-    from types import SimpleNamespace
-    from pydantic import BaseModel
+def test_reasoning_overrides_on_openai_compatible_wire(monkeypatch, tmp_path):
+    import json
+    import os
+
+    import httpx2
+
     from kio2json import llm
 
-    class Record(BaseModel):
-        name: str
+    class Extracted(llm.RouteDecision):
+        pass
 
-    captured = []
+    requests = []
+    deadlines = []
+    run = llm.Agent.run_sync
 
-    class CaptureAgent:
-        def __init__(self, model, **options):
-            self.settings = options["model_settings"]
+    def run_with_deadline(agent, *args, **kwargs):
+        deadlines.append(kwargs["timeout"])
+        return run(agent, *args, **kwargs)
 
-        def run_sync(self, text, timeout):
-            captured.append((self.settings, timeout))
-            return SimpleNamespace(output=None)
+    async def respond(transport, request):
+        body = json.loads(request.content)
+        assert body["model"] == "invented-model"
+        assert body["response_format"] == {"type": "json_object"}
+        assert body["messages"][0] == {"role": "system", "content": "Return JSON"}
+        assert body["messages"][-1] == {"role": "user", "content": "synthetic"}
+        assert '"label"' in body["messages"][1]["content"]
+        options = {"max_tokens", "max_completion_tokens", "reasoning_effort", "thinking", "temperature"}
+        requests.append({k: v for k, v in body.items() if k in options})
+        return httpx2.Response(
+            200,
+            json={
+                "id": "offline",
+                "model": body["model"],
+                "created": 1,
+                "object": "chat.completion",
+                "choices": [
+                    {
+                        "index": 0,
+                        "message": {"role": "assistant", "content": '{"label":"unrelated"}'},
+                        "finish_reason": "stop",
+                    }
+                ],
+            },
+        )
 
-    monkeypatch.setattr(llm, "Agent", CaptureAgent)
-    monkeypatch.setenv("KIO_LLM_BASE_URL", "https://api.deepseek.com")
-    monkeypatch.setenv("KIO_LLM_MODEL", "deepseek-v4-pro")
+    monkeypatch.setattr(httpx2.AsyncHTTPTransport, "handle_async_request", respond)
+    monkeypatch.setattr(llm.Agent, "run_sync", run_with_deadline)
+    monkeypatch.chdir(tmp_path)
+    for key in list(os.environ):
+        if key.startswith("KIO_LLM_"):
+            monkeypatch.delenv(key)
+    monkeypatch.setenv("KIO_LLM_BASE_URL", "https://example.invalid/v1")
+    monkeypatch.setenv("KIO_LLM_MODEL", "invented-model")
     monkeypatch.setenv("KIO_LLM_API_KEY", "invented")
-    monkeypatch.delenv("KIO_LLM_TIMEOUT_SECONDS", raising=False)
-    llm.structured(llm.RouteDecision, "test", "test", max_tokens=32)
-    llm.structured(Record, "test", "test", max_tokens=1800)
-    monkeypatch.setenv("KIO_LLM_BASE_URL", "http://127.0.0.1:8089/v1")
-    llm.structured(Record, "test", "test", max_tokens=1800)
-    assert [(s.get("thinking"), s["max_tokens"], t) for s, t in captured] == [
-        ("low", 24576, 480),
-        ("high", 32768, 480),
-        (None, 1800, 180),
+    with monkeypatch.context() as legacy:
+        legacy.setenv("KIO_LLM_TOKEN_PARAMETER", "max_tokens")
+        legacy.setenv("KIO_LLM_INLINE_SYSTEM_PROMPTS", "false")
+        with monkeypatch.context() as reasoning:
+            for key, value in {
+                "ROUTE_REASONING": "low",
+                "EXTRACT_REASONING": "high",
+                "THINKING_TYPE": "enabled",
+                "ROUTE_MAX_TOKENS": "24576",
+                "EXTRACT_MAX_TOKENS": "32768",
+                "TIMEOUT_SECONDS": "480",
+            }.items():
+                reasoning.setenv(f"KIO_LLM_{key}", value)
+            llm.structured(llm.RouteDecision, "Return JSON", "synthetic", max_tokens=32)
+            llm.structured(Extracted, "Return JSON", "synthetic", max_tokens=1800)
+        legacy.setenv("KIO_LLM_EXTRACT_REASONING", "none")
+        llm.structured(Extracted, "Return JSON", "synthetic", max_tokens=1800)
+    llm.structured(Extracted, "Return JSON", "synthetic", max_tokens=1800)
+    for key, value in {
+        "ROUTE_REASONING": "low",
+        "EXTRACT_REASONING": "high",
+        "ROUTE_MAX_TOKENS": "120",
+        "EXTRACT_MAX_TOKENS": "1400",
+        "TIMEOUT_SECONDS": "89",
+        "EXTRACT_TIMEOUT_SECONDS": "137",
+    }.items():
+        monkeypatch.setenv(f"KIO_LLM_{key}", value)
+    llm.structured(llm.RouteDecision, "Return JSON", "synthetic", max_tokens=32)
+    llm.structured(Extracted, "Return JSON", "synthetic", max_tokens=1800)
+    assert requests == [
+        {"max_tokens": 24576, "reasoning_effort": "low", "thinking": {"type": "enabled"}},
+        {"max_tokens": 32768, "reasoning_effort": "high", "thinking": {"type": "enabled"}},
+        {"max_tokens": 1800, "reasoning_effort": "none", "temperature": 0},
+        {"max_completion_tokens": 1800, "temperature": 0},
+        {"max_completion_tokens": 120, "reasoning_effort": "low"},
+        {"max_completion_tokens": 1400, "reasoning_effort": "high"},
     ]
+    assert deadlines == [480, 480, 180, 180, 89, 137]

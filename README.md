@@ -173,9 +173,29 @@ to 1,800 generated tokens for a non-reasoning response. The class’s field defi
 a JSON object, validates it against the cited schema and permits one correction within a
 180-second call deadline. `KIO_LLM_TIMEOUT_SECONDS` accepts 1–600 seconds. Endpoints
 with native JSON schema constraints can use `KIO_LLM_OUTPUT=schema`; the default is `json`.
-The measured DeepSeek Pro development profile enables low reasoning for routing (24,576 total
-completion tokens) and high reasoning for extraction (32,768). Its default deadline is 480
-seconds. These larger limits include reasoning tokens. Transport retries are disabled. A failed document produces an empty
+For another endpoint, set `KIO_LLM_ROUTE_REASONING` and `KIO_LLM_EXTRACT_REASONING` to a
+`reasoning_effort` supported by the model. `KIO_LLM_ROUTE_MAX_TOKENS` and `KIO_LLM_EXTRACT_MAX_TOKENS`
+set positive completion budgets, including reasoning. `KIO_LLM_ROUTE_TIMEOUT_SECONDS` and
+`KIO_LLM_EXTRACT_TIMEOUT_SECONDS` override the shared deadline for their stage (1–600 seconds).
+Use `KIO_LLM_TOKEN_PARAMETER` to select `max_tokens` or `max_completion_tokens` when the server
+requires a specific field. Set `KIO_LLM_INLINE_SYSTEM_PROMPTS=false` for servers requiring system
+messages at the beginning of the conversation. `KIO_LLM_THINKING_TYPE=enabled` sends
+`thinking.type=enabled` and preserves the returned `reasoning_content` on a validation retry.
+These optional settings apply to whichever model ID and base URL you supply.
+
+The development measurements used the following explicit settings in addition to endpoint credentials.
+A dash uses the application default.
+
+| Setting | DeepSeek Pro | DeepSeek Flash |
+|---|---|---|
+| `KIO_LLM_TOKEN_PARAMETER` | `max_tokens` | `max_tokens` |
+| `KIO_LLM_INLINE_SYSTEM_PROMPTS` | `false` | `false` |
+| `KIO_LLM_THINKING_TYPE` | `enabled` | — |
+| `KIO_LLM_ROUTE_REASONING` / `KIO_LLM_EXTRACT_REASONING` | `low` / `high` | `none` / `none` |
+| `KIO_LLM_ROUTE_MAX_TOKENS` / `KIO_LLM_EXTRACT_MAX_TOKENS` | `24576` / `32768` | `32` / `1800` |
+| `KIO_LLM_TIMEOUT_SECONDS` | `480` | `180` |
+
+Transport retries are disabled. A failed document produces an empty
 file and an error on stderr. The CLI finishes the batch with exit status 1.
 
 Each accepted value needs a citation in the displayed text. If a model flattens line breaks,
@@ -205,6 +225,41 @@ Matching model releases can still differ in quantization and serving settings.
 [Scaleway prices](https://www.scaleway.com/en/pricing/model-as-a-service/) ·
 [Scaleway API](https://www.scaleway.com/en/docs/generative-apis/faq/) ·
 [Berget capabilities](https://docs.berget.ai/models/capabilities)
+
+### Measurements on real KIO documents
+
+On the private dev split (22 PDFs in 14 cases), DeepSeek V4 Pro with model-first extraction and rule fallback (`LR`) scored **0.7236 field micro-F1**. The keyless rules profile scored **0.4356**. The keyed profile asks the model to classify a first page only when the rules reject it. This recovered all five positive documents the rule router missed, and all seven unrelated PDFs still produced empty files. The EU-hosted submission endpoint still needs its own evaluation. [Aggregate results](evals/results/llm-real-docs.json)
+
+All five rows below use the same fallback router, including `R`, where the model can route but rules extract every field. Macro F1 gives equal weight to the three classes. All five modes classified 15/15 positives correctly and returned empty files for 7/7 negatives.
+
+| Pro extraction mode | Micro F1 | Macro F1 | Appeal | Power of attorney | Transfer | Serial stage seconds/PDF |
+|---|---:|---:|---:|---:|---:|---:|
+| R | 0.4203 | 0.3228 | 0.4685 | 0.5000 | 0.0000 | 8.18 |
+| L | 0.7114 | 0.6767 | 0.7277 | 0.6774 | 0.6250 | 69.91 |
+| RL | 0.6734 | 0.6819 | 0.6667 | 0.7541 | 0.6250 | 69.91 |
+| **LR** | **0.7236** | **0.7090** | 0.7277 | 0.7742 | 0.6250 | 69.91 |
+| V | 0.7114 | 0.6767 | 0.7277 | 0.6774 | 0.6250 | 69.91 |
+
+With `LR`, rule-only routing scored 0.6783 micro-F1 and found 10/15 positives. Asking Pro about every first page produced the same score and routes as fallback but required 22 classification calls instead of 12. On the same dev PDFs, DeepSeek Flash scored 0.6951 micro-F1 and 0.6302 macro-F1 with `LR` and fallback routing. Its class scores were 0.7225 for appeals, 0.7097 for powers of attorney and 0.4583 for transfers. Flash took 14.12 serial stage seconds per PDF. These timings sum the recorded OCR, routing and extraction calls and divide by 22. The comparison reuses identical calls across modes.
+
+
+In a separate uncached test on two invented native-text PDFs, one worker took 2.56 s/PDF with Flash and 15.09 s/PDF with Pro. Two simultaneous document workers took 1.15 and 12.55 s/PDF respectively. Each PDF needed one route followed by one extraction. The class decision selects the extraction schema, so these calls run in sequence within each PDF. The fixture had no OCR cost.
+
+The model reads up to three pages. Scanned pages receive a second OCR reading, and the two readings share a 16,384-byte input budget. The extractor can recover a line-wrapped citation when its words map to one source span. It checks typed values and canonical organizer codes against that evidence. Across the development iterations, Flash `L` with fallback routing improved from 0.5418 with the 8,192-byte single reading to 0.6870 with the final profile. Multiple changes contributed to this difference.
+
+In a strict audit that paired repeated records within their parent, Pro `L` had 72 errors across 247 dev field comparisons. In 53 cases the raw response proposed the reference value and grounding replaced it with null. Fifteen quotes could not be recovered. Another 38 quotes matched the source but failed the check for the proposed value. The audit found one nonnull output against a null reference, three name or title convention differences and four incorrect or omitted values recognizable in the input. Eleven cases remained unresolved. This audit used the cached primary and secondary readings and could not establish an input-loss count beyond the first three pages.
+
+
+**Local Qwen comparison.** On the 16 GB Apple M1 we served Unsloth’s Apache-2.0 GGUF of Qwen3-4B-Instruct-2507 (`Q4_K_M`, 2,497,281,120 bytes) using llama.cpp build `b12608`. From the directory containing the binary distribution and the model saved as `qwen.gguf`, run the following command. The measured model file has SHA-256 `3605803b982cb64aead44f6c1b2ae36e3acdb41d8e46c8a94c6533bc4c67e597`. [Model files](https://huggingface.co/unsloth/Qwen3-4B-Instruct-2507-GGUF) · [llama.cpp release](https://github.com/ggml-org/llama.cpp/releases/tag/b12608)
+
+```sh
+./llama-b12608/llama-server -m qwen.gguf --host 127.0.0.1 --port 18089 \
+  -c 16384 -np 1 -ngl 99 --cache-type-k q8_0 --cache-type-v q8_0 --alias qwen-local
+```
+
+The local base URL is `http://127.0.0.1:18089/v1` and the model ID is `qwen-local`. The native-schema run used `KIO_LLM_OUTPUT=schema` and `KIO_LLM_TIMEOUT_SECONDS=360`. Supply a nonempty placeholder for `KIO_LLM_API_KEY` when running this local server without authentication.
+
+Within the 30-minute local budget, Qwen completed 11 of 22 dev PDFs (nine positive, two unrelated). On those same PDFs, Qwen scored 0.4323 micro-F1, Flash 0.7266 and Pro 0.7682. The respective gaps to Flash and Pro were 0.2943 and 0.3359. The completed Qwen prefix averaged 114.18 wall seconds/PDF using cached OCR. The remaining 11 have no local score.
 
 ## Measure
 
@@ -263,8 +318,7 @@ current rules, select `KIO_OCR_ENGINE=tesseract-dpi` and run
 
 All five runs used the same frozen extraction rules and 20 real development PDFs. Native text was
 used where available. Tesseract's explicit-DPI mode gained **0.0301** dev micro-F1 over automatic DPI.
-The hybrid improved on explicit DPI by **0.0133**, below the **0.0300** required to add RapidOCR to
-every installation. The shipped setting is `tesseract-dpi`. [Scores and measurement method](evals/results/ocr-engines.json)
+In that rules-only experiment, the hybrid improved on explicit DPI by **0.0133**. Keyless extraction keeps the `tesseract-dpi` setting. The separately measured keyed profile uses both readings on scanned pages. [Scores and measurement method](evals/results/ocr-engines.json)
 
 | Variant | Field micro-F1 | Macro-F1 | Routed correctly, appeal / power / transfer / other | Wall s / OCR page | CPU s / OCR page | Peak RSS, MiB | Installed MB |
 |---|---:|---:|---|---:|---:|---:|---:|

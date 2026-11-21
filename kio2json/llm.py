@@ -1,14 +1,13 @@
 """Structured extraction with a verbatim source quote for each scalar value."""
 
 import re
-from typing import Literal
-from urllib.parse import urlsplit
+from typing import Annotated, Literal
 
-from pydantic import BaseModel, Field, SecretStr
+from openai.types.shared import ReasoningEffort
+from pydantic import BaseModel, Field, PositiveInt, SecretStr
 from pydantic_ai import Agent, NativeOutput, PromptedOutput
 from pydantic_ai.models.openai import OpenAIChatModel
 from pydantic_ai.profiles.openai import OpenAIModelProfile
-from pydantic_ai.providers.deepseek import DeepSeekProvider
 from pydantic_ai.providers.openai_compatible import OpenAICompatibleProvider
 from pydantic_settings import BaseSettings, SettingsConfigDict
 
@@ -27,31 +26,56 @@ INSTRUCTIONS = (
 )
 
 
+RequestTimeout = Annotated[int, Field(ge=1, le=600)]
+
+
 class Endpoint(BaseSettings):
     model_config = SettingsConfigDict(env_prefix="KIO_LLM_", env_file=".env", extra="ignore", hide_input_in_errors=True)
     base_url: str
     model: str
     api_key: SecretStr
     output: Literal["json", "schema"] = "json"
-    timeout_seconds: int | None = Field(default=None, ge=1, le=600)
+    timeout_seconds: RequestTimeout | None = None
+    route_timeout_seconds: RequestTimeout | None = None
+    extract_timeout_seconds: RequestTimeout | None = None
+    route_reasoning: ReasoningEffort = None
+    extract_reasoning: ReasoningEffort = None
+    route_max_tokens: PositiveInt | None = None
+    extract_max_tokens: PositiveInt | None = None
 
-    @property
-    def pro_reasoning(self) -> bool:
-        return urlsplit(self.base_url).hostname == "api.deepseek.com" and self.model == "deepseek-v4-pro"
+    token_parameter: Literal["max_tokens", "max_completion_tokens"] | None = None
+    thinking_type: Literal["enabled", "disabled"] | None = None
+    inline_system_prompts: bool | None = None
+
+    def request_settings(self, *, routing: bool, max_tokens: int):
+        effort = self.route_reasoning if routing else self.extract_reasoning
+        tokens = self.route_max_tokens if routing else self.extract_max_tokens
+        deadline = self.route_timeout_seconds if routing else self.extract_timeout_seconds
+        settings = {"max_retries": 0, "max_tokens": tokens or max_tokens}
+        if effort in (None, "none"):
+            settings["temperature"] = 0
+        if effort is not None:
+            settings["openai_reasoning_effort"] = effort
+        if self.thinking_type is not None:
+            settings["extra_body"] = {"thinking": {"type": self.thinking_type}}
+        return settings, deadline or self.timeout_seconds or 180
 
     def chat_model(self):
-        if urlsplit(self.base_url).hostname == "api.deepseek.com":
-            provider = DeepSeekProvider(base_url=self.base_url, api_key=self.api_key.get_secret_value())
-            return OpenAIChatModel(
-                self.model, provider=provider, settings=None if self.pro_reasoning else {"thinking": False}
-            )
+        profile = OpenAIModelProfile(
+            supports_json_object_output=True, supports_json_schema_output=self.output == "schema"
+        )
+        if self.token_parameter is not None:
+            profile["openai_chat_supports_max_completion_tokens"] = self.token_parameter == "max_completion_tokens"
+        if self.inline_system_prompts is not None:
+            profile["supports_inline_system_prompts"] = self.inline_system_prompts
+        if self.thinking_type == "enabled":
+            profile["openai_chat_thinking_field"] = "reasoning_content"
+            profile["openai_chat_send_back_thinking_parts"] = "field"
         provider = OpenAICompatibleProvider(
             "kio",
             base_url=self.base_url,
             api_key=self.api_key.get_secret_value(),
-            profile=OpenAIModelProfile(
-                supports_json_object_output=True, supports_json_schema_output=self.output == "schema"
-            ),
+            profile=profile,
         )
         return OpenAIChatModel(self.model, provider=provider)
 
@@ -115,16 +139,7 @@ def structured(output_type, instructions: str, text: str, *, max_tokens: int, mo
         settings = {"max_retries": 0, "max_tokens": max_tokens, "temperature": 0}
         if model is None:
             endpoint = Endpoint()
-            if endpoint.pro_reasoning:
-                routing = output_type is RouteDecision
-                settings = {
-                    "max_retries": 0,
-                    "max_tokens": 24576 if routing else 32768,
-                    "thinking": "low" if routing else "high",
-                    "extra_body": {"thinking": {"type": "enabled"}},
-                }
-                timeout = 480
-            timeout = endpoint.timeout_seconds or timeout
+            settings, timeout = endpoint.request_settings(routing=output_type is RouteDecision, max_tokens=max_tokens)
             model = endpoint.chat_model()
             output_format = NativeOutput if endpoint.output == "schema" else PromptedOutput
             output_type = output_format(
