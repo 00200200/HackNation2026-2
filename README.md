@@ -241,7 +241,7 @@ These runs used local rules with the three endpoint variables unset. The two loc
 |---|---:|---:|---:|---:|---:|---:|---|---:|---:|
 | Local corpus 1, dev | 22 | 0.6973 | 0.6628 | 0.7056 | 0.7273 | 0.5556 | 8/8 / 3/3 / 2/4 | 7/7 | 6.69 |
 | Local corpus 2, dev | 39 | 0.5248 | 0.3619 | 0.6008 | 0.3333 | 0.1515 | 12/13 / 4/5 / 1/10 | 11/11 | 3.61 |
-| Organizer scans | 30 | 0.5633 | 0.4711 | 0.6123 | 0.6065 | 0.1944 | 9/10 / 10/10 / 2/10 | n/a | 4.35 |
+| Organizer scans | 30 | 0.5633 | 0.4711 | 0.6123 | 0.6065 | 0.1944 | 9/10 / 10/10 / 2/10 | n/a | 9.86 |
 
 Micro F1 pools field matches across documents. Macro F1 averages the three class scores. The routing columns count correctly classified documents in each target class. The negatives column counts zero-byte outputs. Timing includes OCR and extraction on a shared host. [Real development reports](evals/results/integration-rules.json) · [Organizer scan report](evals/results/organizer-scans.json)
 
