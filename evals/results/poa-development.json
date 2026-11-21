@@ -1,0 +1,363 @@
+{
+  "profile": "rules, default Polish Tesseract, no model endpoint",
+  "baseline": "f357741d598d424ca5b8f9d03732900c067121f2",
+  "evaluated_product": "76a608373a82e4356d5799b663e0806a69b44dae",
+  "method": "Staged comparisons replay the same OCR text and compare the parsed grant JSON. Final aggregate scores use the normal shuffled-filename CLI. The corpus 2 test split is reserved for the merged system.",
+  "steps": {
+    "integration_baseline": {
+      "organizer_scans": {
+        "micro_f1": 0.5632911392405063,
+        "macro_f1_classes": 0.47108057878667203,
+        "per_class_f1": {
+          "odwolanie": 0.6123456790123457,
+          "pelnomocnictwo": 0.6064516129032258,
+          "przelew": 0.19444444444444445
+        },
+        "correct_routes": {
+          "przelew": 2,
+          "odwolanie": 9,
+          "pelnomocnictwo": 10
+        },
+        "exact_poa_json": 0,
+        "poa_pdfs": 10
+      },
+      "corpus_1_all": {
+        "micro_f1": 0.5872442839951865,
+        "macro_f1_classes": 0.5518938139093178,
+        "per_class_f1": {
+          "odwolanie": 0.6015503875968993,
+          "pelnomocnictwo": 0.5925925925925926,
+          "przelew": 0.46153846153846156
+        },
+        "correct_routes": {
+          "pelnomocnictwo": 6,
+          "negatywny": 11,
+          "odwolanie": 12,
+          "przelew": 4
+        },
+        "exact_poa_json": 0,
+        "poa_pdfs": 6
+      },
+      "corpus_2_dev": {
+        "micro_f1": 0.5248447204968945,
+        "macro_f1_classes": 0.3618796662274923,
+        "per_class_f1": {
+          "odwolanie": 0.6007905138339921,
+          "pelnomocnictwo": 0.3333333333333333,
+          "przelew": 0.15151515151515152
+        },
+        "correct_routes": {
+          "odwolanie": 12,
+          "przelew": 1,
+          "pelnomocnictwo": 4,
+          "negatywny": 11
+        },
+        "exact_poa_json": 0,
+        "poa_pdfs": 5
+      }
+    },
+    "bounded_ocr_declarations": {
+      "organizer_scans": {
+        "micro_f1": 0.6822840409956076,
+        "macro_f1_classes": 0.5990271285309042,
+        "per_class_f1": {
+          "odwolanie": 0.6123456790123457,
+          "pelnomocnictwo": 0.9902912621359223,
+          "przelew": 0.19444444444444445
+        },
+        "correct_routes": {
+          "przelew": 2,
+          "odwolanie": 9,
+          "pelnomocnictwo": 10
+        },
+        "exact_poa_json": 9,
+        "poa_pdfs": 10
+      },
+      "corpus_1_all": {
+        "micro_f1": 0.5872442839951865,
+        "macro_f1_classes": 0.5518938139093178,
+        "per_class_f1": {
+          "odwolanie": 0.6015503875968993,
+          "pelnomocnictwo": 0.5925925925925926,
+          "przelew": 0.46153846153846156
+        },
+        "correct_routes": {
+          "pelnomocnictwo": 6,
+          "negatywny": 11,
+          "odwolanie": 12,
+          "przelew": 4
+        },
+        "exact_poa_json": 0,
+        "poa_pdfs": 6
+      },
+      "corpus_2_dev": {
+        "micro_f1": 0.5248447204968945,
+        "macro_f1_classes": 0.3618796662274923,
+        "per_class_f1": {
+          "odwolanie": 0.6007905138339921,
+          "pelnomocnictwo": 0.3333333333333333,
+          "przelew": 0.15151515151515152
+        },
+        "correct_routes": {
+          "odwolanie": 12,
+          "przelew": 1,
+          "pelnomocnictwo": 4,
+          "negatywny": 11
+        },
+        "exact_poa_json": 0,
+        "poa_pdfs": 5
+      }
+    },
+    "corroborated_krs_crops": {
+      "organizer_scans": {
+        "micro_f1": 0.6852122986822841,
+        "macro_f1_classes": 0.6022633744855967,
+        "per_class_f1": {
+          "odwolanie": 0.6123456790123457,
+          "pelnomocnictwo": 1.0,
+          "przelew": 0.19444444444444445
+        },
+        "correct_routes": {
+          "przelew": 2,
+          "odwolanie": 9,
+          "pelnomocnictwo": 10
+        },
+        "exact_poa_json": 10,
+        "poa_pdfs": 10
+      },
+      "corpus_1_all": {
+        "micro_f1": 0.5872442839951865,
+        "macro_f1_classes": 0.5518938139093178,
+        "per_class_f1": {
+          "odwolanie": 0.6015503875968993,
+          "pelnomocnictwo": 0.5925925925925926,
+          "przelew": 0.46153846153846156
+        },
+        "correct_routes": {
+          "pelnomocnictwo": 6,
+          "negatywny": 11,
+          "odwolanie": 12,
+          "przelew": 4
+        },
+        "exact_poa_json": 0,
+        "poa_pdfs": 6
+      },
+      "corpus_2_dev": {
+        "micro_f1": 0.5248447204968945,
+        "macro_f1_classes": 0.3618796662274923,
+        "per_class_f1": {
+          "odwolanie": 0.6007905138339921,
+          "pelnomocnictwo": 0.3333333333333333,
+          "przelew": 0.15151515151515152
+        },
+        "correct_routes": {
+          "odwolanie": 12,
+          "przelew": 1,
+          "pelnomocnictwo": 4,
+          "negatywny": 11
+        },
+        "exact_poa_json": 0,
+        "poa_pdfs": 5
+      }
+    },
+    "typed_appointments_and_principal_evidence": {
+      "organizer_scans": {
+        "micro_f1": 0.6852122986822841,
+        "macro_f1_classes": 0.6022633744855967,
+        "per_class_f1": {
+          "odwolanie": 0.6123456790123457,
+          "pelnomocnictwo": 1.0,
+          "przelew": 0.19444444444444445
+        },
+        "correct_routes": {
+          "przelew": 2,
+          "odwolanie": 9,
+          "pelnomocnictwo": 10
+        },
+        "exact_poa_json": 10,
+        "poa_pdfs": 10
+      },
+      "corpus_1_all": {
+        "micro_f1": 0.6257521058965102,
+        "macro_f1_classes": 0.6506592460080832,
+        "per_class_f1": {
+          "odwolanie": 0.6015503875968993,
+          "pelnomocnictwo": 0.8888888888888888,
+          "przelew": 0.46153846153846156
+        },
+        "correct_routes": {
+          "pelnomocnictwo": 6,
+          "negatywny": 11,
+          "odwolanie": 12,
+          "przelew": 4
+        },
+        "exact_poa_json": 0,
+        "poa_pdfs": 6
+      },
+      "corpus_2_dev": {
+        "micro_f1": 0.5963855421686747,
+        "macro_f1_classes": 0.5478700043917435,
+        "per_class_f1": {
+          "odwolanie": 0.6007905138339921,
+          "pelnomocnictwo": 0.8913043478260869,
+          "przelew": 0.15151515151515152
+        },
+        "correct_routes": {
+          "odwolanie": 12,
+          "przelew": 1,
+          "pelnomocnictwo": 5,
+          "negatywny": 11
+        },
+        "exact_poa_json": 1,
+        "poa_pdfs": 5
+      }
+    },
+    "embedded_approval_certificates": {
+      "organizer_scans": {
+        "micro_f1": 0.6852122986822841,
+        "macro_f1_classes": 0.6022633744855967,
+        "per_class_f1": {
+          "odwolanie": 0.6123456790123457,
+          "pelnomocnictwo": 1.0,
+          "przelew": 0.19444444444444445
+        },
+        "correct_routes": {
+          "przelew": 2,
+          "odwolanie": 9,
+          "pelnomocnictwo": 10
+        },
+        "exact_poa_json": 10,
+        "poa_pdfs": 10
+      },
+      "corpus_1_all": {
+        "micro_f1": 0.6306954436450839,
+        "macro_f1_classes": 0.6606692560180932,
+        "per_class_f1": {
+          "odwolanie": 0.6015503875968993,
+          "pelnomocnictwo": 0.918918918918919,
+          "przelew": 0.46153846153846156
+        },
+        "correct_routes": {
+          "pelnomocnictwo": 6,
+          "negatywny": 11,
+          "odwolanie": 12,
+          "przelew": 4
+        },
+        "exact_poa_json": 1,
+        "poa_pdfs": 6
+      },
+      "corpus_2_dev": {
+        "micro_f1": 0.6045112781954888,
+        "macro_f1_classes": 0.5661807414963095,
+        "per_class_f1": {
+          "odwolanie": 0.6007905138339921,
+          "pelnomocnictwo": 0.946236559139785,
+          "przelew": 0.15151515151515152
+        },
+        "correct_routes": {
+          "odwolanie": 12,
+          "przelew": 1,
+          "pelnomocnictwo": 5,
+          "negatywny": 11
+        },
+        "exact_poa_json": 3,
+        "poa_pdfs": 5
+      }
+    }
+  },
+  "merged_integration": "eabbb31",
+  "native_outputs_byte_identical": 196,
+  "native_pdf_count": 196,
+  "final_cli": {
+    "corpus_1_all": {
+      "pdfs": 39,
+      "cases": 21,
+      "seconds_per_pdf": 7.388738690147129,
+      "counts": {
+        "tp": 263,
+        "fp": 83,
+        "fn": 225
+      },
+      "routing_by_class": {
+        "odwolanie": {
+          "correct": 12,
+          "total": 13
+        },
+        "pelnomocnictwo": {
+          "correct": 6,
+          "total": 6
+        },
+        "przelew": {
+          "correct": 4,
+          "total": 9
+        },
+        "negatywny": {
+          "correct": 11,
+          "total": 11
+        }
+      },
+      "outputs_complete": 1.0,
+      "split": "all"
+    },
+    "corpus_2_dev": {
+      "pdfs": 39,
+      "cases": 14,
+      "seconds_per_pdf": 6.330917998933448,
+      "counts": {
+        "tp": 201,
+        "fp": 70,
+        "fn": 193
+      },
+      "routing_by_class": {
+        "odwolanie": {
+          "correct": 12,
+          "total": 13
+        },
+        "pelnomocnictwo": {
+          "correct": 5,
+          "total": 5
+        },
+        "przelew": {
+          "correct": 1,
+          "total": 10
+        },
+        "negatywny": {
+          "correct": 11,
+          "total": 11
+        }
+      },
+      "outputs_complete": 1.0,
+      "split": "dev"
+    },
+    "organizer_scans": {
+      "pdfs": 30,
+      "cases": 1,
+      "seconds_per_pdf": 10.045390724996105,
+      "counts": {
+        "tp": 234,
+        "fp": 61,
+        "fn": 154
+      },
+      "routing_by_class": {
+        "odwolanie": {
+          "correct": 9,
+          "total": 10
+        },
+        "pelnomocnictwo": {
+          "correct": 10,
+          "total": 10
+        },
+        "przelew": {
+          "correct": 2,
+          "total": 10
+        },
+        "negatywny": {
+          "correct": 0,
+          "total": 0
+        }
+      },
+      "outputs_complete": 1.0,
+      "split": "all"
+    }
+  }
+}
