@@ -2,12 +2,12 @@
 
 import pytest
 from pydantic_ai import models
-from pydantic_ai.exceptions import UnexpectedModelBehavior
 from pydantic_ai.messages import ModelResponse, ToolCallPart
 from pydantic_ai.models.function import FunctionModel
 from pydantic_ai.models.test import TestModel as OfflineModel
 
 from kio2json.class_config import DocumentClass, load_classes
+from kio2json.endpoint_error import EndpointError
 
 
 def scalar(instruction, **options):
@@ -114,7 +114,7 @@ def test_missing_model_configuration_is_visible(monkeypatch, tmp_path):
     for key in ("KIO_LLM_BASE_URL", "KIO_LLM_MODEL", "KIO_LLM_API_KEY"):
         monkeypatch.delenv(key, raising=False)
     cfg = form({"ref": scalar("Reference")}, ["llm"])
-    with pytest.raises(ValueError, match="(?i)base_url"):
+    with pytest.raises(EndpointError, match="^ValidationError$"):
         extract(cfg, "Receipt")
 
 
@@ -143,7 +143,7 @@ def test_nested_fallback_uses_identity_instead_of_position():
     cfg = next(c for c in load_classes() if c.id == "power_of_attorney").model_copy(
         update={"engines": ["python", "llm"]}
     )
-    text = "adw. Iga Wymyślna oraz adw. Ewa Wymyślna. Identifier 88888888881 belongs to Ewa."
+    text = "Udzielam pełnomocnictwa adw. Iga Wymyślna oraz adw. Ewa Wymyślna. Identifier 88888888881 belongs to Ewa."
     model = OfflineModel(
         custom_output_args={
             "mocodawca": [],
@@ -172,7 +172,7 @@ def test_missing_quote_exhausts_one_schema_retry():
         return ModelResponse(parts=[ToolCallPart(info.output_tools[0].name, {"ref": {"value": "H"}})])
 
     cfg = form({"ref": scalar("Reference")}, ["llm"])
-    with pytest.raises(UnexpectedModelBehavior):
+    with pytest.raises(EndpointError, match="^UnexpectedModelBehavior$"):
         extract(cfg, "H", model=FunctionModel(omit_quote))
     assert len(attempts) == 2
 

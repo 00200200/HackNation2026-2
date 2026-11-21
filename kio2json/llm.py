@@ -7,6 +7,7 @@ from pydantic_ai.providers.openai_compatible import OpenAICompatibleProvider
 from pydantic_settings import BaseSettings, SettingsConfigDict
 
 from .class_config import DocumentClass, OutputField
+from .endpoint_error import EndpointError
 from .output_schema import scalar_value
 
 INSTRUCTIONS = (
@@ -41,12 +42,15 @@ def grounded(field: OutputField, data, text: str):
 
 
 def extract_llm(definition: DocumentClass, text: str, model=None) -> dict:
-    agent = Agent(
-        model if model is not None else Endpoint().chat_model(),
-        output_type=definition.cited_model,
-        instructions=INSTRUCTIONS,
-        retries=1,
-        model_settings={"max_retries": 0},
-    )
-    result = agent.run_sync(text, timeout=60).output.model_dump(by_alias=True)
+    try:
+        agent = Agent(
+            model if model is not None else Endpoint().chat_model(),
+            output_type=definition.cited_model,
+            instructions=INSTRUCTIONS,
+            retries=1,
+            model_settings={"max_retries": 0},
+        )
+        result = agent.run_sync(text, timeout=60).output.model_dump(by_alias=True)
+    except Exception as error:  # noqa: BLE001 - even SDK setup and transport errors can expose credentials
+        raise EndpointError(error) from None
     return {key: grounded(field, result[key], text) for key, field in definition.fields.items()}
