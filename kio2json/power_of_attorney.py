@@ -2,6 +2,8 @@
 
 import re
 
+from stdnum.pl import nip
+
 from .common import ATTORNEY_RE, PERSON, UPPER, registry_ids, squash
 
 LEGAL_FORM = (
@@ -51,6 +53,54 @@ OTHER_ROLE = re.compile(
 )
 
 
+def _company_data(name: str, details: str) -> dict:
+    ids = registry_ids(re.sub(r"\bKRŚ\b", "KRS", details))
+    long_krs = re.search(r"(?is)Rejestru Sądowego.{0,190}?pod numerem\s+(\d{10})(?!\d)", details)
+    return {
+        "imie_nazwisko": None,
+        "krs": ids["krs"] or (long_krs[1] if long_krs else None),
+        "nazwa": name,
+        "nip": ids["nip"],
+        "typ": "osoba_prawna",
+    }
+
+
+def _declared_officers(text: str) -> list[tuple[dict, str]]:
+    grant = GRANT.search(text)
+    if not grant:
+        return []
+    declaration = re.search(r"(?i)\b(?:my\s+)?niżej podpisani\s*:", text[: grant.start()])
+    if not declaration:
+        return []
+    rows = re.split(r"(?m)^\s*\d+[.)]\s+", text[declaration.end() : grant.start()])[1:]
+    officers = []
+    for row in rows:
+        officer = re.match(rf"({PERSON})\s*[-–—,]\s*(?i:{SIGNER_ROLE_RE.pattern})\s+", row)
+        company = COMPANY_RE.match(row, officer.end()) if officer else None
+        if company:
+            officers.append((_company_data(squash(company[1]), row[company.end() :]), squash(officer[1])))
+    return officers
+
+
+def _issuer_identifiers(text: str, principal: dict) -> None:
+    # Letterheads and address footers can carry the IDs omitted by the grant.
+    # Connect one bounded block to the grant by its KRS or the same company name.
+    name = re.sub(LEGAL_FORM + r"$", "", principal["nazwa"]).strip().casefold()
+    lines = text.splitlines()
+    candidates = set()
+    for i, line in enumerate(lines):
+        candidate = registry_ids(line)["nip"]
+        if not candidate or not nip.is_valid(candidate):
+            continue
+        block = " ".join(lines[max(0, i - 2) : i + 3])
+        if (principal["krs"] and registry_ids(block)["krs"] == principal["krs"]) or (
+            name and re.search(rf"(?<!\w){re.escape(name)}(?!\w)", block.casefold())
+        ):
+            candidates.add(candidate)
+    if len(candidates) == 1:
+        principal["nip"] = candidates.pop()
+
+
 def _principals(text: str) -> list[dict]:
     grant = GRANT.search(text)
     text = text[: grant.start()] if grant else text
@@ -83,6 +133,9 @@ def _principals(text: str) -> list[dict]:
             continue
         following = companies[index + 1] if index + 1 < len(companies) else None
         between = text[match.end() : following.start() if following else len(text)]
+        # A court maintaining the registry is part of this company's identity clause.
+        between = re.sub(r"(?i)(Rejestru Sądowego)\s+prowadzon\w+ przez Sąd", r"\1, Sąd", between)
+        between = re.sub(r"(?i)(Rejestru Sądowego\s+pod numerem)\s+KR[SŚ]\s*:", r"\1", between)
         details = OTHER_ROLE.split(between, maxsplit=1)[0]
         explicit = declarations or GRANTOR.search(match[1])
         if not explicit:
@@ -96,18 +149,8 @@ def _principals(text: str) -> list[dict]:
                 or re.search(r"(?:\bi|\boraz|;\s*\d+\))\s*$", between)
             ):
                 continue
-        ids = registry_ids(details[:ID_WINDOW])
         name = _company_name(match.group(1))
-        principals.setdefault(
-            name,
-            {
-                "imie_nazwisko": None,
-                "krs": ids["krs"],
-                "nazwa": name,
-                "nip": ids["nip"],
-                "typ": "osoba_prawna",
-            },
-        )
+        principals.setdefault(name, _company_data(name, details[: ID_WINDOW * 2]))
     return list(principals.values())
 
 
@@ -126,12 +169,29 @@ def _attorneys(text: str) -> list[dict]:
             active = False
         appointment.append(line if active else "|")
     text = "\n".join(appointment)
-    matches = list(ATTORNEY_RE.finditer(text))
-    for index, match in enumerate(matches):
-        next_start = matches[index + 1].start() if index + 1 < len(matches) else len(text)
-        pesel = re.search(r"PESEL:?\s*(\d{11})(?!\d)", text[match.end() : min(next_start, match.end() + 60)])
-        name = squash(match.group(1))
-        attorneys.setdefault(name, {"imie_nazwisko": name, "pesel": pesel.group(1) if pesel else None})
+    titled = rf"(?i:adw\.|r\.\s?pr\.|adwokat\w*|radc\w+\s+prawn\w+)\s+({PERSON})"
+    plain = (
+        rf"(?i:{GRANT.pattern}\s*(?:niniejszym\s+)?(?:pełnomocnictwa\s*)?[:–-]?\s*(?:panią?|panu|pana)?\s*)"
+        rf"({PERSON})(?=\s*(?:[.,(;]|$|(?i:numer PESEL|PESEL|pełnomocnictwa|do\b|legitymuj)))"
+    )
+    labelled = rf"(?im:^\s*pełnomocnik\s*:\s*)({PERSON})"
+    matches = sorted(
+        ((m, kind) for kind, pattern in enumerate((titled, plain, labelled)) for m in re.finditer(pattern, text)),
+        key=lambda item: item[0].start(),
+    )
+    ids = {}
+    for index, (match, kind) in enumerate(matches):
+        next_start = matches[index + 1][0].start() if index + 1 < len(matches) else len(text)
+        pesel = re.search(r"(?i:PESEL):?\s*(\d{11})(?!\d)", text[match.end() : min(next_start, match.end() + 60)])
+        name = squash(match[1])
+        number = pesel[1] if pesel else None
+        if number and number in ids:
+            if kind != 2:
+                continue
+            attorneys.pop(ids[number], None)
+        if number:
+            ids[number] = name
+        attorneys.setdefault(name, {"imie_nazwisko": name, "pesel": number})
     return list(attorneys.values())
 
 
@@ -228,10 +288,57 @@ def _signers(text: str, principal_names: list[str], attorney_names: set[str]) ->
     return signers
 
 
+STAMP = re.compile(r"(?i)^(?:podpis(?:ano|any|ana) (?:elektronicznie )?przez|signed (?:electronically )?by)\s*[:：]\s*")
+FOOTER = re.compile(r"(?i)(?:^tel[.:]|^https?://|\bul\.\s|\b(?:NIP|REGON)\s*[:\d]|\w@\w)")
+
+
+def _stamp_signers(text: str, principal: str, attorneys: set[str]) -> list[str | None]:
+    names = []
+    lines = text.splitlines()
+    core = re.sub(LEGAL_FORM + r"$", "", principal).strip().casefold()
+    headed = False
+    for i, raw in enumerate(lines):
+        line = raw.strip(" |")
+        if re.match(r"(?i)^pełnomocnictwo przyjmuję", line):
+            break
+        if FOOTER.search(line):
+            headed = False
+        if re.match(r"(?i)^(?:za|w imieniu) ", line):
+            headed = bool(core and re.match(rf"(?i)^(?:za|w imieniu) {re.escape(core)}(?:\s|$)", line))
+        if re.fullmatch(r"(?i)podpis(?: mocodawcy)?\s*:\s*\[?nieczytelny\]?", line):
+            names.append(None)
+        marker = STAMP.match(line)
+        if not marker and not (headed and SIGNER_ROLE_RE.fullmatch(line)):
+            continue
+        following = ([line[marker.end() :]] if marker else []) + lines[i + 1 : i + 4]
+        for candidate in following:
+            candidate = candidate.strip(" |")
+            if FOOTER.search(candidate) or STAMP.match(candidate) or SIGNER_ROLE_RE.fullmatch(candidate):
+                break
+            if re.fullmatch(PERSON, candidate):
+                if candidate not in attorneys and candidate not in names:
+                    names.append(candidate)
+                break
+    return names
+
+
 def extract(text: str) -> dict:
-    principals = _principals(text)
+    officers = _declared_officers(text)
+    principals = [p for p, _ in officers] if officers else _principals(text)
     attorneys = _attorneys(text)
-    signers = _signers(text, [p["nazwa"] for p in principals], {a["imie_nazwisko"] for a in attorneys})
+    attorney_names = {a["imie_nazwisko"] for a in attorneys}
+    signers = _signers(text, [p["nazwa"] for p in principals], attorney_names)
+    if officers:
+        for (_, name), people in zip(officers, signers):
+            if name not in people:
+                people.append(name)
+    elif len(principals) == 1:
+        principal = principals[0]
+        if principal["typ"] == "osoba_prawna" and principal["nip"] is None:
+            _issuer_identifiers(text, principal)
+        for name in _stamp_signers(text, principal["nazwa"], attorney_names):
+            if name is None or name not in signers[0]:
+                signers[0].append(name)
     return {
         "mocodawca": [
             {"data": principal, "podpisujacy": [{"imie_nazwisko": name} for name in names]}
