@@ -46,13 +46,19 @@ LETTER_RE = re.compile(
 
 # Only an affirmative, dated execution statement can outrank a printed posting date.
 COMPLETED_PAYMENT = r"(?:wykonano|zrealizowano)"
-PAYMENT_NOUN = r"(?:przelew|transakcję|operację|płatność)"
+EXECUTION_DATE = rf"(?:w\s+dniu|dnia)\s+{DATE}"
+# An order or operation can also concern archiving or issuing a copy.
+PAYMENT_NOUN = (
+    r"(?:przelew|transakcję|płatność|operację\s+(?:bankową|płatniczą|(?:bez)?gotówkową|przelewu)|"
+    r"zlecenie\s+(?:płatnicze|przelewu|stałe)|"
+    rf"(?:operację|zlecenie)(?=[ \t]*(?:[.,;]|\Z)|\s+(?:{COMPLETED_PAYMENT}|w\s+dniu|dnia|w\s+kwocie|na\s+rachunek|z\s+rachunku)\b))"
+)
 EXECUTION_DAY_RE = re.compile(
-    rf"^(?:bank (?:potwierdza|zaświadcza),? że\s+)?(?:"
-    rf"(?:w dniu|dnia)\s+(?P<before>{DATE})\s+(?:z rachunku\s+(?:nr\.?\s+)?{ACCOUNT_RE.pattern}\s+)?"
+    rf"^(?:bank\s+(?:potwierdza|zaświadcza),?\s+że\s+)?(?:"
+    rf"{EXECUTION_DATE}\s+(?:z\s+rachunku\s+(?:nr\.?\s+)?{ACCOUNT_RE.pattern}\s+)?"
     rf"{COMPLETED_PAYMENT}\s+{PAYMENT_NOUN}\b|"
-    rf"(?:{PAYMENT_NOUN}\s+)?{COMPLETED_PAYMENT}"
-    rf"(?:\s+{PAYMENT_NOUN})?\s+(?:w dniu|dnia)\s+(?P<after>{DATE}))",
+    rf"(?:{PAYMENT_NOUN}\s+{COMPLETED_PAYMENT}|{COMPLETED_PAYMENT}\s+{PAYMENT_NOUN})\s+{EXECUTION_DATE}|"
+    rf"{COMPLETED_PAYMENT}\s+{EXECUTION_DATE}\s+{PAYMENT_NOUN}\b(?![ \t]*:|\s+{COMPLETED_PAYMENT}\b))",
     re.IGNORECASE | re.MULTILINE,
 )
 
@@ -311,6 +317,7 @@ def _unique(matches) -> str | None:
 
 
 PROSE_CLAUSE = re.compile(r"(?<=[.!?])\s+(?=[A-ZĄĆĘŁŃÓŚŹŻ])|\n\s*\n")
+EXECUTION_CLAUSE = re.compile(rf"{PROSE_CLAUSE.pattern}|;\s*|\n(?={GENERIC_LABEL})")
 
 
 def _prose_values(text: str) -> tuple[float | None, str | None]:
@@ -338,12 +345,12 @@ def transaction_values(text: str) -> tuple[float | None, str | None]:
         if money is None:
             money = _amount(raw.lstrip("−-"))
         dates.extend(cells.items())
-    for clause in PROSE_CLAUSE.split("\n".join(_payment_lines(fields))):
+    for clause in EXECUTION_CLAUSE.split("\n".join(_payment_lines(fields))):
         letter = LETTER_RE.search(clause)
         if letter and len(DATE_RE.findall(letter[0])) == 1:
             dates.append(("data wykonania", letter[1]))
         for statement in EXECUTION_DAY_RE.finditer(clause):
-            dates.append(("data wykonania", statement["before"] or statement["after"]))
+            dates.append(("data wykonania", DATE_RE.search(statement[0])[0]))
     # Select by the meaning of the printed date, across both labelled fields and table cells.
     # A value date is not evidence of execution.
     day = None

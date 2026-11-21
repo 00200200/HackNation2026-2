@@ -189,6 +189,14 @@ def test_bank_can_introduce_a_refusal_with_a_colon():
         "Przelew zrealizowano dnia 07.06.2026.",
         "W dniu 07.06.2026 wykonano przelew.",
         "Bank potwierdza, że przelew wykonano w dniu 07.06.2026.",
+        "Zrealizowano płatność dnia 07.06.2026.",
+        "Zlecenie wykonano w dniu 07.06.2026.",
+        "Zrealizowano zlecenie płatnicze dnia 07.06.2026.",
+        "Zrealizowano dnia 07.06.2026\nprzelew na rachunek odbiorcy.",
+        "W dniu 07.06.2026 wykonano operację płatniczą.",
+        "W dniu 07.06.2026 wykonano operację\npłatniczą.",
+        "W dniu 07.06.2026 wykonano operację przelewu na rachunek odbiorcy.",
+        "Wykonano dnia 05.06.2026\nPrzelew zrealizowano dnia 07.06.2026.",
     ],
 )
 def test_execution_statement_precedes_debit_date_even_with_labelled_amount(statement):
@@ -205,6 +213,12 @@ def test_execution_statement_precedes_debit_date_even_with_labelled_amount(state
         "W dniu 07.06.2026 nie wykonano przelewu.",
         "W dniu 07.06.2026 wykonano przelew?",
         "Jeżeli rachunek był aktywny,\nw dniu 07.06.2026 wykonano przelew.",
+        "Wykonano dnia 07.06.2026. Przelew widnieje na potwierdzeniu.",
+        "Zrealizowano dnia 07.06.2026\nPrzelew: potwierdzenie przyjęcia.",
+        "Zrealizowano dnia 07.06.2026 zlecenie wydania kopii potwierdzenia przelewu.",
+        "W dniu 07.06.2026 wykonano operację archiwizacji kopii.",
+        "Zrealizowano dnia 07.06.2026 operację\narchiwizacji kopii.",
+        "Wykonano dnia 07.06.2026\nPrzelew krajowy: informacja o transakcji.",
     ],
 )
 def test_unrelated_date_does_not_displace_debit_date(note):

@@ -227,6 +227,14 @@ INTENDED_CHANGES = {
     "invented/grant-unreadable-mark": [
         ("mocodawca.0.podpisujacy.+0", ABSENT, signer(None), "One grantor signature is explicitly illegible.")
     ],
+    "review52/transfer-after-booking": [
+        (
+            "przelew_bankowy.data_operacji",
+            "2035-08-08",
+            "2035-08-07",
+            "The bank states it executed the transfer on August 7 and booked it on August 8.",
+        )
+    ],
 }
 
 
