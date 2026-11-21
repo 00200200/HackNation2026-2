@@ -61,10 +61,12 @@ Two and four grant JSONs matched exactly. The ten organizer grants remained exac
 | Obtain an EU/EEA-only processing commitment for Mistral or deploy the same weights within the EEA | Deployment |
 | Score corpus 2 test once after the class rules and small-model profile are integrated | Coordinator |
 | Improve receipt routing and recover damaged party names on development inputs | Open |
-| Confirm the organizer’s F1 formula and Stage II weights with UZP | Open |
+| Confirm the long-string similarity function with UZP and record the Stage II weights | Open |
 | Promote HackNation2026 PR #48 to `prod` after the faktczyfejk demo, so the doc2json.pl Caddy block survives a redeploy | Open |
 
 ## Decisions
+
+- 22.11.2026: UZP micro F1 is the primary extraction score. Compare the five long fields at an inclusive 80% threshold using RapidFuzz normalized Levenshtein until UZP names its similarity function. When the reference contains a value, both a wrong guess and a null cost one error. Keep supported OCR text, especially when trimming noise could recover a match. Abstaining helps when the reference is absent. [Organizer rules](https://github.com/00200200/HackNation2026-2/issues/59)
 
 - 21.11.2026: use the tesserocr wheel, Polish fast model and an English reread of ambiguous e-mail tokens. The
   model-data wheel verifies the upstream SHA-256 checksums at install time.
@@ -178,3 +180,5 @@ These runs used local rules with the three endpoint variables unset. The two loc
 | Wire the doc2json.pl upload to the extraction (serve the GUI backend behind `/api/` or point the page at it) | Open |
 
 - 21.11.2026 · Codex · Round 3 traced 130 field errors on 78 real development PDFs. Recovered identifiers from matching party records, checked damaged company names against declarations and read debit amounts across bank columns. The single-field Ministral whitespace trial lost one correct title in 12 calls and was dropped.
+
+- 22.11.2026 · Codex · Implemented the UZP scorer and retained historical strict micro F1 on `feat/uzp-metric` (#59).
