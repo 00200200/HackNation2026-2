@@ -8,7 +8,11 @@ The integration branch combines real-layout appeal, grant and transfer rules wit
 OpenAI-compatible model engine. The default CLI and GUI run locally with the three endpoint
 variables unset. Keyed runs can use a second OCR reading and recover a failed document with local rules.
 
+The opt-in small-model profile uses Mistral’s regional API, compact source spans and bounded PDF workers. [Provider comparison](docs/small-model-providers.md)
+
 ## Last eval
+
+The measured Ministral 3B profile uses the integrated rules, evidence-gated routing, selective native gap filling and first-charge verification. Against the rules at `eabbb31`, it raised strict micro F1 on the 91-PDF development pool from .5858 to .7146. A fresh 150-PDF CLI run took 335.64 seconds and scored .7208 micro F1 on its 91-PDF development subset. All 196 organizer training outputs matched the rules byte for byte in keyed and keyless runs. [Per-field results and timing](evals/results/small-model.json)
 
 The full synthetic run matched 196/196 CLI outputs against the baseline by path, class and bytes,
 including 16 empty negatives. The field report matched all 2,316 fields. Training micro F1 and the
@@ -38,8 +42,8 @@ Two and four grant JSONs matched exactly. The ten organizer grants remained exac
 
 | Item | Owner |
 |---|---|
-| Evaluate the planned Mistral API model (at most 8B parameters) on dev | Open |
-| Score corpus 2 test once after selecting and freezing the merged profile | Open |
+| Obtain an EU/EEA-only processing commitment for Mistral or deploy the same weights within the EEA | Deployment |
+| Score corpus 2 test once after the class rules and small-model profile are integrated | Coordinator |
 | Improve receipt routing and recover damaged party names on development inputs | Open |
 | Confirm the organizer’s F1 formula and Stage II weights with UZP | Open |
 
@@ -58,6 +62,8 @@ Two and four grant JSONs matched exactly. The ten organizer grants remained exac
   `/orchestrator`, not to Claude subagents.
 
 ## Log
+
+- 21.11.2026 · Codex · Added native span output for small models, local source validation and a bounded parallel CLI. Verified the native schema on the quantized local model and both regional API releases.
 
 - 21.11.2026 · Claude · brief, eval harness, judge/eval skills, pre-push hook · f6db304
 - 21.11.2026 · Claude · stricter F1 normalisation (types, formats), invented test fixture, organizer data copied into the repo (UZP e8b7a67)
@@ -97,6 +103,7 @@ Two and four grant JSONs matched exactly. The ten organizer grants remained exac
 - 21.11.2026 · Codex · Integrated PRs #20, #18 and #22, verified training byte parity and measured both dev corpora at `d177cbc7`. Refreshed organizer revision `0b360a9` in `cf98ef3` and verified synthetic training and the dedicated scan evaluation at `8d79e66`.
 
 - 21.11.2026 · Codex · Recovered scanned transfer confirmations from debit details and posted rows, preserved printed IBAN prefixes on scans and corrected tilted receipt columns on `feat/scanned-transfers`.
+- 21.11.2026 · Codex · Merged integrated rules at `21737c1`. The Ministral profile now checks the document’s own heading before fallback routing, limits native gap calls to missing parties or payment facts, and can verify the first allegation in one short request. On corpus 2 dev, eight targeted requests added four correct fields in a paired comparison.
 - 21.11.2026 · Codex · Fixed the execution-date regression reported on PR #23, added three native receipts with baseline outputs, and recognized three additional completed payment statuses. All 196 training files matched the baseline byte for byte at `ee6c36e`. The clean training run scored 1.000 micro F1 and the 30 organizer scans scored 0.5633 micro F1.
 
 - 21.11.2026: the appeal-scan branch recovers first-act dates, role and counsel blocks, and procurement fields using OCR provenance and first-page word boxes. All ten public appeal references matched exactly in development.
@@ -109,3 +116,6 @@ Two and four grant JSONs matched exactly. The ten organizer grants remained exac
 
 - 21.11.2026 · Codex · Recovered joint purchasing lists across page breaks, identified appellant counsel and employers, reread damaged searchable appeals and linked first charges to notification evidence. Measured the changes on both real development sets and the organizer scans.
 - 21.11.2026 · Codex · Recovered stamp signers by column, resolved a damaged initial in a titled appointment list, joined grantor registry rows and completed inflected company names. Side-by-side approval signatures now follow their visible reading order.
+
+- 21.11.2026 · Codex · Synced the small-model branch with main at `5297660`, including scanned grant extraction and the bank execution-date rules.
+- 21.11.2026 · Codex · Verified training on the clean merge `fb08cd7` and on `main` at `5297660`. Both scored 1.000 micro F1 and produced identical paths and bytes for all 196 PDFs, including all 16 empty negative outputs.

@@ -10,7 +10,7 @@ from typing import Annotated, Literal, Self
 
 from pydantic import BaseModel, BeforeValidator, ConfigDict, Field, ImportString, PrivateAttr, model_validator
 
-from .classify import classify
+from .classify import classify, routing_evidence
 from .model_pages import AlternateOCR, model_readings
 from .model_profile import Profile, ProfileSettings
 from .ocr_accounts import AccountEvidence
@@ -114,6 +114,7 @@ class OutputField(Config):
 
 
 class DocumentClass(Config):
+    span_instructions: str = ""
     id: str = Field(pattern=r"^[a-z][a-z0-9_]*$")
     enabled: bool = True
     priority: int = 100
@@ -156,6 +157,12 @@ class DocumentClass(Config):
         from .output_schema import record_model
 
         return record_model(self.fields, self.id, cited=True, allow_abstention=True)
+
+    @cached_property
+    def span_model(self):
+        from .output_schema import record_model
+
+        return record_model(self.fields, self.id, allow_abstention=True, spans=True)
 
     @model_validator(mode="after")
     def python_extractor(self) -> Self:
@@ -234,7 +241,7 @@ def route(
             classifier = (
                 model_classifier if not rules_only and definition.profile.routing == "model" else routing.classifier
             )
-            if not rules_only and definition.profile.routing == "fallback":
+            if not rules_only and definition.profile.routing in {"fallback", "supported"}:
                 fallback[definition.id] = definition
             if classifier not in labels:
                 labels[classifier] = (
@@ -246,4 +253,18 @@ def route(
                 return definition
         elif routing.matches(pages):
             return definition
-    return fallback.get(model_classifier(pages)) if fallback else None
+    supported = {key for key, definition in fallback.items() if definition.profile.routing == "supported"}
+    evidence, confirmed_transfer = routing_evidence(pages[0]) if pages and supported else (set(), False)
+    for key in supported - evidence:
+        del fallback[key]
+    if not fallback:
+        return None
+    label = model_classifier(pages)
+    if (
+        label == "power_of_attorney"
+        and "bank_transfer" in supported
+        and evidence == {"bank_transfer"}
+        and confirmed_transfer
+    ):
+        label = "bank_transfer"
+    return fallback.get(label)

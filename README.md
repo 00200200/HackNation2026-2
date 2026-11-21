@@ -116,7 +116,7 @@ uv run pytest -q tests/test_class_config.py -k fourth
 
 ## Add a class
 
-The three organizer class definitions supply the field descriptions, types and grounding rules for a configured model. For a new class in a custom directory, its own TOML selects the routing cues and engine order.
+The three organizer class definitions supply the field descriptions, types and grounding rules for the model profiles. For a new class in a custom directory, its own TOML selects the routing cues and engine order.
 
 1. Create one TOML file in your class directory and choose a unique English `id`. This example
    adds a receipt with one reference field.
@@ -156,10 +156,27 @@ The three organizer class definitions supply the field descriptions, types and g
 
 ## Use a model endpoint
 
-To enable a model for the three bundled classes, supply these variables in the process environment or in
-an ignored `.env` in the working directory. Environment values take precedence. Choose an OpenAI-compatible
-Chat Completions endpoint that can return structured JSON. For submission, the provider and inference
-region must meet the organizer’s EU/EEA requirements. Model selection is pending.
+The primary small-model candidate is Mistral’s open-weight `ministral-3b-2512` (3,849,090,048 total parameters). Both the language and vision weights count toward the 8B ceiling. The regional API supports native JSON Schema. Its documented processing geography includes EU and EFTA countries, so the jury deployment needs a narrower location commitment. [Provider comparison and sources](docs/small-model-providers.md)
+
+To run the measured rules-first profile, export the Mistral credential in your shell and run the following command.
+
+```sh
+export KIO_LLM_BASE_URL=https://api.eu.mistral.ai/v1
+export KIO_LLM_MODEL=ministral-3b-2512
+export KIO_LLM_API_KEY="$MISTRAL_API_KEY"
+export KIO_LLM_OUTPUT=spans KIO_LLM_MODE=RL KIO_LLM_ROUTING=supported
+export KIO_LLM_GAP_SCOPE=incomplete KIO_LLM_CHARGE_FOCUS=true
+export KIO_LLM_DUAL_OCR=false KIO_LLM_TOKEN_PARAMETER=max_tokens
+export KIO_LLM_INLINE_SYSTEM_PROMPTS=false KIO_LLM_TIMEOUT_SECONDS=120
+python -m kio2json --input input --output output --jobs 3
+```
+
+In `spans` mode the model copies one short passage per scalar into a class-specific native schema. The application locates the passage in up to 8,192 UTF-8 bytes of page text, checks token boundaries and derives dates, amounts, identifiers and organizer codes locally. Each class can supply a short `span_instructions` string in its TOML. The example uses local Tesseract for scans. The model receives text; its vision encoder is included in the published parameter count. The CLI accepts 1–8 document workers and defaults to one.
+
+The rules read each document first. In the profile above, a rejected first page needs evidence of a filing, mandate or payment before the model can route it. On native pages the model fills gaps when the rules miss a party or a core payment detail. It can also fill gaps in scans and model-routed documents. A separate appeal request uses the first charge and the dated introductory act, with a 320-token limit and a 30-second deadline. The rules verify the quoted act and date and supply the organizer’s canonical description.
+
+Set all three variables in the process environment or in an ignored `.env` in the working directory.
+Environment values take precedence. The application has no built-in endpoint or credential.
 
 | Variable | Value |
 |---|---|
@@ -167,7 +184,7 @@ region must meet the organizer’s EU/EEA requirements. Model selection is pendi
 | `KIO_LLM_MODEL` | Model ID served at that endpoint |
 | `KIO_LLM_API_KEY` | Credential accepted by the endpoint |
 
-Run the same CLI or viewer command. With all three variables set, the bundled classes use model-first
+Other OpenAI-compatible providers can use the same CLI or viewer. When only the three connection variables are set, the bundled classes use model-first
 extraction with rule fallback (`KIO_LLM_MODE=LR`). The router asks the model about the first page after
 the local rules reject the document (`KIO_LLM_ROUTING=fallback`). On a scan, RapidOCR provides a second
 reading alongside Tesseract. The two readings share a 16,384-byte budget. A citation must match one
@@ -256,6 +273,35 @@ On all 30 organizer development scans, the rules routed 10/10 transfer confirmat
 The organizer allows 45 minutes for its 150-PDF batch, an average budget of 18 seconds per PDF.
 The reported times cover these local datasets. OCR runs locally. Under the updated rules, a remote
 OCR service would count toward model parameters. [Organizer evaluation rules](data/uzp/README.md)
+
+## Ministral on development documents
+
+The paired comparison uses the rules at `eabbb31`. The cold 150-PDF run used `bf57506`. Replaying the same model responses after the date fix reproduced all 108 development outputs byte for byte. The preceding keyless table includes the scanned power-of-attorney changes from `main`.
+
+A cold run of the production CLI processed **150 PDFs in 335.64 seconds** on a 16 GB Apple M1 with three workers, including local OCR and 106 successful regional API requests. The mix comprised 108 development PDFs and 42 public training PDFs. The organizer scan group averaged 3.33 wall seconds per PDF. All outputs completed, with zero retries or recoveries. On the 91-PDF development pool, the fresh responses scored **.7208 micro and .7079 macro**. The live micro / macro scores were .7097 / .6701 on corpus 1 dev, .7104 / .6747 on corpus 2 dev, and .7394 / .7040 on organizer scans. The jury’s 45-minute allowance applies to its own machine and document mix.
+
+The rules-first profile above uses `ministral-3b-2512` and local Tesseract. The paired comparison below uses the same primary readings and captured API responses for each policy. Corpus 1 all includes its 22 dev PDFs and 17 additional development PDFs. The 91-PDF row pools corpus 1 dev, corpus 2 dev and all organizer scans. The coordinator reserved corpus 2 test for the final integrated system.
+
+| Development set | PDFs | Rules micro / macro | 3B micro / macro | 3B appeal / mandate / transfer F1 | 8B comparison micro / macro |
+|---|---:|---:|---:|---:|---:|
+| Corpus 1 dev | 22 | .6973 / .6628 | .7016 / .6545 | .7173 / .7879 / .4583 | .7128 / .6741 |
+| Corpus 1 all | 39 | .5872 / .5519 | .6196 / .6230 | .6168 / .6783 / .5741 | .6237 / .6211 |
+| Corpus 2 dev | 39 | .5248 / .3619 | .7027 / .6668 | .7133 / .4706 / .8167 | .6529 / .4838 |
+| Organizer scans | 30 | .5633 / .4711 | .7360 / .6943 | .7511 / .8108 / .5208 | .7147 / .6553 |
+| Pooled | 91 | .5858 / .4848 | .7146 / .6969 | .7265 / .7202 / .6439 | .6910 / .6098 |
+
+Across the 91 PDFs, the 3B profile added 207 correct field matches, lost five and introduced 47 net false positives relative to the rules. It made 18 routing requests, 57 general extraction requests and 17 first-charge requests. In isolation, those 17 first-charge requests added four correct matches and removed four false positives. All 18 unrelated PDFs stayed empty without an API request. Three of the 30 organizer scans matched their full reference field sets. The secondary five-field fuzzy proxy scored .7325 for the 3B profile and .6006 for rules. [Per-field counts, per-class scores, timings and ablations](evals/results/small-model.json)
+
+The larger `ministral-8b-2512` checkpoint has 8,918,026,240 parameters and exceeds the 8B submission limit. It serves as a development comparison. An on-device smoke test of the 3B Q4_K_M quantization with llama.cpp on a 16 GB Apple M1 recovered the date and amount of an invented transfer in 14.97 seconds. The development corpus scores in the table use the regional API. [Checkpoint and hosting evidence](docs/small-model-providers.md)
+
+To try the same checkpoint locally, save the pinned Q4_K_M file outside the checkout as `ministral.gguf` and start llama.cpp. With the regional profile variables shown above, override the connection variables for the local server and use one document worker. [Pinned GGUF release](https://huggingface.co/unsloth/Ministral-3-3B-Instruct-2512-GGUF/tree/7564922f37fa5bbb62b87f09a55c12f1f91d7a6a) · [llama.cpp b12608](https://github.com/ggml-org/llama.cpp/releases/tag/b12608)
+
+```sh
+llama-server -m ministral.gguf --host 127.0.0.1 --port 18089 -c 8192 -np 1 --alias ministral-local
+# In another shell with the extraction settings above
+export KIO_LLM_BASE_URL=http://127.0.0.1:18089/v1 KIO_LLM_MODEL=ministral-local KIO_LLM_API_KEY=local
+python -m kio2json --input input --output output --jobs 1
+```
 
 ## OCR on real development documents
 

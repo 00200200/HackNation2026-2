@@ -33,6 +33,12 @@ BANK_FIELDS = re.compile(
     r"data (?:operacji|księgowania|transakcji|obciążenia)|rachun(?:ek|ku)|IBAN|nadawc[ay]|odbiorc[ay]|beneficjent\w*)\b",
     re.IGNORECASE,
 )
+PAYMENT_DETAILS = re.compile(rf"\b(?:{CONFIRMATION}|szczeg[óo][łl]y (?:przelewu|transakcji|operacji)\b)", re.IGNORECASE)
+ATTACHMENT_REFERENCE = re.compile(
+    r"\b(?:załącz\w*|w załączeniu|przesył\w*|przedkład\w*|dołącz\w*|kopia)\b", re.IGNORECASE
+)
+LIST_MARKER = re.compile(r"^(?:\(?\d{1,3}[.)]|[-–—•])(?:\s+|$)")
+PRINTED_AMOUNT = re.compile(r"\b\d+(?:[.,]\d{2})?[ \t]*(?:PLN|zł|EUR)\b", re.IGNORECASE)
 
 
 # A "stan" field can also describe a balance or another bank-specific state.
@@ -88,6 +94,48 @@ def resembles_appeal_heading(page: str) -> bool:
         Levenshtein.distance("".join(row.split()).upper(), "ODWOŁANIE", score_cutoff=1) <= 1
         for row in page.splitlines()
     )
+
+
+def routing_evidence(first_page: str) -> tuple[set[str], bool]:
+    """Return eligible classes and whether the payment details independently confirm a transfer."""
+    lines = [line.strip() for line in first_page.splitlines() if line.strip()]
+    if any(UNRELATED_HEADING.match(line) for line in lines):
+        return set(), False
+    labels = set()
+    headings = ["".join(line.upper().split()) for line in lines]
+    if "ODWOŁANIE" in headings or FILING.search(first_page):
+        labels.add("appeal")
+    if any(re.match(r"^PE[ŁL]NOMOCNICTWO(?:$|DO|DLA|PROCESOWE|SZCZEG[ÓO]LNE|NR)", h) for h in headings) or re.search(
+        r"\b(?:udzielam(?:y)?\s+(?:niniejszego\s+)?pełnomocnictwa|upoważniam(?:y)?\b)", first_page, re.IGNORECASE
+    ):
+        labels.add("power_of_attorney")
+    if "PISMOPRZEWODNIE" in headings or _nonexecuted(lines) or bank_transfer.payment_denied(first_page):
+        return labels, False
+    # The entries below an enclosure introduction describe other documents, even when
+    # OCR puts the introduction, a list marker and the receipt heading on separate lines.
+    cutoff = next((i for i, line in enumerate(lines) if ATTACHMENT_REFERENCE.search(line)), len(lines))
+    lines = lines[:cutoff]
+    receipt = "\n".join(lines)
+    account = bank_transfer.ACCOUNT_RE.search(receipt)
+    bank_heading = any(
+        CONFIRMATION_HEADING.match(line)
+        or booking_heading(line, ocr=True)
+        or PAYMENT_DETAILS.match(line)
+        # An exported bank table can place the heading beside an account or bank label.
+        or (account and PAYMENT_DETAILS.search(line))
+        for i, line in enumerate(lines)
+        if not LIST_MARKER.match(line) and not (i and LIST_MARKER.fullmatch(lines[i - 1]))
+    )
+    numbered_field = any(
+        BANK_FIELDS.search(line) and re.search(r"\d", " ".join(lines[i : i + 2])) for i, line in enumerate(lines)
+    )
+    if not bank_heading or not (numbered_field or account):
+        return labels, False
+    labels.add("bank_transfer")
+    sender = re.search(r"(?im)^(?:nadawca|zleceniodawca|płatnik)\s*:[ \t]*\S", receipt)
+    recipient = re.search(r"(?im)^(?:odbiorca|beneficjent)\s*:[ \t]*\S", receipt)
+    has_amount = PRINTED_AMOUNT.search(receipt) or bank_transfer.transaction_values(receipt)[0] is not None
+    return labels, bool(has_amount and (account or (sender and recipient)))
 
 
 def classify(pages: list[str], *, ocr_accounts: AccountEvidence | None = None) -> str | None:

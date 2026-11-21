@@ -172,13 +172,13 @@ def cited_value(field: OutputField, raw, quote: str, text: str, *, visible_end: 
     return None
 
 
-def field_type(field: OutputField, name: str, cited: bool, allow_abstention: bool):
+def field_type(field: OutputField, name: str, cited: bool, allow_abstention: bool, spans: bool = False):
     if field.type == "object":
-        result = record_model(field.fields, name, cited=cited, allow_abstention=allow_abstention)
+        result = record_model(field.fields, name, cited=cited, allow_abstention=allow_abstention, spans=spans)
     elif field.type == "list":
-        result = list[field_type(field.items, name + "Item", cited, allow_abstention)]
+        result = list[field_type(field.items, name + "Item", cited, allow_abstention, spans)]
     else:
-        result = SCALARS[field.type]
+        result = str if spans else SCALARS[field.type]
         if cited:
             result = Cited[result]
     if field.nullable or (allow_abstention and field.type in SCALARS):
@@ -187,13 +187,18 @@ def field_type(field: OutputField, name: str, cited: bool, allow_abstention: boo
 
 
 def record_model(
-    fields: dict[str, OutputField], name: str, *, cited: bool = False, allow_abstention: bool = False
+    fields: dict[str, OutputField],
+    name: str,
+    *,
+    cited: bool = False,
+    allow_abstention: bool = False,
+    spans: bool = False,
 ) -> type[BaseModel]:
     # Aliases preserve external JSON keys, including punctuation and names reserved by BaseModel.
     members = {
         f"field_{i}": (
-            field_type(field, f"{name}_{i}", cited, allow_abstention),
-            Field(alias=key, description=field.instruction),
+            field_type(field, f"{name}_{i}", cited, allow_abstention, spans),
+            Field(alias=key, description=None if spans else field.instruction),
         )
         for i, (key, field) in enumerate(fields.items())
     }
