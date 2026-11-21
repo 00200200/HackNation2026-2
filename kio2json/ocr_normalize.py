@@ -14,6 +14,11 @@ _FORM = re.compile(r"(?i)(\bsp\.[ \t]*z[ \t]+)[o0]\.[ \t]*[o0]\.")
 _MAIL = re.compile(r"(?<=\w)[ \t]*(?:\[at\]|\(at\)|@)[ \t]*(?=[\w-]+(?:\.[\w-]+)+\b)", re.IGNORECASE)
 
 
+# Only canonicalize dedicated headings and role labels. Keep ordinary words and proper names verbatim.
+_HEADING = re.compile(r"(?im)^([ \t]*)(ODWOLANIE|PELNOMOCNICTWO)(?=[ \t]*(?:PROCESOWE[ \t]*)?$)")
+_APPELLANT = re.compile(r"(?im)^([ \t]*)Odwo[lł]uj[aą]cy(?=[ \t]*[:(])")
+
+
 def _repair_account(match: re.Match) -> str:
     number = re.sub(r"\s", "", match[1])
     if number.isdigit() or sum(not c.isdigit() for c in number) > 2:
@@ -25,4 +30,6 @@ def _repair_account(match: re.Match) -> str:
 
 def normalize_ocr(text: str) -> str:
     text = _FORM.sub(lambda match: match[1] + "o.o." if "0" in match[0] else match[0], text)
+    text = _HEADING.sub(lambda m: m[1] + m[2].upper().replace("L", "Ł"), text)
+    text = _APPELLANT.sub(r"\1Odwołujący", text)
     return _MAIL.sub("@", _ACCOUNT.sub(_repair_account, text))

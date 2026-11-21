@@ -33,3 +33,9 @@ def test_missing_signature_lines_preserve_explicit_principal_and_skip_unnamed_pr
     principals = extract(body + signature)["mocodawca"]
     assert [p["podpisujacy"] for p in principals] == [[], [{"imie_nazwisko": "Iga Wymyślna"}]]
     assert all(not p["podpisujacy"] for p in extract(body + "Iga Wymyślna\nDyrektor")["mocodawca"])
+
+
+def test_restore_accents_in_headings_and_labels_without_changing_names():
+    assert normalize_ocr("ODWOLANIE\nOdwolujacy: Studio Pelno\nPELNOMOCNICTWO PROCESOWE") == (
+        "ODWOŁANIE\nOdwołujący: Studio Pelno\nPEŁNOMOCNICTWO PROCESOWE"
+    )
