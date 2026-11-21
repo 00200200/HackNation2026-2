@@ -77,6 +77,7 @@ Two and four grant JSONs matched exactly. The ten organizer grants remained exac
 
 ## Log
 
+- 22.11.2026 · Claude · Handoff fix/install-deps (#44/#45): code done at de49710; fresh py3.13 venv `pip install -r requirements.txt` from another directory rc=0, 80 pkgs, site-packages 642 → 519 MiB (main: raw.githubusercontent.com timeout, 133 pkgs); make check 1704+2 passed; eval-quick 1.000 clean; CLI identical on cases 01/13/27/38/50. Left: judge PASS, stamp, push, PR.
 - 21.11.2026 · Claude · #44/#45: vendored the pinned pol/eng tessdata in `kio2json/tessdata/` (SHA-256 checked at first OCR use), dropped the local `packaging/` wheel so pip needs only PyPI from any directory; `pydantic-ai-slim[openai]` replaces `pydantic-ai`, requirements.txt 134 → 81 packages without anthropic, google-genai, logfire or pydantic-evals.
 - 21.11.2026 · Codex · Added native span output for small models, local source validation and a bounded parallel CLI. Verified the native schema on the quantized local model and both regional API releases.
 
