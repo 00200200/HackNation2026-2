@@ -16,7 +16,7 @@ from .ocr_normalize import MAIL_TOKEN_RE, confirmed_email, normalize_ocr
 MAX_PAGES = 3
 OCR_DPI = 300
 OCR_TIMEOUT_SECONDS = 60
-DEFAULT_OCR_ENGINE = "tesseract"
+DEFAULT_OCR_ENGINE = "tesseract-dpi"
 
 
 class NoReadableTextError(RuntimeError):
