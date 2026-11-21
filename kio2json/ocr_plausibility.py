@@ -1,0 +1,46 @@
+"""Null out OCR text that cannot be a name or title (FAQ 6: null beats an invented value)."""
+
+import re
+
+# Scanner noise from table rules and stamps; these never occur in a party name or a procurement title.
+_STRAY = re.compile(r"[|\[\]{}<>=~^\\#@]")
+_LEGAL_FORM = re.compile(
+    r"(?i)\b(?:sp(?:ółka|\.)\s+z\s+(?:ograniczoną\s+odpowiedzialnością|o\.\s?o\.)"
+    r"|spółka\s+(?:akcyjna|jawna|komandytowa|komandytowo-akcyjna|cywilna|partnerska)"
+    r"|s\.\s?a\.|sp\.\s?[kjp]\.|sp\.\s?k\.\s?a\.)"
+)
+# A short capitals-only token: real in acronyms, but a run of them after the legal form is stamp noise.
+_NOISE_TOKEN = re.compile(r"[A-ZĄĆĘŁŃÓŚŹŻ]{1,5}|\W+")
+
+
+def _letter_ratio(text: str) -> float:
+    chars = [c for c in text if not c.isspace()]
+    return sum(c.isalpha() for c in chars) / len(chars) if chars else 0.0
+
+
+def plausible_text(text: str | None) -> str | None:
+    """Return the value, its clean prefix ending in a legal form, or None when it reads as OCR noise."""
+    if not text:
+        return text
+    forms = list(_LEGAL_FORM.finditer(text))
+    if forms:
+        head, tail = text[: forms[-1].end()], text[forms[-1].end() :].split()
+        noise = sum(bool(_NOISE_TOKEN.fullmatch(token)) for token in tail)
+        if _STRAY.search(" ".join(tail)) or (len(tail) >= 3 and noise * 3 >= len(tail) * 2):
+            text = head
+    if _STRAY.search(text) or _letter_ratio(text) < 0.6:
+        return None
+    return text
+
+
+def gate_appeal(record: dict) -> None:
+    """Apply `plausible_text` to the free-text fields of a scanned appeal."""
+    for party in record["Odwolujacy"]:
+        party["nazwa"] = plausible_text(party["nazwa"])
+        lawyer = party["pelnomocnik"]
+        for key in ("imie_nazwisko", "nazwa"):
+            lawyer[key] = plausible_text(lawyer[key])
+    for party in record["Zamawiajacy"]:
+        party["nazwa"] = plausible_text(party["nazwa"])
+    procurement = record["ZamowieniePubliczne"]
+    procurement["tytul"] = plausible_text(procurement["tytul"])
