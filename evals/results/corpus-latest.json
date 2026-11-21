@@ -1,16 +1,16 @@
 {
-  "commit": "f0dfd0bcc8dd40ce36fbae08703859aa62cf2625",
+  "commit": "d8a2a8fc0df89285b0a999c1198b4b7a6ca9d78b",
   "dirty": false,
   "mode": "corpus",
-  "timestamp": "2026-11-21T17:26:24+00:00",
-  "n_cases": 13,
-  "n_docs": 20,
+  "timestamp": "2026-11-21T17:42:21+00:00",
+  "n_cases": 7,
+  "n_docs": 17,
   "coverage_ok": false,
   "overall_pass": false,
   "run_error": null,
   "metrics": {
     "micro_f1": {
-      "value": 0.41643835616438357,
+      "value": 0.4069767441860465,
       "target": 0.9,
       "pass": false
     },
@@ -25,38 +25,38 @@
       "pass": true
     },
     "classification_accuracy": {
-      "value": 0.6428571428571429,
+      "value": 0.6153846153846154,
       "target": 1.0,
       "pass": false
     },
     "seconds_per_doc": {
-      "value": 7.829779435461387,
+      "value": 0.44570908087360506,
       "target": null,
       "pass": true
     }
   },
   "detail": {
-    "micro_f1": 0.41643835616438357,
-    "macro_f1_documents": 0.29369243219530883,
-    "macro_f1_classes": 0.2915038355767839,
+    "micro_f1": 0.4069767441860465,
+    "macro_f1_documents": 0.2859402287004097,
+    "macro_f1_classes": 0.30729684908789384,
     "macro_f1_class_count": 3,
-    "macro_f1_fields": 0.34659090909090906,
-    "micro_f1_non_null": 0.26229508196721313,
+    "macro_f1_fields": 0.4211621041331186,
+    "micro_f1_non_null": 0.37668161434977576,
     "per_class_f1": {
-      "odwolanie": 0.4489795918367347,
-      "pelnomocnictwo": 0.425531914893617,
-      "przelew": 0.0
+      "odwolanie": 0.4552238805970149,
+      "pelnomocnictwo": 0.3,
+      "przelew": 0.16666666666666666
     },
-    "classification_accuracy": 0.6428571428571429,
+    "classification_accuracy": 0.6153846153846154,
     "negatives_empty": 1.0,
     "outputs_complete": 1.0,
     "counts": {
-      "tp": 76,
-      "fp": 64,
-      "fn": 149
+      "tp": 70,
+      "fp": 33,
+      "fn": 171
     }
   },
   "holdout_51_60": null,
   "f1_definition": "evals/metrics.py docstring (organizer formula UNCONFIRMED)",
-  "split": "dev"
+  "split": "test"
 }
