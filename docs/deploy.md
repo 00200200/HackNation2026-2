@@ -30,6 +30,8 @@ Check from inside the network: `docker run --rm --network edge alpine:3.20 wget 
 2. Done 21.11.2026 live on the server, HackNation2026 PR #48 merged to main, not yet on `prod`: Caddy joins the external `edge` network and the
    Caddyfile gets `doc2json.pl { reverse_proxy doc2json-web:80 }` plus a `www.doc2json.pl` redirect. Caddy then
    reloads and issues the certificate.
-3. Extraction: `doc2json-api` (`api.Dockerfile`, `kio2json.web_api`, installs `requirements.txt` like the jury)
-   runs the rules engine without model keys, one document at a time, capped at 2 CPUs and 3 GB. nginx in
+3. Extraction: `doc2json-api` (`api.Dockerfile`, FastAPI app `kio2json.web_api`, OpenAPI docs at `/api/docs`;
+   installs `requirements.txt` like the jury)
+   runs the rules engine without model keys, one document at a time (max 10 files x 20 MB, 90 s per document),
+   capped at 2 CPUs and 3 GB. nginx in
    `doc2json-web` proxies `/api/` to it; if it is down, the page says so and keeps the files in the browser.

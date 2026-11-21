@@ -23,10 +23,6 @@ services:
     container_name: doc2json-api
     restart: unless-stopped
     networks: [edge]
-    environment:
-      KIO_WEB_WORKERS: "1"
-      KIO_WEB_MAX_FILES: "12"
-      KIO_WEB_MAX_FILE_MB: "25"
     # The VPS also serves the faktczyfejk demo: cap what OCR can take.
     cpus: 2
     mem_limit: 3g

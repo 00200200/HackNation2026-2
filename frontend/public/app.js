@@ -1,7 +1,8 @@
 // doc2json: drop PDFs on the left, read the JSON on the right.
 // Files go to the extraction API only when /api/health answers; otherwise nothing leaves the browser.
 
-const MAX_MB = 25;
+const MAX_MB = 20;
+const MAX_FILES = 10; // same limits as kio2json/web_api.py
 const API_TIMEOUT_MS = 600000;
 // Class ids from config/classes/*.toml; a document outside every class comes back with class null.
 const CLASS_LABEL = {
@@ -84,15 +85,23 @@ async function extract(items) {
   const form = new FormData();
   items.forEach((item) => form.append("files", item.file, item.file.name));
   const res = await fetch("/api/extract", { method: "POST", body: form, signal: AbortSignal.timeout(API_TIMEOUT_MS) });
-  if (!res.ok) throw new Error(`serwer odpowiedział ${res.status}`);
+  if (!res.ok) {
+    const detail = await res.json().then((body) => body.detail).catch(() => null);
+    throw new Error(typeof detail === "string" ? detail : `serwer odpowiedział ${res.status}`);
+  }
   return res.json();
 }
 
 async function handleFiles(fileList) {
   const files = [...fileList];
   const pdfs = files.filter((f) => (f.type === "application/pdf" || /\.pdf$/i.test(f.name)) && f.size <= MAX_MB * 1048576);
-  const skipped = files.length - pdfs.length;
-  const skipNote = skipped ? `Pominięto ${skipped}: tylko PDF do ${MAX_MB} MB. ` : "";
+  const room = Math.max(0, MAX_FILES - state.items.length);
+  const overflow = Math.max(0, pdfs.length - room);
+  pdfs.splice(room);
+  const skipped = files.length - pdfs.length - overflow;
+  const skipNote =
+    (skipped ? `Pominięto ${skipped}: tylko PDF do ${MAX_MB} MB. ` : "") +
+    (overflow ? `Pominięto ${overflow}: najwyżej ${MAX_FILES} plików naraz. ` : "");
   if (!pdfs.length) {
     notice(skipNote || "Wybierz pliki PDF.");
     return;

@@ -41,7 +41,13 @@ def test_extract_keeps_upload_order_and_duplicate_names(client):
 
 
 def test_extract_requires_files(client):
-    assert client.post("/api/extract", data={"x": "1"}).status_code == 400
+    assert client.post("/api/extract", data={"x": "1"}).status_code == 422
+
+
+def test_extract_rejects_oversized_file(client, monkeypatch):
+    monkeypatch.setattr(web_api, "MAX_FILE_MB", 0)
+    results = client.post("/api/extract", files=[("files", ("a.pdf", b"%PDF-1.7", "application/pdf"))]).json()
+    assert results["results"][0]["error"] and results["results"][0]["data"] is None
 
 
 def test_extract_limits_file_count(client):
