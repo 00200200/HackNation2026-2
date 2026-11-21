@@ -15,7 +15,7 @@ h2 { font-size: 34px; font-weight: 600; letter-spacing: -.035em; }
 .note { margin-top: 34px; font-size: 14.5px; color: #a1a1a1; max-width: 1150px; line-height: 1.5; }
 </style></head><body>
 <h2>Field-level micro F1, rules only, no API key</h2>
-<p class="sub">Measured in this repo on 21.11.2026. Source files: evals/results/</p>
+<p class="sub">Measured in this repo on 21.11.2026. Sources: evals/results/latest.json, organizer-scans.json, poa-development.json</p>
 <div class="chart">
   <div class="row"><div class="name">Training cases <small>organizer, synthetic, 196 PDFs</small></div><div class="track"><div class="bar" style="width:100%"></div></div><div class="val">1.000</div></div>
   <div class="row"><div class="name">Organizer scans <small>real, 30 PDFs</small></div><div class="track"><div class="bar real" style="width:68.52%"></div></div><div class="val">0.685</div></div>
@@ -23,5 +23,5 @@ h2 { font-size: 34px; font-weight: 600; letter-spacing: -.035em; }
   <div class="row"><div class="name">Local corpus 2, dev <small>real, 39 PDFs</small></div><div class="track"><div class="bar real" style="width:60.45%"></div></div><div class="val">0.605</div></div>
 </div>
 <div class="axis"><span></span><div class="ticks"><span>0</span><span>0.25</span><span>0.50</span><span>0.75</span><span>1.00</span></div><span></span></div>
-<p class="note">The synthetic training set is what the rules were written against; the real documents show what to expect on unseen cases. Powers of attorney score 0.92 to 1.00 on real data; transfer confirmations are the weakest class (0.15 to 0.46), mostly because unusual bank layouts are not routed.</p>
+<p class="note">The synthetic training set is what the rules were written against; the real documents show what to expect on unseen cases. Powers of attorney score 0.92 to 1.00 on real data; transfer confirmations are the weakest class (0.15 to 0.46); the rules routed only 1 to 4 of every 9 or 10 real transfers.</p>
 </body></html>

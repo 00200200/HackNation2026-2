@@ -35,7 +35,9 @@ action and the paid fee. People read them easily; systems cannot, until the data
 - **No guessing.** A value the document does not state is `null`. Optional model output is kept only when it
   cites a supporting span of the source.
 - **Runs on the jury's laptop.** CPU only, offline OCR, installed with `pip install -r requirements.txt`. No API
-  key is needed for the default configuration.
+  key is needed for the default configuration, which uses no language model at all (rules only, 0 model
+  parameters). An optional OpenAI-compatible endpoint is described in
+  [Use a model endpoint](docs/readme/reference.md#use-a-model-endpoint).
 - **New document types in configuration.** Each class is one TOML file in `config/classes/` with its routing cues,
   fields and engines. The disabled fourth class shows how: [enable it](docs/readme/reference.md#enable-the-fourth-class).
 
@@ -50,9 +52,11 @@ action and the paid fee. People read them easily; systems cannot, until the data
 | Local corpus 1 (real) | 39 | 0.631 | 0.602 | 0.919 | 0.462 |
 | Local corpus 2, dev (real) | 39 | 0.605 | 0.601 | 0.946 | 0.152 |
 
-Rules only, no endpoint configured. The F1 definition is ours: the organizer has not published theirs.
+Rules only, no endpoint configured. None of these is the score on the organizer's hidden test set. The F1 definition
+is ours: the organizer has not published theirs.
 Method, timings and the OCR comparison: [technical reference](docs/readme/reference.md#results-on-the-training-data-synthetic).
-Raw results: [`evals/results/`](evals/results/).
+Raw results: [training](evals/results/latest.json), [organizer scans](evals/results/organizer-scans.json),
+[local corpora](evals/results/poa-development.json).
 
 ## Quick start
 
