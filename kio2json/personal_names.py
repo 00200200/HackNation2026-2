@@ -1,7 +1,7 @@
 """Resolve an inflected Polish personal name using its role and grammatical case."""
 
 import re
-from functools import cache
+from functools import cache, lru_cache
 from itertools import product
 
 from .common import PERSON, squash
@@ -18,6 +18,20 @@ def _analyser():
     import morfeusz2
 
     return morfeusz2.Morfeusz(generate=False)
+
+
+@lru_cache(maxsize=512)
+def same_nominal_form(inflected: str, nominal: str) -> bool:
+    """Confirm a genitive noun/adjective against its independently printed nominative."""
+
+    def lemmas(word, case):
+        return {
+            (lemma, tag.split(":")[0])
+            for _, _, (surface, lemma, tag, _, _) in _analyser().analyse(word)
+            if surface == word and tag.split(":")[0] in {"subst", "adj"} and case in tag.split(":")[2].split(".")
+        }
+
+    return bool(lemmas(inflected, "gen") & lemmas(nominal, "nom"))
 
 
 def _readings(word: str, label: str, case: str) -> set[tuple[str, str]]:

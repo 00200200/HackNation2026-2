@@ -4,6 +4,7 @@ import re
 
 from .appeal_charges import ACTS, CHARGE, FILING, act_date, first_sentence, prose_action, sentences
 from .common import ATTORNEY_RE, DATE, EMAIL_RE, LOWER, PERSON, UPPER, registry_ids, squash, to_iso
+from .personal_names import nominative, same_nominal_form
 
 # Canonical descriptions from data/uzp/oczekiwane-json/czynnosc_powod_id_dict.md.
 REASONS = {
@@ -81,7 +82,11 @@ CONTACT = re.compile(
 )
 MEMBER = re.compile(r"^(\d+)[.)]\s*(.*)")
 MEMBER_ROLE = re.compile(r"\((?:lider|członek|partner)\b[^)]*\)", re.IGNORECASE)
-LEAD_FOR = re.compile(r"^prowadząc\w*\s+postępowanie.*(?:na rzecz|w imieniu)", re.IGNORECASE)
+LEAD_FOR = re.compile(
+    r"^(?:prowadząc\w*\s+postępowanie.*(?:na rzecz|w imieniu)|"
+    r"działając\w*\s+(?:we?\s+(?:własnym imieniu|imieniu (?:własnym|swoim))\s+(?:i|oraz)\s+)?na rzecz\s*:)",
+    re.IGNORECASE,
+)
 CONSORTIUM = re.compile(r"\b(?:wspólnie|konsorcjum)\b", re.IGNORECASE)
 
 
@@ -91,6 +96,19 @@ def _party_role(label: str, explicit_appellant: bool) -> str | None:
     if explicit_appellant and label.casefold() == "wykonawca":
         return None
     return "Odwołujący"
+
+
+def _regional_name(name: str, lead: str) -> str:
+    """Use the lead's printed nominative for the same institution in a different locality."""
+    member = re.fullmatch(r"(.+?) (w|we) (.+)", name)
+    model = re.fullmatch(r"(.+?) (?:w|we) .+", lead)
+    if member and model:
+        words, exemplar = member[1].split(), model[1].split()
+        if len(words) == len(exemplar) and all(
+            left == right or same_nominal_form(left, right) for left, right in zip(words, exemplar, strict=True)
+        ):
+            return f"{model[1]} {member[2]} {member[3]}"
+    return name
 
 
 def _parties(lines: list[str], ocr_mail_lines: frozenset[int], explicit_appellant: bool) -> dict[str, list[dict]]:
@@ -115,6 +133,10 @@ def _parties(lines: list[str], ocr_mail_lines: frozenset[int], explicit_appellan
             r",?\s+z siedzibą\b.*?(?=[,–—-]\s*(?:oddział|filia|delegatura)\b|$)", "", name, flags=re.IGNORECASE
         )
         name = name.rstrip(" ,;")
+        if name and role == "Zamawiający" and sublabel.isdigit() and parties[role]:
+            lead = parties[role][0]
+            if "prowadzący" in lead["sublabel"]:
+                name = _regional_name(name, lead["nazwa"])
         if name:
             entity = {
                 "nazwa": name,
@@ -139,6 +161,13 @@ def _parties(lines: list[str], ocr_mail_lines: frozenset[int], explicit_appellan
             continue
         if wrapped_label:
             wrapped_label = not line.endswith(":")
+            continue
+        if (
+            role == "Zamawiający"
+            and not (name_lines or entity)
+            and (nested := re.match(r"nazwa zamawiającego:\s*(.+)", line, re.IGNORECASE))
+        ):
+            name_lines.append(nested[1])
             continue
         if role == "Zamawiający" and LEAD_FOR.match(line):
             finish_name()
@@ -172,6 +201,17 @@ def _parties(lines: list[str], ocr_mail_lines: frozenset[int], explicit_appellan
             if entity and ID_LINE_RE.search(line):
                 for key, value in registry_ids(line).items():
                     entity[key] = entity[key] or value
+        elif (
+            role == "Zamawiający"
+            and sublabel.isdigit()
+            and index + 2 < len(lines)
+            and re.fullmatch(r"\s*\d+\s*/\s*\d+\s*", lines[index + 1])
+            and (following := MEMBER.match(lines[index + 2].strip()))
+            and len(sublabel) <= 6
+            and following[1] == str(int(sublabel) + 1)
+        ):
+            # A printed footer before the page counter interrupts a continuing list.
+            finish_name()
         elif index in ocr_mail_lines and entity and not name_lines and any(entity[k] for k in ("krs", "nip", "regon")):
             continue
         elif label or (CONSORTIUM.search(line) and line.endswith((":", "："))):
@@ -186,7 +226,7 @@ def _parties(lines: list[str], ocr_mail_lines: frozenset[int], explicit_appellan
 
 
 COUNSEL_LABEL = re.compile(r"^pełnomocnik\s+odwołującego\s*:", re.IGNORECASE)
-APPOINTMENT = re.compile(r"reprezentowan\w*\s+prze[zż]\s*:?", re.IGNORECASE)
+APPOINTMENT = re.compile(r"(?:reprezentowan|zastępowan)\w*\s+prze[zż]\s*(?:pełnomocnika\s*)?:?", re.IGNORECASE)
 
 
 EMPLOYER_LABEL = re.compile(
@@ -254,7 +294,12 @@ def _representative(header: str, text: str, appellant_name: str, explicit_appell
             appellant = _party_role(label[1], explicit_appellant) == "Odwołujący"
         elif COUNSEL_LABEL.match(line):
             appellant = True
-        elif not (CONTACT.search(line) or APPOINTMENT.match(line) or EMPLOYER_LABEL.match(line)) and _ends_party(line):
+        elif _ends_party(line) and not (
+            CONTACT.search(line)
+            or APPOINTMENT.match(line)
+            or EMPLOYER_LABEL.match(line)
+            or re.search(r"\b(?:KRS|NIP|REGON)\b", line.partition(":")[0])
+        ):
             appellant = False
         if appellant:
             lines.append(line)
@@ -285,11 +330,33 @@ def _representative(header: str, text: str, appellant_name: str, explicit_appell
         appointment.append(line)
     if re.search(r"\b(?:prezes\w*|człon\w* zarządu|prokurent\w*)\b", " ".join(appointment[:2]), re.IGNORECASE):
         return None
-    appointment_text = " ".join(appointment)
+    appointment_text = squash(" ".join(appointment))
     attorney = ATTORNEY_RE.search(appointment_text)
+    employee = re.match(rf"(?i:pracownika\s+(?:panią\s+|pana\s+)?)({PERSON})\b", appointment_text, re.IGNORECASE)
     if attorney is None and intro:
-        attorney = re.match(rf"({PERSON})(?=[,\s(]|$)", appointment_text)
+        attorney = re.match(
+            rf"(?i:(?:pracownika\s+)?(?:panią\s+|pana\s+)?(?:adw\.\s+)?)({PERSON})(?=[.,\s(]|$)",
+            appointment_text,
+        )
+    name = squash(attorney[1]) if attorney else signature[1] if signature else None
+    if attorney and intro and APPOINTMENT.fullmatch(intro[0]):
+        if not ATTORNEY_RE.match(appointment_text) and re.match(
+            r"[, ]*właściciel\w*\s+(?:firmy|przedsiębiorstwa)\b", appointment_text[attorney.end() :], re.IGNORECASE
+        ):
+            return None
+        name = nominative(name, "acc") or name
     firm = _employer(after)
+    if employee and attorney:
+        firm = appellant_name
+    elif not firm and attorney:
+        # An inline firm may wrap before the street address.
+        inline = re.match(
+            r"\s*,\s*((?:kancelaria|biuro prawne)\b[^:;@]{1,160}?),\s*(?:ul|al|pl)\.",
+            squash(after)[attorney.end() :],
+            re.IGNORECASE,
+        )
+        if inline:
+            firm = inline[1]
     if not firm and signature:
         # A signed appeal may carry the law firm's name in its letterhead.
         letterhead = re.split(r"(?im)^\s*(?:odwołanie|odwołujący|zamawiający)\b", text, maxsplit=1)[0]
@@ -298,7 +365,7 @@ def _representative(header: str, text: str, appellant_name: str, explicit_appell
             firm = firms[0]
     mail = EMAIL_RE.search(after)
     return {
-        "imie_nazwisko": squash(attorney[1]) if attorney else signature[1] if signature else None,
+        "imie_nazwisko": name,
         "nazwa": squash(firm) if firm else None,
         "mail": mail.group() if mail else None,
     }
@@ -337,7 +404,19 @@ def _challenged_action(text: str) -> tuple[str | None, int | None]:
         item_reason = _reason(item_opening)
         if item_reason:
             return act_date(item_opening, item_reason), item_reason
-    if charge or reason:
+    if charge:
+        # An argument section may repeat the heading after the actual numbered allegations.
+        earlier = CHARGE.search(flat, 0, charge.start())
+        if (
+            reason is None
+            and earlier
+            and (
+                earlier[0].lower() == "zarzucam"
+                or re.search(r"\bodwołujący\s*$", flat[: earlier.start()], re.IGNORECASE)
+            )
+            and (first := prose_action(text))[1] is not None
+        ):
+            return first
         return None, reason
     return prose_action(text)
 

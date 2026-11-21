@@ -119,6 +119,21 @@ def _needs_ocr(page, text: str) -> bool:
     return False
 
 
+def damaged_text_layer(text: str) -> bool:
+    # Digits repeatedly substituted inside distinct words are characteristic of a bad OCR layer.
+    return len(set(re.findall(r"\b[^\W\d_]{2,}\d[^\W\d_]+\b", text.casefold()))) >= 3
+
+
+def _page_sized_image(page) -> bool:
+    visible = get_bbox_overlap(page.bbox, page.cropbox)
+    if visible:
+        for image in page.images:
+            region = get_bbox_overlap(visible, obj_to_bbox(image))
+            if region and all(region[i + 2] - region[i] >= 0.75 * (visible[i + 2] - visible[i]) for i in (0, 1)):
+                return True
+    return False
+
+
 class WordBox(NamedTuple):
     """Printed word in PDF points. Page numbers start at 1 and y increases downwards."""
 
@@ -262,9 +277,11 @@ def _tesseract(image: _Raster, words: list[WordBox] | None, *, explicit_dpi: boo
     return "\n".join(line for line in text.splitlines() if line.strip())
 
 
-def _text_layer(page, force_ocr: bool) -> str | None:
+def _text_layer(page, force_ocr: bool, repair_image_text: bool) -> str | None:
     text = "" if force_ocr else page.extract_text() or ""
-    return None if _needs_ocr(page, text) else text
+    if _needs_ocr(page, text) or (repair_image_text and damaged_text_layer(text) and _page_sized_image(page)):
+        return None
+    return text
 
 
 def _fits_parallel_batch(pages) -> bool:
@@ -302,6 +319,7 @@ def read_pages(
     *,
     word_boxes: list[WordBox] | None = None,
     first_ocr_words: list[WordBox] | None = None,
+    repair_image_text: bool = False,
     engine: str | None = None,
     ocr_pages: list[int] | None = None,
     ocr_word_boxes: list[WordBox] | None = None,
@@ -323,7 +341,7 @@ def read_pages(
         if selected in TESSERACT_ENGINES and 2 <= limit <= 3:
             for page in retained:
                 try:
-                    layers[page.page_number] = _text_layer(page, force_ocr)
+                    layers[page.page_number] = _text_layer(page, force_ocr, repair_image_text)
                 except Exception as error:  # noqa: BLE001 -- earlier pages must finish before this error is raised.
                     layers[page.page_number] = error
                     break
@@ -335,7 +353,7 @@ def read_pages(
             if not include and (not used_ocr or readable):
                 break
             number = page.page_number
-            text = layers[number] if number in layers else _text_layer(page, force_ocr)
+            text = layers[number] if number in layers else _text_layer(page, force_ocr, repair_image_text)
             if isinstance(text, Exception):
                 raise text
             scanned = text is None

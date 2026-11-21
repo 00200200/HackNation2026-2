@@ -18,9 +18,11 @@ These runs used local rules with the three endpoint variables unset. The two loc
 
 | Dataset | PDFs | Micro F1 | Macro F1 by class | Appeal | Power of attorney | Transfer | Correct routes (appeal / power / transfer) | Empty negatives | Wall s/PDF |
 |---|---:|---:|---:|---:|---:|---:|---|---:|---:|
-| Local corpus 1, all | 39 | 0.7104 | 0.6950 | 0.7046 | 0.9189 | 0.4615 | 12/13 / 6/6 / 4/9 | 11/11 | 8.45 |
-| Local corpus 2, dev | 39 | 0.7713 | 0.6375 | 0.8148 | 0.9462 | 0.1515 | 13/13 / 5/5 / 1/10 | 11/11 | 3.89 |
-| Organizer scans | 30 | 0.9203 | 0.7315 | 1.0000 | 1.0000 | 0.1944 | 10/10 / 10/10 / 2/10 | n/a | 16.44 |
+| Local corpus 1, all | 39 | 0.8587 | 0.7571 | 0.8910 | 0.9189 | 0.4615 | 13/13 / 6/6 / 4/9 | 11/11 | 16.27 |
+| Local corpus 2, dev | 39 | 0.8154 | 0.6563 | 0.8713 | 0.9462 | 0.1515 | 13/13 / 5/5 / 1/10 | 11/11 | 15.02 |
+| Organizer scans | 30 | 0.9203 | 0.7315 | 1.0000 | 1.0000 | 0.1944 | 10/10 / 10/10 / 2/10 | n/a | 7.83 |
+
+The corpus 2 timing includes the complete batch before the final date-boundary change. One native-text prediction was regenerated and the complete split rescored. [Real appeal round](evals/results/appeal-real-development.json)
 
 [Merged development measurements](evals/results/appeal-scan-development.json) · [Earlier grant development measurements](evals/results/poa-development.json) · [Organizer scan aggregate](evals/results/organizer-scans.json)
 
@@ -100,3 +102,5 @@ On all 30 organizer development scans, the rules routed 10/10 transfer confirmat
 - 21.11.2026 · Codex · Verified merge `6f55ef6` against main: all 196 training outputs matched byte for byte. Organizer scan micro F1 rose from 0.6852 to 0.9203. Refreshed both real development cohorts.
 
 - 21.11.2026 · Codex · Measured the second scanned-transfer pass at `12a5681`. Nine of ten development receipts matched exactly, and all 196 training outputs retained byte parity. [Round 2 measurements](evals/results/scanned-transfers-round2.json)
+
+- 21.11.2026 · Codex · Recovered joint purchasing lists across page breaks, identified appellant counsel and employers, reread damaged searchable appeals and linked first charges to notification evidence. Measured the changes on both real development sets and the organizer scans.

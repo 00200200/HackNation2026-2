@@ -83,6 +83,13 @@ def incomplete_booking_scan(text: str) -> bool:
     )
 
 
+def resembles_appeal_heading(page: str) -> bool:
+    return any(
+        Levenshtein.distance("".join(row.split()).upper(), "ODWOŁANIE", score_cutoff=1) <= 1
+        for row in page.splitlines()
+    )
+
+
 def classify(pages: list[str], *, ocr_accounts: AccountEvidence | None = None) -> str | None:
     if not pages:
         return None

@@ -239,9 +239,11 @@ These runs used local rules with the three endpoint variables unset. The two loc
 
 | Dataset | PDFs | Micro F1 | Macro F1 by class | Appeal | Power of attorney | Transfer | Correct routes (appeal / power / transfer) | Empty negatives | Wall s/PDF |
 |---|---:|---:|---:|---:|---:|---:|---|---:|---:|
-| Local corpus 1, all | 39 | 0.7104 | 0.6950 | 0.7046 | 0.9189 | 0.4615 | 12/13 / 6/6 / 4/9 | 11/11 | 8.45 |
-| Local corpus 2, dev | 39 | 0.7713 | 0.6375 | 0.8148 | 0.9462 | 0.1515 | 13/13 / 5/5 / 1/10 | 11/11 | 3.89 |
-| Organizer scans | 30 | 0.9203 | 0.7315 | 1.0000 | 1.0000 | 0.1944 | 10/10 / 10/10 / 2/10 | n/a | 16.44 |
+| Local corpus 1, all | 39 | 0.8587 | 0.7571 | 0.8910 | 0.9189 | 0.4615 | 13/13 / 6/6 / 4/9 | 11/11 | 16.27 |
+| Local corpus 2, dev | 39 | 0.8154 | 0.6563 | 0.8713 | 0.9462 | 0.1515 | 13/13 / 5/5 / 1/10 | 11/11 | 15.02 |
+| Organizer scans | 30 | 0.9203 | 0.7315 | 1.0000 | 1.0000 | 0.1944 | 10/10 / 10/10 / 2/10 | n/a | 7.83 |
+
+The corpus 2 timing includes the complete batch before the final date-boundary change. One native-text prediction was regenerated and the complete split rescored. [Real appeal round](evals/results/appeal-real-development.json)
 
 Micro F1 pools field matches across documents. Macro F1 averages the three class scores. The routing columns count correctly classified documents in each target class. The negatives column counts zero-byte outputs. Timing includes OCR and extraction on a shared host. [Merged development measurements](evals/results/appeal-scan-development.json) · [Earlier grant development measurements](evals/results/poa-development.json) · [Organizer scan report](evals/results/organizer-scans.json)
 
@@ -294,6 +296,8 @@ rules. [OCR results](evals/results/ocr-engines.json)
   column alignment or an inflected company name can still leave a party missing. A plain title can include
   lowercase continuation rows before the next labelled field. A challenge date needs a link to the act
   or its notification. Separate filing, invoice and statutory dates can appear on the same page.
+  A searchable scan with a damaged text layer can be reread when its cover resembles an appeal.
+  The retry checks the class from the page image. Poorly recognized names and signatures outside the opening pages remain common sources of error.
 - Receipt routing uses evidence that a payment was executed, its amount or date, and the participating
   accounts. A booking table or bank letter needs both an amount and a date. The extractor binds payer
   and payee separately from fee and refund accounts. Explicit operation or execution dates and transaction IDs take
