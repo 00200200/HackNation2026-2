@@ -8,7 +8,7 @@ Shared state of the project. Rules: `CLAUDE.md` → Worklog.
   template example in `input/case1`.
 - Eval harness (`evals/`, field-level F1 on the training cases, working definition) with tests.
   `evals/field_report.py` adds a per-field error table and an OCR stress run (`--force-ocr`).
-- App: `kio2json/`, a rule-based baseline with no language model. CLI `python -m kio2json --input input --output output`;
+- App: `kio2json/`, default jury classes use rule-based extraction. CLI `python -m kio2json --input input --output output`;
   content-based classification with a rejection path; regex and line-layout extraction per class; pdfplumber text
   with wheel-packaged Tesseract for blank or page-number-only text layers. Installation fetches and verifies the
   language models. Set `KIO_OCR_ENGINE=rapidocr` to use the optional RapidOCR v6 group. Both engines run offline
@@ -23,12 +23,13 @@ Shared state of the project. Rules: `CLAUDE.md` → Worklog.
 
 ## Last eval
 
-21.11.2026, full clean run at `74987f2`, pip-installed OCR (`evals/results/latest.json`): `micro_f1` 1.000, cases 51-60 1.000,
+21.11.2026, full clean run at `c2bf060`, pip-installed OCR (`evals/results/latest.json`): `micro_f1` 1.000, cases 51-60 1.000,
 `classification_accuracy` 1.000, `negatives_empty` 1.000. Training data (synthetic). The rules were written with
 sight of these documents, cases 53-60 included, so this is a regression check and the 51-60 figure is not an
 unseen-case estimate for this baseline.
 
-The forced-OCR field report on 196 synthetic PDFs scored 0.903, up from 0.775 on the same scorer at `4deb354`.
+The merged forced-OCR field report scored 0.897 on 196 synthetic PDFs. Strict F1 on 17 real dev scans was
+0.331 with Tesseract and 0.419 with RapidOCR v6. Natural dev F1 on 20 PDFs was 0.3864 and 0.4588, respectively.
 
 ## Next
 
@@ -65,3 +66,4 @@ The forced-OCR field report on 196 synthetic PDFs scored 0.903, up from 0.775 on
 - 21.11.2026 · Codex · Bound transfer values, appeal facts, grantors and signers to their document sections. Added invented regression cases, replaced the organizer identifier in the normalization test and checked 40 fresh adversarial inputs. Transfer and appeal changes in `aaa8057` and `a10b5ad`.
 - 21.11.2026 · Codex · Merged baseline `90d9701` and restored its routing through TOML. All 196 CLI outputs matched that baseline byte for byte, including 16 empty files. The field report found zero errors across 2,316 fields. Added regression tests for model evidence, endpoint diagnostics, alternative evidence captures, signed grouped amounts and malformed NIPs.
 - 21.11.2026 · Codex · Fixed the remaining PR #8 grounding findings from review of `002fbcb`. The model and fallback now check complete numeric runs, account and registry IDs, email addresses and references. Babel validates grouped money with attached currency. Added generated checks for clipped values and nine grouping styles.
+- 21.11.2026 · Codex · Merged `90d9701` and `4b1cc42`, retained configured routing and measured both engines on dev. Final product merge `c2bf060`.

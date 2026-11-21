@@ -43,8 +43,8 @@ the run exit with status 1 after processing the remaining PDFs. This includes re
 ## How it works
 
 1. `kio2json/pdf_text.py` reads the first three pages with pdfplumber. Pages with no text or
-   only page numbers go through the selected OCR engine at 300 dpi. With default Tesseract, if an address appears to have lost
-   its `@`, an English single-word pass rereads that crop. The extractor accepts the separator
+   only page numbers go through the selected OCR engine at 300 dpi. When default Tesseract reads
+   a possible e-mail address with a missing `@`, an English single-word pass rereads that crop. The extractor accepts the separator
    only when the rest of both readings agrees. Call `read_pages(path, word_boxes=boxes)` with
    an empty list to collect raw words and their rectangles alongside the page strings. Coordinates
    are PDF points from the top left, with one-based page numbers.
@@ -174,11 +174,14 @@ Read these as a regression check. The rules were written by looking at these sam
 documents, cases 51-60 included, so no case here is unseen and the 51-60 figure is no estimate
 of how the rules generalize. The hidden test set holds real cases, and this is not its score.
 
-On the same 196 synthetic documents rendered as 307 images, the strict field report scored **0.903**
-with the pip-installed OCR path and **0.775** on the original system-Tesseract path at `4deb354`.
-On an Apple M1 with 16 GiB RAM, the full command reported 366 MiB peak RSS. A separate
-four-page run measured 727 MiB for the OCR interpreter. Run
-`uv run python -m evals.field_report --force-ocr --errors` to reproduce the OCR score.
+On the merged extraction rules, the default engine scored **0.897** strict field F1 on the
+196 documents rendered as 307 images. RapidOCR v6 transcripts scored **0.828** with the same rules.
+Run `uv run python -m evals.field_report --force-ocr --errors` to repeat the default OCR run.
+
+On 17 real development scans (34 pages), Tesseract scored **0.331** and RapidOCR v6 scored
+**0.419**. The runs took 2.78 and 15.45 CPU seconds per page respectively on an Apple M1.
+Across all 20 development documents with natural text-layer routing, corpus micro-F1 was
+0.3864 with Tesseract and 0.4588 with RapidOCR.
 
 ## Known limits
 
@@ -193,9 +196,9 @@ four-page run measured 727 MiB for the OCR interpreter. Run
   digit string is retained as read, including when the printed checksum is invalid. Ambiguous
   signatures and e-mail addresses can remain missing.
 - A receipt with one masked account must have a confirmation heading, a transaction amount and date,
-  and two explicitly labelled accounts: one fully masked by asterisks and the other checksum-valid.
+  and two explicitly labelled accounts. One must be fully masked by asterisks and the other checksum-valid.
   Unlabelled or conflicting roles can leave account fields empty.
-  Attorney names retain the grammatical case used in the document.
+- Missing grantor headings can leave a signer out. Attorney names retain the grammatical case used in the document.
 - UNCONFIRMED: what "empty JSON" means for unrelated documents. We write an empty file, as the
   organizer README words it.
 - UNCONFIRMED: value types. `pesel` is a number in the organizer's annotated example and a string
