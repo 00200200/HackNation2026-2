@@ -23,6 +23,17 @@ EXECUTED = re.compile(
 STATUS = re.compile(r"^(?:status|stan)[\s.:]+(\S.*)$", re.IGNORECASE)
 
 
+def incomplete_booking_scan(text: str) -> bool:
+    lines = [line.strip() for line in text.splitlines()]
+    if any(UNRELATED_HEADING.match(line) for line in lines):
+        return False
+    if any(not EXECUTED.match(m[1]) for line in lines if (m := STATUS.match(line))):
+        return False
+    return any(booking_heading(line) for line in lines) and bool(
+        re.search(r"(?im)^(?:dzienny numer transakcji|data księgowania|rachunek właściciela)\b", text)
+    )
+
+
 def classify(pages: list[str]) -> str | None:
     label, _ = classify_with_evidence(pages)
     return label

@@ -125,3 +125,23 @@ def test_ocr_repairs_a_unique_digit_in_an_ordinary_confirmation(monkeypatch):
     monkeypatch.setattr(pipeline, "read_pages", read)
     _, data = pipeline.process_pdf("invented.pdf")
     assert data["przelew_bankowy"]["na_rachunek"] == "78351200009981234567890123"
+
+
+def test_unreadable_confirmed_scan_retries_first_page_with_inferred_dpi(monkeypatch):
+    from kio2json import pipeline
+
+    calls = []
+
+    def read(path, *, engine, ocr_pages=None, **kwargs):
+        calls.append(engine)
+        if ocr_pages is not None:
+            ocr_pages.append(1)
+        return ["Potwierdzenie wykonania operacji\nDzienny numer transakcji"] if len(calls) == 1 else [RECEIPT]
+
+    monkeypatch.setattr(pipeline, "DEFAULT_OCR_ENGINE", "tesseract-dpi")
+    monkeypatch.delenv("KIO_OCR_ENGINE", raising=False)
+    monkeypatch.setattr(pipeline, "read_pages", read)
+    kind, data = pipeline.process_pdf("invented.pdf")
+    assert kind == "bank_transfer"
+    assert data["przelew_bankowy"]["numer_transakcji"] == "4"
+    assert calls == ["tesseract-dpi", "tesseract"]
