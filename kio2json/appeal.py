@@ -429,7 +429,7 @@ def _procurement(text: str) -> dict:
     reference = None
     for label in (
         r"(?:nr|numer)\s+(?:referencyjny(?:\s+sprawy)?|postępowania|zamówienia)|postępowani[uea]\s+(?:nr|numer)",
-        r"(?:nr|numer)\s+sprawy|znak(?: sprawy)?",
+        r"(?:nr|numer)\s+sprawy|znak(?:\s+sprawy)?",
     ):
         for match in re.finditer(rf"\b(?:{label})\b[:\s]+", text, re.IGNORECASE):
             value = re.match(r"(?=[\w./-]*\d)[\w./-]+", text[match.end() :])
@@ -482,6 +482,22 @@ def _procurement(text: str) -> dict:
 
 def _appellant_registry(text: str, leader: dict) -> None:
     """Fill absent IDs from an explicit self-identification naming the same appellant."""
+    # A letterhead or registry footer can repeat the appellant's KRS next to
+    # its other identifiers. Stop at the next row unless it starts with a tax ID.
+    if leader["krs"] and not all(leader[key] for key in ("nip", "regon")):
+        anchor = rf"\bKRS(?:[ :]+(?:pod numerem |nr )?){re.escape(leader['krs'])}(?!\d)"
+        capital = r"(?:[,; ]+kapitał zakładowy[ :]+[\d .,]+(?:PLN|zł)(?:, udziały wpłacone)?)?"
+        tax_id = r"(?:NIP[ :]+(?:PL ?)?\d(?:[ -]?\d){9}|REGON[ :]+(?:\d{14}|\d{9}))(?!\d)"
+        block = rf"{anchor}{capital}((?:[ ,;\t]*\n?[ \t]*{tax_id}){{1,2}})"
+        candidates = {"nip": set(), "regon": set()}
+        for row in re.finditer(block, text, re.IGNORECASE):
+            ids = registry_ids(row[1].upper())
+            for key, values in candidates.items():
+                if ids[key]:
+                    values.add(ids[key])
+        for key, values in candidates.items():
+            if len(values) == 1 and not leader[key]:
+                leader[key] = values.pop()
     flat = squash(text)
     for match in re.finditer(re.escape(leader["nazwa"]), flat, re.IGNORECASE):
         tail = flat[match.end() : match.end() + 550]

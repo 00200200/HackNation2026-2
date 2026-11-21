@@ -7,6 +7,7 @@ from stdnum import iban
 
 from . import bank_transfer, power_of_attorney
 from .appeal_charges import FILING
+from .common import DATE, to_iso
 from .ocr_accounts import AccountEvidence
 from .ocr_booking import INTERLEAVED_DEBIT, ORDER_TYPE
 from .receipt_layout import booking_heading
@@ -84,6 +85,19 @@ def _debit_printout(text: str) -> bool:
         re.search(r"(?im)^typ transakcji[ :]+przelew z rachunku\b", text)
         and re.search(rf"(?im)^kwota[ :]+[−-]{bank_transfer.MONEY}", text)
     )
+
+
+def _executed_order_printout(text: str) -> bool:
+    if not re.search(r"(?im)^przelew(?: [\w-]+){0,3} szczegóły przelewu przyjętego do realizacji[ \t]*$", text):
+        return False
+    # An order's requested day may be in the future. Require the separate
+    # execution field and a print timestamp on or after that execution day.
+    executed = re.findall(rf"(?im)^data realizacji przelewu[ :]+({DATE})[ \t]*$", text)
+    printed = re.findall(rf"(?im)^data wydruku[ :]+({DATE})(?=\s|$)", text)
+    if len(executed) != 1 or len(printed) != 1:
+        return False
+    day, issued = to_iso(executed[0]), to_iso(printed[0])
+    return bool(day and issued and day <= issued)
 
 
 def incomplete_booking_scan(text: str) -> bool:
@@ -228,6 +242,7 @@ def classify(pages: list[str], *, ocr_accounts: AccountEvidence | None = None) -
             if (
                 CONFIRMATION_HEADING.match(line)
                 or DEBIT_DETAILS.match(line)
+                or (line.casefold() == "przelew z rachunku szczegóły transakcji" and _debit_printout(page))
                 or booking_heading(line, ocr=index == 0 and ocr_accounts is not None)
             ):
                 transfer_heading = True
@@ -243,7 +258,8 @@ def classify(pages: list[str], *, ocr_accounts: AccountEvidence | None = None) -
         return None
     letter = bank_transfer.executed_letter(first)
     debit = ocr_accounts is not None and _debit_printout(first)
-    if not (transfer_heading or debit or letter or any(EXECUTED.match(line) for line in lines)):
+    dated_order = ocr_accounts is not None and _executed_order_printout(first)
+    if not (transfer_heading or debit or letter or dated_order or any(EXECUTED.match(line) for line in lines)):
         return None
     amount, day = bank_transfer.transaction_values(first)
     if amount is None and day is None:

@@ -15,7 +15,7 @@ from rapidfuzz.distance import Levenshtein
 
 from .appeal_scan_parties import _fold
 from .common import EMAIL_RE
-from .ocr_budget import RereadExpired, remaining_ms, require_remaining_ms
+from .ocr_budget import CROP_TIMEOUT_MS, RereadExpired, remaining_ms, require_remaining_ms
 from .pdf_text import WordBox, _language_dir
 
 _ReadCrop = Callable[[list[WordBox], str, bool], str]
@@ -112,7 +112,9 @@ def verify_cover(record: dict, page: str, words: list[WordBox], path: Path) -> N
             reader.SetPageSegMode(PSM.SINGLE_WORD if deskew or language == "eng" else PSM.SINGLE_LINE)
             reader.SetImage(crop)
             reader.SetSourceResolution(360)
-            return reader.GetUTF8Text().strip() if reader.Recognize(timeout=require_remaining_ms(1000)) else ""
+            return (
+                reader.GetUTF8Text().strip() if reader.Recognize(timeout=require_remaining_ms(CROP_TIMEOUT_MS)) else ""
+            )
 
         for party in record["Odwolujacy"]:
             counsel = party["pelnomocnik"]
