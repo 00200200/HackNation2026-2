@@ -13,7 +13,7 @@ from .ocr_normalize import normalize_ocr
 from .pdf_text import WordBox
 from .personal_names import compatible_names, nominative
 from .power_of_attorney import COMPANY_RE
-from .receipt_layout import _word_rows
+from .receipt_layout import word_rows
 
 # Polish letters have a one-to-one mapping here, so folded match offsets index the original.
 _FOLD = str.maketrans("ąćęłńóśźżĄĆĘŁŃÓŚŹŻ", "acelnoszzACELNOSZZ")
@@ -70,7 +70,7 @@ def _layout_cover(page: str, boxes: list[WordBox]) -> str:
     """Read label and value columns together only when both printed roles support that layout."""
     if not boxes or not re.search(r"(?im)^\s*(?:zamawiaj[ąa]cy|odwo[łl]uj[ąa]cy|dotyczy)\s*:\s*$", page):
         return page
-    rows, height = _word_rows(boxes)
+    rows, height = word_rows(boxes)
     anchors = []
     for i, row in enumerate(rows):
         # A left column can consist of just the role word and a separate colon.

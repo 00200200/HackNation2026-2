@@ -361,6 +361,7 @@ def read_pages(
     *,
     word_boxes: list[WordBox] | None = None,
     first_ocr_words: list[WordBox] | None = None,
+    page_sizes: dict[int, tuple[float, float]] | None = None,
     repair_image_text: bool = False,
     engine: str | None = None,
     ocr_pages: list[int] | None = None,
@@ -425,6 +426,8 @@ def read_pages(
                     for w in page.extract_words()
                 )
             if include:
+                if page_sizes is not None:
+                    page_sizes[number] = page.width, page.height
                 pages.append(text)
             if not readable:
                 page_words = _body_word_count(text)
