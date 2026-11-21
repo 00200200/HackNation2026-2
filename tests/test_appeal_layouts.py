@@ -175,3 +175,11 @@ def test_one_ocr_substitution_in_a_role_keeps_the_printed_name():
 
 def test_nearby_heading_with_only_a_body_reference_is_insufficient():
     assert classify(["ODWOŁANIA\nLista pism odwołującego i doręczeń."]) is None
+
+
+def test_generic_procedural_charge_keeps_its_introductory_dated_act():
+    result = extract(
+        "Zamawiający w dniu 13 maja 2031 odrzucił ofertę. "
+        "Zarzut nr 1 – zaniechanie doprecyzowania wezwania do wyjaśnień."
+    )["OdwolanieKIO"]
+    assert (result["czynnosc_powod_id"], result["czynnosc_dzien"]) == (1, "2031-05-13")

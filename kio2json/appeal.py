@@ -2,7 +2,7 @@
 
 import re
 
-from .appeal_charges import prose_action
+from .appeal_charges import ACTS, prose_action
 from .common import ATTORNEY_RE, DATE, EMAIL_RE, LOWER, PERSON, UPPER, find_date, registry_ids, squash, to_iso
 
 # Canonical descriptions from data/uzp/oczekiwane-json/czynnosc_powod_id_dict.md.
@@ -266,14 +266,10 @@ def _challenged_action(text: str) -> tuple[str | None, int | None]:
         sentence = _first_sentence(introduction[action.start() :])
         action_reason = _reason(sentence)
         if action_reason:
-            if (
-                reason
-                and reason != action_reason
-                and re.match(
-                    r"^[\s:–—-]*(?:odrzuceni|wykluczeni|zaniechani|unieważnieni|wybór)", opening, re.IGNORECASE
-                )
-            ):
-                return None, reason
+            explicit = opening.lstrip(" :–—-")
+            for charge_reason, pattern in ACTS.items():
+                if charge_reason != action_reason and re.match(pattern, explicit, re.IGNORECASE):
+                    return None, charge_reason
             return to_iso(action.group(1)), action_reason
     item = FIRST_ITEM_RE.search(introduction)
     if item:
