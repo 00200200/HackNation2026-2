@@ -1,48 +1,72 @@
-"""Content-based routing. The file name is never an input."""
+"""Classify by the document's own heading and transaction evidence."""
 
 import re
 
-from .bank_transfer import ACCOUNT_RE, AMOUNT_DATE_ROW_RE, AMOUNT_RE, OPERATION_DATE_RE, RECIPIENT_RE, SENDER_RE
+from stdnum import iban
 
-JUDGMENT_RE = re.compile(
-    r"^\s*(?:WYROK|POSTANOWIENIE|W IMIENIU RZECZYPOSPOLITEJ POLSKIEJ)\s*$", re.IGNORECASE | re.MULTILINE
+from .bank_transfer import ACCOUNT_RE, transaction_values
+
+UNRELATED_HEADING = re.compile(
+    r"^(?:wyrok|postanowienie|w imieniu rzeczypospolitej polskiej|faktura|wezwanie|prośba|wniosek|"
+    r"prosimy o|proszę o|instrukcja|zamówienie|oferta handlowa)\b",
+    re.IGNORECASE,
 )
-PAYMENT_REQUEST_RE = re.compile(
-    r"^\s*(?:faktura(?: VAT)?|wezwanie do zapłaty|prośba o płatność)\b", re.IGNORECASE | re.MULTILINE
+CONFIRMATION = (
+    r"(?:potwierdzenie|dowód)\s+(?:(?:wykonania|realizacji)\s+)?(?:polecenia\s+)?"
+    r"(?:przelewu|transakcji|operacji bankowej)\b"
 )
-CONFIRMATION_RE = re.compile(
-    r"\b(?:potwierdzenie|dowód)\s+(?:(?:wykonania|realizacji)\s+)?(?:polecenia\s+)?"
-    r"(?:przelewu|transakcji|operacji bankowej)\b|\bwykonano przelew\b|^\s*(?:status[\s.:]*)?(?:przelew\s+)?zrealizowan[yo]\b",
-    re.IGNORECASE | re.MULTILINE,
+CONFIRMATION_HEADING = re.compile(
+    rf"^(?:dotyczy:\s*|(?-i:[A-ZĄĆĘŁŃÓŚŹŻ][A-ZĄĆĘŁŃÓŚŹŻ &.-]+)\s+)?{CONFIRMATION}", re.IGNORECASE
 )
+EXECUTED = re.compile(r"^(?:status[\s.:]*)?(?:przelew\s+)?(?:zrealizowan[yo]|wykonan[yo])\b", re.IGNORECASE)
+STATUS = re.compile(r"^status[\s.:]+(\S.*)$", re.IGNORECASE)
+
+ACCOUNT_LINE = re.compile(r"rachunek (nadawcy|odbiorcy):\s*(.+)", re.IGNORECASE)
 
 
-def _headings(text: str) -> list[str]:
-    """Lines with whitespace removed, so 'O D W O Ł A N I E' reads as 'ODWOŁANIE'."""
-    return [re.sub(r"\s", "", line).upper() for line in text.splitlines()]
+def _masked_pair(lines: list[str]) -> bool:
+    """One explicitly masked role opposite one checksum-valid, explicitly labelled NRB."""
+    matched = [m.groups() for line in lines if (m := ACCOUNT_LINE.fullmatch(line))]
+    if len(matched) != 2 or len({role.casefold() for role, _ in matched}) != 2:
+        return False
+    values = [value for _, value in matched]
+    return any(re.fullmatch(r"\*{4,}", value) for value in values) and any(
+        (number := ACCOUNT_RE.fullmatch(value)) and iban.is_valid("PL" + re.sub(r"\s", "", number[1]))
+        for value in values
+    )
 
 
 def classify(pages: list[str]) -> str | None:
-    """Return 'appeal', 'power_of_attorney', 'bank_transfer', or None for any other document."""
     if not pages:
         return None
     head = "\n".join(pages[:2])
-    first_page_headings = _headings(pages[0])
+    transfer_heading = False
+    for line in head.splitlines():
+        line = line.strip()
+        heading = re.sub(r"\s", "", line).upper()
+        if UNRELATED_HEADING.match(line):
+            return None
+        if heading == "ODWOŁANIE":
+            return "appeal" if "odwołując" in head.casefold() else None
+        if heading in {"PEŁNOMOCNICTWO", "PEŁNOMOCNICTWOPROCESOWE", "PEŁNOMOCNICTWOSZCZEGÓLNE"}:
+            return "power_of_attorney"
+        if CONFIRMATION_HEADING.match(line):
+            transfer_heading = True
+            break
 
-    if "ODWOŁANIE" in _headings(head) and "odwołując" in head.lower() and not JUDGMENT_RE.search(head):
-        return "appeal"
-    if any(h.startswith("PEŁNOMOCNICTWO") and len(h) <= 30 for h in first_page_headings):
-        return "power_of_attorney"
-    page = pages[0]
-    if "przelew" not in page.lower() or PAYMENT_REQUEST_RE.search(page) or not CONFIRMATION_RE.search(page):
+    first = pages[0]
+    lines = [line.strip() for line in first.splitlines()]
+    statuses = [m[1] for line in lines if (m := STATUS.match(line))]
+    if any(not EXECUTED.match(status) for status in statuses):
         return None
-    accounts = {re.sub(r"\s", "", m.group(1)) for m in ACCOUNT_RE.finditer(page)}
-    if len(accounts) >= 2:
-        return "bank_transfer"
-    # A receipt can mask a number or OCR can damage it. Require a confirmation heading,
-    # both payment roles and a dated amount before accepting a receipt without both accounts.
-    heading = any(CONFIRMATION_RE.match(line.strip()) for line in page.splitlines()[:12])
-    dated_amount = AMOUNT_DATE_ROW_RE.search(page) or (AMOUNT_RE.search(page) and OPERATION_DATE_RE.search(page))
-    if heading and dated_amount and SENDER_RE.search(page.lower()) and RECIPIENT_RE.search(page.lower()):
-        return "bank_transfer"
-    return None
+    if not transfer_heading and not any(EXECUTED.match(line) for line in lines):
+        return None
+    accounts = {re.sub(r"\s", "", match[1]) for match in ACCOUNT_RE.finditer(first)}
+    if "przelew" not in first.casefold():
+        return None
+    amount, day = transaction_values(first)
+    if len(accounts) < 2 and not (
+        transfer_heading and len(accounts) == 1 and amount is not None and day and _masked_pair(lines)
+    ):
+        return None
+    return "bank_transfer" if amount is not None or day is not None else None

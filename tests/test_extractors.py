@@ -37,7 +37,11 @@ def test_classify_routes_by_content():
     assert classify([APPEAL.upper()]) == "appeal"
     assert classify(["P E Ł N O M O C N I C T W O\nudzielam pełnomocnictwa adw. Jan Kowalski"]) == "power_of_attorney"
     assert (
-        classify(["Potwierdzenie przelewu\n11 1111 1111 1111 1111 1111 1111\n22 2222 2222 2222 2222 2222 2222"])
+        classify(
+            [
+                "Potwierdzenie przelewu\nKwota: 14,20 PLN\n11 1111 1111 1111 1111 1111 1111\n22 2222 2222 2222 2222 2222 2222"
+            ]
+        )
         == "bank_transfer"
     )
 
@@ -252,7 +256,7 @@ def test_transfer_requires_evidence_of_confirmation():
     accounts = "4" * 26 + "\n" + "5" * 26
     for header in ("Faktura VAT\nProsimy o przelew", "Wezwanie do zapłaty przelewem"):
         assert classify([header + "\n" + accounts]) is None
-    assert classify(["Potwierdzenie wykonania przelewu\n" + accounts]) == "bank_transfer"
+    assert classify(["Potwierdzenie wykonania przelewu\nData realizacji: 10.01.2026\n" + accounts]) == "bank_transfer"
 
 
 def test_judgment_citation_in_appeal_body():

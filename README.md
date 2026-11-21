@@ -35,10 +35,12 @@ the run exit with status 1 after processing the remaining PDFs. This includes re
    an empty list to collect raw words and their rectangles alongside the page strings. Coordinates
    are PDF points from the top left, with one-based page numbers.
 2. `kio2json/classify.py` uses document content. It checks appeal and power-of-attorney
-   headings. For a transfer it looks for evidence of confirmation or execution together with
-   two accounts, or the masked-account evidence described below. An invoice gets an empty file.
+   headings in reading order. A transfer needs two distinct accounts, a confirmation heading
+   or execution status, and the transaction’s own amount or date. A rejected payment or an
+   invoice asking for confirmation gets an empty file.
 3. `kio2json/appeal.py`, `power_of_attorney.py` and `bank_transfer.py` extract the fields with
-   regular expressions and line-level layout rules.
+   labelled fields, party sections and grant declarations. The appeal extractor reads the
+   challenged act and date from the first charge or its dated introductory sentence.
 
 ## Measure
 
