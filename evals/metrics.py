@@ -36,8 +36,8 @@ def reject_json_constant(token: str):
     raise ValueError("invalid JSON number")
 
 
-def load_reference(path: Path) -> dict:
-    """An empty file labels a negative. All other references must be UTF-8 JSON objects."""
+def read_object(path: Path) -> tuple[dict, bool]:
+    """Return the JSON object and whether the file was literally empty."""
     if not stat.S_ISREG(path.stat().st_mode):
         raise ValueError("expected a regular JSON file")
     try:
@@ -47,15 +47,20 @@ def load_reference(path: Path) -> dict:
         raise ValueError("a selected reference is not valid UTF-8 JSON") from exc
     if not isinstance(data, dict):
         raise ValueError("a selected reference must be a JSON object")  # noqa: TRY004 - invalid file contents
+    return data, not text
+
+
+def load_reference(path: Path) -> dict:
+    data, _ = read_object(path)
     return data
 
 
-def load_prediction(path: Path) -> dict | None:
+def load_prediction(path: Path) -> tuple[dict | None, bool]:
     """An unreadable or malformed prediction is incomplete and misses the reference leaves."""
     try:
-        return load_reference(path)
+        return read_object(path)
     except (OSError, ValueError):
-        return None
+        return None, False
 
 
 def doc_class(data: dict | None) -> str | None:
@@ -146,12 +151,13 @@ class DocResult:
     pred_class: str | None
     counts: Counts
     counts_non_null: Counts
+    empty_output: bool
     errors: list[str] = field(default_factory=list)
     by_field: dict[str, Counts] = field(default_factory=dict)
 
 
 def score_doc(case: str, file: str, pred_path: Path, gold: dict) -> DocResult:
-    pred = load_prediction(pred_path)
+    pred, empty_output = load_prediction(pred_path)
     errors = [] if pred is not None else ["missing or invalid JSON"]
     by_field = {}
     return DocResult(
@@ -161,6 +167,7 @@ def score_doc(case: str, file: str, pred_path: Path, gold: dict) -> DocResult:
         doc_class(pred),
         compare(pred, gold, by_field=by_field),
         compare(pred, gold, skip_gold_nulls=True),
+        empty_output,
         errors,
         by_field,
     )
@@ -197,7 +204,7 @@ def summarise(docs: list[DocResult]) -> dict:
         "micro_f1_non_null": non_null.f1,
         "per_class_f1": class_scores,
         "classification_accuracy": _ratio(sum(d.pred_class == d.gold_class for d in positives), len(positives)),
-        "negatives_empty": _ratio(sum(d.pred_class == NEGATIVE for d in negatives), len(negatives)),
+        "negatives_empty": _ratio(sum(d.empty_output for d in negatives), len(negatives)),
         "outputs_complete": _ratio(sum(not d.errors for d in docs), len(docs)),
         "counts": {"tp": total.tp, "fp": total.fp, "fn": total.fn},
     }

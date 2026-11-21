@@ -60,7 +60,7 @@ def test_lists_are_order_insensitive():
 def test_negative_document_must_be_empty(tmp_path: Path):
     empty = tmp_path / "neg.json"
     empty.write_text("")
-    assert load_prediction(empty) == {}
+    assert load_prediction(empty) == ({}, True)
     assert doc_class({}) == NEGATIVE
     ok = score_doc("negatywne", "x.pdf", empty, {})
     assert (ok.counts.tp, ok.counts.fp, ok.counts.fn) == (0, 0, 0)
@@ -151,3 +151,12 @@ def test_large_integer_prediction_scores_a_mismatch(tmp_path):
     prediction.write_text(json.dumps({"amount": 10**399 + 1}))
     result = score_doc("invented", "doc.pdf", prediction, {"amount": 10**399})
     assert (result.counts.tp, result.counts.fp, result.counts.fn) == (0, 1, 1)
+
+
+def test_negative_output_contract_requires_zero_bytes(tmp_path):
+    prediction = tmp_path / "negative.json"
+    for contents, expected in [(b"{}", 0), (b"", 1)]:
+        prediction.write_bytes(contents)
+        detail = summarise([score_doc("invented", "unrelated.pdf", prediction, {})])
+        assert detail["outputs_complete"] == 1
+        assert detail["negatives_empty"] == expected

@@ -11,6 +11,7 @@ import pytest
 from PIL import Image
 
 from evals import field_report, run
+from evals.metrics import CLASSES
 
 
 @pytest.fixture
@@ -381,7 +382,7 @@ def training_tree(repo):
         else:
             for pdf, ref in run.GOLD_FOR.items():
                 (folder / pdf).write_bytes(invented_pdf())
-                (folder / ref).write_text('{"mocodawca": 1}')
+                (folder / ref).write_text(json.dumps({CLASSES[Path(ref).stem]: 1}))
     subprocess.run(["git", "add", "data"], cwd=repo, check=True)
     subprocess.run(
         [
@@ -414,6 +415,10 @@ def training_tree(repo):
         "extra-negative-gold",
         "uppercase-negative-gold",
         "full-coverage",
+        "empty-positive",
+        "wrong-class",
+        "no-leaves",
+        "mixed-class",
         "extra-pdf",
         "corrupt-pdf",
     ],
@@ -432,6 +437,15 @@ def test_training_inventory_and_references(training_tree, repo, monkeypatch, cap
         return
     if fault in {"invalid-utf8", "invalid-json", "non-object"}:
         ref.write_bytes({"invalid-utf8": b"\xff", "invalid-json": b"{", "non-object": b"[]"}[fault])
+    elif fault in {"empty-positive", "wrong-class", "no-leaves", "mixed-class"}:
+        ref.write_bytes(
+            {
+                "empty-positive": b"",
+                "wrong-class": b'{"mocodawca":1}',
+                "no-leaves": b'{"OdwolanieKIO":{}}',
+                "mixed-class": b'{"OdwolanieKIO":{},"przelew_bankowy":{"kwota":100}}',
+            }[fault]
+        )
     elif fault in {"missing-ref", "missing-pair"}:
         ref.unlink()
         if fault == "missing-pair":

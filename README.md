@@ -150,7 +150,8 @@ The optional `--detail-out` file must be outside every checkout of this reposito
 Both commands check the selected directories, PDFs and references before reporting scores, including with
 `--pred`. Invalid inputs or an extractor failure exit with status 2 and preserve the previous results and gate.
 Test-split diagnostics omit local paths. Missing or malformed predictions count as missed reference fields.
-Training mode checks selected files against the organizer inventory committed in `data/uzp/dane`.
+Training mode checks selected files against the organizer inventory committed in `data/uzp/dane`. Each known
+positive reference needs fields for its expected class. The negative-output target requires zero-byte predictions.
 For a case-level split, put `{"dev": [...], "test": [...]}` in `SPLIT.json` at the corpus root. Each list
 contains case folder names. The default `--split all` scores the whole corpus, including corpora without a split.
 Inspect field errors on dev. Use aggregate scores to evaluate test.

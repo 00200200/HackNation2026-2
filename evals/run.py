@@ -33,7 +33,7 @@ import pdfplumber
 import pypdfium2 as pdfium
 from pdfminer import settings as pdf_settings
 
-from evals.metrics import DocResult, load_reference, reject_json_constant, score_doc, summarise
+from evals.metrics import CLASSES, DocResult, flatten, load_reference, reject_json_constant, score_doc, summarise
 
 ROOT = Path(__file__).resolve().parent.parent
 DATA = ROOT / "data" / "uzp" / "dane"
@@ -144,7 +144,13 @@ def load_cases(data: Path, quick: bool, *, holdout: bool = False) -> dict[str, d
         for name in pdfs:
             check_pdf(folder / name)
             ref = pairs[name]
-            docs[name] = load_reference(folder / ref) if name in GOLD_FOR or ref in refs else {}
+            reference = load_reference(folder / ref) if name in GOLD_FOR or ref in refs else {}
+            if name in GOLD_FOR:
+                marker = CLASSES[Path(ref).stem]
+                markers = reference.keys() & CLASSES.values()
+                if markers != {marker} or not flatten(reference[marker]):
+                    raise ValueError(f"organizer reference {case}/{ref} must contain fields for its expected class")
+            docs[name] = reference
         cases[case] = docs
     return cases
 

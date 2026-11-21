@@ -58,8 +58,8 @@ The optional `--detail-out` file must be outside every checkout of this reposito
 On test splits, corpus I/O failures report an error count and type on the console.
 Invalid inputs, an empty selection and extractor failures exit 2 before writing results or the training gate.
 Both commands validate selected PDF pages and their text layers and read every reference as UTF-8 JSON, even when scoring saved predictions.
-A zero-byte reference labels a negative. A bad prediction misses all gold leaves and counts as incomplete.
-A missed target gives exit code 1. Targets with no applicable documents, such as negative handling on an all-positive corpus, are skipped.
+A zero-byte corpus reference labels a negative. The three named organizer references must each contain fields for the expected class. A bad prediction misses all gold leaves and counts as incomplete.
+For a negative prediction to meet the team target, its file must contain zero bytes. A missed target gives exit code 1. Targets with no applicable documents, such as negative handling on an all-positive corpus, are skipped.
 
 An optional `SPLIT.json` at the corpus root gives two lists of case folder names, `dev` and `test`.
 Together they must cover each case exactly once. Both commands accept `--split dev|test|all` (default `all`).
