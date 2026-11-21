@@ -4,7 +4,9 @@ HackNation 2026 entry for the Public Procurement Office (UZP) challenge: read th
 appeal case, decide what each one is, and write the organizer's JSON for it. Task brief:
 `docs/task/BRIEF.md`. Project state and open work: `WORKLOG.md`.
 
-The extraction path is a rule-based baseline. It uses no language model yet.
+The jury configuration runs three rule-based extractors locally. Each class has a TOML file
+that selects its routing rules, output fields and extraction engines. New classes can use
+label patterns or an optional language model.
 
 ## Run
 
@@ -46,13 +48,105 @@ the run exit with status 1 after processing the remaining PDFs. This includes re
    only when the rest of both readings agrees. Call `read_pages(path, word_boxes=boxes)` with
    an empty list to collect raw words and their rectangles alongside the page strings. Coordinates
    are PDF points from the top left, with one-based page numbers.
-2. `kio2json/classify.py` uses document content. It checks appeal and power-of-attorney
-   headings in reading order. A transfer normally needs two distinct accounts, a confirmation heading
-   or execution status, and the transaction’s own amount or date. A rejected payment or an
-   invoice asking for confirmation gets an empty file.
-3. `kio2json/appeal.py`, `power_of_attorney.py` and `bank_transfer.py` extract the fields with
-   labelled fields, party sections and grant declarations. The appeal extractor reads the
-   challenged act and date from the first charge or its dated introductory sentence.
+2. The CLI loads `config/classes/*.toml` once per batch. `kio2json/class_config.py` matches the
+   page text against enabled definitions in ascending `priority`, then class ID order. The first
+   match wins. The three organizer classes share the content classifier in `kio2json/classify.py`.
+   It reads headings in document order. A transfer normally needs two distinct accounts, a confirmation
+   heading or execution status, and a transaction amount or date. Rejected payments and payment
+   requests get an empty file.
+3. `kio2json/engines.py` sends the joined page text to the selected extractor. The three jury
+   classes use `python` with a dotted path to the existing rule function. Each function retains
+   its field order and normalization. `labelled_fields` extracts values by pattern. `llm`
+   generates a Pydantic AI output model from the same field definitions.
+
+## Enable the fourth class
+
+The optional `participation.toml` recognizes a form headed **Karta uczestnika**. It extracts the
+participant, filing date and reference. To try it, copy the directory and set `enabled = true`
+in the copy of `participation.toml`. Point the CLI at that directory for one run.
+
+```sh
+cp -R config/classes /tmp/kio-classes
+# Edit /tmp/kio-classes/participation.toml, then run:
+KIO_CLASSES_DIR=/tmp/kio-classes python -m kio2json --input input --output output
+```
+
+With the default directory, that form gets an empty file. The end-to-end test writes an invented
+PDF, runs the CLI in both configurations and checks the output, including its ISO date.
+
+```sh
+uv run pytest -q tests/test_class_config.py -k fourth
+```
+
+## Add a class
+
+1. Create one TOML file in your class directory and choose a unique English `id`. This example
+   adds a receipt with one reference field.
+
+   ```toml
+   id = "receipt"
+   engines = ["labelled_fields"]
+
+   [routing]
+   required = ['^Receipt$', '^Reference:']
+   forbidden = ['^Draft\b']
+
+   [fields.reference]
+   type = "string"
+   instruction = "Reference printed on the receipt."
+   pattern = '^Reference:[ \t]*(.+)$'
+   ```
+
+2. Set the routing cues. Patterns are case-insensitive and support line anchors. Every
+   `required` pattern must match and any `forbidden` match rejects the class. Each optional
+   `headings` pattern must match a whole line with whitespace removed. `routing.pages` limits
+   the search to the first N available pages (default 1). To require distinct references, for
+   example, add `[routing.evidence]` with `pattern = 'Reference: (\w+)'` and `minimum = 2`.
+   Classes with a Python router can set `classifier = "kio2json.classify.classify"` in
+   `[routing]` in place of the cues. The function receives the page texts and returns a class ID
+   or `None`. Each organizer class uses this setting.
+3. Define one field per output key. Scalars support `string`, `integer`, `number` and `boolean`.
+   Object fields have a `fields` table, and list fields declare an `items` schema, which can
+   itself contain lists. All fields carry an `instruction`. Fields are nullable by default.
+   A labelled field's `pattern` captures the value in one group. On a list, each capture is
+   one row, and its child patterns search within that row. Available normalizers are
+   `iso_date`, `money`, `account_number`, `krs`, `nip`, `regon` and `pesel`.
+4. Run the CLI with a PDF containing the new heading and labels. For the example above,
+   a document with lines `Receipt` and `Reference: HX-7` yields `{"reference": "HX-7"}`.
+   Test a near miss such as a draft. Changes take effect on the next invocation.
+   Treat class files as trusted application configuration. Extractor and classifier paths load Python callables.
+
+## Use a model endpoint
+
+Choose an OpenAI-compatible chat endpoint serving your open-weight model with structured
+tool output. Set these variables in the process environment or in an ignored `.env` in the
+working directory. Existing environment values take precedence.
+
+| Variable | Value |
+|---|---|
+| `KIO_LLM_BASE_URL` | API base URL, including the endpoint's version path, e.g. `http://localhost:8000/v1` |
+| `KIO_LLM_MODEL` | Model identifier advertised by that endpoint |
+| `KIO_LLM_API_KEY` | Endpoint credential |
+
+Set `engines = ["llm"]` for model-only extraction. Remove the `extractor` entry when removing
+the Python engine. Use `engines = ["python", "llm"]` to keep values found by the rules and
+consult the model for null fields. A fallback preserves existing arrays, including empty ones.
+To fill missing fields within existing records, set `match_by` on the list to a unique scalar
+field, such as `data.nazwa` in `power_of_attorney.toml`. Ambiguous identities keep their original
+records. The built-in jury classes use only `python` and require no endpoint settings.
+
+The model supplies a verbatim quote for each scalar. The engine checks that the page contains
+the quote and that the quote supports the value. Copied text must appear in the quote after
+normalization. Full references and email addresses keep their internal punctuation. For dates,
+amounts, accounts and registry IDs, the quote must cover the complete printed value, including
+any sign. Grouped amounts such as `9 876,54 PLN` and amounts with attached currency such as
+`EUR87,23` are supported. An incomplete value or an overlong account yields null, including for
+normally mandatory scalars. A correctly quoted value from the wrong party’s block can still pass.
+
+Pydantic AI allows one structured-output correction within a 60-second run timeout. Transport
+retries are disabled. An endpoint failure is reported on stderr with the PDF path, failure type
+and HTTP status when available. The CLI continues the batch and exits with status 1.
+Offline model tests cover these rules. Accuracy and latency on a live model have yet to be measured.
 
 ## Measure
 
@@ -102,7 +196,6 @@ four-page run measured 727 MiB for the OCR interpreter. Run
   and two explicitly labelled accounts: one fully masked by asterisks and the other checksum-valid.
   Unlabelled or conflicting roles can leave account fields empty.
   Attorney names retain the grammatical case used in the document.
-- Classes, fields and extraction patterns live in Python modules.
 - UNCONFIRMED: what "empty JSON" means for unrelated documents. We write an empty file, as the
   organizer README words it.
 - UNCONFIRMED: value types. `pesel` is a number in the organizer's annotated example and a string

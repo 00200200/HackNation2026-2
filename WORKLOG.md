@@ -13,6 +13,10 @@ Shared state of the project. Rules: `CLAUDE.md` → Worklog.
   with wheel-packaged Tesseract for blank or page-number-only text layers. Installation fetches and verifies the
   language models. Set `KIO_OCR_ENGINE=rapidocr` to use the optional RapidOCR v6 group. Both engines run offline
   and return word boxes in PDF points on request. Branch `feat/ocr-engine`.
+- The CLI reads class definitions from `config/classes/`.
+  The jury classes select the baseline content classifier and their Python extractors by dotted path.
+  A disabled participation form demonstrates config-only routing and labelled fields. The optional
+  model engine checks each complete source value against its own verbatim quote and reports endpoint failures per PDF.
 - Research notes on OCR, schema extraction and Polish legal NLP: `docs/kio-extraction-research.md`.
 - Claude Code setup: skills `hacknation-judging`, `odwolania2json-eval`, `build`, `verify`, `humanizer`;
   agents `judge`, `builder`, `reviewer`, `researcher`; pre-push hook in `.githooks/`.
@@ -31,8 +35,7 @@ The forced-OCR field report on 196 synthetic PDFs scored 0.903, up from 0.775 on
 | Item | Owner |
 |---|---|
 | Real-layout appeals: small reference set from real KIO appeals; coordinate-aware rules vs a grounded model call | — |
-| Config-driven classes (routing cues, fields, patterns in config files) | — |
-| Extraction per class with an open-weight LLM on an EU API (pydantic-ai), where rules fail | — |
+| Measure accuracy and latency of the config-selected LLM on real layouts once the EU model endpoint is available | — |
 | Transparency output: source page, quoted text and rule per field | — |
 | GUI: upload, run, source and JSON side by side | — |
 | Ask the UZP stand: F1 formula, stage II weights (README 50/50 vs PDF 50/30/20) | — |
@@ -58,4 +61,7 @@ The forced-OCR field report on 196 synthetic PDFs scored 0.903, up from 0.775 on
 - 21.11.2026 · Claude · rule-based baseline `kio2json`, field report, data refresh to UZP 7590db8 (reason 6 description is now `Odpowiedzi/wyjaśnienia do SWZ`); full eval `micro_f1` 1.000 on training data
 - 21.11.2026 · Codex · fixed OCR failure reporting, payment and party roles, first-charge dates and field-report matching. Added regressions with invented fixtures. Extraction fixes in `0ecd41c`.
 - 21.11.2026 · Codex · measured CPU OCR engines, shipped pip-only offline scans and word boxes, and repaired OCR fields. Forced-image field F1 0.903, native F1 1.000. `b36ceb5`.
+- 21.11.2026 · Codex · Configured routing and three extraction engines in `00a84f2`. The fourth class uses only TOML. All 196 synthetic corpus outputs matched baseline `4deb354` byte for byte. The field report found zero errors across 2,316 fields.
 - 21.11.2026 · Codex · Bound transfer values, appeal facts, grantors and signers to their document sections. Added invented regression cases, replaced the organizer identifier in the normalization test and checked 40 fresh adversarial inputs. Transfer and appeal changes in `aaa8057` and `a10b5ad`.
+- 21.11.2026 · Codex · Merged baseline `90d9701` and restored its routing through TOML. All 196 CLI outputs matched that baseline byte for byte, including 16 empty files. The field report found zero errors across 2,316 fields. Added regression tests for model evidence, endpoint diagnostics, alternative evidence captures, signed grouped amounts and malformed NIPs.
+- 21.11.2026 · Codex · Fixed the remaining PR #8 grounding findings from review of `002fbcb`. The model and fallback now check complete numeric runs, account and registry IDs, email addresses and references. Babel validates grouped money with attached currency. Added generated checks for clipped values and nine grouping styles.
