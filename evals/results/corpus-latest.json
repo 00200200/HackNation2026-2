@@ -1,8 +1,8 @@
 {
-  "commit": "3992a2589e77e2d66d450a42c61e3deba8c0304c",
+  "commit": "ee3c8ca0f29bb6b20ed4349fd55ba52ee3e19880",
   "dirty": false,
   "mode": "corpus",
-  "timestamp": "2026-11-21T15:55:16+00:00",
+  "timestamp": "2026-11-21T16:43:14+00:00",
   "n_cases": 7,
   "n_docs": 17,
   "coverage_ok": false,
@@ -10,7 +10,7 @@
   "run_error": null,
   "metrics": {
     "micro_f1": {
-      "value": 0.3480825958702065,
+      "value": 0.4186046511627907,
       "target": 0.9,
       "pass": false
     },
@@ -30,30 +30,30 @@
       "pass": false
     },
     "seconds_per_doc": {
-      "value": 0.8444060196497423,
+      "value": 1.6207353700609768,
       "target": null,
       "pass": true
     }
   },
   "detail": {
-    "micro_f1": 0.3480825958702065,
-    "macro_f1_documents": 0.22851198575180476,
-    "macro_f1_classes": 0.24453920871831317,
+    "micro_f1": 0.4186046511627907,
+    "macro_f1_documents": 0.29293323569341667,
+    "macro_f1_classes": 0.3122719734660033,
     "macro_f1_class_count": 3,
-    "macro_f1_fields": 0.3477589908749329,
-    "micro_f1_non_null": 0.2831050228310502,
+    "macro_f1_fields": 0.4335077831454643,
+    "micro_f1_non_null": 0.39461883408071746,
     "per_class_f1": {
-      "odwolanie": 0.39552238805970147,
-      "pelnomocnictwo": 0.17142857142857143,
+      "odwolanie": 0.4701492537313433,
+      "pelnomocnictwo": 0.3,
       "przelew": 0.16666666666666666
     },
     "classification_accuracy": 0.6153846153846154,
     "negatives_empty": 1.0,
     "outputs_complete": 1.0,
     "counts": {
-      "tp": 59,
-      "fp": 39,
-      "fn": 182
+      "tp": 72,
+      "fp": 31,
+      "fn": 169
     }
   },
   "holdout_51_60": null,
