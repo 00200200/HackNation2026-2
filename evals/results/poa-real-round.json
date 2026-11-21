@@ -1,0 +1,357 @@
+{
+  "product_commit": "d9d741f06a14600e064344c5726e026f3424f673",
+  "base_commit": "5297660bf",
+  "mode": "Local rules with default OCR. Corpus 1 all and corpus 2 dev are development data.",
+  "method": "Per-step grant runs reused page transcripts and OCR geometry. Other classes use the baseline predictions. Final grant outputs were also checked through the PDF CLI. Exact grant documents require list order and exact values.",
+  "datasets": {
+    "corpus_1_all": {
+      "documents_by_class": {
+        "odwolanie": 13,
+        "pelnomocnictwo": 6,
+        "przelew": 9,
+        "negatywny": 11
+      },
+      "correct_routes": {
+        "odwolanie": 12,
+        "pelnomocnictwo": 6,
+        "przelew": 4,
+        "negatywny": 11
+      },
+      "baseline_per_class_field_f1": {
+        "odwolanie": 0.6015503875968993,
+        "pelnomocnictwo": 0.918918918918919,
+        "przelew": 0.46153846153846156
+      },
+      "baseline_exact_by_class": {
+        "odwolanie": 0,
+        "pelnomocnictwo": 1,
+        "przelew": 0,
+        "negatywny": 11
+      }
+    },
+    "corpus_2_dev": {
+      "documents_by_class": {
+        "odwolanie": 13,
+        "pelnomocnictwo": 5,
+        "przelew": 10,
+        "negatywny": 11
+      },
+      "correct_routes": {
+        "odwolanie": 12,
+        "pelnomocnictwo": 5,
+        "przelew": 1,
+        "negatywny": 11
+      },
+      "baseline_per_class_field_f1": {
+        "odwolanie": 0.6007905138339921,
+        "pelnomocnictwo": 0.946236559139785,
+        "przelew": 0.15151515151515152
+      },
+      "baseline_exact_by_class": {
+        "odwolanie": 0,
+        "pelnomocnictwo": 3,
+        "przelew": 0,
+        "negatywny": 11
+      }
+    },
+    "organizer_scans": {
+      "documents_by_class": {
+        "odwolanie": 10,
+        "pelnomocnictwo": 10,
+        "przelew": 10
+      },
+      "correct_routes": {
+        "odwolanie": 9,
+        "pelnomocnictwo": 10,
+        "przelew": 2
+      },
+      "baseline_per_class_field_f1": {
+        "odwolanie": 0.6123456790123457,
+        "pelnomocnictwo": 1.0,
+        "przelew": 0.19444444444444445
+      },
+      "baseline_exact_by_class": {
+        "odwolanie": 0,
+        "pelnomocnictwo": 10,
+        "przelew": 0
+      }
+    }
+  },
+  "baseline_root_errors": {
+    "columns": [
+      "corpus_1_all",
+      "corpus_2_dev"
+    ],
+    "counts": {
+      "grantor_type_personal_name_and_krs": [
+        0,
+        0
+      ],
+      "grantor_registered_company_name": [
+        0,
+        1
+      ],
+      "grantor_nip": [
+        1,
+        0
+      ],
+      "signer_missing_including_unreadable": [
+        5,
+        1
+      ],
+      "signer_list_order_only_documents": [
+        1,
+        0
+      ],
+      "attorney_missing_name_and_pesel_one_entry": [
+        0,
+        1
+      ],
+      "attorney_nominative_wrong": [
+        1,
+        0
+      ],
+      "attorney_order_only_documents": [
+        0,
+        0
+      ],
+      "independent_pesel_errors": [
+        0,
+        0
+      ]
+    },
+    "notes": "Missing attorney counts one list entry (name plus null PESEL). List ordering counts documents. Dates and scope have no output fields. A mismatched company name can prevent strict parent pairing in field_report."
+  },
+  "stages": {
+    "baseline": {
+      "corpus_1_all": {
+        "field_micro_f1": 0.630695,
+        "macro_f1_classes": 0.660669,
+        "power_field_f1": 0.918919,
+        "power_counts": {
+          "tp": 51,
+          "fp": 2,
+          "fn": 7
+        },
+        "exact_powers": 1
+      },
+      "corpus_2_dev": {
+        "field_micro_f1": 0.604511,
+        "macro_f1_classes": 0.566181,
+        "power_field_f1": 0.946237,
+        "power_counts": {
+          "tp": 44,
+          "fp": 1,
+          "fn": 4
+        },
+        "exact_powers": 3
+      },
+      "organizer_scans": {
+        "field_micro_f1": 0.685212,
+        "macro_f1_classes": 0.602263,
+        "power_field_f1": 1.0,
+        "power_counts": {
+          "tp": 103,
+          "fp": 0,
+          "fn": 0
+        },
+        "exact_powers": 10
+      }
+    },
+    "stamps": {
+      "corpus_1_all": {
+        "field_micro_f1": 0.633971,
+        "macro_f1_classes": 0.667047,
+        "power_field_f1": 0.938053,
+        "power_counts": {
+          "tp": 53,
+          "fp": 2,
+          "fn": 5
+        },
+        "exact_powers": 1
+      },
+      "corpus_2_dev": {
+        "field_micro_f1": 0.604511,
+        "macro_f1_classes": 0.566181,
+        "power_field_f1": 0.946237,
+        "power_counts": {
+          "tp": 44,
+          "fp": 1,
+          "fn": 4
+        },
+        "exact_powers": 3
+      },
+      "organizer_scans": {
+        "field_micro_f1": 0.685212,
+        "macro_f1_classes": 0.602263,
+        "power_field_f1": 1.0,
+        "power_counts": {
+          "tp": 103,
+          "fp": 0,
+          "fn": 0
+        },
+        "exact_powers": 10
+      }
+    },
+    "appointment": {
+      "corpus_1_all": {
+        "field_micro_f1": 0.633971,
+        "macro_f1_classes": 0.667047,
+        "power_field_f1": 0.938053,
+        "power_counts": {
+          "tp": 53,
+          "fp": 2,
+          "fn": 5
+        },
+        "exact_powers": 1
+      },
+      "corpus_2_dev": {
+        "field_micro_f1": 0.608696,
+        "macro_f1_classes": 0.573576,
+        "power_field_f1": 0.968421,
+        "power_counts": {
+          "tp": 46,
+          "fp": 1,
+          "fn": 2
+        },
+        "exact_powers": 3
+      },
+      "organizer_scans": {
+        "field_micro_f1": 0.685212,
+        "macro_f1_classes": 0.602263,
+        "power_field_f1": 1.0,
+        "power_counts": {
+          "tp": 103,
+          "fp": 0,
+          "fn": 0
+        },
+        "exact_powers": 10
+      }
+    },
+    "register": {
+      "corpus_1_all": {
+        "field_micro_f1": 0.636364,
+        "macro_f1_classes": 0.672947,
+        "power_field_f1": 0.955752,
+        "power_counts": {
+          "tp": 54,
+          "fp": 1,
+          "fn": 4
+        },
+        "exact_powers": 1
+      },
+      "corpus_2_dev": {
+        "field_micro_f1": 0.608696,
+        "macro_f1_classes": 0.573576,
+        "power_field_f1": 0.968421,
+        "power_counts": {
+          "tp": 46,
+          "fp": 1,
+          "fn": 2
+        },
+        "exact_powers": 3
+      },
+      "organizer_scans": {
+        "field_micro_f1": 0.685212,
+        "macro_f1_classes": 0.602263,
+        "power_field_f1": 1.0,
+        "power_counts": {
+          "tp": 103,
+          "fp": 0,
+          "fn": 0
+        },
+        "exact_powers": 10
+      }
+    },
+    "issuer": {
+      "corpus_1_all": {
+        "field_micro_f1": 0.636364,
+        "macro_f1_classes": 0.672947,
+        "power_field_f1": 0.955752,
+        "power_counts": {
+          "tp": 54,
+          "fp": 1,
+          "fn": 4
+        },
+        "exact_powers": 1
+      },
+      "corpus_2_dev": {
+        "field_micro_f1": 0.611694,
+        "macro_f1_classes": 0.580593,
+        "power_field_f1": 0.989474,
+        "power_counts": {
+          "tp": 47,
+          "fp": 0,
+          "fn": 1
+        },
+        "exact_powers": 4
+      },
+      "organizer_scans": {
+        "field_micro_f1": 0.685212,
+        "macro_f1_classes": 0.602263,
+        "power_field_f1": 1.0,
+        "power_counts": {
+          "tp": 103,
+          "fp": 0,
+          "fn": 0
+        },
+        "exact_powers": 10
+      }
+    },
+    "order": {
+      "corpus_1_all": {
+        "field_micro_f1": 0.636364,
+        "macro_f1_classes": 0.672947,
+        "power_field_f1": 0.955752,
+        "power_counts": {
+          "tp": 54,
+          "fp": 1,
+          "fn": 4
+        },
+        "exact_powers": 2
+      },
+      "corpus_2_dev": {
+        "field_micro_f1": 0.611694,
+        "macro_f1_classes": 0.580593,
+        "power_field_f1": 0.989474,
+        "power_counts": {
+          "tp": 47,
+          "fp": 0,
+          "fn": 1
+        },
+        "exact_powers": 4
+      },
+      "organizer_scans": {
+        "field_micro_f1": 0.685212,
+        "macro_f1_classes": 0.602263,
+        "power_field_f1": 1.0,
+        "power_counts": {
+          "tp": 103,
+          "fp": 0,
+          "fn": 0
+        },
+        "exact_powers": 10
+      }
+    }
+  },
+  "remaining_root_errors": {
+    "corpus_1_all": {
+      "missing_signer_entries": 3,
+      "ambiguous_attorney_name": 1
+    },
+    "corpus_2_dev": {
+      "missing_signer_entries": 1
+    }
+  },
+  "verification": {
+    "synthetic_pdfs": 196,
+    "synthetic_micro_f1": 1.0,
+    "synthetic_bytes_identical_to_base": 196,
+    "synthetic_strict_fields_correct": 2316,
+    "organizer_scans": 30,
+    "organizer_scans_seconds_per_pdf": 20.352848241664468,
+    "organizer_scans_micro_f1": 0.6852122986822841,
+    "organizer_timing_environment": "Local shared machine with other evaluations running.",
+    "corpus_2_test_evaluated": false
+  }
+}
