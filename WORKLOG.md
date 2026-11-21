@@ -10,24 +10,25 @@ Shared state of the project. Rules: `CLAUDE.md` → Worklog.
   `evals/field_report.py` adds a per-field error table and an OCR stress run (`--force-ocr`).
 - App: `kio2json/`, a rule-based baseline with no language model. CLI `python -m kio2json --input input --output output`;
   content-based classification with a rejection path; regex and line-layout extraction per class; pdfplumber text
-  with Tesseract (`pol`) for blank or page-number-only text layers. Required OCR failures identify the PDF on stderr. Branch `baseline/rule-based-extraction`.
+  with wheel-packaged Tesseract for blank or page-number-only text layers. Installation fetches and verifies the
+  language models. Scans run offline and callers can request raw word boxes in PDF points. Branch `feat/ocr-engine`.
 - Research notes on OCR, schema extraction and Polish legal NLP: `docs/kio-extraction-research.md`.
 - Claude Code setup: skills `hacknation-judging`, `odwolania2json-eval`, `build`, `verify`, `humanizer`;
   agents `judge`, `builder`, `reviewer`, `researcher`; pre-push hook in `.githooks/`.
 
 ## Last eval
 
-21.11.2026, full mode, rule-based baseline (`evals/results/latest.json`): `micro_f1` 1.000, cases 51-60 1.000,
+21.11.2026, full clean run at `3c674f8`, pip-installed OCR (`evals/results/latest.json`): `micro_f1` 1.000, cases 51-60 1.000,
 `classification_accuracy` 1.000, `negatives_empty` 1.000. Training data (synthetic). The rules were written with
 sight of these documents, cases 53-60 included, so this is a regression check and the 51-60 figure is not an
 unseen-case estimate for this baseline.
+
+The forced-OCR field report on 196 synthetic PDFs scored 0.903, up from 0.775 on the same scorer at `4deb354`.
 
 ## Next
 
 | Item | Owner |
 |---|---|
-| OCR challenger: Tesseract vs a pip-installable engine (PP-OCRv6) on `evals.field_report --force-ocr` | — |
-| OCR-tolerant rules: account checksum repair, `0.0.` → `o.o.`, signers without dotted lines | — |
 | Real-layout appeals: small reference set from real KIO appeals; coordinate-aware rules vs a grounded model call | — |
 | Config-driven classes (routing cues, fields, patterns in config files) | — |
 | Extraction per class with an open-weight LLM on an EU API (pydantic-ai), where rules fail | — |
@@ -37,6 +38,8 @@ unseen-case estimate for this baseline.
 
 ## Decisions
 
+- 21.11.2026: use the tesserocr wheel, Polish fast model and an English reread of ambiguous e-mail tokens. The
+  model-data wheel verifies the upstream SHA-256 checksums at install time.
 - 21.11.2026: Python 3.13, uv, pydantic-ai 2.71.0. Cases 51–60 are the holdout for prompt work.
 - 21.11.2026: rules first. Every training target PDF has a text layer and the rules match all reference JSONs, so
   an OCR or model change has to beat this baseline in the eval. The baseline's rules have seen cases 51-60; a fresh case split is needed to measure generalization for work that builds on these rules.
@@ -53,3 +56,4 @@ unseen-case estimate for this baseline.
 - 21.11.2026 · Claude · stricter F1 normalisation (types, formats), invented test fixture, organizer data copied into the repo (UZP e8b7a67)
 - 21.11.2026 · Claude · rule-based baseline `kio2json`, field report, data refresh to UZP 7590db8 (reason 6 description is now `Odpowiedzi/wyjaśnienia do SWZ`); full eval `micro_f1` 1.000 on training data
 - 21.11.2026 · Codex · fixed OCR failure reporting, payment and party roles, first-charge dates and field-report matching. Added regressions with invented fixtures. Extraction fixes in `0ecd41c`.
+- 21.11.2026 · Codex · measured CPU OCR engines, shipped pip-only offline scans and word boxes, and repaired OCR fields. Forced-image field F1 0.903, native F1 1.000. `b36ceb5`.

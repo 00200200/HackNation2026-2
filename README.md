@@ -49,8 +49,7 @@ uv run python -m evals.field_report --errors  # which fields fail, with list ite
 uv run python -m evals.field_report --force-ocr --errors   # ignore the text layer: what OCR costs
 ```
 
-`evals.run` is the team's F1 harness and the source of every number below; its definition of
-F1 is in `evals/metrics.py`. The organizers have not published theirs.
+The native-text results use the team's F1 definition in `evals/metrics.py`. The organizers have not published theirs.
 
 ## Results on the training data (synthetic)
 
@@ -66,6 +65,12 @@ Source: `evals/results/latest.json` (full mode; the file records the commit it w
 Read these as a regression check. The rules were written by looking at these same synthetic
 documents, cases 51-60 included, so no case here is unseen and the 51-60 figure is no estimate
 of how the rules generalize. The hidden test set holds real cases, and this is not its score.
+
+On the same 196 synthetic documents rendered as 307 images, the strict field report scored **0.903**
+with the pip-installed OCR path and **0.775** on the original system-Tesseract path at `4deb354`.
+On an Apple M1 with 16 GiB RAM, the full command reported 366 MiB peak RSS. A separate
+four-page run measured 727 MiB for the OCR interpreter. Run
+`uv run python -m evals.field_report --force-ocr --errors` to reproduce the OCR score.
 
 ## Known limits
 
