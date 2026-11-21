@@ -2,6 +2,7 @@
 
 from pathlib import Path
 
+from .appeal_layout import restore_party_columns
 from .class_config import DocumentClass, load_classes, route
 from .engines import extract
 from .pdf_text import join_pages, read_pages
@@ -15,4 +16,6 @@ def process_pdf(
     definition = route(pages, classes if classes is not None else load_classes())
     if definition is None:
         return None, {}
+    if definition.id == "appeal":
+        pages = restore_party_columns(pdf_path, pages, force_ocr)
     return definition.id, extract(definition, join_pages(pages))

@@ -206,22 +206,12 @@ Read these as a regression check. The rules were written by looking at these sam
 documents, cases 51-60 included, so no case here is unseen and the 51-60 figure is no estimate
 of how the rules generalize. The hidden test set holds real cases, and this is not its score.
 
-On the merged extraction rules, the default engine scored **0.897** strict field F1 on the
-196 documents rendered as 307 images. RapidOCR v6 transcripts scored **0.828** with the same rules.
-Run `uv run python -m evals.field_report --force-ocr --errors` to repeat the default OCR run.
-
-On 17 real development scans (34 pages), Tesseract scored **0.331** and RapidOCR v6 scored
-**0.419**. The runs took 2.78 and 15.45 CPU seconds per page respectively on an Apple M1.
-Across all 20 development documents with natural text-layer routing, corpus micro-F1 was
-0.3864 with Tesseract and 0.4588 with RapidOCR.
-
 ## Known limits
 
-- The rules follow the two layout families in the training data. `input/case1` holds the
-  organizer's one real, redacted, scanned appeal, which has a different layout. For that file
-  the extractor finds the class, filing date, place, procurement reference, BZP number and title.
-  Both party lists and the challenged action are empty. The organizer supplies no reference JSON
-  for this file.
+- Appeal extraction reads the first three pages. A signature or dated notice later in the PDF can be missed.
+  The extractor uses printed word positions when a scan groups party labels into a separate column.
+  Ambiguous alignments, damaged names and legal inflections can prevent an exact match.
+  A reference to a statute or the filing date alone supplies no date for the challenged act.
 - OCR can still lose accented letters, split a notice number or reorder columns. Scans with a
   noisy but nonempty text layer follow the native-text path. A Polish account containing OCR
   glyphs is repaired only if a unique candidate passes the IBAN mod-97 check. A fully printed

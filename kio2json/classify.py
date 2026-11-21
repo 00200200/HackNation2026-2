@@ -2,6 +2,7 @@
 
 import re
 
+from rapidfuzz.distance import Levenshtein
 from stdnum import iban
 
 from .bank_transfer import ACCOUNT_RE, transaction_values
@@ -46,8 +47,13 @@ def classify(pages: list[str]) -> str | None:
         heading = re.sub(r"\s", "", line).upper()
         if UNRELATED_HEADING.match(line):
             return None
-        if heading == "ODWOŁANIE":
-            return "appeal" if "odwołując" in head.casefold() else None
+        if Levenshtein.distance(heading, "ODWOŁANIE", score_cutoff=1) <= 1:
+            party = re.search(r"odwo[łl]uj[ąa]c", head, re.IGNORECASE)
+            labelled_parties = re.search(r"(?im)^(?:wykonawca|odwo[łl]uj[ąa]cy)\s*[:(]", head) and re.search(
+                r"(?im)^zamawiaj[ąa]cy\s*[:(]", head
+            )
+            if (heading == "ODWOŁANIE" and party) or labelled_parties:
+                return "appeal"
         if heading in {"PEŁNOMOCNICTWO", "PEŁNOMOCNICTWOPROCESOWE", "PEŁNOMOCNICTWOSZCZEGÓLNE"}:
             return "power_of_attorney"
         if CONFIRMATION_HEADING.match(line):
