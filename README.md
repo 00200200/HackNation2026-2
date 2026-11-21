@@ -119,8 +119,10 @@ records. The built-in jury classes use only `python` and require no endpoint set
 
 The model supplies a verbatim quote for each scalar. The engine checks that the page contains
 the quote and that the quote supports the value. Copied text must appear in the quote after
-normalization. For dates, amounts, accounts and registry IDs, the quote must contain a span
-that normalizes to the returned value. Missing or unsupported values yield null, including
+normalization. Full references and email addresses keep their internal punctuation. For dates,
+amounts, accounts and registry IDs, the quote must cover the complete printed value, including
+any sign. Grouped amounts such as `9 876,54 PLN` and amounts with attached currency such as
+`EUR87,23` are supported. An incomplete value or an overlong account yields null, including for
 normally mandatory scalars. A correctly quoted value from the wrong party’s block can still pass.
 
 Pydantic AI allows one structured-output correction within a 60-second run timeout. Transport
