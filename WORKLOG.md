@@ -12,6 +12,8 @@ The opt-in small-model profile uses Mistral’s regional API, compact source spa
 
 The batch CLI defaults to up to four PDF workers, with one thread per Tesseract instance and up to three concurrent page reads per PDF. The first OCR pass supplies layout word boxes, and optional OCR shares a 27-second per-document deadline.
 
+The grant certificate and board-stamp readers share the copy-attestation check so that a certifier cannot be counted as the issuing officer.
+
 ## Last eval
 
 The measured Ministral 3B profile uses the integrated rules, evidence-gated routing, selective native gap filling and first-charge verification. Against the rules at `eabbb31`, it raised strict micro F1 on the 91-PDF development pool from .5858 to .7146. A fresh 150-PDF CLI run took 335.64 seconds and scored .7208 micro F1 on its 91-PDF development subset. All 196 organizer training outputs matched the rules byte for byte in keyed and keyless runs. [Per-field results and timing](evals/results/small-model.json)
@@ -131,3 +133,4 @@ Two and four grant JSONs matched exactly. The ten organizer grants remained exac
 
 - 21.11.2026 · Codex · Measured `a32ba1c` against `5297660`. All 226 outputs matched byte for byte. Four workers processed 30 scans in 37.15 s and the 150-PDF mix in 74.42 s on an M1. [Per-PDF runtime profile](evals/results/batch-runtime.json)
 - 21.11.2026 · Codex · In the integrated Ministral profile, preserve the required null personal name for a corporate grantor after filling model gaps. The previous profile filled it on three organizer scans and one corpus 1 grant.
+- 21.11.2026 · Codex · Restored issuer declarations above grant titles, printed signers beside email addresses, and scanned sole-trader names. Certificate attribution now checks the signer's role. Eight invented CLI cases compare the affected records with the pre-PR #25 base.

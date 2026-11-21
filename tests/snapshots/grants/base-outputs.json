@@ -1,0 +1,198 @@
+{
+  "certified-copy": {
+    "mocodawca": [
+      {
+        "data": {
+          "imie_nazwisko": null,
+          "krs": null,
+          "nazwa": "Wrzos S.A.",
+          "nip": null,
+          "typ": "osoba_prawna"
+        },
+        "podpisujacy": []
+      }
+    ],
+    "pelnomocnicy": [
+      {
+        "imie_nazwisko": "Roberta Polnego",
+        "pesel": null
+      }
+    ]
+  },
+  "comma": {
+    "mocodawca": [
+      {
+        "data": {
+          "imie_nazwisko": null,
+          "krs": null,
+          "nazwa": "Sopel S.A.",
+          "nip": null,
+          "typ": "osoba_prawna"
+        },
+        "podpisujacy": [
+          {
+            "imie_nazwisko": "Ewa Letnia"
+          }
+        ]
+      }
+    ],
+    "pelnomocnicy": [
+      {
+        "imie_nazwisko": "Igorowi Rudemu",
+        "pesel": null
+      }
+    ]
+  },
+  "joint": {
+    "mocodawca": [
+      {
+        "data": {
+          "imie_nazwisko": null,
+          "krs": null,
+          "nazwa": "Zorza S.A.",
+          "nip": null,
+          "typ": "osoba_prawna"
+        },
+        "podpisujacy": []
+      },
+      {
+        "data": {
+          "imie_nazwisko": null,
+          "krs": null,
+          "nazwa": "Sopel S.A.",
+          "nip": null,
+          "typ": "osoba_prawna"
+        },
+        "podpisujacy": []
+      }
+    ],
+    "pelnomocnicy": [
+      {
+        "imie_nazwisko": "Igorowi Rudemu",
+        "pesel": null
+      }
+    ]
+  },
+  "repeated": {
+    "mocodawca": [
+      {
+        "data": {
+          "imie_nazwisko": null,
+          "krs": null,
+          "nazwa": "Zorza S.A.",
+          "nip": "1112223344",
+          "typ": "osoba_prawna"
+        },
+        "podpisujacy": []
+      },
+      {
+        "data": {
+          "imie_nazwisko": null,
+          "krs": null,
+          "nazwa": "Sopel S.A.",
+          "nip": null,
+          "typ": "osoba_prawna"
+        },
+        "podpisujacy": []
+      }
+    ],
+    "pelnomocnicy": [
+      {
+        "imie_nazwisko": "Janowi Polnemu",
+        "pesel": null
+      }
+    ]
+  },
+  "officer": {
+    "mocodawca": [
+      {
+        "data": {
+          "imie_nazwisko": null,
+          "krs": null,
+          "nazwa": "Wrzos S.A.",
+          "nip": null,
+          "typ": "osoba_prawna"
+        },
+        "podpisujacy": [
+          {
+            "imie_nazwisko": "Ewa Portowa"
+          }
+        ]
+      }
+    ],
+    "pelnomocnicy": [
+      {
+        "imie_nazwisko": "Janowi Polnemu",
+        "pesel": null
+      }
+    ]
+  },
+  "semicolon": {
+    "mocodawca": [
+      {
+        "data": {
+          "imie_nazwisko": null,
+          "krs": null,
+          "nazwa": "Mak S.A.",
+          "nip": null,
+          "typ": "osoba_prawna"
+        },
+        "podpisujacy": [
+          {
+            "imie_nazwisko": "Maria Wysoka"
+          }
+        ]
+      }
+    ],
+    "pelnomocnicy": [
+      {
+        "imie_nazwisko": "Roberta Polnego",
+        "pesel": null
+      }
+    ]
+  },
+  "signature": {
+    "mocodawca": [
+      {
+        "data": {
+          "imie_nazwisko": null,
+          "krs": null,
+          "nazwa": "Jodła S.A.",
+          "nip": null,
+          "typ": "osoba_prawna"
+        },
+        "podpisujacy": [
+          {
+            "imie_nazwisko": "Ewa Letnia"
+          }
+        ]
+      }
+    ],
+    "pelnomocnicy": [
+      {
+        "imie_nazwisko": "Igorowi Rudemu",
+        "pesel": null
+      }
+    ]
+  },
+  "sole-trader-scan": {
+    "mocodawca": [
+      {
+        "data": {
+          "imie_nazwisko": "Leon Polny",
+          "krs": null,
+          "nazwa": "Zegary Polne",
+          "nip": "1112223344",
+          "typ": "osoba_fizyczna"
+        },
+        "podpisujacy": []
+      }
+    ],
+    "pelnomocnicy": [
+      {
+        "imie_nazwisko": "Urszula Wysoka",
+        "pesel": null
+      }
+    ]
+  }
+}

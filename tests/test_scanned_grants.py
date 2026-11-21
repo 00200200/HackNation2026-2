@@ -265,7 +265,11 @@ def test_power_to_certify_copies_allows_an_officer_stamp(monkeypatch, tmp_path):
         for text, y in zip([*page.splitlines(), "Prezes Zarządu", "Jan Rydz"], [50, 120, 150, 168], strict=True)
     ]
     monkeypatch.setattr(rapid_worker, "recognize", lambda *args, **kwargs: ("", rows))
-    for ending, expected in [("", [{"imie_nazwisko": "Jan Rydz"}]), ("\nZa zgodność z oryginałem pełnomocnictwa.", [])]:
+    for ending, expected in [
+        ("", [{"imie_nazwisko": "Jan Rydz"}]),
+        ("\nZa zgodność z oryginałem pełnomocnictwa.", []),
+        ("\nPotwierdzam zgodność kopii.", []),
+    ]:
         record = extract_power_of_attorney([page], [1])
         recover_board_stamp(tmp_path / "doc.pdf", record, page + ending)
         assert record["mocodawca"][0]["podpisujacy"] == expected
@@ -283,4 +287,6 @@ def test_repeated_mandate_word_in_certification_is_not_the_end_of_the_grant():
         "Jan Rydz",
     ]
     boxes = [WordBox(1, line, 50, i * 20, 120, i * 20 + 12) for i, line in enumerate(lines)]
+    assert board_stamp_names(boxes, set(), "Ciepły Żagiel S.A.") == []
+    boxes[2] = WordBox(1, "Potwierdzam zgodność kopii.", 50, 40, 120, 52)
     assert board_stamp_names(boxes, set(), "Ciepły Żagiel S.A.") == []

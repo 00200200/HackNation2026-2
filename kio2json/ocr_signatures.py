@@ -7,6 +7,7 @@ from rapidfuzz.distance import Levenshtein
 
 from . import power_of_attorney
 from .common import ATTORNEY_RE, DATE, PERSON, UPPER, squash
+from .grant_certificates import NON_ISSUER_SIGNATURE
 from .ocr_budget import remaining_ms
 from .pdf_text import WordBox
 from .personal_names import nominative
@@ -232,11 +233,8 @@ SCOPE_END = re.compile(
 STAMP_END = re.compile(r"za zgodność|pełnomocnictwo przyjmuję|do kontaktu|poświadcza|świadek|notariusz", re.IGNORECASE)
 
 
-CERTIFICATION = re.compile(r"(?im)^[ \t]*(?:za zgodność z oryginałem|poświadczam zgodność|pełnomocnictwo przyjmuję)\b")
-
-
 def board_stamp_names(lines: list[WordBox], attorneys: set[str], company: str) -> list[str]:
-    if any(CERTIFICATION.match(line.text) for line in lines):
+    if NON_ISSUER_SIGNATURE.search("\n".join(line.text for line in lines)):
         return []
     ends = [i for i, line in enumerate(lines) if SCOPE_END.search(line.text)]
     if not ends or not GRANT.search(" ".join(line.text for line in lines[: ends[-1] + 1])):
@@ -284,7 +282,7 @@ def recover_board_stamp(path: Path, record: dict, page: str) -> None:
     principals = record["mocodawca"]
     if len(principals) != 1 or principals[0]["podpisujacy"] or principals[0]["data"]["typ"] != "osoba_prawna":
         return
-    if not GRANT.search(page) or power_of_attorney.NOTARIAL_HEADING.search(page) or CERTIFICATION.search(page):
+    if not GRANT.search(page) or power_of_attorney.NOTARIAL_HEADING.search(page) or NON_ISSUER_SIGNATURE.search(page):
         return
     lines = page.splitlines()
     closing = next((i for i in reversed(range(len(lines))) if SCOPE_END.search(lines[i])), None)

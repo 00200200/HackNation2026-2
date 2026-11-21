@@ -319,11 +319,12 @@ def test_supported_routing_of_completed_native_receipts(keyed, monkeypatch, tmp_
 )
 def test_rules_first_fills_a_personal_name_only_for_a_person(keyed, monkeypatch, grantor_type, expected_name):
     from copy import deepcopy
+
     from kio2json import engines
 
     monkeypatch.setenv("KIO_LLM_MODE", "RL")
     definition = next(d for d in load_classes() if d.id == "power_of_attorney")
-    owner = dict(typ=grantor_type, nazwa="Fiolet", krs=None, nip=None, imie_nazwisko=None)
+    owner = {"typ": grantor_type, "nazwa": "Fiolet", "krs": None, "nip": None, "imie_nazwisko": None}
     rules = {"mocodawca": [{"data": owner, "podpisujacy": []}], "pelnomocnicy": []}
     model = deepcopy(rules)
     model["mocodawca"][0]["data"]["imie_nazwisko"] = "Iga Fioletowa"
