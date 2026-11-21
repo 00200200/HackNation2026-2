@@ -16,7 +16,7 @@ The landing (`frontend/`, static nginx) runs on the team VPS next to the faktczy
 ## Deploy this repo
 
 ```bash
-rsync -az --delete -e "ssh -i ~/.ssh/faktczyfejk" compose.prod.yaml frontend ubuntu@135.125.239.206:/opt/doc2json/
+rsync -az --delete -e "ssh -i ~/.ssh/faktczyfejk" compose.prod.yaml api.Dockerfile .dockerignore requirements.txt packaging kio2json config frontend ubuntu@135.125.239.206:/opt/doc2json/
 ssh -i ~/.ssh/faktczyfejk ubuntu@135.125.239.206 'cd /opt/doc2json && docker compose -f compose.prod.yaml up -d --build --wait'
 ```
 
@@ -30,5 +30,6 @@ Check from inside the network: `docker run --rm --network edge alpine:3.20 wget 
 2. Done 21.11.2026 live on the server, HackNation2026 PR #48 merged to main, not yet on `prod`: Caddy joins the external `edge` network and the
    Caddyfile gets `doc2json.pl { reverse_proxy doc2json-web:80 }` plus a `www.doc2json.pl` redirect. Caddy then
    reloads and issues the certificate.
-3. When the extraction backend exists: add it to `compose.prod.yaml` and proxy `/api/` to it in
-   `frontend/nginx.conf`. Until then `/api/` returns 404 and the page keeps files in the browser.
+3. Extraction: `doc2json-api` (`api.Dockerfile`, `kio2json.web_api`, installs `requirements.txt` like the jury)
+   runs the rules engine without model keys, one document at a time, capped at 2 CPUs and 3 GB. nginx in
+   `doc2json-web` proxies `/api/` to it; if it is down, the page says so and keeps the files in the browser.

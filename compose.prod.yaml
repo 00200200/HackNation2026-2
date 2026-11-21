@@ -1,5 +1,6 @@
 # Production on the shared VPS: no published ports. The `edge` network is shared with the Caddy container of the
-# faktczyfejk stack, which terminates HTTPS for doc2json.pl and proxies to doc2json-web:80.
+# faktczyfejk stack, which terminates HTTPS for doc2json.pl and proxies to doc2json-web:80; nginx there proxies
+# /api/ to doc2json-api:8000 (kio2json.web_api, rules engine, no model keys).
 # Server: /opt/doc2json, `docker network create edge` once, then `docker compose -f compose.prod.yaml up -d --build --wait`.
 name: doc2json
 
@@ -14,6 +15,23 @@ services:
       interval: 30s
       timeout: 5s
       retries: 3
+
+  api:
+    build:
+      context: .
+      dockerfile: api.Dockerfile
+    container_name: doc2json-api
+    restart: unless-stopped
+    networks: [edge]
+    environment:
+      KIO_WEB_WORKERS: "1"
+      KIO_WEB_MAX_FILES: "12"
+      KIO_WEB_MAX_FILE_MB: "25"
+    # The VPS also serves the faktczyfejk demo: cap what OCR can take.
+    cpus: 2
+    mem_limit: 3g
+    tmpfs:
+      - /tmp:size=1g
 
 networks:
   edge:

@@ -9,8 +9,7 @@ OpenAI-compatible model engine. The default CLI and GUI run locally with the thr
 variables unset. Keyed runs can use a second OCR reading and recover a failed document with local rules.
 
 Public landing https://doc2json.pl (`frontend/`, static nginx, monochrome) runs on the team VPS as `doc2json-web`
-behind the faktczyfejk Caddy; deploy in `docs/deploy.md`. Its upload is not wired to the extraction yet: it calls
-`/api/health` and keeps files in the browser while that returns 404.
+behind the faktczyfejk Caddy; deploy in `docs/deploy.md`. Its upload calls `kio2json.web_api` (`/api/extract`, rules engine, no keys) in the `doc2json-api` container.
 
 ## Last eval
 
@@ -36,7 +35,6 @@ These runs used local rules with the three endpoint variables unset. The two loc
 | Score corpus 2 test once after selecting and freezing the merged profile | Open |
 | Improve receipt routing and recover damaged party names on development inputs | Open |
 | Confirm the organizer’s F1 formula and Stage II weights with UZP | Open |
-| Wire the doc2json.pl upload to the extraction (serve the GUI backend behind `/api/` or point the page at it) | Open |
 | Promote HackNation2026 PR #48 to `prod` after the faktczyfejk demo, so the doc2json.pl Caddy block survives a redeploy | Open |
 
 ## Decisions
@@ -96,3 +94,4 @@ These runs used local rules with the three endpoint variables unset. The two loc
 - 21.11.2026 · Codex · Recovered officers, multiple appointments and register digits on scanned grants, and named signers from embedded certificates on real grants. All 10 organizer grants matched exactly in rules-only mode.
 - 21.11.2026 · Claude · landing/upload UI in `frontend/`, prod compose on the shared `edge` network, deploy notes · feat/frontend
 - 21.11.2026 · Claude · doc2json.pl live over HTTPS (DNS A records, Caddy block on the server), landing reduced to the dark tool screen · feat/frontend
+- 21.11.2026 · Claude · `kio2json.web_api` (health + extract, index-matched results) behind doc2json.pl, API container, frontend wired · feat/web-extraction

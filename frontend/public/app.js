@@ -2,12 +2,13 @@
 // Files go to the extraction API only when /api/health answers; otherwise nothing leaves the browser.
 
 const MAX_MB = 25;
-const API_TIMEOUT_MS = 180000;
+const API_TIMEOUT_MS = 600000;
+// Class ids from config/classes/*.toml; a document outside every class comes back with class null.
 const CLASS_LABEL = {
-  odwolanie: "Odwołanie",
-  pelnomocnictwo: "Pełnomocnictwo",
-  przelew: "Przelew",
-  negatywny: "Inny dokument",
+  appeal: "Odwołanie",
+  power_of_attorney: "Pełnomocnictwo",
+  bank_transfer: "Przelew",
+  participation: "Przystąpienie",
 };
 
 const $ = (sel) => document.querySelector(sel);
@@ -43,7 +44,7 @@ function renderFiles() {
     name.textContent = item.file.name;
     const status = document.createElement("span");
     status.className = "file-status" + (item.busy ? " is-busy" : "");
-    status.textContent = item.cls ? CLASS_LABEL[item.cls] ?? item.cls : item.status;
+    status.textContent = item.status || (item.cls ? (CLASS_LABEL[item.cls] ?? item.cls) : "Inny dokument");
     row.append(name, status);
     const li = document.createElement("li");
     li.append(row);
@@ -114,11 +115,14 @@ async function handleFiles(fileList) {
   renderFiles();
   try {
     const { results } = await extract(fresh);
-    for (const item of fresh) {
-      const hit = results.find((r) => r.file === item.file.name);
-      Object.assign(item, { busy: false, cls: hit?.class, data: hit ? hit.data ?? {} : undefined, status: hit ? "" : "Brak wyniku" });
-    }
-    notice(skipNote);
+    fresh.forEach((item, i) => {
+      const hit = results.find((r) => r.index === i);
+      if (!hit) Object.assign(item, { busy: false, status: "Brak wyniku" });
+      else if (hit.error) Object.assign(item, { busy: false, status: "Błąd odczytu", error: hit.error });
+      else Object.assign(item, { busy: false, status: "", cls: hit.class, data: hit.data ?? {} });
+    });
+    const failed = fresh.filter((item) => item.error);
+    notice(skipNote + (failed.length ? `Nie udało się odczytać: ${failed.map((f) => f.file.name).join(", ")}.` : ""));
     const first = fresh.find((item) => item.data !== undefined);
     if (first) select(first);
     else renderFiles();
