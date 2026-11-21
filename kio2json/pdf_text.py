@@ -12,9 +12,14 @@ OCR_DPI = 300
 OCR_TIMEOUT_SECONDS = 60
 
 
-PAGE_NUMBER_RE = re.compile(
-    r"\s*[-–—]?\s*(?:(?:strona|str\.|page)\s*)?\d+(?:\s*(?:z|/|of)\s*\d+)?\s*[-–—]?\s*", re.IGNORECASE
-)
+def _has_content(text: str) -> bool:
+    # A page counter has digits and at most a label and a short connecting word.
+    # Ignore the punctuation, layout and language of that counter.
+    for line in text.splitlines():
+        words = re.findall(r"[^\W\d_]+", line)
+        if words and (not re.search(r"\d", line) or len(words) > 2 or (len(words) == 2 and len(words[1]) > 2)):
+            return True
+    return False
 
 
 def _ocr(page) -> str:
@@ -31,8 +36,7 @@ def read_pages(pdf_path: Path, max_pages: int = MAX_PAGES, force_ocr: bool = Fal
     with pdfplumber.open(pdf_path) as pdf:
         for page in pdf.pages[:max_pages]:
             text = "" if force_ocr else page.extract_text() or ""
-            has_content = any(line.strip() and not PAGE_NUMBER_RE.fullmatch(line) for line in text.splitlines())
-            pages.append(text if has_content else _ocr(page))
+            pages.append(text if _has_content(text) else _ocr(page))
     return pages
 
 

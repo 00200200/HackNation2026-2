@@ -1,8 +1,8 @@
 {
-  "commit": "2b7186bfc917fb7a593ce79b447a327dc234ccf2",
+  "commit": "61bbfc3ebe52cb70a1b7cf0a82d1f0467d5bd5a3",
   "dirty": false,
   "mode": "full",
-  "timestamp": "2026-11-21T14:39:18+00:00",
+  "timestamp": "2026-11-21T14:39:35+00:00",
   "n_cases": 60,
   "n_docs": 196,
   "coverage_ok": true,
@@ -30,17 +30,13 @@
       "pass": true
     },
     "seconds_per_doc": {
-      "value": 0.4783475822697831,
+      "value": 0.4958193333372854,
       "target": null,
       "pass": true
     }
   },
   "detail": {
     "micro_f1": 1.0,
-    "macro_f1_documents": 1.0,
-    "macro_f1_classes": 1.0,
-    "macro_f1_class_count": 3,
-    "macro_f1_fields": 1.0,
     "micro_f1_non_null": 1.0,
     "per_class_f1": {
       "odwolanie": 1.0,
@@ -58,10 +54,6 @@
   },
   "holdout_51_60": {
     "micro_f1": 1.0,
-    "macro_f1_documents": 1.0,
-    "macro_f1_classes": 1.0,
-    "macro_f1_class_count": 3,
-    "macro_f1_fields": 1.0,
     "micro_f1_non_null": 1.0,
     "per_class_f1": {
       "odwolanie": 1.0,

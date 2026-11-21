@@ -29,7 +29,7 @@ def test_normalisation_ignores_spacing_case_and_number_format():
     )
     assert compare(pred, GOLD).f1 == 1.0
     assert normalise(10000.00) == normalise(10000) == "num:10000"
-    assert normalise(85120133547, "pesel") == normalise("851 201-33547", "pesel")
+    assert normalise(99422967018, "pesel") == normalise("994 229-67018", "pesel")
 
 
 def test_types_and_formats_are_not_normalised_away():
