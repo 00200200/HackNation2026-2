@@ -9,6 +9,7 @@ from contextlib import suppress
 from pathlib import Path
 from threading import Lock, Timer
 from time import monotonic
+from typing import Literal
 
 _process: subprocess.Popen | None = None
 _lock = Lock()
@@ -28,7 +29,7 @@ def close() -> None:
 atexit.register(close)
 
 
-def recognize(path: Path, page: int, word_boxes: bool, timeout: float) -> tuple[str, list]:
+def recognize(path: Path, page: int, word_boxes: bool | Literal["lines"], timeout: float) -> tuple[str, list]:
     global _process
     deadline = monotonic() + timeout
     expired = TimeoutError(f"RapidOCR timed out after {timeout:g} seconds")
@@ -90,7 +91,7 @@ def _serve() -> None:
             boxes = [] if want_boxes else None
             try:
                 with pdfplumber.open(path, pages=[page]) as pdf:
-                    text = _rapidocr(pdf.pages[0], boxes)
+                    text = _rapidocr(pdf.pages[0], boxes, lines=want_boxes == "lines")
                 result = [text, boxes or [], None]
             except Exception as error:  # noqa: BLE001 -- relay PDF and native model errors to the caller.
                 result = [None, [], str(error) or type(error).__name__]

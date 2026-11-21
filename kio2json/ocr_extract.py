@@ -10,10 +10,11 @@ from .appeal_scan_action import apply_action
 from .appeal_scan_crops import verify_cover
 from .appeal_scan_parties import apply_parties
 from .appeal_scan_procurement import apply_procurement
-from .grant_declarations import read_declaration
+from .grant_declarations import complete_represented_company, read_declaration
 from .ocr_accounts import AccountEvidence, account_evidence
 from .ocr_normalize import MAIL_TOKEN_RE
 from .pdf_text import WordBox, iter_page_lines, join_pages
+from .personal_names import repair_appointment_initials
 
 
 def _lines(pages: list[str], ocr_pages: Collection[int]):
@@ -103,7 +104,7 @@ def extract_bank_transfer(
 def extract_power_of_attorney(pages: list[str], ocr_pages: Collection[int]) -> dict:
     pages = [
         power_of_attorney.normalize_registry_labels(
-            re.sub(r"(?i)\b(spółka|sp\.)\s+z\s+[0o]\.[0o]\.", r"\1 z o.o.", page)
+            re.sub(r"(?i)\b(spółka|sp\.)\s+z\s+[0o]\.[0o]\.", r"\1 z o.o.", repair_appointment_initials(page))
         )
         if index in ocr_pages
         else page
@@ -137,5 +138,6 @@ def extract_power_of_attorney(pages: list[str], ocr_pages: Collection[int]) -> d
     record = power_of_attorney.finish_record(text, principals, officers, attorneys, signers)
     if pages and 1 in ocr_pages and not any(power_of_attorney.GRANT.search(page) for page in pages[1:]):
         read_declaration(pages[0], record)
+        complete_represented_company(pages[0], record)
         ocr_signatures.confirmed_scan_signer(pages[0], record)
     return record

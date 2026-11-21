@@ -30,6 +30,10 @@ The scanned-transfer rules routed 5/5 organizer dev transfers and 3/5 on the sin
 
 On all 30 organizer development scans, the rules routed 10/10 transfer confirmations. Nine matched every field literally (59/60 fields, transfer F1 0.9833). The outstanding title contains a severely degraded name and abbreviation. Across all three classes the run averaged 9.23 s/PDF on the shared Apple M1, with a maximum of 19.02 s. With the integrated power-of-attorney rules, micro F1 reached 0.6312 on corpus 1 all, 0.7160 on its dev subset and 0.6816 on corpus 2 dev. [Round 2 measurements](evals/results/scanned-transfers-round2.json)
 
+The subsequent real-grant round found six labelled grants in corpus 1 and five in corpus 2 dev.
+On these development documents, grant field F1 rose to 0.9558 and 0.9895 respectively.
+Two and four grant JSONs matched exactly. The ten organizer grants remained exact.
+
 ## Next
 
 | Item | Owner |
@@ -104,3 +108,4 @@ On all 30 organizer development scans, the rules routed 10/10 transfer confirmat
 - 21.11.2026 · Codex · Measured the second scanned-transfer pass at `12a5681`. Nine of ten development receipts matched exactly, and all 196 training outputs retained byte parity. [Round 2 measurements](evals/results/scanned-transfers-round2.json)
 
 - 21.11.2026 · Codex · Recovered joint purchasing lists across page breaks, identified appellant counsel and employers, reread damaged searchable appeals and linked first charges to notification evidence. Measured the changes on both real development sets and the organizer scans.
+- 21.11.2026 · Codex · Recovered stamp signers by column, resolved a damaged initial in a titled appointment list, joined grantor registry rows and completed inflected company names. Side-by-side approval signatures now follow their visible reading order.
