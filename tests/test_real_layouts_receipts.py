@@ -215,7 +215,10 @@ def test_parallel_party_and_payment_columns_keep_each_fields_values(monkeypatch)
         (20, 238, "Adres banku"),
     ]
 
+    reads = []
+
     def read(path, *, word_boxes=None, ocr_pages=None, **kwargs):
+        reads.append(path)
         if ocr_pages is not None:
             ocr_pages.append(1)
         if word_boxes is not None:
@@ -225,6 +228,7 @@ def test_parallel_party_and_payment_columns_keep_each_fields_values(monkeypatch)
     monkeypatch.setattr(pipeline, "read_pages", read)
     kind, data = pipeline.process_pdf("invented.pdf")
     assert kind == "bank_transfer"
+    assert len(reads) == 1  # Layout uses the same OCR word iterator as the transcript.
     assert data["przelew_bankowy"] == {
         "kwota": 49.12,
         "data_operacji": "2024-05-13",

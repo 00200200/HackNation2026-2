@@ -14,8 +14,18 @@ from .classify import incomplete_booking_scan
 from .engines import extract
 from .model_pages import AlternateOCR
 from .ocr_accounts import AccountEvidence, account_evidence, normalize_receipt
-from .pdf_text import DEFAULT_OCR_ENGINE, NoReadableTextError, OCRRecognitionError, join_pages, read_pages
+from .pdf_text import (
+    DEFAULT_OCR_ENGINE,
+    TESSERACT_ENGINES,
+    NoReadableTextError,
+    OCRRecognitionError,
+    WordBox,
+    join_pages,
+    read_pages,
+)
+from .receipt_account_crop import recover_account_crops
 from .receipt_layout import append_receipt_fields, has_detached_labels, receipt_cell_fields
+from .receipt_title import reread_title
 
 
 def _is_receipt(definition: DocumentClass | None) -> bool:
@@ -61,6 +71,7 @@ def _read_receipt(
     force_ocr: bool,
     engine: str,
     retry: bool,
+    boxes: list[WordBox] | None,
 ) -> tuple[list[str], DocumentClass | None, AccountEvidence | None]:
     definition, accounts = _route_receipt(pages, definitions, scanned)
     if not pages or (definition is not None and not _is_receipt(definition)):
@@ -68,10 +79,13 @@ def _read_receipt(
     original = pages
     fields = {}
     if scanned and (definition is not None or incomplete_booking_scan(pages[0])):
+        if boxes:
+            pages = recover_account_crops(pdf_path, pages, boxes)
         pages = [normalize_receipt(pages[0]), *pages[1:]]
     if has_detached_labels(pages, ocr=scanned):
-        boxes = []
-        read_pages(pdf_path, max_pages=1, force_ocr=force_ocr, engine=engine, word_boxes=boxes)
+        if boxes is None or not scanned:
+            boxes = []
+            read_pages(pdf_path, max_pages=1, force_ocr=force_ocr, engine=engine, word_boxes=boxes)
         fields = receipt_cell_fields(boxes, ocr=scanned)
         # Keep the complete title already bound to a native label, including wrapped lines.
         if (
@@ -112,10 +126,15 @@ def process_pdf(
     definitions = classes if classes is not None else load_classes()
 
     @cache
-    def read(engine: str) -> tuple[list[str], list[int]]:
+    def read(engine: str) -> tuple[list[str], list[int], list[WordBox] | None]:
         scanned = []
-        pages = read_pages(pdf_path, force_ocr=force_ocr, engine=engine, ocr_pages=scanned)
-        return pages, scanned
+        # Tesseract already iterates word boxes to check e-mail. RapidOCR's
+        # word-box mode changes its recognition request, so keep that lazy.
+        boxes = [] if engine in TESSERACT_ENGINES else None
+        pages = read_pages(
+            pdf_path, force_ocr=force_ocr, engine=engine, ocr_pages=scanned, word_boxes=boxes, native_word_boxes=False
+        )
+        return pages, scanned, boxes
 
     try:
         return _process(pdf_path, definitions, read, force_ocr)
@@ -139,7 +158,7 @@ def process_pdf(
 def _process(
     pdf_path: Path,
     definitions: list[DocumentClass],
-    read: Callable[[str], tuple[list[str], list[int]]],
+    read: Callable[[str], tuple[list[str], list[int], list[WordBox] | None]],
     force_ocr: bool,
 ) -> tuple[str | None, dict]:
     selected = os.getenv("KIO_OCR_ENGINE", DEFAULT_OCR_ENGINE)
@@ -147,7 +166,7 @@ def _process(
     readable = False
     for engine in engines:
         try:
-            primary, ocr_pages = read(engine)
+            primary, ocr_pages, boxes = read(engine)
             pages, definition, accounts = _read_receipt(
                 primary,
                 pdf_path,
@@ -156,6 +175,7 @@ def _process(
                 force_ocr=force_ocr,
                 engine=engine,
                 retry=engine == selected == "tesseract-dpi",
+                boxes=boxes,
             )
         except NoReadableTextError:
             if engine == engines[-1] and not readable:
@@ -180,7 +200,9 @@ def _process(
             definition = routed
         if definition is not None:
             if definition.id == "appeal":
-                pages = restore_party_columns(pdf_path, pages, force_ocr, engine=engine)
+                pages = restore_party_columns(
+                    pdf_path, pages, force_ocr, engine=engine, boxes=boxes, ocr_pages=ocr_pages
+                )
             ocr_python = None
             if ocr_pages:
                 if definition.extractor is bank_transfer.extract:
@@ -189,13 +211,24 @@ def _process(
                     ocr_python = partial(ocr_extract.extract_power_of_attorney, pages, ocr_pages)
                 elif definition.extractor is appeal.extract:
                     ocr_python = partial(ocr_extract.extract_appeal, pages, ocr_pages)
-            return definition.id, extract(
+            record = extract(
                 definition,
                 join_pages(pages),
                 ocr_python=ocr_python,
                 alternate=alternate if definition.profile.dual_ocr else None,
                 model_text=join_pages(primary) if pages is not primary else None,
             )
+            if (
+                boxes
+                and 1 in ocr_pages
+                and definition.engines == ["python"]
+                and definition.extractor is bank_transfer.extract
+            ):
+                fields = record["przelew_bankowy"]
+                title = reread_title(pdf_path, boxes, fields["tytul"])
+                if title is not None:
+                    fields["tytul"] = title
+            return definition.id, record
         if not ocr_pages:
             break
     return None, {}

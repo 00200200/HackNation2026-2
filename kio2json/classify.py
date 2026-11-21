@@ -8,6 +8,7 @@ from stdnum import iban
 from . import bank_transfer, power_of_attorney
 from .appeal_charges import FILING
 from .ocr_accounts import AccountEvidence
+from .ocr_booking import INTERLEAVED_DEBIT, ORDER_TYPE
 from .receipt_layout import booking_heading
 
 UNRELATED_HEADING = re.compile(
@@ -73,7 +74,9 @@ def incomplete_booking_scan(text: str) -> bool:
         CONFIRMATION_HEADING.match(line.lstrip(" |/–-")) or DEBIT_DETAILS.match(line) or booking_heading(line, ocr=True)
         for line in lines
     )
-    order = re.search(r"(?im)^typ zlecenia[ :]+przelew\b", text)
+    order = ORDER_TYPE.search(text) or INTERLEAVED_DEBIT.search(text)
+    if order and re.search(r"(?im)^dane zleceniodawcy\b", text):
+        return True
     return bool(
         (confirmation or order or _debit_printout(text) or bank_transfer.executed_letter(text))
         and (BANK_FIELDS.search(text) or bank_transfer.completed_value_block(text))

@@ -206,6 +206,8 @@ def _cell_value(field: str, cell: str, ocr: bool) -> str | None:
             return value
         return compact if re.fullmatch(r"[0-9]{26}", compact) else None
     if field.startswith("Data"):
+        if ocr:
+            cell = cell.rstrip(" *|")
         day = DATE_RE.match(cell)
         if day and re.fullmatch(r"(?:\s+\d{1,2}:\d{2}(?::\d{2})?)?", cell[day.end() :]):
             return day[0]

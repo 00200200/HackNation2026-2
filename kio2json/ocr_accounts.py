@@ -7,6 +7,7 @@ from stdnum import iban
 
 from .bank_transfer import AMOUNT_LABEL, BOUNDARY_RE, completed_value_block, posted_party_debit, printed_accounts
 from .common import DATE, to_iso
+from .ocr_booking import normalize_booking_rows
 from .receipt_layout import validated_account
 
 # 26-digit Polish account number, optionally 'PL'-prefixed, grouped or wrapped across lines.
@@ -204,9 +205,4 @@ def normalize_receipt(text: str) -> str:
     text = re.sub(r"(?im)^rachunk(?= odbiorcy\b)", "Rachunek", text)
     text = re.sub(rf"(?im)^data[ :]+({DATE})[ \t]*\nwykonania\b", r"Data wykonania: \1", text)
     text = re.sub(r"(?im)^[+| \t]*numer[ :]+(\d+)[ \t]*\ntransakcji[ |\t]*$", r"Numer transakcji: \1", text)
-    if re.search(r"(?im)^typ zlecenia[ :]+przelew\b", text):
-        # A ruled form can leave a short uppercase artefact beside a complete execution state.
-        text = re.sub(r"(?m)^[|][ \t]*(?!NIE\b)[A-Z]{1,2}[ \t]+(wykonan[aye])[ \t]*$", r"Status: \1", text)
-        if re.search(r"(?im)^status[ :]+wykonan[aye]\b", text) and re.search(r"(?im)^rachunek zleceniodawcy\b", text):
-            text = re.sub(r"(?im)^rachunek kontrahenta[ :|–-]+", "Rachunek odbiorcy: ", text)
-    return OCR_NRB.sub(number, OCR_DATE.sub(date, text))
+    return OCR_NRB.sub(number, OCR_DATE.sub(date, normalize_booking_rows(text)))
