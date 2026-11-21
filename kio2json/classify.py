@@ -67,6 +67,7 @@ def classify(pages: list[str], *, ocr_accounts: AccountEvidence | None = None) -
     if not pages:
         return None
     head = "\n".join(pages[:2])
+    scan_filing = ocr_accounts is not None and FILING.search(pages[0])
     transfer_heading = False
     register_heading = False
     for index, page in enumerate(pages[:2]):
@@ -77,6 +78,18 @@ def classify(pages: list[str], *, ocr_accounts: AccountEvidence | None = None) -
                 return None
             if re.match(r"^(?:rejestr|wykaz|spis|ewidencja)\b", line, re.IGNORECASE):
                 register_heading = True
+            if index == 0 and scan_filing:
+                # Flecks at the edge of a scanned title can appear as bullets or quotes.
+                if heading.strip("*•|.,„”'—–-") == "ODWOŁANIE":
+                    return "appeal"
+                if (
+                    not register_heading
+                    and Levenshtein.distance(heading, "ODWOŁANIE", score_cutoff=1) == 1
+                    and re.search(r"(?im)^odwo[łl]uj[ąa]cy\s*:", page)
+                    and re.search(r"(?im)^zamawiaj[ąa]cy\s*:", page)
+                    and re.search(r"krajowej izby odwoławczej", page, re.IGNORECASE)
+                ):
+                    return "appeal"
             if Levenshtein.distance(heading, "ODWOŁANIE", score_cutoff=1) <= 1:
                 party = re.search(r"odwo[łl]uj[ąa]c", head, re.IGNORECASE)
                 labelled_parties = re.search(r"(?im)^(?:wykonawca|odwo[łl]uj[ąa]cy)\s*[:(]", head) and re.search(

@@ -174,8 +174,11 @@ def _process(
                 accounts = account_evidence(primary[0]) if 1 in ocr_pages else None
             definition = routed
         if definition is not None:
+            words = []
+            if selected == "tesseract-dpi" and definition.extractor is appeal.extract and not definition.profile.keyed:
+                words = [box for box in boxes if box.page == 1]
             if definition.id == "appeal":
-                pages = restore_party_columns(pdf_path, pages, force_ocr, engine=engine)
+                pages = restore_party_columns(pdf_path, pages, force_ocr, engine=engine, first_words=words)
             ocr_python = None
             if ocr_pages:
                 if definition.extractor is bank_transfer.extract:
@@ -184,7 +187,10 @@ def _process(
                     grant_pages = verified_pages(pdf_path, pages, boxes) if not definition.profile.keyed else pages
                     ocr_python = partial(ocr_extract.extract_power_of_attorney, grant_pages, ocr_pages)
                 elif definition.extractor is appeal.extract:
-                    ocr_python = partial(ocr_extract.extract_appeal, pages, ocr_pages)
+                    if definition.profile.keyed:
+                        ocr_python = partial(ocr_extract.extract_appeal, pages, ocr_pages)
+                    else:
+                        ocr_python = partial(ocr_extract.extract_scanned_appeal, pages, ocr_pages, pdf_path, words)
             record = extract(
                 definition,
                 join_pages(pages),
