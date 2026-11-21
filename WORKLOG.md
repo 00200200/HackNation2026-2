@@ -148,6 +148,7 @@ Two and four grant JSONs matched exactly. The ten organizer grants remained exac
 - 21.11.2026 · Claude · landing/upload UI in `frontend/`, prod compose on the shared `edge` network, deploy notes · feat/frontend
 - 21.11.2026 · Claude · doc2json.pl live over HTTPS (DNS A records, Caddy block on the server), landing reduced to the dark tool screen · feat/frontend
 - 21.11.2026 · Claude · `kio2json.web_api` (health + extract, index-matched results) behind doc2json.pl, API container, frontend wired · feat/web-extraction
+- 21.11.2026 · Claude · #47 `HN_REAL_CORPUS` empty by default, `make eval-real` fails with a message when unset, personal path removed; #51 "8B cap" wording replaced by the organizer's "smaller model scores more, scoring being revised" · docs/paths-and-llm-scoring
 
 - 21.11.2026 · Integrated #27 and #34 with streamed upload limits and a disposable OCR process per document. The request deadline includes upload and queue time.
 

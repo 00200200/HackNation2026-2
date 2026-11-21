@@ -161,7 +161,7 @@ The three organizer class definitions supply the field descriptions, types and g
 
 ## Use a model endpoint
 
-The primary small-model candidate is Mistral’s open-weight `ministral-3b-2512` (3,849,090,048 total parameters). Both the language and vision weights count toward the 8B ceiling. The regional API supports native JSON Schema. Its documented processing geography includes EU and EFTA countries, so the jury deployment needs a narrower location commitment. [Provider comparison and sources](docs/small-model-providers.md)
+The primary small-model candidate is Mistral’s open-weight `ministral-3b-2512` (3,849,090,048 total parameters). Both the language and vision weights are counted. The organizer says a smaller model scores more and is revising the exact LLM scoring (`data/uzp/README.md`, “Sposób punktacji LLM”: “pracujemy nad nowymi wytycznymi”). The regional API supports native JSON Schema. Its documented processing geography includes EU and EFTA countries, so the jury deployment needs a narrower location commitment. [Provider comparison and sources](docs/small-model-providers.md)
 
 To run the measured rules-first profile, export the Mistral credential in your shell and run the following command.
 
@@ -209,7 +209,7 @@ uv run python -m evals.run                    # all 60 synthetic training cases 
 uv run python -m evals.run --organizer-scans  # 30 separately labelled scans
 uv run python -m evals.field_report --errors  # which fields fail, with list items paired inside their parent
 uv run python -m evals.field_report --force-ocr --errors   # ignore the text layer: what OCR costs
-make eval-real HN_REAL_SPLIT=dev              # /Users/domin/hn2-real-eval, or set HN_REAL_CORPUS
+make eval-real HN_REAL_CORPUS=/path/to/corpus HN_REAL_SPLIT=dev   # HN_REAL_CORPUS is required
 uv run python -m evals.run --corpus "$corpus" --split test
 uv run python -m evals.run --corpus "$corpus" --split dev --detail-out "$corpus/dev-detail.json"
 uv run python -m evals.field_report --corpus "$corpus" --split dev --force-ocr --errors
@@ -311,7 +311,7 @@ The rules-first profile above uses `ministral-3b-2512` and local Tesseract. The 
 
 Across the 91 PDFs, the 3B profile added 207 correct field matches, lost five and introduced 47 net false positives relative to the rules. It made 18 routing requests, 57 general extraction requests and 17 first-charge requests. In isolation, those 17 first-charge requests added four correct matches and removed four false positives. All 18 unrelated PDFs stayed empty without an API request. Three of the 30 organizer scans matched their full reference field sets. The secondary five-field fuzzy proxy scored .7325 for the 3B profile and .6006 for rules. [Per-field counts, per-class scores, timings and ablations](evals/results/small-model.json)
 
-The larger `ministral-8b-2512` checkpoint has 8,918,026,240 parameters and exceeds the 8B submission limit. It serves as a development comparison. An on-device smoke test of the 3B Q4_K_M quantization with llama.cpp on a 16 GB Apple M1 recovered the date and amount of an invented transfer in 14.97 seconds. The development corpus scores in the table use the regional API. A separate local CPU check put the company into the natural-person name field on eight of ten invented grants. [Checkpoint and hosting evidence](docs/small-model-providers.md) · [Local grant review](https://github.com/00200200/HackNation2026-2/pull/26#issuecomment-7069029860)
+The larger `ministral-8b-2512` checkpoint has 8,918,026,240 parameters and is more than twice the size of the 3B model, so under the organizer’s “smaller scores more” rule it would likely score less. It serves as a development comparison. An on-device smoke test of the 3B Q4_K_M quantization with llama.cpp on a 16 GB Apple M1 recovered the date and amount of an invented transfer in 14.97 seconds. The development corpus scores in the table use the regional API. A separate local CPU check put the company into the natural-person name field on eight of ten invented grants. [Checkpoint and hosting evidence](docs/small-model-providers.md) · [Local grant review](https://github.com/00200200/HackNation2026-2/pull/26#issuecomment-7069029860)
 
 To try the same checkpoint locally, save the pinned Q4_K_M file outside the checkout as `ministral.gguf` and start llama.cpp. With the regional profile variables shown above, override the connection variables for the local server and use one document worker. [Pinned GGUF release](https://huggingface.co/unsloth/Ministral-3-3B-Instruct-2512-GGUF/tree/7564922f37fa5bbb62b87f09a55c12f1f91d7a6a) · [llama.cpp b12608](https://github.com/ggml-org/llama.cpp/releases/tag/b12608)
 
