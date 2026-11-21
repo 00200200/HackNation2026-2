@@ -143,6 +143,10 @@ def classify(pages: list[str], *, ocr_accounts: AccountEvidence | None = None) -
                     return "appeal"
             if re.fullmatch(r"PEŁNOMOCNICTWO(?:PROCESOWE|SZCZEGÓLNE)?(?:NR[.:]?[0-9][A-Z0-9./-]*)?", heading):
                 return "power_of_attorney"
+            if re.fullmatch(
+                r"PEŁNOMOCNICTWONR[.:]?[A-Z]{1,8}[-/]\d[\dA-Z./-]*", heading
+            ) and power_of_attorney.GRANT.search(head):
+                return "power_of_attorney"
             if CONFIRMATION_HEADING.match(line) or booking_heading(line, ocr=index == 0 and ocr_accounts is not None):
                 transfer_heading = True
                 break

@@ -7,6 +7,7 @@ anthropic==2.12.0
 anyio==4.16.0
 argcomplete==3.7.2
 asgiref==3.13.0
+asn1crypto==1.5.1
 attrs==26.1.0
 authlib==1.9.10
 babel==2.18.0
@@ -56,6 +57,7 @@ mcp==2.3.0
 mcp-types==2.3.0
 mdit-py-plugins==0.7.0
 mdurl==0.1.2
+morfeusz2==1.99.15
 narwhals==2.29.0
 numpy==2.5.5
 omegaconf==2.4.0

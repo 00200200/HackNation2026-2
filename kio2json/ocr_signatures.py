@@ -185,3 +185,35 @@ def signers(run: list[str], principals: list[str], attorneys: set[str], prior: l
                 continue
         current, expect_name, signed = single, False, False
     return signers
+
+
+def confirmed_scan_signer(page: str, record: dict) -> None:
+    """Bind a repeated officer or a split electronic-signature block to a sole grantor."""
+    principals = record["mocodawca"]
+    if len(principals) != 1:
+        return
+    grant = GRANT.search(page)
+    if not grant:
+        return
+    signers = principals[0]["podpisujacy"]
+    attorneys = {a["imie_nazwisko"] for a in record["pelnomocnicy"]}
+    signed = page[grant.end() :]
+    split_stamp = re.search(
+        rf"(?im:^\W*elektronicznie\s*\n)[ \t]*(\w+)[ \t]+(?i:podpisan[ay]\s+przez)\s*\n[ \t]*({PERSON})\b",
+        signed,
+    )
+    candidates = []
+    if split_stamp and split_stamp[2].split()[0] == split_stamp[1]:
+        candidates.append(squash(split_stamp[2]))
+    declaration = re.search(
+        rf"(?i:\bjako)\s+({PERSON})\s*[-–—]\s*(?i:{SIGNER_ROLE_RE.pattern})\b", page[: grant.start()]
+    )
+    if declaration:
+        name = squash(declaration[1])
+        if re.search(rf"(?m)^\s*{re.escape(name)}\s*[-–—]\s*(?i:{SIGNER_ROLE_RE.pattern})\b", signed):
+            candidates.append(name)
+            signers[:] = [s for s in signers if not SIGNER_ROLE_RE.fullmatch(s["imie_nazwisko"] or "")]
+    for name in candidates:
+        signer = {"imie_nazwisko": name}
+        if name not in attorneys and signer not in signers:
+            signers.append(signer)
