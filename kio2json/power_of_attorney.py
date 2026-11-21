@@ -39,16 +39,23 @@ def _company_name(raw: str) -> str:
     return " ".join(words)
 
 
+GRANT = re.compile(r"\b(?:udziela(?:m|my|ją)?|ustanawia(?:m|my|ją)?|upoważnia(?:m|my|ją)?)\b", re.IGNORECASE)
+GRANTOR = re.compile(
+    r"\b(?:mocodawc[ąa](?:\s+jest)?|działając\s+w\s+imieniu)\b|^wykonawcy wspólnie\b[^:]*\bkonsorcjum\)\s*:",
+    re.IGNORECASE | re.MULTILINE,
+)
+OTHER_ROLE = re.compile(
+    r"\b(?:zamawiając(?:y|ym)(?:\s+jest)?|prowadzon\w+\s+przez|postępowanie\s+prowadzi)\b"
+    r"|^[ \t]*(?!mocodawc|konsorcjum|KRS\b|NIP\b|REGON\b)[^\W\d_][\w /-]{0,60}(?: \([^():]*\))?:",
+    re.IGNORECASE | re.MULTILINE,
+)
+
+
 def _principals(text: str) -> list[dict]:
-    declaration = re.split(r"\b(?:udziela|ustanawia|upoważnia)(?:m|my|ją)?\b", text, maxsplit=1, flags=re.IGNORECASE)[0]
-    # A form can list the authority before the grantor. Drop its block through the next grantor heading.
-    text = re.sub(
-        r"^[ \t]*(?:Zamawiający|Pełnomocnicy)\b.*?(?=^[ \t]*Mocodawc[ąa]\b|\Z)",
-        "",
-        declaration,
-        flags=re.IGNORECASE | re.MULTILINE | re.DOTALL,
-    )
-    text = re.split(r"\b(?:prowadzon\w+\s+przez|postępowanie\s+prowadzi)\b", text, maxsplit=1, flags=re.IGNORECASE)[0]
+    grant = GRANT.search(text)
+    text = text[: grant.start()] if grant else text
+    if not grant and not GRANTOR.search(text):
+        return []
     sole_trader = SOLE_TRADER_RE.search(text)
     if sole_trader:
         person = re.search(rf"podpisan\w*\s+({PERSON})", text)
@@ -66,8 +73,30 @@ def _principals(text: str) -> list[dict]:
     principals = {}
     companies = list(COMPANY_RE.finditer(text))
     for index, match in enumerate(companies):
-        window_end = companies[index + 1].start() if index + 1 < len(companies) else len(text)
-        ids = registry_ids(text[match.end() : min(window_end, match.end() + ID_WINDOW)])
+        previous_end = companies[index - 1].end() if index else 0
+        context = text[previous_end : match.start()]
+        # A new explicit subject takes precedence over an earlier proceeding clause.
+        declarations = list(GRANTOR.finditer(context))
+        if declarations:
+            context = context[declarations[-1].end() :]
+        if OTHER_ROLE.search(context) or OTHER_ROLE.match(match[1]):
+            continue
+        following = companies[index + 1] if index + 1 < len(companies) else None
+        between = text[match.end() : following.start() if following else len(text)]
+        details = OTHER_ROLE.split(between, maxsplit=1)[0]
+        explicit = declarations or GRANTOR.search(match[1])
+        if not explicit:
+            if not grant:
+                continue
+            # The subject immediately precedes the grant. A further company must
+            # either be a coordinated grantor or belong to a different role.
+            if following and not (
+                OTHER_ROLE.search(between)
+                or OTHER_ROLE.match(following[1])
+                or re.search(r"(?:\bi|\boraz|;\s*\d+\))\s*$", between)
+            ):
+                continue
+        ids = registry_ids(details[:ID_WINDOW])
         name = _company_name(match.group(1))
         principals.setdefault(
             name,
@@ -84,6 +113,19 @@ def _principals(text: str) -> list[dict]:
 
 def _attorneys(text: str) -> list[dict]:
     attorneys = {}
+    # The appointment may be printed in a labelled table before the grant verb.
+    # A later participant, proceeding or signature block cannot appoint anyone.
+    appointment = []
+    active = False
+    for line in text.splitlines():
+        if GRANT.search(line) or re.search(r"\bpełnomocni(?:k|cy)\b", line, re.IGNORECASE):
+            active = True
+        elif not re.match(r"^(?:pełnomocnictwa|PESEL|nr wpisu|(?:na )?listę)\b", line.strip(), re.IGNORECASE) and (
+            OTHER_ROLE.match(line.strip()) or SIGNATURE_LINE_RE.search(line)
+        ):
+            active = False
+        appointment.append(line if active else "|")
+    text = "\n".join(appointment)
     matches = list(ATTORNEY_RE.finditer(text))
     for index, match in enumerate(matches):
         next_start = matches[index + 1].start() if index + 1 < len(matches) else len(text)
@@ -94,23 +136,32 @@ def _attorneys(text: str) -> list[dict]:
 
 
 def _signers(text: str, principal_names: list[str], attorney_names: set[str]) -> list[list[str]]:
-    """Names under the signature lines, grouped by the principal named above them
-    ('W imieniu X:', 'Za X'). Without such a marker they belong to the first principal."""
+    """Attach each signature to its explicit heading, including the heading before the first rule."""
     signers = [[] for _ in principal_names]
-    signature_start = SIGNATURE_LINE_RE.search(text)
-    if not signature_start or not principal_names:
+    first = SIGNATURE_LINE_RE.search(text)
+    if not first or not principal_names:
         return signers
-    # The first principal heading can precede the first signature line and wrap in a PDF.
-    before = squash(text[: signature_start.start()]).rstrip(" :").casefold()
-    current = next((i for i, name in enumerate(principal_names) if before.endswith(name.casefold())), 0)
-    zone = text[signature_start.start() :]
-    for index, name in enumerate(principal_names):
-        zone = re.sub(r"\s+".join(map(re.escape, name.split(" "))), f"\n@@{index}@@\n", zone, flags=re.IGNORECASE)
-
-    for line in zone.splitlines():
-        marker = re.fullmatch(r"@@(\d+)@@", line.strip())
-        if marker:
-            current = int(marker.group(1))
+    heading = re.compile(r"^(?:W imieniu|Za)\s+", re.IGNORECASE)
+    # Before the first signature rule, only the immediately preceding heading belongs
+    # to the signature area. Names or role qualifiers sometimes wrap onto the next line.
+    prefix = text[: first.start()].rstrip().splitlines()
+    start = next(
+        (i for i in range(len(prefix) - 1, max(-1, len(prefix) - 4), -1) if heading.match(prefix[i].strip())),
+        len(prefix),
+    )
+    lines = prefix[start:] + text[first.start() :].splitlines()
+    current = 0 if len(principal_names) == 1 else None
+    for index, line in enumerate(lines):
+        if heading.match(line.strip()):
+            heading_text = line.strip()
+            if index + 1 < len(lines) and not SIGNATURE_LINE_RE.search(lines[index + 1]):
+                heading_text += " " + lines[index + 1].strip()
+            named = [i for i, name in enumerate(principal_names) if name.casefold() in squash(heading_text).casefold()]
+            current = named[0] if len(named) == 1 else None
+            continue
+        if re.match(r"^pełnomocnictwo przyjmuję", line, re.IGNORECASE):
+            break
+        if current is None or index < len(prefix) - start:
             continue
         line = ROLE_WORDS_RE.sub("|", ATTORNEY_RE.sub("|", line))
         for person in re.findall(PERSON, line):

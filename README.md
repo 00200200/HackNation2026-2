@@ -158,7 +158,10 @@ of how the rules generalize. The hidden test set holds real cases, and this is n
   `/` in account numbers, `@` in e-mail addresses, `sp. z o.o.` as `sp. z 0.0.`) and drops the
   dotted signature lines that the power-of-attorney rules use to find signers.
   `evals.field_report --force-ocr` shows the affected fields.
-- Transfer confirmations with a masked account can be rejected. Attorney names retain the grammatical
+- A confirmation with a masked account, or with neither a transaction amount nor a date,
+  can be rejected. Unlabelled or conflicting account roles can produce null fields.
+- The party and signature rules need legible section boundaries. A missing grantor heading or
+  an ambiguous signature can leave a party or signer out. Attorney names retain the grammatical
   case used in the document.
 - UNCONFIRMED: what "empty JSON" means for unrelated documents. We write an empty file, as the
   organizer README words it.

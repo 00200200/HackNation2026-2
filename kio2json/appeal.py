@@ -47,13 +47,43 @@ PARTIES_END_RE = re.compile(
 # The sentence must open with these words: the same phrase inside a subordinate clause
 # ("mimo że Zamawiający w dniu ...") describes some other act.
 ACTION_RE = re.compile(rf"(?:^|(?<=[.;:] ))Zamawiający\s+w\s+dniu\s+({DATE})")
-# A full stop after a word of three letters or more, or a doubled one after "sp.j..".
-SENTENCE_END_RE = re.compile(rf"(?:(?<=[{UPPER}{LOWER})]{{3}})\.|\.\.)\s+(?=[{UPPER}])")
 ALLEGATIONS_START_RE = re.compile(r"Zaskarżonym\s+czynnościom|Zarzut\s+nr\s+1\b")
 FIRST_ITEM_RE = re.compile(r"polegających\s+na:\s*1\)\s*(.+?);")
 FIRST_ALLEGATION_RE = re.compile(r"Zarzut\s+nr\s+1\b(.+?)(?=Zarzut\s+nr\s+2|$)")
-CHARGE_END_RE = re.compile(r"[;!?]|(?<=[\w]{3})\.(?<!art\.)(?<!ust\.)(?<!pkt\.)(?<!lit\.)\s+", re.IGNORECASE)
 STATUTE_DATE_RE = re.compile(rf"\b(?:ustaw\w*|rozporządzeni\w*|dyrektyw\w*)\s+z\s+dnia\s+{DATE}", re.IGNORECASE)
+
+
+# Nested fields belong to the current party. Any other labelled line starts
+# another section, even if its role is unknown to our output schema.
+PARTY_FIELD = re.compile(
+    r"^(?:KRS|NIP|REGON|reprezentowan\w* przez|adres do korespondencji|tel\.|e-mail)\b", re.IGNORECASE
+)
+SECTION_LABEL = re.compile(r"^[^\W\d_][\w ()./-]{0,80}:")
+BODY_HEADING = re.compile(r"^(?:uzasadnienie|dowody|żądania|zarzuty|zarzut nr \d+|wnioski|załączniki)\b", re.IGNORECASE)
+
+
+def _ends_party(line: str) -> bool:
+    if PARTY_FIELD.match(line) or line.lower().endswith("składzie:"):
+        return False
+    return bool(
+        SECTION_LABEL.match(line) or BODY_HEADING.match(line) or squash(line).replace(" ", "").upper() == "ODWOŁANIE"
+    )
+
+
+def _first_sentence(text: str) -> str:
+    """Stop at sentence punctuation, keeping dots inside citations, dates and company names."""
+    for stop in re.finditer(r"[;!?]|\.(?=\s|$)", text):
+        if stop[0] == ".":
+            before = text[: stop.start()]
+            after = text[stop.end() :].lstrip()
+            if re.search(r"\b(?:art|ust|pkt|lit|poz|nr|im|ul|św|al|Dz|sygn)$", before, re.IGNORECASE):
+                continue
+            if after and after[0].islower() and re.search(r"\b(?:sp|o|j|k|p|a|r)$", before, re.IGNORECASE):
+                continue
+            if re.search(r"\bsp$", before, re.IGNORECASE) and re.match(r"(?:z|j|k|p)\b", after, re.IGNORECASE):
+                continue
+        return text[: stop.start()]
+    return text
 
 
 def _parties(lines: list[str]) -> dict[str, list[dict]]:
@@ -85,8 +115,7 @@ def _parties(lines: list[str]) -> dict[str, list[dict]]:
         if in_wrapped_label:
             in_wrapped_label = not line.endswith(":")
             continue
-        heading = re.sub(r"\s", "", line).upper()
-        if PARTIES_END_RE.match(line) or heading == "ODWOŁANIE" or PLACE_DATE_RE.match(line):
+        if PARTIES_END_RE.match(line) or _ends_party(line) or PLACE_DATE_RE.match(line):
             finish_name()
             section = None
         elif line.endswith(":"):
@@ -120,10 +149,7 @@ def _representative(text: str) -> dict | None:
         label = SECTION_RE.match(line.strip())
         if label:
             appellant = label.group(1).casefold() == "odwołujący"
-        elif (
-            re.match(r"\s*(?:Wykonawca wybrany|dotyczy)", line, re.IGNORECASE)
-            or squash(line).replace(" ", "").upper() == "ODWOŁANIE"
-        ):
+        elif _ends_party(line.strip()):
             appellant = False
         if appellant:
             lines.append(line)
@@ -132,7 +158,12 @@ def _representative(text: str) -> dict | None:
     if not intro:
         return None
     after = text[intro.end() :]
-    attorney = ATTORNEY_RE.search(after[:300])
+    appointment = []
+    for line in after.splitlines():
+        if SECTION_LABEL.match(line.strip()):
+            break
+        appointment.append(line)
+    attorney = ATTORNEY_RE.search(" ".join(appointment))
     firm = re.search(r"adres do korespondencji:\s*(.+?),\s*(?:ul\.|al\.|pl\.|os\.)", after[:600], re.DOTALL)
     mail = EMAIL_RE.search(after[:800])
     return {
@@ -151,21 +182,24 @@ def _challenged_action(text: str) -> tuple[str | None, int | None]:
     """Use a dated first charge, otherwise its introductory account of the challenged act."""
     flat = squash(text)
     charge = FIRST_ALLEGATION_RE.search(flat)
-    opening = CHARGE_END_RE.split(charge.group(1), maxsplit=1)[0] if charge else ""
+    opening = _first_sentence(charge.group(1)) if charge else ""
     reason = _reason(opening)
-    day = find_date(STATUTE_DATE_RE.sub("", opening))
+    dated_act = re.split(
+        r",?\s+(?:o czym|odwołanie|pismo (?:wniesiono|nadano))\b", opening, maxsplit=1, flags=re.IGNORECASE
+    )[0]
+    day = find_date(STATUTE_DATE_RE.sub("", dated_act))
     if reason and day:
         return day, reason
 
     introduction = ALLEGATIONS_START_RE.split(flat, maxsplit=1)[0]
     for action in reversed(list(ACTION_RE.finditer(introduction))):
-        sentence = SENTENCE_END_RE.split(introduction[action.start() :], maxsplit=1)[0]
+        sentence = _first_sentence(introduction[action.start() :])
         action_reason = _reason(sentence)
         if action_reason:
             return to_iso(action.group(1)), action_reason
     item = FIRST_ITEM_RE.search(introduction)
     if item:
-        item_opening = SENTENCE_END_RE.split(item.group(1), maxsplit=1)[0]
+        item_opening = _first_sentence(item.group(1))
         item_reason = _reason(item_opening)
         if item_reason:
             return find_date(item_opening), item_reason
@@ -177,15 +211,25 @@ def _procurement(text: str) -> dict:
     ted = re.search(r"(?P<year>\d{4})/S\s*\d{3}-(?P<number>\d{6})", text) or re.search(
         r"(?<![\d/\-])(?P<number>\d{6})-(?P<year>\d{4})(?!\d)", text
     )
-    reference = re.search(
-        r"(?:nr|numer)\s+(?:referencyjny(?:\s+sprawy)?|postępowania|sprawy):?\s*(\S+)", text
-    ) or re.search(r"postępowani[ea]\s+(?:nr|numer)\s+(\S+)", text)
-    title = re.search(r"pn\.:?\s*„(.+?)”", text, re.DOTALL) or re.search(
-        r"dotyczy.*?„(.+?)”", text, re.DOTALL | re.IGNORECASE
-    )
+    ref_label = re.search(
+        r"(?:nr|numer)\s+(?:referencyjny(?:\s+sprawy)?|postępowania|sprawy)\b[:\s]+", text, re.IGNORECASE
+    ) or re.search(r"postępowani[ea]\s+(?:nr|numer)\b[:\s]+", text, re.IGNORECASE)
+    reference = None
+    if ref_label:
+        value = text[ref_label.end() :].lstrip()
+        if not SECTION_LABEL.match(value):
+            reference = re.match(r"(?=\S*\d)[\w./-]+", value)
+    title = re.search(r"pn\.:?\s*„([^”]+)”", text)
+    if not title and (subject := re.search(r"\bdotyczy\b[ \t]*:?", text, re.IGNORECASE)):
+        lines = []
+        for line in text[subject.end() :].splitlines():
+            if SECTION_LABEL.match(line.strip()):
+                break
+            lines.append(line)
+        title = re.search(r"„([^”]+)”", " ".join(lines))
     return {
         "numer_bzp": f"{bzp.group(1)}/BZP{bzp.group(2)}" if bzp else None,
-        "numer_postepowania": reference.group(1).rstrip(",.;)") if reference else None,
+        "numer_postepowania": reference[0].rstrip(".,") if reference else None,
         "numer_ted": f"{ted['number']}-{ted['year']}" if ted else None,
         "tytul": squash(title.group(1)) if title else None,
     }
