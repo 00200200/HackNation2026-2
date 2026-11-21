@@ -32,8 +32,10 @@ the run exit with status 1 after processing the remaining PDFs. This includes re
    only page numbers go through Polish Tesseract at 300 dpi.
 2. The CLI loads `config/classes/*.toml` once per batch. `kio2json/class_config.py` matches the
    page text against enabled definitions in ascending `priority`, then class ID order. The first
-   match wins. For example, a transfer requires two distinct accounts and evidence of payment
-   confirmation or execution. Invoices that request payment get an empty file.
+   match wins. The three organizer classes share the content classifier in `kio2json/classify.py`.
+   It reads headings in document order. A transfer needs two distinct accounts, a confirmation
+   heading or execution status, and a transaction amount or date. Rejected payments and payment
+   requests get an empty file.
 3. `kio2json/engines.py` sends the joined page text to the selected extractor. The three jury
    classes use `python` with a dotted path to the existing rule function. Each function retains
    its field order and normalization. `labelled_fields` extracts values by pattern. `llm`
@@ -80,8 +82,11 @@ uv run pytest -q tests/test_class_config.py -k fourth
 2. Set the routing cues. Patterns are case-insensitive and support line anchors. Every
    `required` pattern must match and any `forbidden` match rejects the class. Each optional
    `headings` pattern must match a whole line with whitespace removed. `routing.pages` limits
-   the search to the first N available pages (default 1). For a count of distinct matches,
-   see `[routing.evidence]` and `minimum` in `bank_transfer.toml`.
+   the search to the first N available pages (default 1). To require distinct references, for
+   example, add `[routing.evidence]` with `pattern = 'Reference: (\w+)'` and `minimum = 2`.
+   Classes with a Python router can set `classifier = "kio2json.classify.classify"` in
+   `[routing]` in place of the cues. The function receives the page texts and returns a class ID
+   or `None`. Each organizer class uses this setting.
 3. Define one field per output key. Scalars support `string`, `integer`, `number` and `boolean`.
    Object fields have a `fields` table, and list fields declare an `items` schema, which can
    itself contain lists. All fields carry an `instruction`. Fields are nullable by default.
@@ -91,7 +96,7 @@ uv run pytest -q tests/test_class_config.py -k fourth
 4. Run the CLI with a PDF containing the new heading and labels. For the example above,
    a document with lines `Receipt` and `Reference: HX-7` yields `{"reference": "HX-7"}`.
    Test a near miss such as a draft. Changes take effect on the next invocation.
-   Treat class files as trusted application configuration since `python` loads a callable.
+   Treat class files as trusted application configuration. Extractor and classifier paths load Python callables.
 
 ## Use a model endpoint
 
@@ -112,13 +117,16 @@ To fill missing fields within existing records, set `match_by` on the list to a 
 field, such as `data.nazwa` in `power_of_attorney.toml`. Ambiguous identities keep their original
 records. The built-in jury classes use only `python` and require no endpoint settings.
 
-The model supplies a verbatim quote with each scalar value. The engine checks each quote
-against the supplied text, then writes only the public fields. Missing information or an
-unmatched quote yields null, even for a normally mandatory scalar. A matching quotation
-can still refer to the wrong party. Pydantic AI allows one structured-output correction within
-a 60-second run timeout. Transport retries are disabled. An endpoint or validation failure is
-reported for that PDF on stderr and the batch exits with status 1. Offline model tests cover
-these extraction rules. Accuracy and latency on a live model have yet to be measured.
+The model supplies a verbatim quote for each scalar. The engine checks that the page contains
+the quote and that the quote supports the value. Copied text must appear in the quote after
+normalization. For dates, amounts, accounts and registry IDs, the quote must contain a span
+that normalizes to the returned value. Missing or unsupported values yield null, including
+normally mandatory scalars. A correctly quoted value from the wrong party’s block can still pass.
+
+Pydantic AI allows one structured-output correction within a 60-second run timeout. Transport
+retries are disabled. An endpoint failure is reported on stderr with the PDF path, failure type
+and HTTP status when available. The CLI continues the batch and exits with status 1.
+Offline model tests cover these rules. Accuracy and latency on a live model have yet to be measured.
 
 ## Measure
 

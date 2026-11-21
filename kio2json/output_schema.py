@@ -4,34 +4,56 @@ import re
 
 from pydantic import BaseModel, ConfigDict, Field, TypeAdapter, ValidationError, create_model
 
-from .bank_transfer import ACCOUNT_RE, MONEY
+from .bank_transfer import ACCOUNT_RE
 from .class_config import OutputField
-from .common import DATE_RE, registry_ids, to_iso
+from .common import DATE, MONTHS, to_iso
 
 SCALARS = {"string": str, "number": float, "integer": int, "boolean": bool}
 ADAPTERS = {name: TypeAdapter(kind, config=ConfigDict(allow_inf_nan=False)) for name, kind in SCALARS.items()}
 
 
+# An evidence span and a labelled capture use the same grammar and normalization.
+ENGLISH_MONTHS = "January February March April May June July August September October November December".lower().split()
+MONTH_WORD = re.compile(r"\b(?:" + "|".join(ENGLISH_MONTHS) + r")\b", re.IGNORECASE)
+# Consume the complete numeric token before validating grouping, so a malformed
+# amount cannot be split into a smaller valid amount during a citation search.
+NUMBER_TOKEN = re.compile(
+    r"(?<![\w.,+−-])(?:[+−-][ \u00a0\u202f]*)?"
+    r"\d++(?:[ \u00a0\u202f]\d++|\.\d{3}(?!\d))*+(?:[.,]\d++)*+(?:[eE][+-]?\d++)?(?!\w)"
+)
+MONEY_FORMAT = re.compile(
+    r"(?:(?P<sign>[+−-])[ \u00a0\u202f]*)?(?P<whole>\d{1,3}(?:[ .\u00a0\u202f]\d{3})+|\d+)(?:[.,](?P<fraction>\d{1,2}))?"
+)
+SPANS = {
+    "iso_date": re.compile(rf"(?<!\w)(?:{DATE}|\d{{1,2}}\s+{MONTH_WORD.pattern}\s+\d{{4}})(?!\w)", re.IGNORECASE),
+    "money": NUMBER_TOKEN,
+    "account_number": re.compile(rf"(?<!\w){ACCOUNT_RE.pattern}(?!\w)", re.IGNORECASE),
+    "nip": re.compile(r"(?<![\w-])(?<!\d[ ])(?:PL\s?)?(\d(?:[ \-]?\d){9})(?!\w|[ -]\d)", re.IGNORECASE),
+    "krs": re.compile(r"(?<!\w)(?:nr\s*)?(\d{10})(?!\w)", re.IGNORECASE),
+    "regon": re.compile(r"(?<!\w)(\d{14}|\d{9})(?!\w)"),
+    "pesel": re.compile(r"(?<!\w)([0-9]{11})(?!\w)"),
+}
+
+
 def normalize(name: str, raw):
     if raw is None:
         return None
-    value = str(raw).strip()
-    if name == "iso_date":
-        return to_iso(value) if DATE_RE.fullmatch(value) else None
-    if name == "account_number":
-        match = ACCOUNT_RE.fullmatch(value.upper())
-        return re.sub(r"\s", "", match[1]) if match else None
-    if name == "pesel":
-        return value if re.fullmatch(r"[0-9]{11}", value) else None
     if name == "money":
         if type(raw) in (float, int):
             return raw
-        if re.fullmatch(r"[+-]?\d+(?:[.,]\d{1,2})?", value):
-            return value.replace(",", ".")
-        if re.fullmatch(MONEY, value):
-            return re.sub(r"[ .\u00a0]", "", value[:-3]) + "." + value[-2:]
+        match = MONEY_FORMAT.fullmatch(str(raw).strip())
+        if not match:
+            return None
+        whole = re.sub(r"[.\s]", "", match["whole"])
+        sign = "-" if match["sign"] in ("-", "−") else ""
+        return f"{sign}{whole}.{match['fraction'] or '0'}"
+    match = SPANS[name].fullmatch(str(raw).strip())
+    if not match:
         return None
-    return registry_ids(f"{name.upper()}: {value}")[name]
+    if name == "iso_date":
+        date_text = MONTH_WORD.sub(lambda m: MONTHS[ENGLISH_MONTHS.index(m[0].lower())], match[0])
+        return to_iso(date_text)
+    return re.sub(r"[\s-]", "", match[1])
 
 
 class SchemaModel(BaseModel):
@@ -51,6 +73,46 @@ def scalar_value(field: OutputField, raw):
         return ADAPTERS[field.type].validate_python(value)
     except ValidationError:
         return None
+
+
+def cited_value(field: OutputField, raw, quote: str, text: str):
+    """Require an entire source token inside one verbatim occurrence of this citation."""
+    value = scalar_value(field, raw)
+    quote_start = text.find(quote)
+    if value is None or not quote.strip() or quote_start == -1:
+        return None
+    numeric = field.type in ("integer", "number")
+    if field.normalizer:
+        pattern = SPANS[field.normalizer]
+    elif numeric:
+        pattern = NUMBER_TOKEN
+    else:
+        words = str(value).split()
+        if not words:
+            return None
+        copied = r"\s+".join(re.escape(word) for word in words)
+        pattern = re.compile(rf"(?<!\w){copied}(?!\w)", re.IGNORECASE)
+
+    for span in pattern.finditer(text):
+        # Source matches are ordered. Advance past occurrences too short to
+        # contain this match, including when the same quote occurs more than once.
+        if span.end() > quote_start + len(quote):
+            quote_start = text.find(quote, span.end() - len(quote))
+            if quote_start == -1:
+                break
+        # Identifier grammars capture the number separately from optional PL or nr prefixes.
+        value_start = span.start(1) if span.lastindex else span.start()
+        if value_start < quote_start:
+            continue
+        if field.normalizer:
+            supported = scalar_value(field, span[0])
+        elif numeric:
+            supported = scalar_value(field, span[0].replace(",", ".").replace("−", "-"))
+        else:
+            return value
+        if supported == value:
+            return value
+    return None
 
 
 def field_type(field: OutputField, name: str, cited: bool, allow_abstention: bool):

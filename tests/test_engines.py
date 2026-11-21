@@ -188,3 +188,111 @@ def test_endpoint_reads_dotenv_and_prioritizes_environment(tmp_path, monkeypatch
     model = Endpoint().chat_model()
     assert model.model_name == "process-model"
     assert str(model.provider.base_url).rstrip("/") == "http://localhost:8100/v1"
+
+
+@pytest.mark.parametrize(
+    ("field", "value", "quote", "expected"),
+    [
+        (scalar("Customer reference"), "MIST-901", "Receipt", None),
+        (scalar("Customer reference"), "LARK-83", "Supplier ref FINCH-61", None),
+        (scalar("Customer reference"), "LARK-83", "Customer ref lark-83", "LARK-83"),
+        (scalar("Customer name"), "North Quill", "Payee NORTH\n  QUILL LTD", "North Quill"),
+        (scalar("Customer name"), "  ", "Receipt", None),
+        (scalar("Customer reference"), "ROOK-91", "Reference ROOK-912", None),
+        (scalar("Count", type="integer"), 13, "Count 113", None),
+        (scalar("Count", type="integer"), 34, "Count 12,34", None),
+        (scalar("Count", type="integer"), 321, "Count 1 321", None),
+        (scalar("Count", type="integer"), 27, "Count 27,4X", None),
+        (scalar("Refund", type="number", normalizer="money"), 52.37, "Refund 3 52,37", None),
+        (scalar("Ratio", type="number"), 2.0, "Ratio 2", 2.0),
+        (scalar("Active", type="boolean"), False, "Active false", False),
+        (scalar("Filing date", normalizer="iso_date"), "2034-10-22", "Filed 21 października 2034", None),
+        (
+            scalar("Filing date", normalizer="iso_date"),
+            "2034-10-22",
+            "Filed 21.10.2034 or 22 października 2034",
+            "2034-10-22",
+        ),
+        (scalar("Refund", type="number", normalizer="money"), 6543.71, "Refund -6 543,71 PLN", None),
+        (scalar("Refund", type="number", normalizer="money"), 6543.71, "Refund −6 543,71 PLN", None),
+        (scalar("Refund", type="number", normalizer="money"), -6543.71, "Refund −6 543,71 PLN", -6543.71),
+        (scalar("Refund", type="number", normalizer="money"), -6543.71, "Refund -6 543,71 PLN", -6543.71),
+        (
+            scalar("Account", normalizer="account_number"),
+            "73" + "1864" * 6,
+            "New account PL73" + " 1864" * 6,
+            "73" + "1864" * 6,
+        ),
+        (scalar("Account", normalizer="account_number"), "73" + "1864" * 6, "Old account PL74" + " 1864" * 6, None),
+        (scalar("Tax ID", normalizer="nip"), "7842913068", "ID PL784-291-30-68", "7842913068"),
+        (scalar("Tax ID", normalizer="nip"), "7842913068", "ID 784-291-30-68-3", None),
+        (scalar("Register", normalizer="krs"), "0000087643", "Register 00000876430", None),
+        (scalar("Register", normalizer="regon"), "876450123", "Register 87645012300007", None),
+        (scalar("Person ID", normalizer="pesel"), "87654321019", "Person ID 87654321018", None),
+    ],
+)
+def test_model_values_need_support_inside_their_own_quote(field, value, quote, expected):
+    from kio2json.engines import extract
+
+    cfg = form({"value": field}, ["llm"])
+    model = OfflineModel(custom_output_args={"value": {"value": value, "quote": quote}})
+    text = f"Receipt\nCustomer ref LARK-83\n{quote}"
+    assert extract(cfg, text, model=model) == {"value": expected}
+
+
+@pytest.mark.parametrize(
+    ("raw", "expected"),
+    [("-6 543,71", -6543.71), ("+6.543,71", 6543.71), ("-6543,71", -6543.71)],
+)
+def test_labelled_money_preserves_sign_across_grouping(raw, expected):
+    from kio2json.engines import extract
+
+    cfg = form(
+        {"refund": scalar("Refund", type="number", normalizer="money", pattern=r"Refund: (.+)")}, ["labelled_fields"]
+    )
+    assert extract(cfg, f"Refund: {raw}") == {"refund": expected}
+
+
+@pytest.mark.parametrize("raw", ["784-291-30-68-3", "7842913068XYZ", "7842913068 and another ID"])
+def test_labelled_nip_rejects_a_capture_with_trailing_characters(raw):
+    from kio2json.engines import extract
+
+    cfg = form({"nip": scalar("Tax ID", normalizer="nip", pattern=r"ID: (.+)")}, ["labelled_fields"])
+    assert extract(cfg, f"ID: {raw}") == {"nip": None}
+
+
+@pytest.mark.parametrize(
+    ("field", "value", "quote", "text"),
+    [
+        (scalar("Refund", type="number", normalizer="money"), 15.31, "15,31", "Signed refund -15,31"),
+        (scalar("Tax ID", normalizer="nip"), "7865439120", "7865439120", "Tax ID 7865439120-7"),
+        (scalar("Reference"), "JET-81", "JET-81", "Reference JET-812"),
+    ],
+)
+def test_clipping_a_quote_cannot_change_the_source_value(field, value, quote, text):
+    from kio2json.engines import extract
+
+    cfg = form({"field": field}, ["llm"])
+    model = OfflineModel(custom_output_args={"field": {"value": value, "quote": quote}})
+    assert extract(cfg, text, model=model) == {"field": None}
+
+
+@pytest.mark.parametrize(
+    ("field", "value", "quote", "text"),
+    [
+        (scalar("Refund", type="number", normalizer="money"), 15.31, "15,31", "Charge -15,31. Refund 15,31."),
+        (
+            scalar("Amount", type="number", normalizer="money"),
+            48,
+            "48,00",
+            "Kwota operacji Data operacji\n48,00 19.07.2031",
+        ),
+        (scalar("Register", normalizer="krs"), "0000087643", "0000087643", "KRS nr 0000087643"),
+    ],
+)
+def test_verbatim_quote_can_cover_a_standalone_value(field, value, quote, text):
+    from kio2json.engines import extract
+
+    cfg = form({"field": field}, ["llm"])
+    model = OfflineModel(custom_output_args={"field": {"value": value, "quote": quote}})
+    assert extract(cfg, text, model=model) == {"field": value}
