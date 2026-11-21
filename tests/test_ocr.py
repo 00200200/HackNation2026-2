@@ -108,3 +108,49 @@ def test_confirmed_payment_with_one_unreadable_account_preserves_the_other_role(
     assert (result["z_rachunku"], result["na_rachunek"]) == (None, account)
     assert classify(["Prosimy o potwierdzenie przelewu" + text.removeprefix("Potwierdzenie przelewu")]) is None
     assert classify(["FAKTURA VAT\n" + text]) is None
+
+
+def test_rapidocr_uses_engine_word_boxes_in_pdf_points(monkeypatch):
+    from unittest.mock import Mock
+
+    from kio2json import pdf_text
+
+    result = Mock(txts=("Studio Próbne",), word_results=((("Studio", 0.97, [[2, 2], [8, 1], [9, 5], [1, 6]]),),))
+    engine = Mock(return_value=result)
+    monkeypatch.setattr(pdf_text, "_rapid_engine", lambda: engine)
+    monkeypatch.setenv("KIO_OCR_ENGINE", "rapidocr")
+    page = Mock(page_number=3)
+    image = page.to_image.return_value
+    image.scale = 2
+    image.bbox = (10, 20, 110, 120)
+    words = []
+    assert pdf_text._ocr(page, words) == "Studio Próbne"
+    assert words == [(3, "Studio", 10.5, 20.5, 14.5, 23)]
+    engine.assert_called_once_with(image.original, return_word_box=True)
+
+
+def test_unrecognized_engine_reports_the_setting(monkeypatch):
+    import pytest
+
+    from kio2json import pdf_text
+
+    monkeypatch.setenv("KIO_OCR_ENGINE", "missing")
+    with pytest.raises(ValueError, match="KIO_OCR_ENGINE"):
+        pdf_text._ocr(None, None)
+
+
+def test_masked_transfer_requires_exact_roles_and_checksum():
+    from kio2json.classify import classify
+
+    transfer = (
+        "Potwierdzenie przelewu\nRachunek nadawcy: ****\nRachunek odbiorcy: 56458700991234567801234567"
+        "\nKwota przelewu: 64,50 PLN\nData operacji: 04.06.2025"
+    )
+    for before, after in [
+        ("****", "nieczytelny"),
+        ("Rachunek odbiorcy", "Rachunek nadawcy"),
+        ("4567", "4568"),
+        ("Data operacji", "Data wydruku"),
+    ]:
+        assert classify([transfer.replace(before, after)]) is None
+    assert classify([transfer + "\nStatus: odrzucony"]) is None

@@ -1,10 +1,12 @@
-"""Page text: the PDF text layer, with Polish Tesseract OCR for pages that have none."""
+"""Page text: the PDF text layer, with selectable local OCR for pages that have none."""
 
+import os
 import re
 from contextlib import ExitStack
 from functools import cache
 from importlib.metadata import files
 from pathlib import Path
+from threading import Lock
 from typing import NamedTuple
 
 import pdfplumber
@@ -46,7 +48,54 @@ def _language_dir() -> str:
     raise FileNotFoundError("Polish OCR data missing from the kio-polish-ocr-data installation")
 
 
+@cache
+def _rapid_engine():
+    try:
+        import onnxruntime  # noqa: F401 -- RapidOCR loads the selected runtime lazily.
+        from rapidocr import RapidOCR
+    except ImportError as error:
+        raise RuntimeError("RapidOCR needs the optional rapidocr and onnxruntime packages (see README)") from error
+    return RapidOCR(
+        params={
+            "EngineConfig.onnxruntime.intra_op_num_threads": 2,
+            "EngineConfig.onnxruntime.inter_op_num_threads": 1,
+            "Global.log_level": "warning",
+        }
+    )
+
+
+# RapidOCR mutates per-call options on the engine, including whether to compute word boxes.
+_rapid_lock = Lock()
+
+
 def _ocr(page, words: list[WordBox] | None) -> str:
+    engine = os.environ.get("KIO_OCR_ENGINE", "tesseract")
+    if engine == "tesseract":
+        return _tesseract(page, words)
+    if engine != "rapidocr":
+        raise ValueError(f"Unknown KIO_OCR_ENGINE={engine!r}, expected tesseract or rapidocr")
+    image = page.to_image(resolution=OCR_DPI)
+    with _rapid_lock:
+        result = _rapid_engine()(image.original, return_word_box=words is not None)
+    if words is not None and result.txts:
+        left, top = image.bbox[:2]
+        for line in result.word_results or ():
+            for word, _, box in line or ():
+                xs, ys = zip(*box)
+                words.append(
+                    WordBox(
+                        page.page_number,
+                        word,
+                        left + min(xs) / image.scale,
+                        top + min(ys) / image.scale,
+                        left + max(xs) / image.scale,
+                        top + max(ys) / image.scale,
+                    )
+                )
+    return "\n".join(result.txts or ())
+
+
+def _tesseract(page, words: list[WordBox] | None) -> str:
     """Recognize the page and verify suspect e-mail separators against their image crops."""
     from tesserocr import PSM, RIL, PyTessBaseAPI, iterate_level
 
