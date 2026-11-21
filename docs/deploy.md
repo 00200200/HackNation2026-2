@@ -22,12 +22,12 @@ ssh -i ~/.ssh/faktczyfejk ubuntu@135.125.239.206 'cd /opt/doc2json && docker com
 
 Check from inside the network: `docker run --rm --network edge alpine:3.20 wget -qO- http://doc2json-web/`.
 
-## Going public (pending on 21.11.2026)
+## Going public
 
-1. Domain doc2json.pl: ordered at OVH (order 263873856), payment in validation. Once active, in the OVH DNS zone:
+1. Done 21.11.2026: domain doc2json.pl at OVH; in its OVH DNS zone
    A records for `doc2json.pl` and `www.doc2json.pl` → 135.125.239.206, no AAAA (same reason as faktczyfejk.pl:
    IPv6 clients behind Docker's proxy would share one rate-limit key).
-2. HackNation2026 PR (needs the team's go, it touches the live demo): Caddy joins the external `edge` network and the
+2. Done 21.11.2026 live on the server, HackNation2026 PR #48 merged to main, not yet on `prod`: Caddy joins the external `edge` network and the
    Caddyfile gets `doc2json.pl { reverse_proxy doc2json-web:80 }` plus a `www.doc2json.pl` redirect. Caddy then
    reloads and issues the certificate.
 3. When the extraction backend exists: add it to `compose.prod.yaml` and proxy `/api/` to it in
