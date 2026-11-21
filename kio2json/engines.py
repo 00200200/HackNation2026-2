@@ -144,6 +144,12 @@ def extract(
             values = {
                 k: fill(f, values.get(k), candidate.get(k), fill_empty=fill_empty) for k, f in definition.fields.items()
             }
+    if definition.profile.mode == "RL" and definition.id == "power_of_attorney":
+        for principal in values["mocodawca"]:
+            owner = principal["data"]
+            if owner["typ"] == "osoba_prawna":
+                # A person's name belongs to an individual grantor or signer.
+                owner["imie_nazwisko"] = None
     if definition.engines == ["python"]:
         # Python extractors own their normalization and serialization order.
         return values
