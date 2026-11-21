@@ -24,7 +24,7 @@ These runs used local rules with the three endpoint variables unset. The two loc
 |---|---:|---:|---:|---:|---:|---:|---|---:|---:|
 | Local corpus 1, all | 39 | 0.6307 | 0.6607 | 0.6016 | 0.9189 | 0.4615 | 12/13 / 6/6 / 4/9 | 11/11 | 7.39 |
 | Local corpus 2, dev | 39 | 0.6045 | 0.5662 | 0.6008 | 0.9462 | 0.1515 | 12/13 / 5/5 / 1/10 | 11/11 | 6.33 |
-| Organizer scans | 30 | 0.6852 | 0.6023 | 0.6123 | 1.0000 | 0.1944 | 9/10 / 10/10 / 2/10 | n/a | 10.05 |
+| Organizer scans | 30 | 0.6852 | 0.6023 | 0.6123 | 1.0000 | 0.1944 | 9/10 / 10/10 / 2/10 | n/a | 3.69 |
 
 [Grant development measurements](evals/results/poa-development.json) · [Organizer scan aggregate](evals/results/organizer-scans.json)
 
@@ -99,3 +99,5 @@ These runs used local rules with the three endpoint variables unset. The two loc
 
 - 21.11.2026 · Codex · Synced the small-model branch with main at `5297660`, including scanned grant extraction and the bank execution-date rules.
 - 21.11.2026 · Codex · Verified training on the clean merge `fb08cd7` and on `main` at `5297660`. Both scored 1.000 micro F1 and produced identical paths and bytes for all 196 PDFs, including all 16 empty negative outputs.
+
+- 21.11.2026 · Codex · Verified the merge at `fb08cd7` against `main` at `5297660`. The keyless CLI matched all 196 training outputs by path and bytes, with micro F1 1.000. On 30 organizer scans, both scored 0.6852 micro F1. Main took 9.65 s/PDF with default settings. The first branch run timed out in Polish OCR on the last PDF. The completed branch retry at `37d6352` used `OMP_THREAD_LIMIT=1` and took 3.69 s/PDF.
