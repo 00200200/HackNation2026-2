@@ -235,15 +235,15 @@ current rules, select `KIO_OCR_ENGINE=tesseract-dpi` and run
 
 ## Rules on real documents and organizer scans
 
-These runs used local rules with the three endpoint variables unset. The two local datasets contain real documents and use whole-case splits. Corpus 1 dev has 22 PDFs from 14 cases. Corpus 2 dev has 39 PDFs from 14 cases. Held-out evaluation of the integrated configuration on both corpora is pending model selection. The earlier model-engine branch evaluated two profiles on the 17-PDF corpus 1 held-out split. [Historical model results](evals/results/llm-real-docs.json) The organizer supplied a separate set of 30 labelled scans, ten per target class. The scan command stages the committed PDF/reference pairs as one batch with neutral filenames. [Organizer scan set at the measured revision](https://github.com/Urzad-Zamowien-Publicznych/hacknation-2026/tree/0b360a9da4b482a6a280696df6714404e0953505/dane/skany)
+The local rules were evaluated on all 39 PDFs from 21 cases in corpus 1 and the 39 development PDFs from 14 cases in corpus 2. The project reserves corpus 2 test for the merged system. The organizer supplied 30 labelled development scans, ten per class, at revision `0b360a9`. All ten appeal predictions matched their complete reference objects (225 fields). The scan harness stages PDFs under neutral filenames. The earlier model-engine experiment evaluated two profiles on the 17-document corpus 1 holdout. [Historical model results](evals/results/llm-real-docs.json) · [Organizer scan inventory](https://github.com/Urzad-Zamowien-Publicznych/hacknation-2026/tree/0b360a9da4b482a6a280696df6714404e0953505/dane/skany)
 
 | Dataset | PDFs | Micro F1 | Macro F1 by class | Appeal | Power of attorney | Transfer | Correct routes (appeal / power / transfer) | Empty negatives | Wall s/PDF |
 |---|---:|---:|---:|---:|---:|---:|---|---:|---:|
-| Local corpus 1, dev | 22 | 0.6973 | 0.6628 | 0.7056 | 0.7273 | 0.5556 | 8/8 / 3/3 / 2/4 | 7/7 | 6.69 |
-| Local corpus 2, dev | 39 | 0.5248 | 0.3619 | 0.6008 | 0.3333 | 0.1515 | 12/13 / 4/5 / 1/10 | 11/11 | 3.61 |
-| Organizer scans | 30 | 0.5633 | 0.4711 | 0.6123 | 0.6065 | 0.1944 | 9/10 / 10/10 / 2/10 | n/a | 9.86 |
+| Local corpus 1, all | 39 | 0.6675 | 0.5862 | 0.7046 | 0.5926 | 0.4615 | 12/13 / 6/6 / 4/9 | 11/11 | 3.63 |
+| Local corpus 2, dev | 39 | 0.7035 | 0.4332 | 0.8148 | 0.3333 | 0.1515 | 13/13 / 4/5 / 1/10 | 11/11 | 3.31 |
+| Organizer scans | 30 | 0.8242 | 0.6003 | 1.0000 | 0.6065 | 0.1944 | 10/10 / 10/10 / 2/10 | n/a | 5.49 |
 
-Micro F1 pools field matches across documents. Macro F1 averages the three class scores. The routing columns count correctly classified documents in each target class. The negatives column counts zero-byte outputs. Timing includes OCR and extraction on a shared host. [Real development reports](evals/results/integration-rules.json) · [Organizer scan report](evals/results/organizer-scans.json)
+Micro F1 pools field matches across documents. Macro F1 averages the three class scores. The routing columns count correctly classified documents in each target class. The negatives column counts zero-byte outputs. Timing includes OCR and extraction on a shared host. [Real development reports](evals/results/appeal-scan-development.json) · [Organizer scan report](evals/results/organizer-scans.json)
 
 The organizer allows 45 minutes for its 150-PDF batch, an average budget of 18 seconds per PDF.
 The reported times cover these local datasets. OCR runs locally. Under the updated rules, a remote
