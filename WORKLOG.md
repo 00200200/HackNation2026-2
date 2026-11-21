@@ -8,9 +8,10 @@ Shared state of the project. Rules: `CLAUDE.md` → Worklog.
   template example in `input/case1`.
 - Eval harness (`evals/`, field-level F1 on the training cases, working definition) with tests.
   `evals/field_report.py` adds a per-field error table and an OCR stress run (`--force-ocr`).
-- App: `kio2json/`, a rule-based baseline with no language model. CLI `python -m kio2json --input input --output output`;
-  content-based classification with a rejection path; regex and line-layout extraction per class; pdfplumber text
-  with Tesseract (`pol`) for blank or page-number-only text layers. Required OCR failures identify the PDF on stderr. Branch `baseline/rule-based-extraction`.
+- On `feat/config-driven-classes`, the CLI reads class definitions from `config/classes/`.
+  The jury classes use their existing Python extractors. A disabled participation form demonstrates
+  config-only routing and labelled fields. Pydantic AI structured extraction and null-field fallback
+  have offline tests. The CLI still uses pdfplumber and Polish Tesseract, with per-PDF errors on stderr.
 - Research notes on OCR, schema extraction and Polish legal NLP: `docs/kio-extraction-research.md`.
 - Claude Code setup: skills `hacknation-judging`, `odwolania2json-eval`, `build`, `verify`, `humanizer`;
   agents `judge`, `builder`, `reviewer`, `researcher`; pre-push hook in `.githooks/`.
@@ -29,8 +30,7 @@ unseen-case estimate for this baseline.
 | OCR challenger: Tesseract vs a pip-installable engine (PP-OCRv6) on `evals.field_report --force-ocr` | — |
 | OCR-tolerant rules: account checksum repair, `0.0.` → `o.o.`, signers without dotted lines | — |
 | Real-layout appeals: small reference set from real KIO appeals; coordinate-aware rules vs a grounded model call | — |
-| Config-driven classes (routing cues, fields, patterns in config files) | — |
-| Extraction per class with an open-weight LLM on an EU API (pydantic-ai), where rules fail | — |
+| Measure accuracy and latency of the config-selected LLM on real layouts once the EU model endpoint is available | — |
 | Transparency output: source page, quoted text and rule per field | — |
 | GUI: upload, run, source and JSON side by side | — |
 | Ask the UZP stand: F1 formula, stage II weights (README 50/50 vs PDF 50/30/20) | — |
@@ -53,3 +53,4 @@ unseen-case estimate for this baseline.
 - 21.11.2026 · Claude · stricter F1 normalisation (types, formats), invented test fixture, organizer data copied into the repo (UZP e8b7a67)
 - 21.11.2026 · Claude · rule-based baseline `kio2json`, field report, data refresh to UZP 7590db8 (reason 6 description is now `Odpowiedzi/wyjaśnienia do SWZ`); full eval `micro_f1` 1.000 on training data
 - 21.11.2026 · Codex · fixed OCR failure reporting, payment and party roles, first-charge dates and field-report matching. Added regressions with invented fixtures. Extraction fixes in `0ecd41c`.
+- 21.11.2026 · Codex · Configured routing and three extraction engines in `00a84f2`. The fourth class uses only TOML. All 196 synthetic corpus outputs matched baseline `4deb354` byte for byte. The field report found zero errors across 2,316 fields.

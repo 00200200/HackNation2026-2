@@ -1,0 +1,23 @@
+id = "participation"
+enabled = false
+engines = ["labelled_fields"]
+
+[routing]
+required = ['^Karta uczestnika[ \t]*$', '^Uczestnik:']
+forbidden = ['^Projekt\b']
+
+[fields.participant]
+type = "string"
+instruction = "Name of the participant on the notice."
+pattern = '^Uczestnik:[ \t]*(.+)$'
+
+[fields.filed]
+type = "string"
+normalizer = "iso_date"
+instruction = "Date the notice was filed."
+pattern = '^Data:[ \t]*(.+)$'
+
+[fields.reference]
+type = "string"
+instruction = "Procedure reference on the form."
+pattern = '^Sygnatura:[ \t]*(.+)$'
