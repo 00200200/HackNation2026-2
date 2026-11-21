@@ -18,11 +18,11 @@ These runs used local rules with the three endpoint variables unset. The two loc
 
 | Dataset | PDFs | Micro F1 | Macro F1 by class | Appeal | Power of attorney | Transfer | Correct routes (appeal / power / transfer) | Empty negatives | Wall s/PDF |
 |---|---:|---:|---:|---:|---:|---:|---|---:|---:|
-| Local corpus 1, all | 39 | 0.6307 | 0.6607 | 0.6016 | 0.9189 | 0.4615 | 12/13 / 6/6 / 4/9 | 11/11 | 7.39 |
-| Local corpus 2, dev | 39 | 0.6045 | 0.5662 | 0.6008 | 0.9462 | 0.1515 | 12/13 / 5/5 / 1/10 | 11/11 | 6.33 |
-| Organizer scans | 30 | 0.6852 | 0.6023 | 0.6123 | 1.0000 | 0.1944 | 9/10 / 10/10 / 2/10 | n/a | 10.05 |
+| Local corpus 1, all | 39 | 0.7104 | 0.6950 | 0.7046 | 0.9189 | 0.4615 | 12/13 / 6/6 / 4/9 | 11/11 | 8.45 |
+| Local corpus 2, dev | 39 | 0.7713 | 0.6375 | 0.8148 | 0.9462 | 0.1515 | 13/13 / 5/5 / 1/10 | 11/11 | 3.89 |
+| Organizer scans | 30 | 0.9203 | 0.7315 | 1.0000 | 1.0000 | 0.1944 | 10/10 / 10/10 / 2/10 | n/a | 16.44 |
 
-[Appeal development measurements](evals/results/appeal-scan-development.json) · [Grant development measurements](evals/results/poa-development.json) · [Organizer scan aggregate](evals/results/organizer-scans.json)
+[Merged development measurements](evals/results/appeal-scan-development.json) · [Earlier grant development measurements](evals/results/poa-development.json) · [Organizer scan aggregate](evals/results/organizer-scans.json)
 
 ## Next
 
@@ -90,3 +90,4 @@ These runs used local rules with the three endpoint variables unset. The two loc
 - 21.11.2026: the appeal-scan branch recovers first-act dates, role and counsel blocks, and procurement fields using OCR provenance and first-page word boxes. All ten public appeal references matched exactly in development.
 - 21.11.2026 · Codex · Recovered officers, multiple appointments and register digits on scanned grants, and named signers from embedded certificates on real grants. All 10 organizer grants matched exactly in rules-only mode.
 - 21.11.2026 · Codex · Merged main at `5297660` into the appeal scan branch and combined cover-page OCR evidence with scanned grant and certificate extraction.
+- 21.11.2026 · Codex · Verified merge `6f55ef6` against main: all 196 training outputs matched byte for byte. Organizer scan micro F1 rose from 0.6852 to 0.9203. Refreshed both real development cohorts.

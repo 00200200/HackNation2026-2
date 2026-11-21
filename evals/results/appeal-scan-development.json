@@ -2,10 +2,10 @@
   "all": {
     "scope": "corpus 1 all",
     "measurement": {
-      "commit": "36a03c8b3155b60c49fc31ee066127f1d1bb0904",
+      "commit": "6f55ef6039674c0df9331fb2d6e4635861190e63",
       "dirty": false,
       "mode": "corpus",
-      "timestamp": "2026-11-21T20:00:15+00:00",
+      "timestamp": "2026-11-21T21:14:38+00:00",
       "n_cases": 21,
       "n_docs": 39,
       "coverage_ok": false,
@@ -13,7 +13,7 @@
       "run_error": null,
       "metrics": {
         "micro_f1": {
-          "value": 0.6674641148325359,
+          "value": 0.7103694874851013,
           "target": 0.9,
           "pass": false
         },
@@ -33,30 +33,30 @@
           "pass": false
         },
         "seconds_per_doc": {
-          "value": 3.63218783120362,
+          "value": 8.454132401718734,
           "target": null,
           "pass": true
         }
       },
       "detail": {
-        "micro_f1": 0.6674641148325359,
-        "macro_f1_documents": 0.5603450300929292,
-        "macro_f1_classes": 0.5862488129154796,
+        "micro_f1": 0.7103694874851013,
+        "macro_f1_documents": 0.6425231286050613,
+        "macro_f1_classes": 0.6950242550242551,
         "macro_f1_class_count": 3,
-        "macro_f1_fields": 0.6535093764260431,
-        "micro_f1_non_null": 0.6193078324225865,
+        "macro_f1_fields": 0.7280564932525717,
+        "micro_f1_non_null": 0.6787658802177858,
         "per_class_f1": {
           "odwolanie": 0.7046153846153846,
-          "pelnomocnictwo": 0.5925925925925926,
+          "pelnomocnictwo": 0.918918918918919,
           "przelew": 0.46153846153846156
         },
         "classification_accuracy": 0.7857142857142857,
         "negatives_empty": 1.0,
         "outputs_complete": 1.0,
         "counts": {
-          "tp": 279,
-          "fp": 69,
-          "fn": 209
+          "tp": 298,
+          "fp": 53,
+          "fn": 190
         },
         "routing_by_class": {
           "odwolanie": {
@@ -82,6 +82,7 @@
       "split": "all"
     },
     "exact_documents_by_class": {
+      "pelnomocnictwo": 1,
       "negatywny": 11,
       "odwolanie": 3
     }
@@ -89,10 +90,10 @@
   "dev": {
     "scope": "corpus 2 dev",
     "measurement": {
-      "commit": "36a03c8b3155b60c49fc31ee066127f1d1bb0904",
+      "commit": "6f55ef6039674c0df9331fb2d6e4635861190e63",
       "dirty": false,
       "mode": "corpus",
-      "timestamp": "2026-11-21T20:00:02+00:00",
+      "timestamp": "2026-11-21T21:17:21+00:00",
       "n_cases": 14,
       "n_docs": 39,
       "coverage_ok": false,
@@ -100,7 +101,7 @@
       "run_error": null,
       "metrics": {
         "micro_f1": {
-          "value": 0.7035460992907802,
+          "value": 0.7713498622589532,
           "target": 0.9,
           "pass": false
         },
@@ -115,35 +116,35 @@
           "pass": true
         },
         "classification_accuracy": {
-          "value": 0.6428571428571429,
+          "value": 0.6785714285714286,
           "target": 1.0,
           "pass": false
         },
         "seconds_per_doc": {
-          "value": 3.312592471149774,
+          "value": 3.888134497874536,
           "target": null,
           "pass": true
         }
       },
       "detail": {
-        "micro_f1": 0.7035460992907802,
-        "macro_f1_documents": 0.45969625612482756,
-        "macro_f1_classes": 0.4332210998877665,
+        "micro_f1": 0.7713498622589532,
+        "macro_f1_documents": 0.5748889998889999,
+        "macro_f1_classes": 0.6375221751565837,
         "macro_f1_class_count": 3,
-        "macro_f1_fields": 0.5954899421566089,
-        "micro_f1_non_null": 0.5598194130925508,
+        "macro_f1_fields": 0.7339018389018389,
+        "micro_f1_non_null": 0.6520787746170679,
         "per_class_f1": {
           "odwolanie": 0.8148148148148148,
-          "pelnomocnictwo": 0.3333333333333333,
+          "pelnomocnictwo": 0.946236559139785,
           "przelew": 0.15151515151515152
         },
-        "classification_accuracy": 0.6428571428571429,
+        "classification_accuracy": 0.6785714285714286,
         "negatives_empty": 1.0,
         "outputs_complete": 1.0,
         "counts": {
-          "tp": 248,
-          "fp": 63,
-          "fn": 146
+          "tp": 280,
+          "fp": 52,
+          "fn": 114
         },
         "routing_by_class": {
           "odwolanie": {
@@ -151,7 +152,7 @@
             "total": 13
           },
           "pelnomocnictwo": {
-            "correct": 4,
+            "correct": 5,
             "total": 5
           },
           "przelew": {
@@ -170,7 +171,8 @@
     },
     "exact_documents_by_class": {
       "odwolanie": 2,
-      "negatywny": 11
+      "negatywny": 11,
+      "pelnomocnictwo": 3
     }
   }
 }

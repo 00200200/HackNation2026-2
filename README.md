@@ -239,11 +239,13 @@ These runs used local rules with the three endpoint variables unset. The two loc
 
 | Dataset | PDFs | Micro F1 | Macro F1 by class | Appeal | Power of attorney | Transfer | Correct routes (appeal / power / transfer) | Empty negatives | Wall s/PDF |
 |---|---:|---:|---:|---:|---:|---:|---|---:|---:|
-| Local corpus 1, all | 39 | 0.6307 | 0.6607 | 0.6016 | 0.9189 | 0.4615 | 12/13 / 6/6 / 4/9 | 11/11 | 7.39 |
-| Local corpus 2, dev | 39 | 0.6045 | 0.5662 | 0.6008 | 0.9462 | 0.1515 | 12/13 / 5/5 / 1/10 | 11/11 | 6.33 |
-| Organizer scans | 30 | 0.6852 | 0.6023 | 0.6123 | 1.0000 | 0.1944 | 9/10 / 10/10 / 2/10 | n/a | 10.05 |
+| Local corpus 1, all | 39 | 0.7104 | 0.6950 | 0.7046 | 0.9189 | 0.4615 | 12/13 / 6/6 / 4/9 | 11/11 | 8.45 |
+| Local corpus 2, dev | 39 | 0.7713 | 0.6375 | 0.8148 | 0.9462 | 0.1515 | 13/13 / 5/5 / 1/10 | 11/11 | 3.89 |
+| Organizer scans | 30 | 0.9203 | 0.7315 | 1.0000 | 1.0000 | 0.1944 | 10/10 / 10/10 / 2/10 | n/a | 16.44 |
 
-Micro F1 pools field matches across documents. Macro F1 averages the three class scores. The routing columns count correctly classified documents in each target class. The negatives column counts zero-byte outputs. Timing includes OCR and extraction on a shared host. [Appeal development measurements](evals/results/appeal-scan-development.json) · [Grant development measurements](evals/results/poa-development.json) · [Organizer scan report](evals/results/organizer-scans.json)
+Micro F1 pools field matches across documents. Macro F1 averages the three class scores. The routing columns count correctly classified documents in each target class. The negatives column counts zero-byte outputs. Timing includes OCR and extraction on a shared host. [Merged development measurements](evals/results/appeal-scan-development.json) · [Earlier grant development measurements](evals/results/poa-development.json) · [Organizer scan report](evals/results/organizer-scans.json)
+
+The earlier model-engine experiment compared two profiles on the 17-document corpus 1 holdout. [Model results](evals/results/llm-real-docs.json)
 
 The organizer allows 45 minutes for its 150-PDF batch, an average budget of 18 seconds per PDF.
 The reported times cover these local datasets. OCR runs locally. Under the updated rules, a remote
