@@ -301,13 +301,14 @@ def read_pages(
     force_ocr: bool = False,
     *,
     word_boxes: list[WordBox] | None = None,
-    native_word_boxes: bool = True,
     engine: str | None = None,
     ocr_pages: list[int] | None = None,
+    ocr_word_boxes: list[WordBox] | None = None,
 ) -> list[str]:
     """Return the first pages and their optional boxes/OCR provenance. Check readability document-wide."""
     pages = []
-    words = [] if word_boxes is not None else None
+    words = [] if word_boxes is not None or ocr_word_boxes is not None else None
+    scanned_numbers = set()
     used_ocr = False
     readable = False
     word_count = 0
@@ -339,8 +340,10 @@ def read_pages(
             scanned = text is None
             if scanned:
                 used_ocr = True
-                if include and ocr_pages is not None:
-                    ocr_pages.append(page.page_number)
+                if include:
+                    scanned_numbers.add(number)
+                    if ocr_pages is not None:
+                        ocr_pages.append(number)
                 if number in jobs:
                     future, page_boxes = jobs[number]
                     text = future.result()
@@ -349,7 +352,7 @@ def read_pages(
                 else:
                     text = recognize(page, words if include else None)
                 text = normalize_ocr(text)
-            elif include and words is not None and native_word_boxes:
+            elif include and word_boxes is not None:
                 words.extend(
                     WordBox(page.page_number, w["text"], w["x0"], w["top"], w["x1"], w["bottom"])
                     for w in page.extract_words()
@@ -364,6 +367,8 @@ def read_pages(
             raise NoReadableTextError("no readable text after OCR")
     if word_boxes is not None and words:
         word_boxes.extend(words)
+    if ocr_word_boxes is not None and ocr_word_boxes is not word_boxes and words:
+        ocr_word_boxes.extend(box for box in words if box.page in scanned_numbers)
     return pages
 
 

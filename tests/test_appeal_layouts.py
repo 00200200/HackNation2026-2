@@ -72,7 +72,7 @@ def test_two_columns_use_printed_rows_for_detached_labels(monkeypatch):
     def read(path, **options):
         reads.append(path)
         options.get("ocr_pages", []).append(1)
-        if (out := options.get("word_boxes")) is not None:
+        if (out := options.get("ocr_word_boxes", options.get("word_boxes"))) is not None:
             out.extend(boxes)
         return ["Zamawiający:\nOdwołujący:\nFabryka Tęczy\nPort Mgły\nODWOŁANIE"]
 

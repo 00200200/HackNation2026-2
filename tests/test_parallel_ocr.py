@@ -69,9 +69,7 @@ def test_ordered_ocr_provenance_and_mixed_page_read(tmp_path, monkeypatch, failu
     provenance, boxes = [], []
 
     def read():
-        return pdf_text.read_pages(
-            path, engine="tesseract-dpi", ocr_pages=provenance, word_boxes=boxes, native_word_boxes=False
-        )
+        return pdf_text.read_pages(path, engine="tesseract-dpi", ocr_pages=provenance, ocr_word_boxes=boxes)
 
     if failure:
         with pytest.raises(RuntimeError, match=f"{failure} failed"):

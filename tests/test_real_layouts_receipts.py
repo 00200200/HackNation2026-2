@@ -217,12 +217,12 @@ def test_parallel_party_and_payment_columns_keep_each_fields_values(monkeypatch)
 
     reads = []
 
-    def read(path, *, word_boxes=None, ocr_pages=None, **kwargs):
+    def read(path, *, ocr_word_boxes=None, ocr_pages=None, **kwargs):
         reads.append(path)
         if ocr_pages is not None:
             ocr_pages.append(1)
-        if word_boxes is not None:
-            word_boxes.extend(WordBox(1, t, x, y, x + 12, y + 7) for x, y, t in cells)
+        if ocr_word_boxes is not None:
+            ocr_word_boxes.extend(WordBox(1, t, x, y, x + 12, y + 7) for x, y, t in cells)
         return ["\n".join(t for x, y, t in cells)]
 
     monkeypatch.setattr(pipeline, "read_pages", read)
@@ -252,3 +252,20 @@ def test_second_read_propagates_a_recognition_timeout(monkeypatch):
     monkeypatch.setattr(pipeline, "read_pages", read)
     with pytest.raises(pipeline.OCRRecognitionError, match="timed out"):
         pipeline.process_pdf("invented.pdf")
+
+
+def test_annex_tilt_does_not_affect_first_page_receipt_cells():
+    from kio2json.pdf_text import WordBox
+    from kio2json.receipt_layout import receipt_cell_fields
+
+    def box(page, text, x, y):
+        return WordBox(page, text, x, y, x + 40, y + 8)
+
+    receipt = [
+        box(1, "Kwota", 12, 20),
+        box(1, "45,20 PLN", 280, 20),
+        box(1, "Tytuł", 12, 48),
+        box(1, "Zakup blachy", 280, 48),
+    ]
+    annex = [box(2, "słowo", 42 * col, 28 * row + 2.9 * col) for row in range(3) for col in range(10)]
+    assert receipt_cell_fields(receipt + annex, ocr=True) == {"Kwota": "45,20 PLN", "Tytuł": "Zakup blachy"}

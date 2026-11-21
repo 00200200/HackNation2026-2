@@ -12,11 +12,12 @@ from .appeal_layout import restore_party_columns
 from .class_config import DocumentClass, load_classes, route
 from .classify import incomplete_booking_scan
 from .engines import extract
+from .grant_certificates import add_certificate_signers
 from .model_pages import AlternateOCR
 from .ocr_accounts import AccountEvidence, account_evidence, normalize_receipt
+from .ocr_grant_register import verified_pages
 from .pdf_text import (
     DEFAULT_OCR_ENGINE,
-    TESSERACT_ENGINES,
     NoReadableTextError,
     OCRRecognitionError,
     WordBox,
@@ -126,14 +127,10 @@ def process_pdf(
     definitions = classes if classes is not None else load_classes()
 
     @cache
-    def read(engine: str) -> tuple[list[str], list[int], list[WordBox] | None]:
+    def read(engine: str) -> tuple[list[str], list[int], list[WordBox]]:
         scanned = []
-        # Tesseract already iterates word boxes to check e-mail. RapidOCR's
-        # word-box mode changes its recognition request, so keep that lazy.
-        boxes = [] if engine in TESSERACT_ENGINES else None
-        pages = read_pages(
-            pdf_path, force_ocr=force_ocr, engine=engine, ocr_pages=scanned, word_boxes=boxes, native_word_boxes=False
-        )
+        boxes = []
+        pages = read_pages(pdf_path, force_ocr=force_ocr, engine=engine, ocr_pages=scanned, ocr_word_boxes=boxes)
         return pages, scanned, boxes
 
     try:
@@ -158,7 +155,7 @@ def process_pdf(
 def _process(
     pdf_path: Path,
     definitions: list[DocumentClass],
-    read: Callable[[str], tuple[list[str], list[int], list[WordBox] | None]],
+    read: Callable[[str], tuple[list[str], list[int], list[WordBox]]],
     force_ocr: bool,
 ) -> tuple[str | None, dict]:
     selected = os.getenv("KIO_OCR_ENGINE", DEFAULT_OCR_ENGINE)
@@ -208,7 +205,8 @@ def _process(
                 if definition.extractor is bank_transfer.extract:
                     ocr_python = partial(ocr_extract.extract_bank_transfer, pages, ocr_pages, accounts=accounts)
                 elif definition.extractor is power_of_attorney.extract:
-                    ocr_python = partial(ocr_extract.extract_power_of_attorney, pages, ocr_pages)
+                    grant_pages = verified_pages(pdf_path, pages, boxes) if not definition.profile.keyed else pages
+                    ocr_python = partial(ocr_extract.extract_power_of_attorney, grant_pages, ocr_pages)
                 elif definition.extractor is appeal.extract:
                     ocr_python = partial(ocr_extract.extract_appeal, pages, ocr_pages)
             record = extract(
@@ -228,6 +226,8 @@ def _process(
                 title = reread_title(pdf_path, boxes, fields["tytul"])
                 if title is not None:
                     fields["tytul"] = title
+            if definition.extractor is power_of_attorney.extract and not definition.profile.keyed:
+                add_certificate_signers(pdf_path, record, join_pages(pages))
             return definition.id, record
         if not ocr_pages:
             break
