@@ -8,7 +8,7 @@ from rapidfuzz.distance import Levenshtein
 from . import power_of_attorney
 from .common import ATTORNEY_RE, DATE, PERSON, UPPER, squash
 from .grant_certificates import NON_ISSUER_SIGNATURE
-from .ocr_budget import remaining_ms
+from .ocr_budget import REREAD_PAGE_TIMEOUT_SECONDS, remaining_ms
 from .pdf_text import WordBox
 from .personal_names import nominative
 from .power_of_attorney import GRANT, GRANTOR
@@ -288,7 +288,7 @@ def recover_board_stamp(path: Path, record: dict, page: str) -> None:
     closing = next((i for i in reversed(range(len(lines))) if SCOPE_END.search(lines[i])), None)
     if closing is None or STAMP_END.search("\n".join(lines[closing + 1 :])):
         return
-    timeout = remaining_ms(35_000)
+    timeout = remaining_ms(1000 * REREAD_PAGE_TIMEOUT_SECONDS)
     if not timeout:
         return
     try:

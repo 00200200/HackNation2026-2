@@ -159,17 +159,23 @@ def _document_rules(definition, pdf_path, pages, ocr_pages, boxes, engine, selec
     return definition.extractor(join_pages(pages))
 
 
-@document_budget()
 def process_pdf(
     pdf_path: Path,
     force_ocr: bool = False,
     *,
     classes: list[DocumentClass] | None = None,
     on_recovery: Callable[[str], None] | None = None,
+    batch_deadline: float | None = None,
 ) -> tuple[str | None, dict]:
     """Return the class and JSON, using local recovery for a failed keyed organizer document."""
-    definitions = classes if classes is not None else load_classes()
+    with document_budget(batch_deadline):
+        definitions = classes if classes is not None else load_classes()
+        return _process_with_recovery(pdf_path, definitions, force_ocr, on_recovery)
 
+
+def _process_with_recovery(
+    pdf_path: Path, definitions: list[DocumentClass], force_ocr: bool, on_recovery: Callable[[str], None] | None
+) -> tuple[str | None, dict]:
     page_sizes = {}
 
     @cache
