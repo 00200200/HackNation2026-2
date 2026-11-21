@@ -33,12 +33,18 @@ class Endpoint(BaseSettings):
     model: str
     api_key: SecretStr
     output: Literal["json", "schema"] = "json"
-    timeout_seconds: int = Field(default=180, ge=1, le=600)
+    timeout_seconds: int | None = Field(default=None, ge=1, le=600)
+
+    @property
+    def pro_reasoning(self) -> bool:
+        return urlsplit(self.base_url).hostname == "api.deepseek.com" and self.model == "deepseek-v4-pro"
 
     def chat_model(self):
         if urlsplit(self.base_url).hostname == "api.deepseek.com":
             provider = DeepSeekProvider(base_url=self.base_url, api_key=self.api_key.get_secret_value())
-            return OpenAIChatModel(self.model, provider=provider, settings={"thinking": False})
+            return OpenAIChatModel(
+                self.model, provider=provider, settings=None if self.pro_reasoning else {"thinking": False}
+            )
         provider = OpenAICompatibleProvider(
             "kio",
             base_url=self.base_url,
@@ -106,9 +112,19 @@ def bounded_text(text: str) -> str:
 def structured(output_type, instructions: str, text: str, *, max_tokens: int, model=None):
     try:
         timeout = 180
+        settings = {"max_retries": 0, "max_tokens": max_tokens, "temperature": 0}
         if model is None:
             endpoint = Endpoint()
-            timeout = endpoint.timeout_seconds
+            if endpoint.pro_reasoning:
+                routing = output_type is RouteDecision
+                settings = {
+                    "max_retries": 0,
+                    "max_tokens": 24576 if routing else 32768,
+                    "thinking": "low" if routing else "high",
+                    "extra_body": {"thinking": {"type": "enabled"}},
+                }
+                timeout = 480
+            timeout = endpoint.timeout_seconds or timeout
             model = endpoint.chat_model()
             output_format = NativeOutput if endpoint.output == "schema" else PromptedOutput
             output_type = output_format(
@@ -119,7 +135,7 @@ def structured(output_type, instructions: str, text: str, *, max_tokens: int, mo
             output_type=output_type,
             instructions=instructions,
             retries=1,
-            model_settings={"max_retries": 0, "max_tokens": max_tokens, "temperature": 0},
+            model_settings=settings,
         )
         return agent.run_sync(text, timeout=timeout).output
     except Exception as error:  # noqa: BLE001 - provider messages can expose credentials and document text

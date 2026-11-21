@@ -169,11 +169,13 @@ second reading by RapidOCR. Rules continue to use their primary page text and OC
 The 16,384-byte excerpt budget is shared between readings. Each citation is checked against a
 single displayed source. Set `KIO_LLM_DUAL_OCR=false` to measure one reading. Native pages
 do not trigger alternate OCR. Use a model context large enough for the excerpt, schema and up
-to 1,800 generated tokens. The class’s field definitions accompany the excerpt. Pydantic AI requests
+to 1,800 generated tokens for a non-reasoning response. The class’s field definitions accompany the excerpt. Pydantic AI requests
 a JSON object, validates it against the cited schema and permits one correction within a
 180-second call deadline. `KIO_LLM_TIMEOUT_SECONDS` accepts 1–600 seconds. Endpoints
 with native JSON schema constraints can use `KIO_LLM_OUTPUT=schema`; the default is `json`.
-Transport retries are disabled. A failed document produces an empty
+The measured DeepSeek Pro development profile enables low reasoning for routing (24,576 total
+completion tokens) and high reasoning for extraction (32,768). Its default deadline is 480
+seconds. These larger limits include reasoning tokens. Transport retries are disabled. A failed document produces an empty
 file and an error on stderr. The CLI finishes the batch with exit status 1.
 
 Each accepted value needs a citation in the displayed text. If a model flattens line breaks,

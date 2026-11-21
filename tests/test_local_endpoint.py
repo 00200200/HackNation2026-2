@@ -29,3 +29,37 @@ def test_hidden_repeat_cannot_establish_role_or_complete_clipped_token():
 
     field = OutputField(type="string", instruction="Complete reference")
     assert grounded(field, {"value": "ABC", "quote": "ABC"}, "Reference ABCD\nABC", "Reference ABC") is None
+
+
+def test_reasoning_budget_depends_on_explicit_provider_model_and_task(monkeypatch):
+    from types import SimpleNamespace
+    from pydantic import BaseModel
+    from kio2json import llm
+
+    class Record(BaseModel):
+        name: str
+
+    captured = []
+
+    class CaptureAgent:
+        def __init__(self, model, **options):
+            self.settings = options["model_settings"]
+
+        def run_sync(self, text, timeout):
+            captured.append((self.settings, timeout))
+            return SimpleNamespace(output=None)
+
+    monkeypatch.setattr(llm, "Agent", CaptureAgent)
+    monkeypatch.setenv("KIO_LLM_BASE_URL", "https://api.deepseek.com")
+    monkeypatch.setenv("KIO_LLM_MODEL", "deepseek-v4-pro")
+    monkeypatch.setenv("KIO_LLM_API_KEY", "invented")
+    monkeypatch.delenv("KIO_LLM_TIMEOUT_SECONDS", raising=False)
+    llm.structured(llm.RouteDecision, "test", "test", max_tokens=32)
+    llm.structured(Record, "test", "test", max_tokens=1800)
+    monkeypatch.setenv("KIO_LLM_BASE_URL", "http://127.0.0.1:8089/v1")
+    llm.structured(Record, "test", "test", max_tokens=1800)
+    assert [(s.get("thinking"), s["max_tokens"], t) for s, t in captured] == [
+        ("low", 24576, 480),
+        ("high", 32768, 480),
+        (None, 1800, 180),
+    ]
