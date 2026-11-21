@@ -36,6 +36,8 @@ def process_pdf(
         readable = True
         definition, accounts = route_with_evidence(pages, definitions)
         if definition is not None:
+            if accounts is not None and 1 in ocr_pages:
+                accounts = accounts.checked_ocr_numbers()
             return definition.id, extract(definition, join_pages(pages), accounts=accounts)
         if not ocr_pages:
             break  # A second engine would read the same native text.

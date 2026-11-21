@@ -69,3 +69,29 @@ def test_registry_court_is_not_a_change_of_party():
 prowadzonego przez Sąd Rejonowy, Wydział Gospodarczy
 Krajowego Rejestru Sądowego pod numerem KRŚ: 0000998123, udziela pełnomocnictwa."""
     assert extract(text)["mocodawca"][0]["data"]["krs"] == "0000998123"
+
+
+def test_digital_stamps_bind_to_the_named_grantor_and_stop_at_a_foreign_block():
+    text = """Warsztat Miedziany sp. z o.o. i Latarnia S.A. udzielają pełnomocnictwa.
+Za Latarnia S.A.
+Podpisano elektronicznie przez: Mira Wietrzna
+Za Warsztat Miedziany sp. z o.o.
+Podpisano elektronicznie przez:
+Wit Szklany
+Osoba do kontaktu:
+Podpisano elektronicznie przez: Ola Ognista"""
+    result = extract(text)
+    assert [p["podpisujacy"] for p in result["mocodawca"]] == [
+        [{"imie_nazwisko": "Wit Szklany"}],
+        [{"imie_nazwisko": "Mira Wietrzna"}],
+    ]
+
+
+def test_officers_of_one_principal_share_the_signature_list():
+    text = """My niżej podpisani:
+1) Mira Wietrzna – prezes zarządu Latarnia S.A., KRS 0000998123
+2) Wit Szklany – prokurent Latarnia S.A.
+udzielamy pełnomocnictwa."""
+    (principal,) = extract(text)["mocodawca"]
+    assert principal["data"]["krs"] == "0000998123"
+    assert principal["podpisujacy"] == [{"imie_nazwisko": "Mira Wietrzna"}, {"imie_nazwisko": "Wit Szklany"}]

@@ -108,3 +108,20 @@ def test_booking_form_with_pending_state_is_rejected():
 def test_operation_date_precedes_booking_date_even_when_printed_second():
     text = RECEIPT.replace("Data księgowania 16.08.2024", "Data księgowania 16.08.2024\nData operacji 15.08.2024")
     assert bank_transfer.extract(text)["przelew_bankowy"]["data_operacji"] == "2024-08-15"
+
+
+def test_ocr_repairs_a_unique_digit_in_an_ordinary_confirmation(monkeypatch):
+    from kio2json import pipeline
+
+    def read(path, *, ocr_pages, **kwargs):
+        ocr_pages.append(1)
+        return [
+            (
+                "Potwierdzenie przelewu\nRachunek nadawcy: 56458700991234567801234567\n"
+                "Rachunek odbiorcy: 76351200009981234567890123\nKwota: 42,08\nData operacji: 04.03.2025"
+            )
+        ]
+
+    monkeypatch.setattr(pipeline, "read_pages", read)
+    _, data = pipeline.process_pdf("invented.pdf")
+    assert data["przelew_bankowy"]["na_rachunek"] == "78351200009981234567890123"

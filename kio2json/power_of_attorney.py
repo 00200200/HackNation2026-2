@@ -342,53 +342,72 @@ STAMP = re.compile(r"(?i)^(?:podpis(?:ano|any|ana) (?:elektronicznie )?przez|sig
 FOOTER = re.compile(r"(?i)(?:^tel[.:]|^https?://|\bul\.\s|\b(?:NIP|REGON)\s*[:\d]|\w@\w)")
 
 
-def _stamp_signers(text: str, principal: str, attorneys: set[str]) -> list[str | None]:
-    names = []
-    lines = text.splitlines()
-    core = re.sub(LEGAL_FORM + r"$", "", principal).strip().casefold()
+def _add_stamp_signers(text: str, principals: list[str], attorneys: set[str], signers: list[list]) -> None:
+    single = 0 if len(principals) == 1 else None
+    owner = single
     headed = False
+    cores = [re.sub(LEGAL_FORM + r"$", "", name).strip().casefold() for name in principals]
+    lines = text.splitlines()
     for i, raw in enumerate(lines):
         line = raw.strip(" |")
         if re.match(r"(?i)^pełnomocnictwo przyjmuję", line):
             break
-        if FOOTER.search(line):
-            headed = False
-        if re.match(r"(?i)^(?:za|w imieniu) ", line):
-            headed = bool(core and re.match(rf"(?i)^(?:za|w imieniu) {re.escape(core)}(?:\s|$)", line))
+        if SIGNATURE_HEADING.fullmatch(line):
+            owner, headed = single, True
+            continue
+        if NAMED_SIGNATURE.match(line):
+            name = NAMED_SIGNATURE.sub("", line).strip(" :")
+            core = re.sub(LEGAL_FORM + r"$", "", name).strip().casefold()
+            owner = cores.index(core) if cores.count(core) == 1 else None
+            headed = owner is not None
+            continue
         if re.fullmatch(r"(?i)podpis(?: mocodawcy)?\s*:\s*\[?nieczytelny\]?", line):
-            names.append(None)
+            if owner is not None:
+                signers[owner].append(None)
+            continue
         marker = STAMP.match(line)
-        if not marker and not (headed and SIGNER_ROLE_RE.fullmatch(line)):
+        if not marker and (FOOTER.search(line) or OTHER_ROLE.match(line)):
+            owner, headed = None, False
+        if owner is None or not (marker or (headed and SIGNER_ROLE_RE.fullmatch(line))):
             continue
         following = ([line[marker.end() :]] if marker else []) + lines[i + 1 : i + 4]
         for candidate in following:
             candidate = candidate.strip(" |")
-            if FOOTER.search(candidate) or STAMP.match(candidate) or SIGNER_ROLE_RE.fullmatch(candidate):
+            if (
+                FOOTER.search(candidate)
+                or OTHER_ROLE.match(candidate)
+                or STAMP.match(candidate)
+                or SIGNER_ROLE_RE.fullmatch(candidate)
+            ):
                 break
             if re.fullmatch(PERSON, candidate):
-                if candidate not in attorneys and candidate not in names:
-                    names.append(candidate)
+                if candidate not in attorneys and candidate not in signers[owner]:
+                    signers[owner].append(candidate)
                 break
-    return names
 
 
 def extract(text: str) -> dict:
     officers = _declared_officers(text)
-    principals = [p for p, _ in officers] if officers else _principals(text)
+    issuers = {}
+    for data, _ in officers:
+        issuer = issuers.setdefault(data["nazwa"], data.copy())
+        for key in ("krs", "nip"):
+            if issuer[key] is None:
+                issuer[key] = data[key]
+    principals = list(issuers.values()) if officers else _principals(text)
     attorneys = _attorneys(text)
     attorney_names = {a["imie_nazwisko"] for a in attorneys}
-    signers = _signers(text, [p["nazwa"] for p in principals], attorney_names)
-    if officers:
-        for (_, name), people in zip(officers, signers):
-            if name not in people:
-                people.append(name)
-    elif len(principals) == 1:
+    principal_names = [p["nazwa"] for p in principals]
+    signers = _signers(text, principal_names, attorney_names)
+    for principal, name in officers:
+        people = signers[principal_names.index(principal["nazwa"])]
+        if name not in people:
+            people.append(name)
+    if len(principals) == 1:
         principal = principals[0]
         if principal["typ"] == "osoba_prawna" and principal["nip"] is None:
             _issuer_identifiers(text, principal)
-        for name in _stamp_signers(text, principal["nazwa"], attorney_names):
-            if name is None or name not in signers[0]:
-                signers[0].append(name)
+    _add_stamp_signers(text, principal_names, attorney_names, signers)
     return {
         "mocodawca": [
             {"data": principal, "podpisujacy": [{"imie_nazwisko": name} for name in names]}

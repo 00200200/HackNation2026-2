@@ -82,6 +82,14 @@ class AccountEvidence:
     distinct_numbers: int
     masked_pair: bool
 
+    def checked_ocr_numbers(self) -> "AccountEvidence":
+        return AccountEvidence(
+            validated_account(self.sender) if self.sender else None,
+            validated_account(self.recipient) if self.recipient else None,
+            self.distinct_numbers,
+            self.masked_pair,
+        )
+
 
 def account_evidence(text: str) -> AccountEvidence:
     """Bind complete numbers or masks to their printed field or ordered table column."""
