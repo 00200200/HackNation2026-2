@@ -26,12 +26,16 @@ Shared state of the project. Rules: `CLAUDE.md` → Worklog.
 
 ## Last eval
 
-21.11.2026, full clean run at `c2bf060`, pip-installed OCR (`evals/results/latest.json`): `micro_f1` 1.000, cases 51-60 1.000,
+21.11.2026, full clean run at `ee3c8ca`, pip-installed OCR (`evals/results/latest.json`): `micro_f1` 1.000, cases 51-60 1.000,
 `classification_accuracy` 1.000, `negatives_empty` 1.000. Training data (synthetic). The rules were written with
 sight of these documents, cases 53-60 included, so this is a regression check and the 51-60 figure is not an
 unseen-case estimate for this baseline.
 
-The merged forced-OCR field report scored 0.897 on 196 synthetic PDFs. Strict F1 on 17 real dev scans was
+On the appeal-layout branch, whole-dev micro F1 rose from 0.3864 to 0.7237 and appeal field F1 rose from
+0.4128 to 0.8166. All seven dev appeals routed correctly in both runs. The single held-out run scored
+0.4186 micro F1 and 0.3123 macro F1 by class across 17 PDFs. Its aggregate is in `evals/results/corpus-latest.json`.
+
+Earlier OCR measurements at `c2bf060` follow. The merged forced-OCR field report scored 0.897 on 196 synthetic PDFs. Strict F1 on 17 real dev scans was
 0.331 with Tesseract and 0.419 with RapidOCR v6. Natural dev F1 on 20 PDFs was 0.3864 and 0.4588, respectively.
 21.11.2026, local real corpus. The all-corpus row comes from `00626a5`. The dev and test scores below
 were first measured at `79eef2a` after the baseline merge. Those figures describe the earlier system-Tesseract baseline.
@@ -88,4 +92,4 @@ Both splits missed the team’s micro F1 and classification targets. Compared wi
 - 21.11.2026 · Codex · merged the config-driven extraction baseline (`4b1cc42`) into the evaluation branch for the final training and corpus checks.
 - 21.11.2026 · Codex · added training checks for empty or mislabelled positive references. The negative output check now distinguishes a zero-byte prediction from an empty JSON object.
 - 21.11.2026 · Codex · Added the local PDF viewer and start scripts for #11 in `d1c9749`. Browser uploads and ZIP downloads matched the CLI for all three document classes, a scanned appeal and an unrelated PDF.
-- 21.11.2026 · Codex · Recovered appeal parties from detached labels and joint lists, scoped counsel to the appellant, and extracted procurement and first-charge facts from prose.
+- 21.11.2026 · Codex · Recovered appeal parties from detached labels and joint lists, scoped counsel to the appellant, and extracted procurement and first-charge facts from prose. Product `ee3c8ca`.
