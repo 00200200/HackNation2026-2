@@ -78,7 +78,7 @@ Two and four grant JSONs matched exactly. The ten organizer grants remained exac
 ## Log
 
 - 22.11.2026 · Claude · #39: scanned-appeal party names and lawyer fields become null on stray scanner symbols, a low letter ratio or capitals noise after a lawyer's title; a capitals-noise tail after a legal form is cut unless it names another consortium member; titles are checked for stray symbols only. On the organizer template scan the appellant and law firm names are now null and the authority name ends at its legal form (checked by a direct CLI run; the template is not in the eval). Organizer scans 0.9974 → 0.9974, full training 1.000 → 1.000 (holdout 1.000), both against `4d91600`; the private dev corpora are not on this machine and were not measured · b2121b5
-- 22.11.2026 · Claude · #39 handoff: branch `fix/ocr-plausibility` (local, unpushed). Done: gate, tests, both rounds of judge P2 fixes; organizer scans 0.9974, full training 1.000, holdout 1.000, quick 1.000 (main `4d91600` the same); private dev corpora not measured (corpora not on this machine). Left: judge verdict on `c4b3d94`, stamp `judge-pass`, push, PR to main referencing #39 that asks the corpus owner for a real-corpus check before merge.
+- 22.11.2026 · Claude · #39: judge PASS on `c4b3d94` after two rounds of P2 fixes; pushed `fix/ocr-plausibility` with a PR to main. Left: a real-corpus check by the corpus owner before merge (dev corpora not on this machine).
 - 21.11.2026 · Codex · Added native span output for small models, local source validation and a bounded parallel CLI. Verified the native schema on the quantized local model and both regional API releases.
 
 - 21.11.2026 · Claude · brief, eval harness, judge/eval skills, pre-push hook · f6db304
