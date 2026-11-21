@@ -68,10 +68,13 @@ def _read_and_delete(path: Path) -> Result:
         path.unlink(missing_ok=True)
 
 
-async def _read(content: bytes) -> Result:
+async def _read(content: bytes, deadline: float) -> Result:
+    try:
+        await asyncio.wait_for(_slot.acquire(), max(0.0, deadline - time.monotonic()))
+    except TimeoutError:
+        return Result(None, "", "Nie zmieścił się w limicie czasu tego żądania. Wyślij go osobno.")
     with tempfile.NamedTemporaryFile(suffix=".pdf", delete=False) as handle:
         handle.write(content)
-    await _slot.acquire()
     job = asyncio.get_running_loop().run_in_executor(_pool, _read_and_delete, Path(handle.name))
     job.add_done_callback(lambda _: _slot.release())
     try:
@@ -103,10 +106,8 @@ async def extract(files: list[UploadFile]) -> ExtractResponse:
                 item.error = f"Plik większy niż {MAX_FILE_MB} MB."
             elif content.lstrip()[:5] != b"%PDF-":
                 item.error = "To nie jest plik PDF."
-            elif time.monotonic() > deadline:
-                item.error = "Nie zmieścił się w limicie czasu tego żądania. Wyślij go osobno."
             else:
-                result = await _read(content)
+                result = await _read(content, deadline)
                 item.class_id, item.error = result.label, result.error
                 item.data = json.loads(result.text) if result.text else ({} if result.error is None else None)
             results.append(item)

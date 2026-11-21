@@ -95,9 +95,8 @@ async function extract(items) {
 async function handleFiles(fileList) {
   const files = [...fileList];
   const pdfs = files.filter((f) => (f.type === "application/pdf" || /\.pdf$/i.test(f.name)) && f.size <= MAX_MB * 1048576);
-  const room = Math.max(0, MAX_FILES - state.items.length);
-  const overflow = Math.max(0, pdfs.length - room);
-  pdfs.splice(room);
+  const overflow = Math.max(0, pdfs.length - MAX_FILES);
+  pdfs.splice(MAX_FILES);
   const skipped = files.length - pdfs.length - overflow;
   const skipNote =
     (skipped ? `Pominięto ${skipped}: tylko PDF do ${MAX_MB} MB. ` : "") +

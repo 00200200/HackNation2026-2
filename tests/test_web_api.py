@@ -53,3 +53,9 @@ def test_extract_rejects_oversized_file(client, monkeypatch):
 def test_extract_limits_file_count(client):
     files = [("files", (f"{i}.pdf", b"%PDF-1.7", "application/pdf")) for i in range(web_api.MAX_FILES + 1)]
     assert client.post("/api/extract", files=files).status_code == 413
+
+
+def test_document_waiting_past_the_budget_is_reported(client, monkeypatch):
+    monkeypatch.setattr(web_api, "REQUEST_BUDGET_S", 0)
+    results = client.post("/api/extract", files=[("files", ("a.pdf", b"%PDF-1.7", "application/pdf"))]).json()
+    assert results["results"][0]["error"] and results["results"][0]["data"] is None
