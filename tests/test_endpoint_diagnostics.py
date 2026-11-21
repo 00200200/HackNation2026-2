@@ -58,7 +58,6 @@ def test_cli_endpoint_failure_reports_only_path_type_and_status(
         }
     )
     monkeypatch.setattr(cli, "load_classes", lambda: [receipt])
-    monkeypatch.setattr(cli, "ocr_problem", lambda: None)
     first = tmp_path / "first.pdf"
     first.touch()
     (tmp_path / "second.pdf").touch()

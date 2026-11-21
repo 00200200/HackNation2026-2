@@ -1,0 +1,538 @@
+{
+  "task1/printed-roles-missing-fields": [
+    "Potwierdzenie przelewu\nNa rachunek: 22222222222222222222222222 Z rachunku: 11111111111111111111111111\nKwota przelewu: brak\nOpłata: 1,50 PLN\nData operacji: brak\nData wydruku: 12.05.2026\nTytuł:\nNumer transakcji: ABC123456"
+  ],
+  "task1/background-vs-charge": [
+    "ODWOŁANIE\nOdwołujący: Alfa\nZamawiający w dniu 1 marca 2026 opublikował SWZ.\nZarzut nr 1 – odrzucenie oferty w dniu 8 marca 2026."
+  ],
+  "task1/filing-vs-action-date": [
+    "ODWOŁANIE\nOdwołujący: Alfa\nZarzut nr 1 – odrzucenie oferty. Odwołanie wniesiono 15.05.2026."
+  ],
+  "task1/authority-representation": [
+    "ODWOŁANIE\nZamawiający: Beta\nreprezentowana przez: adw. Iga Fikcyjna\nOdwołujący: Alfa"
+  ],
+  "task1/reverse-signer-order": [
+    "PEŁNOMOCNICTWO\nAlfa sp. z o.o. i Beta sp. z o.o. udzielają pełnomocnictwa.\nZa Beta sp. z o.o.:\n..................\nEwa Biała\nZa Alfa sp. z o.o.:\n..................\nMarek Zielony"
+  ],
+  "task1/non-granting-company": [
+    "PEŁNOMOCNICTWO\nDziałając w imieniu Alfa sp. z o.o., KRS 9876543211, udzielam pełnomocnictwa.\nPostępowanie prowadzi Beta sp. z o.o., KRS 9876543222."
+  ],
+  "task1/invoice-alternate-accounts": [
+    "FAKTURA VAT\nProsimy o przelew na jeden z rachunków: 22222222222222222222222222 lub 11111111111111111111111111"
+  ],
+  "task1/judgment-citation": [
+    "ODWOŁANIE\nOdwołujący: Alfa\nW uzasadnieniu przywołuję orzeczenie Sygn. akt KIO 1/26."
+  ],
+  "task1/masked-sender": [
+    "Potwierdzenie przelewu\nRachunek nadawcy: ***1234\nRachunek odbiorcy: 22222222222222222222222222\nKwota przelewu: 14,20 PLN"
+  ],
+  "task1/selectable-footer": [
+    "ODWOŁANIE\nOdwołujący: Alfa\nStrona 1 z 1"
+  ],
+  "task1/both-parties-no-identifiers": [
+    "ODWOŁANIE\nOdwołujący: Alfa\nZamawiający: Beta"
+  ],
+  "task1/grant-no-id-dative": [
+    "PEŁNOMOCNICTWO\nMocodawca: Alfa sp. z o.o. udziela pełnomocnictwa adwokatowi Piotrowi Testowemu."
+  ],
+  "task4/request-account-alternatives": [
+    "Prosimy o przesłanie dokumentu: potwierdzenie przelewu na jeden z wymienionych rachunków.\nNadawca: 21212121212121212121212121\nOdbiorca: 34343434343434343434343434"
+  ],
+  "task4/fee-and-inline-id": [
+    "Potwierdzenie przelewu\nNadawca: 21212121212121212121212121\nOdbiorca: 34343434343434343434343434\nKwota przelewu: brak\nOpłata bankowa (kwota: 3,40 PLN)\nTytuł: Identyfikator operacji: RT123456"
+  ],
+  "task4/filing-after-company": [
+    "ODWOŁANIE\nOdwołujący: Rdest sp. z o.o.\nZarzut nr 1 – odrzucenie oferty Rdest sp. z o.o. Odwołanie wniesiono 15.05.2026."
+  ],
+  "task4/named-appellant-before-body": [
+    "ODWOŁANIE\nOdwołujący: Rdest sp. z o.o.\nUzasadnienie:\nWnoszę jak na wstępie."
+  ],
+  "task4/participant-attorney": [
+    "ODWOŁANIE\nOdwołujący: Rdest sp. z o.o.\nUczestnik: Strona Trzecia\nreprezentowany przez: adw. Olga Letnia"
+  ],
+  "task4/signature-consortium-qualifier": [
+    "PEŁNOMOCNICTWO\nWrzos sp. z o.o. i Goryczka sp. z o.o. udzielają pełnomocnictwa.\nZa Goryczka sp. z o.o. (partner konsorcjum):\n..................\nMira Letnia\nZa Wrzos sp. z o.o.:\n..................\nEwa Cicha"
+  ],
+  "task4/authority-registered": [
+    "PEŁNOMOCNICTWO\nMocodawca: Wrzos sp. z o.o., w postępowaniu, którego zamawiającym jest Goryczka sp. z o.o., KRS 9876543222, udziela pełnomocnictwa."
+  ],
+  "task4/authority-no-id": [
+    "PEŁNOMOCNICTWO\nMocodawca: Wrzos sp. z o.o., KRS 9876543211, w postępowaniu, którego zamawiającym jest Goryczka sp. z o.o., udziela pełnomocnictwa."
+  ],
+  "task4/judgment-quoted-appeal": [
+    "Sygn. akt KIO 98/26\nWYROK Z DNIA 17 LISTOPADA 2026\nW uzasadnieniu przytoczono treść pisma:\nODWOŁANIE\nOdwołujący: Rdest"
+  ],
+  "task4/bankowa-title": [
+    "Potwierdzenie przelewu\nNadawca: 21212121212121212121212121\nOdbiorca: 34343434343434343434343434\nKwota: 17,25 PLN\nTytuł:\nBankowa gwarancja wadialna"
+  ],
+  "task4/leading-authority-both-ids": [
+    "PEŁNOMOCNICTWO\nW postępowaniu prowadzonym przez Goryczka sp. z o.o., KRS 9876543222,\nMocodawca: Wrzos sp. z o.o., KRS 9876543211\nudziela pełnomocnictwa."
+  ],
+  "task4/leading-authority-no-grantor-id": [
+    "PEŁNOMOCNICTWO\nW postępowaniu prowadzonym przez Goryczka sp. z o.o., KRS 9876543222,\nMocodawca: Wrzos sp. z o.o.\nudziela pełnomocnictwa."
+  ],
+  "task4/leading-authority-neither-id": [
+    "PEŁNOMOCNICTWO\nW postępowaniu prowadzonym przez Goryczka sp. z o.o.,\nMocodawca: Wrzos sp. z o.o.\nudziela pełnomocnictwa."
+  ],
+  "task4/roles-recipient-first": [
+    "Potwierdzenie przelewu\nRachunek beneficjenta: 34343434343434343434343434 Rachunek płatnika: 21212121212121212121212121\nKwota: 17,25 PLN"
+  ],
+  "task4/valid-wrapped-fee-title": [
+    "Potwierdzenie przelewu\nNadawca: 21212121212121212121212121\nOdbiorca: 34343434343434343434343434\nKwota przelewu: 17,25 PLN\nData operacji: 03.04.2025\nTytuł:\nOpłata za wpis"
+  ],
+  "task4/intro-dated-rejection": [
+    "ODWOŁANIE\nOdwołujący: Rdest sp. z o.o.\nZamawiający odrzucił ofertę w dniu 8 marca 2026.\nZarzut nr 1 – odrzucenie oferty."
+  ],
+  "task4/authority-first": [
+    "PEŁNOMOCNICTWO\nZamawiający: Goryczka sp. z o.o.\nMocodawca: Wrzos sp. z o.o. udziela pełnomocnictwa."
+  ],
+  "task4/citation-inline": [
+    "ODWOŁANIE\nOdwołujący: Rdest sp. z o.o.\nW uzasadnieniu przywołano orzeczenie Sygn. akt KIO 81/26."
+  ],
+  "task4/judgment-standalone": [
+    "WYROK\nW uzasadnieniu przytoczono treść pisma:\nODWOŁANIE\nOdwołujący: Rdest"
+  ],
+  "task4/party-at-eof": [
+    "ODWOŁANIE\nOdwołujący: Rdest sp. z o.o."
+  ],
+  "task4/direct-grant-no-id": [
+    "PEŁNOMOCNICTWO\nMocodawca: Wrzos sp. z o.o. udziela pełnomocnictwa"
+  ],
+  "task4/footer-colon": [
+    "ODWOŁANIE\nOdwołujący: Rdest sp. z o.o.\nStrona: 1 z 1"
+  ],
+  "task4/footer-polish": [
+    "ODWOŁANIE\nOdwołujący: Rdest sp. z o.o.\nStrona 1 z 1"
+  ],
+  "task4/footer-english": [
+    "ODWOŁANIE\nOdwołujący: Rdest sp. z o.o.\nPage 1 of 2"
+  ],
+  "task4/footer-dashes": [
+    "ODWOŁANIE\nOdwołujący: Rdest sp. z o.o.\n— 1 —"
+  ],
+  "task11/R1a": [
+    "Prosimy o przesłanie dokumentu: potwierdzenie przelewu na jeden z wymienionych rachunków.\nNadawca: 73737373737373737373737373\nOdbiorca: 84848484848484848484848484"
+  ],
+  "task11/R1b": [
+    "LISTA WYMAGANYCH ZAŁĄCZNIKÓW\nProsimy dołączyć następujący dokument:\nPotwierdzenie przelewu\nKwota: 48,12\nNadawca: 73737373737373737373737373\nOdbiorca: 84848484848484848484848484"
+  ],
+  "task11/R1c": [
+    "ZAWIADOMIENIE O BRAKACH\nNależy przesłać dokument wymieniony poniżej:\nPotwierdzenie przelewu\nKwota: 48,12\nNadawca: 73737373737373737373737373\nOdbiorca: 84848484848484848484848484"
+  ],
+  "task11/R2a": [
+    "Potwierdzenie przelewu\nNadawca: 73737373737373737373737373\nOdbiorca: 84848484848484848484848484\nData operacji: 04.07.2028\nKwota przelewu: brak\nOpłata bankowa (kwota: 3,40 PLN)\nTytuł: Identyfikator operacji: RT123456"
+  ],
+  "task11/R2b": [
+    "Potwierdzenie przelewu\nNadawca: 73737373737373737373737373\nOdbiorca: 84848484848484848484848484\nData operacji: 04.07.2028\nKoszty dodatkowe:\nKwota: 6,27 PLN\nTytuł:"
+  ],
+  "task11/R2c": [
+    "Potwierdzenie przelewu\nNadawca: 73737373737373737373737373\nOdbiorca: 84848484848484848484848484\nData operacji: 04.07.2028\nTytuł:\nPoniższy dokument sporządzono automatycznie."
+  ],
+  "task11/R2d": [
+    "Potwierdzenie przelewu\nNadawca: 73737373737373737373737373\nOdbiorca: 84848484848484848484848484\nData operacji: 04.07.2028\nOpłata manipulacyjna [\nwartość: 8,13 PLN\n]"
+  ],
+  "task11/R3a": [
+    "ODWOŁANIE\nOdwołujący: Luneta\nZarzut nr 1 – odrzucenie oferty Rdest sp. z o.o. Odwołanie wniesiono 15.05.2026."
+  ],
+  "task11/R3b": [
+    "ODWOŁANIE\nOdwołujący: Luneta\nZarzut nr 1 – odrzucenie oferty Luneta S.A. (Skargę wniesiono 13.04.2028)."
+  ],
+  "task11/R3c": [
+    "ODWOŁANIE\nOdwołujący: Luneta\nZarzut nr 1 – odrzucenie oferty Luneta S.A. kopię skargi doręczono 14.04.2028."
+  ],
+  "task11/R3d": [
+    "ODWOŁANIE\nOdwołujący: Luneta\nZarzut nr 1 – odrzucenie oferty złożonej 16.04.2028 przez wykonawcę."
+  ],
+  "task11/R4a": [
+    "ODWOŁANIE\nOdwołujący: Luneta\nUzasadnienie:\nWnoszę jak na wstępie."
+  ],
+  "task11/R4b": [
+    "ODWOŁANIE\nOdwołujący: Luneta\nI. STAN FAKTYCZNY\nOpis przebiegu postępowania."
+  ],
+  "task11/R4c": [
+    "ODWOŁANIE\nOdwołujący: Luneta\nUZASADNIENIE FAKTYCZNE\nOpis przebiegu postępowania."
+  ],
+  "task11/R4d": [
+    "ODWOŁANIE\nOdwołujący: Luneta\nIII. OKOLICZNOŚCI SPRAWY\nSkładamy poniższe wyjaśnienia."
+  ],
+  "task11/R5a": [
+    "ODWOŁANIE\nOdwołujący: Luneta\nUczestnik: Strona Trzecia\nreprezentowany przez: adw. Ada Rzeczna"
+  ],
+  "task11/R5b": [
+    "ODWOŁANIE\nOdwołujący: Luneta\nIII. Uczestnik: Firma Drewno\nreprezentowany przez: adw. Ada Rzeczna"
+  ],
+  "task11/R5c": [
+    "ODWOŁANIE\nOdwołujący: Luneta\nPrzystępujący po stronie zamawiającego — Firma Drewno\nreprezentowany przez: adw. Ada Rzeczna"
+  ],
+  "task11/R6a": [
+    "PEŁNOMOCNICTWO\nLuneta S.A. i Bursztynek sp. z o.o. udzielają pełnomocnictwa.\nZa Bursztynek sp. z o.o. (partner konsorcjum):\n..................\nMila Jesienna\nZa Luneta S.A.:\n..................\nAda Rzeczna"
+  ],
+  "task11/R6b": [
+    "PEŁNOMOCNICTWO\nLuneta S.A. i Bursztynek sp. z o.o. udzielają pełnomocnictwa.\nW imieniu Bursztynek sp. z o.o. jako członka grupy:\n..................\nMila Jesienna\nZa Luneta S.A.\n(Kierownik Projektu):\n..................\nAda Rzeczna"
+  ],
+  "task11/R6c": [
+    "PEŁNOMOCNICTWO\nLuneta S.A. i Bursztynek sp. z o.o. udzielają pełnomocnictwa.\nZa Bursztynek sp. z o.o. — strona druga:\n..................\nMila Jesienna\nW imieniu Luneta S.A.\n(Zespół Obsługi):\n..................\nAda Rzeczna"
+  ],
+  "task11/R7a": [
+    "PEŁNOMOCNICTWO\nMocodawca: Luneta S.A., w postępowaniu, którego zamawiającym jest Bursztynek sp. z o.o., KRS 9876543222, udziela pełnomocnictwa."
+  ],
+  "task11/R7b": [
+    "PEŁNOMOCNICTWO\nMocodawca: Luneta S.A., w przetargu organizowanym przez Bursztynek sp. z o.o., udziela pełnomocnictwa."
+  ],
+  "task11/R7c": [
+    "PEŁNOMOCNICTWO\nMocodawca: Luneta S.A., w sprawie, w której rolę zamawiającego pełni Bursztynek sp. z o.o., NIP 8855443300, udziela pełnomocnictwa."
+  ],
+  "task11/R8a": [
+    "Sygn. akt KIO 98/26\nWYROK Z DNIA 17 LISTOPADA 2026\nW uzasadnieniu przytoczono treść pisma:\nODWOŁANIE\nOdwołujący: Luneta\n"
+  ],
+  "task11/R8b": [
+    "WYCIĄG Z WYROKU\nW uzasadnieniu przytoczono treść pisma:\nODWOŁANIE\nOdwołujący: Luneta\n"
+  ],
+  "task11/R8c": [
+    "UZASADNIENIE WYROKU\nW uzasadnieniu przytoczono treść pisma:\nODWOŁANIE\nOdwołujący: Luneta\n"
+  ],
+  "task11/Ta": [
+    "Potwierdzenie przelewu\nNadawca: 73737373737373737373737373\nOdbiorca: 84848484848484848484848484\nKwota: 27,34\nTytuł:\nBankowa gwarancja wadialna"
+  ],
+  "task11/Tb": [
+    "Potwierdzenie przelewu\nNadawca: 73737373737373737373737373\nOdbiorca: 84848484848484848484848484\nKwota: 27,34\nTytuł:\nStatus prawny nieruchomości"
+  ],
+  "task11/Tc": [
+    "Potwierdzenie przelewu\nNadawca: 73737373737373737373737373\nOdbiorca: 84848484848484848484848484\nKwota: 27,34\nTytuł:\nRachunek za materiały"
+  ],
+  "task11/Td": [
+    "Potwierdzenie przelewu\nNadawca: 73737373737373737373737373\nOdbiorca: 84848484848484848484848484\nKwota: 27,34\nTytuł:\nBankierska zaliczka za usługę"
+  ],
+  "task11/Ga": [
+    "PEŁNOMOCNICTWO\nW postępowaniu prowadzonym przez Bursztynek sp. z o.o., KRS 9876543222,\nMocodawca: Luneta S.A.\nudziela pełnomocnictwa."
+  ],
+  "task11/Gb": [
+    "PEŁNOMOCNICTWO\nZamawiającym jest Bursztynek sp. z o.o..\nDziałając w imieniu Luneta S.A., udzielam pełnomocnictwa."
+  ],
+  "task11/Gc": [
+    "PEŁNOMOCNICTWO\nZamawiający: Bursztynek sp. z o.o.\nMocodawcą jest Luneta S.A..\nUdzielamy pełnomocnictwa."
+  ],
+  "task11/Xacc": [
+    "Potwierdzenie przelewu\nNadawca: 73737373737373737373737373\nRachunek do zwrotu nadpłaty: 84848484848484848484848484\nKwota: 12,34"
+  ],
+  "task11/Xact": [
+    "ODWOŁANIE\nOdwołujący: Luneta\nUzasadnienie: Zamawiający w dniu 11.03.2028 zmienił treść SWZ.\nZarzut nr 1 – odrzucenie oferty."
+  ],
+  "task11/Xneg": [
+    "PEŁNOMOCNICTWO\nLuneta S.A. nie udziela pełnomocnictwa adw. Ada Rzeczna."
+  ],
+  "task11/Xrole": [
+    "PEŁNOMOCNICTWO\nLuneta S.A. udziela pełnomocnictwa adw. Mila Jesienna.\nPełnomocnik zamawiającego: adw. Ada Rzeczna"
+  ],
+  "task11/Xowner": [
+    "ODWOŁANIE\nOdwołujący: Luneta\nOdwołujący: Drugi Wykonawca\nreprezentowany przez: adw. Ada Rzeczna"
+  ],
+  "task11/Xact2": [
+    "ODWOŁANIE\nOdwołujący: Luneta\nUzasadnienie: Zamawiający w dniu 11.03.2028 wykluczył innego wykonawcę.\nZarzut nr 1 – odrzucenie oferty."
+  ],
+  "task11/R5d": [
+    "ODWOŁANIE\nOdwołujący: Luneta\n2) Interwenient: Firma Drewno\nreprezentowany przez: adw. Ada Rzeczna"
+  ],
+  "task11/R3e": [
+    "ODWOŁANIE\nOdwołujący: Luneta\nZarzut nr 1 – odrzucenie oferty Luneta sp.j. wniosek wysłano 15.04.2028."
+  ],
+  "task11/Xs0": [
+    "PEŁNOMOCNICTWO\nLuneta S.A. i Bursztynek sp. z o.o. udzielają pełnomocnictwa.\nZa Nowa Luneta S.A.:\n..................\nAda Rzeczna"
+  ],
+  "task11/Xs1": [
+    "PEŁNOMOCNICTWO\nLuneta S.A. i Bursztynek sp. z o.o. udzielają pełnomocnictwa.\nZa Stara Luneta S.A.:\n..................\nAda Rzeczna"
+  ],
+  "task11/R2e": [
+    "Potwierdzenie przelewu\nNadawca: 73737373737373737373737373\nOdbiorca: 84848484848484848484848484\nData operacji: 04.07.2028\nTytuł: Numer dokumentu kontrolnego: AZ-89"
+  ],
+  "task11/R2f": [
+    "Potwierdzenie przelewu\nNadawca: 73737373737373737373737373\nOdbiorca: 84848484848484848484848484\nData operacji: 04.07.2028\nTytuł: rata Numer transakcji: ZD964230"
+  ],
+  "task11/Gd": [
+    "PEŁNOMOCNICTWO\nZamawiający: Bursztynek sp. z o.o. udziela wyjaśnień w toku postępowania.\nMocodawca: Luneta S.A. udziela pełnomocnictwa."
+  ],
+  "task11/Ge": [
+    "PEŁNOMOCNICTWO\nZamawiający: Bursztynek sp. z o.o. ustanawia termin składania ofert.\nMocodawcą jest Luneta S.A..\nUdzielamy pełnomocnictwa."
+  ],
+  "task11/F0": [
+    "ODWOŁANIE\nOdwołujący: Luneta\nStrona: 1 z 1"
+  ],
+  "task11/F1": [
+    "ODWOŁANIE\nOdwołujący: Luneta\nStrona pierwsza"
+  ],
+  "task11/F2": [
+    "ODWOŁANIE\nOdwołujący: Luneta\nStrona nr 1 z 1"
+  ],
+  "task11/F3": [
+    "ODWOŁANIE\nOdwołujący: Luneta\nStrona 1 z 1 | Wydruk systemowy"
+  ],
+  "task22/unblurred-original": [
+    "ODWOŁANIE\nNumer sprawy: ABC-17\nData: 12.03.2025"
+  ],
+  "task22/contact": [
+    "PEŁNOMOCNICTWO\nMocodawca: Fikcyjne Studio sp. z o.o. udziela\npełnomocnictwa adw. Idzie Wymyślnej.\nOsoba do kontaktu:\nLidia Próbna\nDyrektor"
+  ],
+  "task22/repeated-recipient": [
+    "Potwierdzenie przelewu\nInformacja dla nadawcy: przelew na konto 87432198765432198765432123\nRachunek nadawcy: ****\nRachunek odbiorcy: 87432198765432198765432123\nKwota przelewu: 17,25 PLN\nData operacji: 03.04.2025"
+  ],
+  "task22/masked-sender-control": [
+    "Potwierdzenie przelewu\nRachunek nadawcy: ****\nRachunek odbiorcy: 87432198765432198765432123\nKwota przelewu: 17,25 PLN\nData operacji: 03.04.2025"
+  ],
+  "task22/boxes": [
+    "ALFA PRZELEW"
+  ],
+  "task22/legal-form-typo": [
+    "PEŁNOMOCNICTWO\nMocodawca: Studio sp. z 0.o. udziela pełnomocnictwa."
+  ],
+  "task22/plain-numerals": [
+    "Arkusz porównania ofert\nOferta 0.0."
+  ],
+  "task22/legal-form-uppercase": [
+    "PEŁNOMOCNICTWO\nMocodawca: Studio sp. z O.O. udziela pełnomocnictwa."
+  ],
+  "task22/heading-ascii": [
+    "PELNOMOCNICTWO PROCESOWE\nMocodawca: Studio sp. z o.o."
+  ],
+  "task22/role-ascii": [
+    "ODWOŁANIE\nOdwolujacy: Imię"
+  ],
+  "task22/domain-after-party": [
+    "ODWOŁANIE\nOdwołujący: Studio sp. z o.o.\nKRS 9876543211\nfirma.example"
+  ],
+  "task22/acceptance": [
+    "PEŁNOMOCNICTWO\nMocodawca: Fikcyjne Studio sp. z o.o. udziela\npełnomocnictwa adw. Idzie Wymyślnej.\nPrzyjmuję pełnomocnictwo:\nNina Fikcyjna\nDyrektor"
+  ],
+  "task22/single-undotted": [
+    "PEŁNOMOCNICTWO\nMocodawca: Fikcyjne Studio sp. z o.o. udziela\npełnomocnictwa adw. Idzie Wymyślnej.\nPodpis mocodawcy:\nNina Fikcyjna\nDyrektor"
+  ],
+  "task22/account-two-os": [
+    "Potwierdzenie przelewu\nRachunek nadawcy: 56 4587 OO99 1234 5678 0123 4567\nRachunek odbiorcy: 87432198765432198765432123\nKwota przelewu: 17,25 PLN\nData operacji: 03.04.2025"
+  ],
+  "task22/account-bad-check-digits": [
+    "Potwierdzenie przelewu\nRachunek nadawcy: 57 4587 OO99 1234 5678 0123 4567\nRachunek odbiorcy: 87432198765432198765432123\nKwota przelewu: 17,25 PLN\nData operacji: 03.04.2025"
+  ],
+  "task22/account-three-glyphs": [
+    "Potwierdzenie przelewu\nRachunek nadawcy: 56 4587 OO99 I234 5678 0123 4567\nRachunek odbiorcy: 87432198765432198765432123\nKwota przelewu: 17,25 PLN\nData operacji: 03.04.2025"
+  ],
+  "task22/account-bad-digits": [
+    "Potwierdzenie przelewu\nRachunek nadawcy: 57 4587 0099 1234 5678 0123 4567\nRachunek odbiorcy: 87432198765432198765432123\nKwota przelewu: 17,25 PLN\nData operacji: 03.04.2025"
+  ],
+  "task22/account-slash-one": [
+    "Potwierdzenie przelewu\nRachunek nadawcy: 56 4587 0099 /234 5678 0123 4567\nRachunek odbiorcy: 87432198765432198765432123\nKwota przelewu: 17,25 PLN\nData operacji: 03.04.2025"
+  ],
+  "task22/account-slash-seven": [
+    "Potwierdzenie przelewu\nRachunek nadawcy: 56 458/ 0099 1234 5678 0123 4567\nRachunek odbiorcy: 87432198765432198765432123\nKwota przelewu: 17,25 PLN\nData operacji: 03.04.2025"
+  ],
+  "task22/account-pl-prefix": [
+    "Potwierdzenie przelewu\nRachunek nadawcy: PL56 4587 OO99 1234 5678 0123 4567\nRachunek odbiorcy: 87432198765432198765432123\nKwota przelewu: 17,25 PLN\nData operacji: 03.04.2025"
+  ],
+  "task22/mail-paren-at": [
+    "ODWOŁANIE\nOdwołujący: Studio\nE-mail: anna (at) firma.example"
+  ],
+  "task22/mail-square-at": [
+    "ODWOŁANIE\nOdwołujący: Studio\nE-mail: anna [at] firma.example"
+  ],
+  "task22/mail-spaced-at": [
+    "ODWOŁANIE\nOdwołujący: Studio\nE-mail: anna @ firma.example"
+  ],
+  "task22/mail-bare-q": [
+    "ODWOŁANIE\nOdwołujący: Studio\nE-mail: annaQfirma.example"
+  ],
+  "task22/mail-crop-q": [
+    "ODWOŁANIE\nOdwołujący: Studio\nE-mail: testQx.example"
+  ],
+  "task22/mail-crop-agree": [
+    "ODWOŁANIE\nOdwołujący: Studio\nE-mail: test@x.example"
+  ],
+  "task22/mail-crop-different": [
+    "ODWOŁANIE\nOdwołujący: Studio\nE-mail: inny@x.example"
+  ],
+  "task30/footer-plain": [
+    "ODWOŁANIE\nNumer sprawy: ABC-17\nData: 12.03.2025\nStrona 1 z 1"
+  ],
+  "task30/footer-nr": [
+    "ODWOŁANIE\nNumer sprawy: ABC-17\nData: 12.03.2025\nStrona nr 1 z 1"
+  ],
+  "task30/footer-nr-ocr-transcript": [
+    "PLAN SALI\nStrona nr 1z 1"
+  ],
+  "task30/coordinator": [
+    "PEŁNOMOCNICTWO\nMocodawca: Fikcyjne Studio sp. z o.o. udziela\npełnomocnictwa adw. Idzie Wymyślnej.\nKoordynator projektu:\nLidia Próbna\nProkurent"
+  ],
+  "task30/signature-then-phone": [
+    "PEŁNOMOCNICTWO\nMocodawca: Fikcyjne Studio sp. z o.o. udziela\npełnomocnictwa adw. Idzie Wymyślnej.\nPodpis\nNina Fikcyjna\nTelefon do biura:\nLidia Próbna\nDyrektor"
+  ],
+  "task30/contact-sentence": [
+    "PEŁNOMOCNICTWO\nMocodawca: Fikcyjne Studio sp. z o.o. udziela\npełnomocnictwa adw. Idzie Wymyślnej.\nDo odbioru dokumentów wyznaczono osobę do kontaktu.\nLidia Próbna\nDyrektor"
+  ],
+  "task30/explicit-dotted": [
+    "PEŁNOMOCNICTWO\nMocodawca: Fikcyjne Studio sp. z o.o. udziela\npełnomocnictwa adw. Idzie Wymyślnej.\nPodpis osoby uprawnionej do reprezentacji mocodawcy:\n......................\nNina Fikcyjna\nDyrektor"
+  ],
+  "task30/repeated-sender": [
+    "Potwierdzenie przelewu\nInformacja dla odbiorcy: przelew na konto 87432198765432198765432123\nRachunek odbiorcy: ****\nRachunek nadawcy: 87432198765432198765432123\nKwota przelewu: 17,25 PLN\nData operacji: 03.04.2025"
+  ],
+  "task30/memo-missing-sender": [
+    "Potwierdzenie przelewu\nNotatka: przelew na konto 71932700000000000000000027\nRachunek odbiorcy: 87432198765432198765432123\nRachunek nadawcy:\nKwota przelewu: 17,25 PLN\nData operacji: 03.04.2025"
+  ],
+  "task30/fully-printed": [
+    "Potwierdzenie przelewu\nNumer rachunku nadawcy: 71932700000000000000000027\nNumer rachunku odbiorcy: 87432198765432198765432123\nKwota przelewu: 17,25 PLN\nData operacji: 03.04.2025"
+  ],
+  "task30/mask-x": [
+    "Potwierdzenie przelewu\nRachunek nadawcy: XXXX\nRachunek odbiorcy: 87432198765432198765432123\nKwota przelewu: 17,25 PLN\nData operacji: 03.04.2025"
+  ],
+  "task30/plan-only": [
+    "PLAN SALI"
+  ],
+  "task30/plan-next-page": [
+    "ODWOŁANIE\nNumer sprawy: ABC-17\nData: 12.03.2025",
+    "PLAN SALI"
+  ],
+  "new/appeal-labelled-domain": [
+    "ODWOŁANIE\nOdwołujący: Tkacki Warsztat sp. z o.o.\nKRS 9876423127\ntkalnia.example\nZamawiający: Gmina Czółenko"
+  ],
+  "new/appeal-party-following-mail": [
+    "ODWOŁANIE\nOdwołujący: Tkacki Warsztat sp. z o.o.\nNIP: 8765432189\nsekretariatQtkalnia.example\nZamawiający: Dom Tkanin"
+  ],
+  "new/appeal-legal-form-as-printed": [
+    "ODWOŁANIE\nOdwołujący: Splot sp. z 0.0.\nZamawiający: Nitka SA"
+  ],
+  "new/appeal-mask-in-title": [
+    "ODWOŁANIE\nOdwołujący: Tkacki Warsztat sp. z o.o.\nNazwa zamówienia: Przędza XXXX i akcesoria\nZarzut nr 1 – opis warunków udziału."
+  ],
+  "new/appeal-body-action": [
+    "ODWOŁANIE\nOdwołujący: Tkacki Warsztat sp. z o.o.\nZarzut nr 1 – unieważnienie postępowania w dniu 17 maja 2030."
+  ],
+  "new/appeal-post-scriptum": [
+    "ODWOŁANIE\nOdwołujący: Tkacki Warsztat sp. z o.o.\nZamawiający: Cech Przędzarzy\nZałączniki:\nPEŁNOMOCNICTWO"
+  ],
+  "new/appeal-lawyer": [
+    "ODWOŁANIE\nOdwołujący: Tkacki Warsztat sp. z o.o.\nreprezentowany przez: adw. Nela Splotna\nSygnatura: TK-54"
+  ],
+  "new/appeal-role-in-quote": [
+    "ODWOŁANIE\nOdwołujący: Tkacki Warsztat sp. z o.o.\nUzasadnienie:\nPismo zamawiającego cytuje „Odwołujący: Zespół Osnowy”."
+  ],
+  "new/power-undotted-position": [
+    "PEŁNOMOCNICTWO\nMocodawca: Tkacki Warsztat sp. z o.o. udziela pełnomocnictwa adw. Kalinie Czerwcowej.\nPodpis\nKalina Czerwcowa\nPrezes"
+  ],
+  "new/power-dotted-refusal": [
+    "PEŁNOMOCNICTWO\nMocodawca: Tkacki Warsztat sp. z o.o. udziela pełnomocnictwa adw. Kalinie Czerwcowej.\nOdmowa przyjęcia kopii:\n......................\nIwo Splotny"
+  ],
+  "new/power-archive-copy": [
+    "PEŁNOMOCNICTWO\nMocodawca: Tkacki Warsztat sp. z o.o. udziela pełnomocnictwa adw. Kalinie Czerwcowej.\nOryginał odebrano w biurze.\nMaria Czerwcowa\nSekretarz"
+  ],
+  "new/power-lowercase-caption": [
+    "PEŁNOMOCNICTWO\nMocodawca: Tkacki Warsztat sp. z o.o. udziela pełnomocnictwa adw. Kalinie Czerwcowej.\npodpis w imieniu mocodawcy\n.....................\nAnna Osnowa"
+  ],
+  "new/power-two-columns": [
+    "PEŁNOMOCNICTWO\nMocodawca: Tkacki Warsztat sp. z o.o. udziela pełnomocnictwa adw. Kalinie Czerwcowej.\nMocodawca Pełnomocnik\n..................... .....................\nAda Czerwcowa adw. Kalina Czerwcowa"
+  ],
+  "new/power-other-principal": [
+    "PEŁNOMOCNICTWO\nMocodawca: Tkacki Warsztat sp. z o.o. udziela pełnomocnictwa adw. Kalinie Czerwcowej.\nZa Warsztat Przędzy S.A.:\n.....................\nUlryk Osnowa"
+  ],
+  "new/power-appendix-percent": [
+    "PEŁNOMOCNICTWO\nMocodawca: Tkacki Warsztat sp. z o.o. udziela pełnomocnictwa adw. Kalinie Czerwcowej.\nZakres umocowania:\nPodpisanie 50% protokołów."
+  ],
+  "new/power-line-with-title": [
+    "PEŁNOMOCNICTWO\nMocodawca: Tkacki Warsztat sp. z o.o. udziela pełnomocnictwa adw. Kalinie Czerwcowej.\nPodpis:\n......................\nAda Czerwcowa, Wiceprezes"
+  ],
+  "new/bank-amount-in-title": [
+    "Potwierdzenie przelewu\nRachunek nadawcy: 71932700000000000000000027\nRachunek odbiorcy: 87432198765432198765432123\nKwota przelewu: 35,76 PLN\nTytuł: Zwrot za włókno, kwota brutto 8,19 PLN"
+  ],
+  "new/bank-archive-third": [
+    "Potwierdzenie przelewu\nRachunek nadawcy: 71932700000000000000000027\nRachunek odbiorcy: 87432198765432198765432123\nKwota przelewu: 35,76 PLN\nArchiwalny rachunek: 92929292929292929292929292"
+  ],
+  "new/bank-table-two-values": [
+    "Potwierdzenie przelewu\nNadawca Odbiorca\n87432198765432198765432123 71932700000000000000000027\nData operacji: 09.08.2032"
+  ],
+  "new/bank-printed-twice": [
+    "Potwierdzenie przelewu\nRachunek nadawcy: 71932700000000000000000027\nRachunek odbiorcy: 87432198765432198765432123\nKwota przelewu: 35,76 PLN\nNota: w korespondencji podać rachunek 87432198765432198765432123."
+  ],
+  "new/bank-inline-opposite-roles": [
+    "Potwierdzenie przelewu\nNa rachunek 71932700000000000000000027, z rachunku 87432198765432198765432123\nKwota: 202,12 PLN"
+  ],
+  "new/bank-mask-memo": [
+    "Potwierdzenie przelewu\nRachunek nadawcy: —\nRachunek odbiorcy: 71932700000000000000000027\nNumer akt: 87432198765432198765432123\nKwota: 32,00 PLN"
+  ],
+  "new/bank-negative-status": [
+    "Potwierdzenie przelewu\nRachunek nadawcy: 71932700000000000000000027\nRachunek odbiorcy: 87432198765432198765432123\nKwota przelewu: 35,76 PLN\nStatus: wstrzymano\nTytuł: Osnowa i przędza"
+  ],
+  "new/bank-partial-iban": [
+    "Potwierdzenie przelewu\nIBAN rachunku nadawcy: PL71 9327\nIBAN rachunku odbiorcy: PL87432198765432198765432123\nData operacji: 18.11.2032"
+  ],
+  "new/other-archive-index": [
+    "Inwentarz archiwalny\nTom drugi: odwołanie i pełnomocnictwo\nMiejsce: Czytelnia"
+  ],
+  "new/other-empty-form": [
+    "WZÓR DO UZUPEŁNIENIA\nOsoba do kontaktu: XXXX\nRachunek: ****"
+  ],
+  "new/other-menu": [
+    "JADŁOSPIS\nZupa kalafiorowa\nKompot gruszkowy"
+  ],
+  "new/other-signature-sheet": [
+    "KARTA OBECNOŚCI\nPodpis osoby uprawnionej do reprezentacji mocodawcy:\n......................\nNina Fikcyjna"
+  ],
+  "new/other-bank-circular": [
+    "Prośba o aktualizację danych\nNumer rachunku nadawcy: 71932700000000000000000027\nNumer rachunku odbiorcy: 87432198765432198765432123"
+  ],
+  "new/other-english": [
+    "Room inventory\nDesk, lamp, bookshelf\nPage 4 of 8"
+  ],
+  "new/other-appeal-heading-in-sentence": [
+    "Spis korespondencji\nTytuł załącznika: ODWOŁANIE\nOdwołujący się do ustaleń autor."
+  ],
+  "new/other-receipt-no-transfer": [
+    "Pokwitowanie odbioru\nPobrano próbki tkanin.\nPodpis: Ada Osnowa"
+  ],
+  "new/appeal-on-second-page": [
+    "Kancelaria Przędzalni\nPismo przewodnie",
+    "ODWOŁANIE\nOdwołujący: Tkacki Warsztat sp. z o.o.\nZamawiający: Młyn Nitki"
+  ],
+  "new/appeal-third-page-only": [
+    "Kancelaria Przędzalni",
+    "Pismo przewodnie",
+    "ODWOŁANIE\nOdwołujący: Tkacki Warsztat sp. z o.o.\nZarzut nr 1 – odrzucenie oferty."
+  ],
+  "new/power-caption-next-page": [
+    "PEŁNOMOCNICTWO\nMocodawca: Tkacki Warsztat sp. z o.o. udziela pełnomocnictwa adw. Kalinie Czerwcowej.\nPodpis mocodawcy:",
+    "......................\nAda Czerwcowa"
+  ],
+  "new/power-header-on-both": [
+    "PEŁNOMOCNICTWO\nMocodawca: Tkacki Warsztat sp. z o.o. udziela pełnomocnictwa adw. Kalinie Czerwcowej.\nStrona 1 z 2",
+    "PEŁNOMOCNICTWO\nW imieniu Tkacki Warsztat sp. z o.o.:\n....................\nStefan Osnowa"
+  ],
+  "new/bank-status-on-continuation": [
+    "Potwierdzenie przelewu\nRachunek nadawcy: 71932700000000000000000027\nRachunek odbiorcy: 87432198765432198765432123\nKwota przelewu: 35,76 PLN\nData operacji: 28.08.2032",
+    "Stan księgi\nStatus: planowany"
+  ],
+  "new/bank-terms-on-page-two": [
+    "Potwierdzenie przelewu\nSzczegóły na kolejnej stronie.",
+    "Potwierdzenie przelewu\nRachunek nadawcy: 71932700000000000000000027\nRachunek odbiorcy: 87432198765432198765432123\nKwota przelewu: 35,76 PLN\nTytuł: Zaliczka"
+  ],
+  "new/other-three-headings": [
+    "Spis spraw do odczytania",
+    "Materiały do omówienia",
+    "PEŁNOMOCNICTWO"
+  ],
+  "new/other-booklet": [
+    "Poradnik tkacki\nStrona 1 z 2",
+    "Poradnik tkacki\nSposoby wiązania nici\nStrona 2 z 2"
+  ],
+  "task1/name-case-normalization": [
+    "ODWOŁANIE\nOdwołujący: Alfa\nZamawiający: ALFA"
+  ],
+  "task1/signer-identity-ordered": [
+    "PEŁNOMOCNICTWO\nAlfa sp. z o.o. i Beta sp. z o.o. udzielają pełnomocnictwa.\nZa Alfa sp. z o.o.:\n..................\nEwa Próbna\nIga Próbna\nZa Beta sp. z o.o.:\n..................\nJan Próbny\nOla Próbna"
+  ],
+  "task1/signer-identity-swapped": [
+    "PEŁNOMOCNICTWO\nAlfa sp. z o.o. i Beta sp. z o.o. udzielają pełnomocnictwa.\nZa Alfa sp. z o.o.:\n..................\nJan Próbny\nOla Próbna\nZa Beta sp. z o.o.:\n..................\nEwa Próbna\nIga Próbna"
+  ],
+  "task11/identifier-digits": [
+    "PEŁNOMOCNICTWO\nMocodawca: Fikcyjne Studio sp. z o.o. udziela\npełnomocnictwa adw. Idzie Wymyślnej.\nPESEL: 99422967018"
+  ],
+  "task11/identifier-spaces-hyphen": [
+    "PEŁNOMOCNICTWO\nMocodawca: Fikcyjne Studio sp. z o.o. udziela\npełnomocnictwa adw. Idzie Wymyślnej.\nPESEL: 9942-296 7018"
+  ],
+  "task11/identifier-hyphen-spaces": [
+    "PEŁNOMOCNICTWO\nMocodawca: Fikcyjne Studio sp. z o.o. udziela\npełnomocnictwa adw. Idzie Wymyślnej.\nPESEL: 99 422 967-018"
+  ]
+}

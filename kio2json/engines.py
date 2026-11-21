@@ -76,13 +76,15 @@ def bind_engine(name: str, definition: DocumentClass, model=None) -> Callable[[s
     return partial(extract_llm, definition, model=model)
 
 
-def extract(definition: DocumentClass, text: str, *, model=None) -> dict:
+def extract(definition: DocumentClass, text: str, *, model=None, ocr_python: Callable[[], dict] | None = None) -> dict:
     values = None
     for engine in definition.engines:
         if values is not None and not any(gaps(f, values.get(k)) for k, f in definition.fields.items()):
             break
-        extractor = bind_engine(engine, definition, model)
-        candidate = extractor(text)
+        if engine == "python" and ocr_python is not None:
+            candidate = ocr_python()
+        else:
+            candidate = bind_engine(engine, definition, model)(text)
         if values is None:
             values = candidate
         else:

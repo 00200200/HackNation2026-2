@@ -3,6 +3,7 @@
 import re
 
 from .bank_transfer import ACCOUNT_RE, transaction_values
+from .ocr_accounts import AccountEvidence
 
 UNRELATED_HEADING = re.compile(
     r"^(?:wyrok|postanowienie|w imieniu rzeczypospolitej polskiej|faktura|wezwanie|prośba|wniosek|"
@@ -20,7 +21,7 @@ EXECUTED = re.compile(r"^(?:status[\s.:]*)?(?:przelew\s+)?(?:zrealizowan[yo]|wyk
 STATUS = re.compile(r"^status[\s.:]+(\S.*)$", re.IGNORECASE)
 
 
-def classify(pages: list[str]) -> str | None:
+def classify(pages: list[str], *, ocr_accounts: AccountEvidence | None = None) -> str | None:
     if not pages:
         return None
     head = "\n".join(pages[:2])
@@ -45,8 +46,14 @@ def classify(pages: list[str]) -> str | None:
         return None
     if not transfer_heading and not any(EXECUTED.match(line) for line in lines):
         return None
-    accounts = {re.sub(r"\s", "", match[1]) for match in ACCOUNT_RE.finditer(first)}
-    if len(accounts) < 2 or "przelew" not in first.casefold():
+    if ocr_accounts is None:
+        account_count = len({re.sub(r"\s", "", match[1]) for match in ACCOUNT_RE.finditer(first)})
+    else:
+        account_count = ocr_accounts.distinct_numbers
+    masked = ocr_accounts is not None and account_count == 1 and ocr_accounts.masked_pair and transfer_heading
+    if (account_count < 2 and not masked) or "przelew" not in first.casefold():
         return None
     amount, day = transaction_values(first)
+    if masked and (amount is None or day is None):
+        return None
     return "bank_transfer" if amount is not None or day is not None else None

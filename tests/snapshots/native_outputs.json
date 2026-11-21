@@ -1,0 +1,3624 @@
+{
+  "base": "32106434f746628c7080191597f0766d4151d786",
+  "outputs": {
+    "task1/printed-roles-missing-fields": [
+      null,
+      {}
+    ],
+    "task1/background-vs-charge": [
+      "appeal",
+      {
+        "OdwolanieKIO": {
+          "data": null,
+          "czynnosc_dzien": "2026-03-08",
+          "czynnosc_powod_id": 1,
+          "czynnosc_opis": "Decyzja o odrzuceniu oferty",
+          "miejscowosc": null
+        },
+        "Odwolujacy": [
+          {
+            "krs": null,
+            "nazwa": "Alfa Zamawiający w dniu 1 marca 2026 opublikował SWZ.",
+            "nip": null,
+            "regon": null,
+            "przez-pelnomocnika": 0,
+            "pelnomocnik": {
+              "imie_nazwisko": null,
+              "nazwa": null,
+              "mail": null
+            }
+          }
+        ],
+        "Zamawiajacy": [],
+        "ZamowieniePubliczne": {
+          "numer_bzp": null,
+          "numer_postepowania": null,
+          "numer_ted": null,
+          "tytul": null
+        }
+      }
+    ],
+    "task1/filing-vs-action-date": [
+      "appeal",
+      {
+        "OdwolanieKIO": {
+          "data": null,
+          "czynnosc_dzien": null,
+          "czynnosc_powod_id": 1,
+          "czynnosc_opis": "Decyzja o odrzuceniu oferty",
+          "miejscowosc": null
+        },
+        "Odwolujacy": [
+          {
+            "krs": null,
+            "nazwa": "Alfa",
+            "nip": null,
+            "regon": null,
+            "przez-pelnomocnika": 0,
+            "pelnomocnik": {
+              "imie_nazwisko": null,
+              "nazwa": null,
+              "mail": null
+            }
+          }
+        ],
+        "Zamawiajacy": [],
+        "ZamowieniePubliczne": {
+          "numer_bzp": null,
+          "numer_postepowania": null,
+          "numer_ted": null,
+          "tytul": null
+        }
+      }
+    ],
+    "task1/authority-representation": [
+      "appeal",
+      {
+        "OdwolanieKIO": {
+          "data": null,
+          "czynnosc_dzien": null,
+          "czynnosc_powod_id": null,
+          "czynnosc_opis": null,
+          "miejscowosc": null
+        },
+        "Odwolujacy": [
+          {
+            "krs": null,
+            "nazwa": "Alfa",
+            "nip": null,
+            "regon": null,
+            "przez-pelnomocnika": 0,
+            "pelnomocnik": {
+              "imie_nazwisko": null,
+              "nazwa": null,
+              "mail": null
+            }
+          }
+        ],
+        "Zamawiajacy": [
+          {
+            "krs": null,
+            "nazwa": "Beta",
+            "nip": null,
+            "regon": null,
+            "prowadzacy_postepowanie": null
+          }
+        ],
+        "ZamowieniePubliczne": {
+          "numer_bzp": null,
+          "numer_postepowania": null,
+          "numer_ted": null,
+          "tytul": null
+        }
+      }
+    ],
+    "task1/reverse-signer-order": [
+      "power_of_attorney",
+      {
+        "mocodawca": [
+          {
+            "data": {
+              "imie_nazwisko": null,
+              "krs": null,
+              "nazwa": "Alfa sp. z o.o.",
+              "nip": null,
+              "typ": "osoba_prawna"
+            },
+            "podpisujacy": [
+              {
+                "imie_nazwisko": "Marek Zielony"
+              }
+            ]
+          },
+          {
+            "data": {
+              "imie_nazwisko": null,
+              "krs": null,
+              "nazwa": "Beta sp. z o.o.",
+              "nip": null,
+              "typ": "osoba_prawna"
+            },
+            "podpisujacy": [
+              {
+                "imie_nazwisko": "Ewa Biała"
+              }
+            ]
+          }
+        ],
+        "pelnomocnicy": []
+      }
+    ],
+    "task1/non-granting-company": [
+      "power_of_attorney",
+      {
+        "mocodawca": [
+          {
+            "data": {
+              "imie_nazwisko": null,
+              "krs": "9876543211",
+              "nazwa": "Alfa sp. z o.o.",
+              "nip": null,
+              "typ": "osoba_prawna"
+            },
+            "podpisujacy": []
+          }
+        ],
+        "pelnomocnicy": []
+      }
+    ],
+    "task1/invoice-alternate-accounts": [
+      null,
+      {}
+    ],
+    "task1/judgment-citation": [
+      "appeal",
+      {
+        "OdwolanieKIO": {
+          "data": null,
+          "czynnosc_dzien": null,
+          "czynnosc_powod_id": null,
+          "czynnosc_opis": null,
+          "miejscowosc": null
+        },
+        "Odwolujacy": [
+          {
+            "krs": null,
+            "nazwa": "Alfa W uzasadnieniu przywołuję orzeczenie Sygn. akt KIO 1/26.",
+            "nip": null,
+            "regon": null,
+            "przez-pelnomocnika": 0,
+            "pelnomocnik": {
+              "imie_nazwisko": null,
+              "nazwa": null,
+              "mail": null
+            }
+          }
+        ],
+        "Zamawiajacy": [],
+        "ZamowieniePubliczne": {
+          "numer_bzp": null,
+          "numer_postepowania": null,
+          "numer_ted": null,
+          "tytul": null
+        }
+      }
+    ],
+    "task1/masked-sender": [
+      null,
+      {}
+    ],
+    "task1/selectable-footer": [
+      "appeal",
+      {
+        "OdwolanieKIO": {
+          "data": null,
+          "czynnosc_dzien": null,
+          "czynnosc_powod_id": null,
+          "czynnosc_opis": null,
+          "miejscowosc": null
+        },
+        "Odwolujacy": [
+          {
+            "krs": null,
+            "nazwa": "Alfa",
+            "nip": null,
+            "regon": null,
+            "przez-pelnomocnika": 0,
+            "pelnomocnik": {
+              "imie_nazwisko": null,
+              "nazwa": null,
+              "mail": null
+            }
+          }
+        ],
+        "Zamawiajacy": [],
+        "ZamowieniePubliczne": {
+          "numer_bzp": null,
+          "numer_postepowania": null,
+          "numer_ted": null,
+          "tytul": null
+        }
+      }
+    ],
+    "task1/both-parties-no-identifiers": [
+      "appeal",
+      {
+        "OdwolanieKIO": {
+          "data": null,
+          "czynnosc_dzien": null,
+          "czynnosc_powod_id": null,
+          "czynnosc_opis": null,
+          "miejscowosc": null
+        },
+        "Odwolujacy": [
+          {
+            "krs": null,
+            "nazwa": "Alfa",
+            "nip": null,
+            "regon": null,
+            "przez-pelnomocnika": 0,
+            "pelnomocnik": {
+              "imie_nazwisko": null,
+              "nazwa": null,
+              "mail": null
+            }
+          }
+        ],
+        "Zamawiajacy": [
+          {
+            "krs": null,
+            "nazwa": "Beta",
+            "nip": null,
+            "regon": null,
+            "prowadzacy_postepowanie": null
+          }
+        ],
+        "ZamowieniePubliczne": {
+          "numer_bzp": null,
+          "numer_postepowania": null,
+          "numer_ted": null,
+          "tytul": null
+        }
+      }
+    ],
+    "task1/grant-no-id-dative": [
+      "power_of_attorney",
+      {
+        "mocodawca": [
+          {
+            "data": {
+              "imie_nazwisko": null,
+              "krs": null,
+              "nazwa": "Alfa sp. z o.o.",
+              "nip": null,
+              "typ": "osoba_prawna"
+            },
+            "podpisujacy": []
+          }
+        ],
+        "pelnomocnicy": [
+          {
+            "imie_nazwisko": "Piotrowi Testowemu",
+            "pesel": null
+          }
+        ]
+      }
+    ],
+    "task4/request-account-alternatives": [
+      null,
+      {}
+    ],
+    "task4/fee-and-inline-id": [
+      null,
+      {}
+    ],
+    "task4/filing-after-company": [
+      "appeal",
+      {
+        "OdwolanieKIO": {
+          "data": null,
+          "czynnosc_dzien": null,
+          "czynnosc_powod_id": 1,
+          "czynnosc_opis": "Decyzja o odrzuceniu oferty",
+          "miejscowosc": null
+        },
+        "Odwolujacy": [
+          {
+            "krs": null,
+            "nazwa": "Rdest sp. z o.o.",
+            "nip": null,
+            "regon": null,
+            "przez-pelnomocnika": 0,
+            "pelnomocnik": {
+              "imie_nazwisko": null,
+              "nazwa": null,
+              "mail": null
+            }
+          }
+        ],
+        "Zamawiajacy": [],
+        "ZamowieniePubliczne": {
+          "numer_bzp": null,
+          "numer_postepowania": null,
+          "numer_ted": null,
+          "tytul": null
+        }
+      }
+    ],
+    "task4/named-appellant-before-body": [
+      "appeal",
+      {
+        "OdwolanieKIO": {
+          "data": null,
+          "czynnosc_dzien": null,
+          "czynnosc_powod_id": null,
+          "czynnosc_opis": null,
+          "miejscowosc": null
+        },
+        "Odwolujacy": [
+          {
+            "krs": null,
+            "nazwa": "Rdest sp. z o.o.",
+            "nip": null,
+            "regon": null,
+            "przez-pelnomocnika": 0,
+            "pelnomocnik": {
+              "imie_nazwisko": null,
+              "nazwa": null,
+              "mail": null
+            }
+          }
+        ],
+        "Zamawiajacy": [],
+        "ZamowieniePubliczne": {
+          "numer_bzp": null,
+          "numer_postepowania": null,
+          "numer_ted": null,
+          "tytul": null
+        }
+      }
+    ],
+    "task4/participant-attorney": [
+      "appeal",
+      {
+        "OdwolanieKIO": {
+          "data": null,
+          "czynnosc_dzien": null,
+          "czynnosc_powod_id": null,
+          "czynnosc_opis": null,
+          "miejscowosc": null
+        },
+        "Odwolujacy": [
+          {
+            "krs": null,
+            "nazwa": "Rdest sp. z o.o.",
+            "nip": null,
+            "regon": null,
+            "przez-pelnomocnika": 0,
+            "pelnomocnik": {
+              "imie_nazwisko": null,
+              "nazwa": null,
+              "mail": null
+            }
+          }
+        ],
+        "Zamawiajacy": [],
+        "ZamowieniePubliczne": {
+          "numer_bzp": null,
+          "numer_postepowania": null,
+          "numer_ted": null,
+          "tytul": null
+        }
+      }
+    ],
+    "task4/signature-consortium-qualifier": [
+      "power_of_attorney",
+      {
+        "mocodawca": [
+          {
+            "data": {
+              "imie_nazwisko": null,
+              "krs": null,
+              "nazwa": "Wrzos sp. z o.o.",
+              "nip": null,
+              "typ": "osoba_prawna"
+            },
+            "podpisujacy": [
+              {
+                "imie_nazwisko": "Ewa Cicha"
+              }
+            ]
+          },
+          {
+            "data": {
+              "imie_nazwisko": null,
+              "krs": null,
+              "nazwa": "Goryczka sp. z o.o.",
+              "nip": null,
+              "typ": "osoba_prawna"
+            },
+            "podpisujacy": [
+              {
+                "imie_nazwisko": "Mira Letnia"
+              }
+            ]
+          }
+        ],
+        "pelnomocnicy": []
+      }
+    ],
+    "task4/authority-registered": [
+      "power_of_attorney",
+      {
+        "mocodawca": [
+          {
+            "data": {
+              "imie_nazwisko": null,
+              "krs": null,
+              "nazwa": "Wrzos sp. z o.o.",
+              "nip": null,
+              "typ": "osoba_prawna"
+            },
+            "podpisujacy": []
+          }
+        ],
+        "pelnomocnicy": []
+      }
+    ],
+    "task4/authority-no-id": [
+      "power_of_attorney",
+      {
+        "mocodawca": [
+          {
+            "data": {
+              "imie_nazwisko": null,
+              "krs": "9876543211",
+              "nazwa": "Wrzos sp. z o.o.",
+              "nip": null,
+              "typ": "osoba_prawna"
+            },
+            "podpisujacy": []
+          }
+        ],
+        "pelnomocnicy": []
+      }
+    ],
+    "task4/judgment-quoted-appeal": [
+      null,
+      {}
+    ],
+    "task4/bankowa-title": [
+      "bank_transfer",
+      {
+        "przelew_bankowy": {
+          "data_operacji": null,
+          "kwota": 17.25,
+          "na_rachunek": "34343434343434343434343434",
+          "numer_transakcji": null,
+          "tytul": "Bankowa gwarancja wadialna",
+          "z_rachunku": "21212121212121212121212121"
+        }
+      }
+    ],
+    "task4/leading-authority-both-ids": [
+      "power_of_attorney",
+      {
+        "mocodawca": [
+          {
+            "data": {
+              "imie_nazwisko": null,
+              "krs": "9876543211",
+              "nazwa": "Wrzos sp. z o.o.",
+              "nip": null,
+              "typ": "osoba_prawna"
+            },
+            "podpisujacy": []
+          }
+        ],
+        "pelnomocnicy": []
+      }
+    ],
+    "task4/leading-authority-no-grantor-id": [
+      "power_of_attorney",
+      {
+        "mocodawca": [
+          {
+            "data": {
+              "imie_nazwisko": null,
+              "krs": null,
+              "nazwa": "Wrzos sp. z o.o.",
+              "nip": null,
+              "typ": "osoba_prawna"
+            },
+            "podpisujacy": []
+          }
+        ],
+        "pelnomocnicy": []
+      }
+    ],
+    "task4/leading-authority-neither-id": [
+      "power_of_attorney",
+      {
+        "mocodawca": [
+          {
+            "data": {
+              "imie_nazwisko": null,
+              "krs": null,
+              "nazwa": "Wrzos sp. z o.o.",
+              "nip": null,
+              "typ": "osoba_prawna"
+            },
+            "podpisujacy": []
+          }
+        ],
+        "pelnomocnicy": []
+      }
+    ],
+    "task4/roles-recipient-first": [
+      "bank_transfer",
+      {
+        "przelew_bankowy": {
+          "data_operacji": null,
+          "kwota": 17.25,
+          "na_rachunek": "34343434343434343434343434",
+          "numer_transakcji": null,
+          "tytul": null,
+          "z_rachunku": "21212121212121212121212121"
+        }
+      }
+    ],
+    "task4/valid-wrapped-fee-title": [
+      "bank_transfer",
+      {
+        "przelew_bankowy": {
+          "data_operacji": "2025-04-03",
+          "kwota": 17.25,
+          "na_rachunek": "34343434343434343434343434",
+          "numer_transakcji": null,
+          "tytul": "Opłata za wpis",
+          "z_rachunku": "21212121212121212121212121"
+        }
+      }
+    ],
+    "task4/intro-dated-rejection": [
+      "appeal",
+      {
+        "OdwolanieKIO": {
+          "data": null,
+          "czynnosc_dzien": null,
+          "czynnosc_powod_id": 1,
+          "czynnosc_opis": "Decyzja o odrzuceniu oferty",
+          "miejscowosc": null
+        },
+        "Odwolujacy": [
+          {
+            "krs": null,
+            "nazwa": "Rdest sp. z o.o. Zamawiający odrzucił ofertę w dniu 8 marca 2026.",
+            "nip": null,
+            "regon": null,
+            "przez-pelnomocnika": 0,
+            "pelnomocnik": {
+              "imie_nazwisko": null,
+              "nazwa": null,
+              "mail": null
+            }
+          }
+        ],
+        "Zamawiajacy": [],
+        "ZamowieniePubliczne": {
+          "numer_bzp": null,
+          "numer_postepowania": null,
+          "numer_ted": null,
+          "tytul": null
+        }
+      }
+    ],
+    "task4/authority-first": [
+      "power_of_attorney",
+      {
+        "mocodawca": [
+          {
+            "data": {
+              "imie_nazwisko": null,
+              "krs": null,
+              "nazwa": "Wrzos sp. z o.o.",
+              "nip": null,
+              "typ": "osoba_prawna"
+            },
+            "podpisujacy": []
+          }
+        ],
+        "pelnomocnicy": []
+      }
+    ],
+    "task4/citation-inline": [
+      "appeal",
+      {
+        "OdwolanieKIO": {
+          "data": null,
+          "czynnosc_dzien": null,
+          "czynnosc_powod_id": null,
+          "czynnosc_opis": null,
+          "miejscowosc": null
+        },
+        "Odwolujacy": [
+          {
+            "krs": null,
+            "nazwa": "Rdest sp. z o.o. W uzasadnieniu przywołano orzeczenie Sygn. akt KIO 81/26.",
+            "nip": null,
+            "regon": null,
+            "przez-pelnomocnika": 0,
+            "pelnomocnik": {
+              "imie_nazwisko": null,
+              "nazwa": null,
+              "mail": null
+            }
+          }
+        ],
+        "Zamawiajacy": [],
+        "ZamowieniePubliczne": {
+          "numer_bzp": null,
+          "numer_postepowania": null,
+          "numer_ted": null,
+          "tytul": null
+        }
+      }
+    ],
+    "task4/judgment-standalone": [
+      null,
+      {}
+    ],
+    "task4/party-at-eof": [
+      "appeal",
+      {
+        "OdwolanieKIO": {
+          "data": null,
+          "czynnosc_dzien": null,
+          "czynnosc_powod_id": null,
+          "czynnosc_opis": null,
+          "miejscowosc": null
+        },
+        "Odwolujacy": [
+          {
+            "krs": null,
+            "nazwa": "Rdest sp. z o.o.",
+            "nip": null,
+            "regon": null,
+            "przez-pelnomocnika": 0,
+            "pelnomocnik": {
+              "imie_nazwisko": null,
+              "nazwa": null,
+              "mail": null
+            }
+          }
+        ],
+        "Zamawiajacy": [],
+        "ZamowieniePubliczne": {
+          "numer_bzp": null,
+          "numer_postepowania": null,
+          "numer_ted": null,
+          "tytul": null
+        }
+      }
+    ],
+    "task4/direct-grant-no-id": [
+      "power_of_attorney",
+      {
+        "mocodawca": [
+          {
+            "data": {
+              "imie_nazwisko": null,
+              "krs": null,
+              "nazwa": "Wrzos sp. z o.o.",
+              "nip": null,
+              "typ": "osoba_prawna"
+            },
+            "podpisujacy": []
+          }
+        ],
+        "pelnomocnicy": []
+      }
+    ],
+    "task4/footer-colon": [
+      "appeal",
+      {
+        "OdwolanieKIO": {
+          "data": null,
+          "czynnosc_dzien": null,
+          "czynnosc_powod_id": null,
+          "czynnosc_opis": null,
+          "miejscowosc": null
+        },
+        "Odwolujacy": [
+          {
+            "krs": null,
+            "nazwa": "Rdest sp. z o.o.",
+            "nip": null,
+            "regon": null,
+            "przez-pelnomocnika": 0,
+            "pelnomocnik": {
+              "imie_nazwisko": null,
+              "nazwa": null,
+              "mail": null
+            }
+          }
+        ],
+        "Zamawiajacy": [],
+        "ZamowieniePubliczne": {
+          "numer_bzp": null,
+          "numer_postepowania": null,
+          "numer_ted": null,
+          "tytul": null
+        }
+      }
+    ],
+    "task4/footer-polish": [
+      "appeal",
+      {
+        "OdwolanieKIO": {
+          "data": null,
+          "czynnosc_dzien": null,
+          "czynnosc_powod_id": null,
+          "czynnosc_opis": null,
+          "miejscowosc": null
+        },
+        "Odwolujacy": [
+          {
+            "krs": null,
+            "nazwa": "Rdest sp. z o.o.",
+            "nip": null,
+            "regon": null,
+            "przez-pelnomocnika": 0,
+            "pelnomocnik": {
+              "imie_nazwisko": null,
+              "nazwa": null,
+              "mail": null
+            }
+          }
+        ],
+        "Zamawiajacy": [],
+        "ZamowieniePubliczne": {
+          "numer_bzp": null,
+          "numer_postepowania": null,
+          "numer_ted": null,
+          "tytul": null
+        }
+      }
+    ],
+    "task4/footer-english": [
+      "appeal",
+      {
+        "OdwolanieKIO": {
+          "data": null,
+          "czynnosc_dzien": null,
+          "czynnosc_powod_id": null,
+          "czynnosc_opis": null,
+          "miejscowosc": null
+        },
+        "Odwolujacy": [
+          {
+            "krs": null,
+            "nazwa": "Rdest sp. z o.o. Page 1 of 2",
+            "nip": null,
+            "regon": null,
+            "przez-pelnomocnika": 0,
+            "pelnomocnik": {
+              "imie_nazwisko": null,
+              "nazwa": null,
+              "mail": null
+            }
+          }
+        ],
+        "Zamawiajacy": [],
+        "ZamowieniePubliczne": {
+          "numer_bzp": null,
+          "numer_postepowania": null,
+          "numer_ted": null,
+          "tytul": null
+        }
+      }
+    ],
+    "task4/footer-dashes": [
+      "appeal",
+      {
+        "OdwolanieKIO": {
+          "data": null,
+          "czynnosc_dzien": null,
+          "czynnosc_powod_id": null,
+          "czynnosc_opis": null,
+          "miejscowosc": null
+        },
+        "Odwolujacy": [
+          {
+            "krs": null,
+            "nazwa": "Rdest sp. z o.o. — 1 —",
+            "nip": null,
+            "regon": null,
+            "przez-pelnomocnika": 0,
+            "pelnomocnik": {
+              "imie_nazwisko": null,
+              "nazwa": null,
+              "mail": null
+            }
+          }
+        ],
+        "Zamawiajacy": [],
+        "ZamowieniePubliczne": {
+          "numer_bzp": null,
+          "numer_postepowania": null,
+          "numer_ted": null,
+          "tytul": null
+        }
+      }
+    ],
+    "task11/R1a": [
+      null,
+      {}
+    ],
+    "task11/R1b": [
+      "bank_transfer",
+      {
+        "przelew_bankowy": {
+          "data_operacji": null,
+          "kwota": 48.12,
+          "na_rachunek": "84848484848484848484848484",
+          "numer_transakcji": null,
+          "tytul": null,
+          "z_rachunku": "73737373737373737373737373"
+        }
+      }
+    ],
+    "task11/R1c": [
+      "bank_transfer",
+      {
+        "przelew_bankowy": {
+          "data_operacji": null,
+          "kwota": 48.12,
+          "na_rachunek": "84848484848484848484848484",
+          "numer_transakcji": null,
+          "tytul": null,
+          "z_rachunku": "73737373737373737373737373"
+        }
+      }
+    ],
+    "task11/R2a": [
+      "bank_transfer",
+      {
+        "przelew_bankowy": {
+          "data_operacji": "2028-07-04",
+          "kwota": null,
+          "na_rachunek": "84848484848484848484848484",
+          "numer_transakcji": "RT123456",
+          "tytul": null,
+          "z_rachunku": "73737373737373737373737373"
+        }
+      }
+    ],
+    "task11/R2b": [
+      "bank_transfer",
+      {
+        "przelew_bankowy": {
+          "data_operacji": "2028-07-04",
+          "kwota": 6.27,
+          "na_rachunek": "84848484848484848484848484",
+          "numer_transakcji": null,
+          "tytul": null,
+          "z_rachunku": "73737373737373737373737373"
+        }
+      }
+    ],
+    "task11/R2c": [
+      "bank_transfer",
+      {
+        "przelew_bankowy": {
+          "data_operacji": "2028-07-04",
+          "kwota": null,
+          "na_rachunek": "84848484848484848484848484",
+          "numer_transakcji": null,
+          "tytul": "Poniższy dokument sporządzono automatycznie.",
+          "z_rachunku": "73737373737373737373737373"
+        }
+      }
+    ],
+    "task11/R2d": [
+      "bank_transfer",
+      {
+        "przelew_bankowy": {
+          "data_operacji": "2028-07-04",
+          "kwota": 8.13,
+          "na_rachunek": "84848484848484848484848484",
+          "numer_transakcji": null,
+          "tytul": null,
+          "z_rachunku": "73737373737373737373737373"
+        }
+      }
+    ],
+    "task11/R3a": [
+      "appeal",
+      {
+        "OdwolanieKIO": {
+          "data": null,
+          "czynnosc_dzien": null,
+          "czynnosc_powod_id": 1,
+          "czynnosc_opis": "Decyzja o odrzuceniu oferty",
+          "miejscowosc": null
+        },
+        "Odwolujacy": [
+          {
+            "krs": null,
+            "nazwa": "Luneta",
+            "nip": null,
+            "regon": null,
+            "przez-pelnomocnika": 0,
+            "pelnomocnik": {
+              "imie_nazwisko": null,
+              "nazwa": null,
+              "mail": null
+            }
+          }
+        ],
+        "Zamawiajacy": [],
+        "ZamowieniePubliczne": {
+          "numer_bzp": null,
+          "numer_postepowania": null,
+          "numer_ted": null,
+          "tytul": null
+        }
+      }
+    ],
+    "task11/R3b": [
+      "appeal",
+      {
+        "OdwolanieKIO": {
+          "data": null,
+          "czynnosc_dzien": null,
+          "czynnosc_powod_id": 1,
+          "czynnosc_opis": "Decyzja o odrzuceniu oferty",
+          "miejscowosc": null
+        },
+        "Odwolujacy": [
+          {
+            "krs": null,
+            "nazwa": "Luneta",
+            "nip": null,
+            "regon": null,
+            "przez-pelnomocnika": 0,
+            "pelnomocnik": {
+              "imie_nazwisko": null,
+              "nazwa": null,
+              "mail": null
+            }
+          }
+        ],
+        "Zamawiajacy": [],
+        "ZamowieniePubliczne": {
+          "numer_bzp": null,
+          "numer_postepowania": null,
+          "numer_ted": null,
+          "tytul": null
+        }
+      }
+    ],
+    "task11/R3c": [
+      "appeal",
+      {
+        "OdwolanieKIO": {
+          "data": null,
+          "czynnosc_dzien": "2028-04-14",
+          "czynnosc_powod_id": 1,
+          "czynnosc_opis": "Decyzja o odrzuceniu oferty",
+          "miejscowosc": null
+        },
+        "Odwolujacy": [
+          {
+            "krs": null,
+            "nazwa": "Luneta",
+            "nip": null,
+            "regon": null,
+            "przez-pelnomocnika": 0,
+            "pelnomocnik": {
+              "imie_nazwisko": null,
+              "nazwa": null,
+              "mail": null
+            }
+          }
+        ],
+        "Zamawiajacy": [],
+        "ZamowieniePubliczne": {
+          "numer_bzp": null,
+          "numer_postepowania": null,
+          "numer_ted": null,
+          "tytul": null
+        }
+      }
+    ],
+    "task11/R3d": [
+      "appeal",
+      {
+        "OdwolanieKIO": {
+          "data": null,
+          "czynnosc_dzien": "2028-04-16",
+          "czynnosc_powod_id": 1,
+          "czynnosc_opis": "Decyzja o odrzuceniu oferty",
+          "miejscowosc": null
+        },
+        "Odwolujacy": [
+          {
+            "krs": null,
+            "nazwa": "Luneta",
+            "nip": null,
+            "regon": null,
+            "przez-pelnomocnika": 0,
+            "pelnomocnik": {
+              "imie_nazwisko": null,
+              "nazwa": null,
+              "mail": null
+            }
+          }
+        ],
+        "Zamawiajacy": [],
+        "ZamowieniePubliczne": {
+          "numer_bzp": null,
+          "numer_postepowania": null,
+          "numer_ted": null,
+          "tytul": null
+        }
+      }
+    ],
+    "task11/R4a": [
+      "appeal",
+      {
+        "OdwolanieKIO": {
+          "data": null,
+          "czynnosc_dzien": null,
+          "czynnosc_powod_id": null,
+          "czynnosc_opis": null,
+          "miejscowosc": null
+        },
+        "Odwolujacy": [
+          {
+            "krs": null,
+            "nazwa": "Luneta",
+            "nip": null,
+            "regon": null,
+            "przez-pelnomocnika": 0,
+            "pelnomocnik": {
+              "imie_nazwisko": null,
+              "nazwa": null,
+              "mail": null
+            }
+          }
+        ],
+        "Zamawiajacy": [],
+        "ZamowieniePubliczne": {
+          "numer_bzp": null,
+          "numer_postepowania": null,
+          "numer_ted": null,
+          "tytul": null
+        }
+      }
+    ],
+    "task11/R4b": [
+      "appeal",
+      {
+        "OdwolanieKIO": {
+          "data": null,
+          "czynnosc_dzien": null,
+          "czynnosc_powod_id": null,
+          "czynnosc_opis": null,
+          "miejscowosc": null
+        },
+        "Odwolujacy": [
+          {
+            "krs": null,
+            "nazwa": "Luneta I. STAN FAKTYCZNY Opis przebiegu postępowania.",
+            "nip": null,
+            "regon": null,
+            "przez-pelnomocnika": 0,
+            "pelnomocnik": {
+              "imie_nazwisko": null,
+              "nazwa": null,
+              "mail": null
+            }
+          }
+        ],
+        "Zamawiajacy": [],
+        "ZamowieniePubliczne": {
+          "numer_bzp": null,
+          "numer_postepowania": null,
+          "numer_ted": null,
+          "tytul": null
+        }
+      }
+    ],
+    "task11/R4c": [
+      "appeal",
+      {
+        "OdwolanieKIO": {
+          "data": null,
+          "czynnosc_dzien": null,
+          "czynnosc_powod_id": null,
+          "czynnosc_opis": null,
+          "miejscowosc": null
+        },
+        "Odwolujacy": [
+          {
+            "krs": null,
+            "nazwa": "Luneta",
+            "nip": null,
+            "regon": null,
+            "przez-pelnomocnika": 0,
+            "pelnomocnik": {
+              "imie_nazwisko": null,
+              "nazwa": null,
+              "mail": null
+            }
+          }
+        ],
+        "Zamawiajacy": [],
+        "ZamowieniePubliczne": {
+          "numer_bzp": null,
+          "numer_postepowania": null,
+          "numer_ted": null,
+          "tytul": null
+        }
+      }
+    ],
+    "task11/R4d": [
+      "appeal",
+      {
+        "OdwolanieKIO": {
+          "data": null,
+          "czynnosc_dzien": null,
+          "czynnosc_powod_id": null,
+          "czynnosc_opis": null,
+          "miejscowosc": null
+        },
+        "Odwolujacy": [
+          {
+            "krs": null,
+            "nazwa": "Luneta III. OKOLICZNOŚCI SPRAWY Składamy poniższe wyjaśnienia.",
+            "nip": null,
+            "regon": null,
+            "przez-pelnomocnika": 0,
+            "pelnomocnik": {
+              "imie_nazwisko": null,
+              "nazwa": null,
+              "mail": null
+            }
+          }
+        ],
+        "Zamawiajacy": [],
+        "ZamowieniePubliczne": {
+          "numer_bzp": null,
+          "numer_postepowania": null,
+          "numer_ted": null,
+          "tytul": null
+        }
+      }
+    ],
+    "task11/R5a": [
+      "appeal",
+      {
+        "OdwolanieKIO": {
+          "data": null,
+          "czynnosc_dzien": null,
+          "czynnosc_powod_id": null,
+          "czynnosc_opis": null,
+          "miejscowosc": null
+        },
+        "Odwolujacy": [
+          {
+            "krs": null,
+            "nazwa": "Luneta",
+            "nip": null,
+            "regon": null,
+            "przez-pelnomocnika": 0,
+            "pelnomocnik": {
+              "imie_nazwisko": null,
+              "nazwa": null,
+              "mail": null
+            }
+          }
+        ],
+        "Zamawiajacy": [],
+        "ZamowieniePubliczne": {
+          "numer_bzp": null,
+          "numer_postepowania": null,
+          "numer_ted": null,
+          "tytul": null
+        }
+      }
+    ],
+    "task11/R5b": [
+      "appeal",
+      {
+        "OdwolanieKIO": {
+          "data": null,
+          "czynnosc_dzien": null,
+          "czynnosc_powod_id": null,
+          "czynnosc_opis": null,
+          "miejscowosc": null
+        },
+        "Odwolujacy": [
+          {
+            "krs": null,
+            "nazwa": "Luneta",
+            "nip": null,
+            "regon": null,
+            "przez-pelnomocnika": 0,
+            "pelnomocnik": {
+              "imie_nazwisko": null,
+              "nazwa": null,
+              "mail": null
+            }
+          }
+        ],
+        "Zamawiajacy": [],
+        "ZamowieniePubliczne": {
+          "numer_bzp": null,
+          "numer_postepowania": null,
+          "numer_ted": null,
+          "tytul": null
+        }
+      }
+    ],
+    "task11/R5c": [
+      "appeal",
+      {
+        "OdwolanieKIO": {
+          "data": null,
+          "czynnosc_dzien": null,
+          "czynnosc_powod_id": null,
+          "czynnosc_opis": null,
+          "miejscowosc": null
+        },
+        "Odwolujacy": [
+          {
+            "krs": null,
+            "nazwa": "Luneta Przystępujący po stronie zamawiającego — Firma Drewno",
+            "nip": null,
+            "regon": null,
+            "przez-pelnomocnika": 1,
+            "pelnomocnik": {
+              "imie_nazwisko": "Ada Rzeczna",
+              "nazwa": null,
+              "mail": null
+            }
+          }
+        ],
+        "Zamawiajacy": [],
+        "ZamowieniePubliczne": {
+          "numer_bzp": null,
+          "numer_postepowania": null,
+          "numer_ted": null,
+          "tytul": null
+        }
+      }
+    ],
+    "task11/R6a": [
+      "power_of_attorney",
+      {
+        "mocodawca": [
+          {
+            "data": {
+              "imie_nazwisko": null,
+              "krs": null,
+              "nazwa": "Luneta S.A.",
+              "nip": null,
+              "typ": "osoba_prawna"
+            },
+            "podpisujacy": [
+              {
+                "imie_nazwisko": "Ada Rzeczna"
+              }
+            ]
+          },
+          {
+            "data": {
+              "imie_nazwisko": null,
+              "krs": null,
+              "nazwa": "Bursztynek sp. z o.o.",
+              "nip": null,
+              "typ": "osoba_prawna"
+            },
+            "podpisujacy": [
+              {
+                "imie_nazwisko": "Mila Jesienna"
+              }
+            ]
+          }
+        ],
+        "pelnomocnicy": []
+      }
+    ],
+    "task11/R6b": [
+      "power_of_attorney",
+      {
+        "mocodawca": [
+          {
+            "data": {
+              "imie_nazwisko": null,
+              "krs": null,
+              "nazwa": "Luneta S.A.",
+              "nip": null,
+              "typ": "osoba_prawna"
+            },
+            "podpisujacy": [
+              {
+                "imie_nazwisko": "Kierownik Projektu"
+              },
+              {
+                "imie_nazwisko": "Ada Rzeczna"
+              }
+            ]
+          },
+          {
+            "data": {
+              "imie_nazwisko": null,
+              "krs": null,
+              "nazwa": "Bursztynek sp. z o.o.",
+              "nip": null,
+              "typ": "osoba_prawna"
+            },
+            "podpisujacy": [
+              {
+                "imie_nazwisko": "Mila Jesienna"
+              }
+            ]
+          }
+        ],
+        "pelnomocnicy": []
+      }
+    ],
+    "task11/R6c": [
+      "power_of_attorney",
+      {
+        "mocodawca": [
+          {
+            "data": {
+              "imie_nazwisko": null,
+              "krs": null,
+              "nazwa": "Luneta S.A.",
+              "nip": null,
+              "typ": "osoba_prawna"
+            },
+            "podpisujacy": [
+              {
+                "imie_nazwisko": "Zespół Obsługi"
+              },
+              {
+                "imie_nazwisko": "Ada Rzeczna"
+              }
+            ]
+          },
+          {
+            "data": {
+              "imie_nazwisko": null,
+              "krs": null,
+              "nazwa": "Bursztynek sp. z o.o.",
+              "nip": null,
+              "typ": "osoba_prawna"
+            },
+            "podpisujacy": [
+              {
+                "imie_nazwisko": "Mila Jesienna"
+              }
+            ]
+          }
+        ],
+        "pelnomocnicy": []
+      }
+    ],
+    "task11/R7a": [
+      "power_of_attorney",
+      {
+        "mocodawca": [
+          {
+            "data": {
+              "imie_nazwisko": null,
+              "krs": null,
+              "nazwa": "Luneta S.A.",
+              "nip": null,
+              "typ": "osoba_prawna"
+            },
+            "podpisujacy": []
+          }
+        ],
+        "pelnomocnicy": []
+      }
+    ],
+    "task11/R7b": [
+      "power_of_attorney",
+      {
+        "mocodawca": [
+          {
+            "data": {
+              "imie_nazwisko": null,
+              "krs": null,
+              "nazwa": "Luneta S.A.",
+              "nip": null,
+              "typ": "osoba_prawna"
+            },
+            "podpisujacy": []
+          },
+          {
+            "data": {
+              "imie_nazwisko": null,
+              "krs": null,
+              "nazwa": "Bursztynek sp. z o.o.",
+              "nip": null,
+              "typ": "osoba_prawna"
+            },
+            "podpisujacy": []
+          }
+        ],
+        "pelnomocnicy": []
+      }
+    ],
+    "task11/R7c": [
+      "power_of_attorney",
+      {
+        "mocodawca": [
+          {
+            "data": {
+              "imie_nazwisko": null,
+              "krs": null,
+              "nazwa": "Luneta S.A.",
+              "nip": null,
+              "typ": "osoba_prawna"
+            },
+            "podpisujacy": []
+          },
+          {
+            "data": {
+              "imie_nazwisko": null,
+              "krs": null,
+              "nazwa": "Bursztynek sp. z o.o.",
+              "nip": "8855443300",
+              "typ": "osoba_prawna"
+            },
+            "podpisujacy": []
+          }
+        ],
+        "pelnomocnicy": []
+      }
+    ],
+    "task11/R8a": [
+      null,
+      {}
+    ],
+    "task11/R8b": [
+      "appeal",
+      {
+        "OdwolanieKIO": {
+          "data": null,
+          "czynnosc_dzien": null,
+          "czynnosc_powod_id": null,
+          "czynnosc_opis": null,
+          "miejscowosc": null
+        },
+        "Odwolujacy": [
+          {
+            "krs": null,
+            "nazwa": "Luneta",
+            "nip": null,
+            "regon": null,
+            "przez-pelnomocnika": 0,
+            "pelnomocnik": {
+              "imie_nazwisko": null,
+              "nazwa": null,
+              "mail": null
+            }
+          }
+        ],
+        "Zamawiajacy": [],
+        "ZamowieniePubliczne": {
+          "numer_bzp": null,
+          "numer_postepowania": null,
+          "numer_ted": null,
+          "tytul": null
+        }
+      }
+    ],
+    "task11/R8c": [
+      "appeal",
+      {
+        "OdwolanieKIO": {
+          "data": null,
+          "czynnosc_dzien": null,
+          "czynnosc_powod_id": null,
+          "czynnosc_opis": null,
+          "miejscowosc": null
+        },
+        "Odwolujacy": [
+          {
+            "krs": null,
+            "nazwa": "Luneta",
+            "nip": null,
+            "regon": null,
+            "przez-pelnomocnika": 0,
+            "pelnomocnik": {
+              "imie_nazwisko": null,
+              "nazwa": null,
+              "mail": null
+            }
+          }
+        ],
+        "Zamawiajacy": [],
+        "ZamowieniePubliczne": {
+          "numer_bzp": null,
+          "numer_postepowania": null,
+          "numer_ted": null,
+          "tytul": null
+        }
+      }
+    ],
+    "task11/Ta": [
+      "bank_transfer",
+      {
+        "przelew_bankowy": {
+          "data_operacji": null,
+          "kwota": 27.34,
+          "na_rachunek": "84848484848484848484848484",
+          "numer_transakcji": null,
+          "tytul": "Bankowa gwarancja wadialna",
+          "z_rachunku": "73737373737373737373737373"
+        }
+      }
+    ],
+    "task11/Tb": [
+      null,
+      {}
+    ],
+    "task11/Tc": [
+      "bank_transfer",
+      {
+        "przelew_bankowy": {
+          "data_operacji": null,
+          "kwota": 27.34,
+          "na_rachunek": "84848484848484848484848484",
+          "numer_transakcji": null,
+          "tytul": null,
+          "z_rachunku": "73737373737373737373737373"
+        }
+      }
+    ],
+    "task11/Td": [
+      "bank_transfer",
+      {
+        "przelew_bankowy": {
+          "data_operacji": null,
+          "kwota": 27.34,
+          "na_rachunek": "84848484848484848484848484",
+          "numer_transakcji": null,
+          "tytul": "Bankierska zaliczka za usługę",
+          "z_rachunku": "73737373737373737373737373"
+        }
+      }
+    ],
+    "task11/Ga": [
+      "power_of_attorney",
+      {
+        "mocodawca": [
+          {
+            "data": {
+              "imie_nazwisko": null,
+              "krs": null,
+              "nazwa": "Luneta S.A.",
+              "nip": null,
+              "typ": "osoba_prawna"
+            },
+            "podpisujacy": []
+          }
+        ],
+        "pelnomocnicy": []
+      }
+    ],
+    "task11/Gb": [
+      "power_of_attorney",
+      {
+        "mocodawca": [
+          {
+            "data": {
+              "imie_nazwisko": null,
+              "krs": null,
+              "nazwa": "Luneta S.A.",
+              "nip": null,
+              "typ": "osoba_prawna"
+            },
+            "podpisujacy": []
+          }
+        ],
+        "pelnomocnicy": []
+      }
+    ],
+    "task11/Gc": [
+      "power_of_attorney",
+      {
+        "mocodawca": [
+          {
+            "data": {
+              "imie_nazwisko": null,
+              "krs": null,
+              "nazwa": "Luneta S.A.",
+              "nip": null,
+              "typ": "osoba_prawna"
+            },
+            "podpisujacy": []
+          }
+        ],
+        "pelnomocnicy": []
+      }
+    ],
+    "task11/Xacc": [
+      "bank_transfer",
+      {
+        "przelew_bankowy": {
+          "data_operacji": null,
+          "kwota": 12.34,
+          "na_rachunek": "84848484848484848484848484",
+          "numer_transakcji": null,
+          "tytul": null,
+          "z_rachunku": "73737373737373737373737373"
+        }
+      }
+    ],
+    "task11/Xact": [
+      "appeal",
+      {
+        "OdwolanieKIO": {
+          "data": null,
+          "czynnosc_dzien": "2028-03-11",
+          "czynnosc_powod_id": 5,
+          "czynnosc_opis": "Modyfikacja treści SWZ",
+          "miejscowosc": null
+        },
+        "Odwolujacy": [
+          {
+            "krs": null,
+            "nazwa": "Luneta",
+            "nip": null,
+            "regon": null,
+            "przez-pelnomocnika": 0,
+            "pelnomocnik": {
+              "imie_nazwisko": null,
+              "nazwa": null,
+              "mail": null
+            }
+          }
+        ],
+        "Zamawiajacy": [],
+        "ZamowieniePubliczne": {
+          "numer_bzp": null,
+          "numer_postepowania": null,
+          "numer_ted": null,
+          "tytul": null
+        }
+      }
+    ],
+    "task11/Xneg": [
+      "power_of_attorney",
+      {
+        "mocodawca": [
+          {
+            "data": {
+              "imie_nazwisko": null,
+              "krs": null,
+              "nazwa": "Luneta S.A.",
+              "nip": null,
+              "typ": "osoba_prawna"
+            },
+            "podpisujacy": []
+          }
+        ],
+        "pelnomocnicy": [
+          {
+            "imie_nazwisko": "Ada Rzeczna",
+            "pesel": null
+          }
+        ]
+      }
+    ],
+    "task11/Xrole": [
+      "power_of_attorney",
+      {
+        "mocodawca": [
+          {
+            "data": {
+              "imie_nazwisko": null,
+              "krs": null,
+              "nazwa": "Luneta S.A.",
+              "nip": null,
+              "typ": "osoba_prawna"
+            },
+            "podpisujacy": []
+          }
+        ],
+        "pelnomocnicy": [
+          {
+            "imie_nazwisko": "Mila Jesienna",
+            "pesel": null
+          },
+          {
+            "imie_nazwisko": "Ada Rzeczna",
+            "pesel": null
+          }
+        ]
+      }
+    ],
+    "task11/Xowner": [
+      "appeal",
+      {
+        "OdwolanieKIO": {
+          "data": null,
+          "czynnosc_dzien": null,
+          "czynnosc_powod_id": null,
+          "czynnosc_opis": null,
+          "miejscowosc": null
+        },
+        "Odwolujacy": [
+          {
+            "krs": null,
+            "nazwa": "Luneta",
+            "nip": null,
+            "regon": null,
+            "przez-pelnomocnika": 1,
+            "pelnomocnik": {
+              "imie_nazwisko": "Ada Rzeczna",
+              "nazwa": null,
+              "mail": null
+            }
+          }
+        ],
+        "Zamawiajacy": [],
+        "ZamowieniePubliczne": {
+          "numer_bzp": null,
+          "numer_postepowania": null,
+          "numer_ted": null,
+          "tytul": null
+        }
+      }
+    ],
+    "task11/Xact2": [
+      "appeal",
+      {
+        "OdwolanieKIO": {
+          "data": null,
+          "czynnosc_dzien": "2028-03-11",
+          "czynnosc_powod_id": 3,
+          "czynnosc_opis": "Decyzja o wykluczeniu wykonawcy",
+          "miejscowosc": null
+        },
+        "Odwolujacy": [
+          {
+            "krs": null,
+            "nazwa": "Luneta",
+            "nip": null,
+            "regon": null,
+            "przez-pelnomocnika": 0,
+            "pelnomocnik": {
+              "imie_nazwisko": null,
+              "nazwa": null,
+              "mail": null
+            }
+          }
+        ],
+        "Zamawiajacy": [],
+        "ZamowieniePubliczne": {
+          "numer_bzp": null,
+          "numer_postepowania": null,
+          "numer_ted": null,
+          "tytul": null
+        }
+      }
+    ],
+    "task11/R5d": [
+      "appeal",
+      {
+        "OdwolanieKIO": {
+          "data": null,
+          "czynnosc_dzien": null,
+          "czynnosc_powod_id": null,
+          "czynnosc_opis": null,
+          "miejscowosc": null
+        },
+        "Odwolujacy": [
+          {
+            "krs": null,
+            "nazwa": "Luneta 2) Interwenient: Firma Drewno",
+            "nip": null,
+            "regon": null,
+            "przez-pelnomocnika": 1,
+            "pelnomocnik": {
+              "imie_nazwisko": "Ada Rzeczna",
+              "nazwa": null,
+              "mail": null
+            }
+          }
+        ],
+        "Zamawiajacy": [],
+        "ZamowieniePubliczne": {
+          "numer_bzp": null,
+          "numer_postepowania": null,
+          "numer_ted": null,
+          "tytul": null
+        }
+      }
+    ],
+    "task11/R3e": [
+      "appeal",
+      {
+        "OdwolanieKIO": {
+          "data": null,
+          "czynnosc_dzien": "2028-04-15",
+          "czynnosc_powod_id": 1,
+          "czynnosc_opis": "Decyzja o odrzuceniu oferty",
+          "miejscowosc": null
+        },
+        "Odwolujacy": [
+          {
+            "krs": null,
+            "nazwa": "Luneta",
+            "nip": null,
+            "regon": null,
+            "przez-pelnomocnika": 0,
+            "pelnomocnik": {
+              "imie_nazwisko": null,
+              "nazwa": null,
+              "mail": null
+            }
+          }
+        ],
+        "Zamawiajacy": [],
+        "ZamowieniePubliczne": {
+          "numer_bzp": null,
+          "numer_postepowania": null,
+          "numer_ted": null,
+          "tytul": null
+        }
+      }
+    ],
+    "task11/Xs0": [
+      "power_of_attorney",
+      {
+        "mocodawca": [
+          {
+            "data": {
+              "imie_nazwisko": null,
+              "krs": null,
+              "nazwa": "Luneta S.A.",
+              "nip": null,
+              "typ": "osoba_prawna"
+            },
+            "podpisujacy": [
+              {
+                "imie_nazwisko": "Ada Rzeczna"
+              }
+            ]
+          },
+          {
+            "data": {
+              "imie_nazwisko": null,
+              "krs": null,
+              "nazwa": "Bursztynek sp. z o.o.",
+              "nip": null,
+              "typ": "osoba_prawna"
+            },
+            "podpisujacy": []
+          }
+        ],
+        "pelnomocnicy": []
+      }
+    ],
+    "task11/Xs1": [
+      "power_of_attorney",
+      {
+        "mocodawca": [
+          {
+            "data": {
+              "imie_nazwisko": null,
+              "krs": null,
+              "nazwa": "Luneta S.A.",
+              "nip": null,
+              "typ": "osoba_prawna"
+            },
+            "podpisujacy": [
+              {
+                "imie_nazwisko": "Ada Rzeczna"
+              }
+            ]
+          },
+          {
+            "data": {
+              "imie_nazwisko": null,
+              "krs": null,
+              "nazwa": "Bursztynek sp. z o.o.",
+              "nip": null,
+              "typ": "osoba_prawna"
+            },
+            "podpisujacy": []
+          }
+        ],
+        "pelnomocnicy": []
+      }
+    ],
+    "task11/R2e": [
+      "bank_transfer",
+      {
+        "przelew_bankowy": {
+          "data_operacji": "2028-07-04",
+          "kwota": null,
+          "na_rachunek": "84848484848484848484848484",
+          "numer_transakcji": null,
+          "tytul": null,
+          "z_rachunku": "73737373737373737373737373"
+        }
+      }
+    ],
+    "task11/R2f": [
+      "bank_transfer",
+      {
+        "przelew_bankowy": {
+          "data_operacji": "2028-07-04",
+          "kwota": null,
+          "na_rachunek": "84848484848484848484848484",
+          "numer_transakcji": "ZD964230",
+          "tytul": "rata",
+          "z_rachunku": "73737373737373737373737373"
+        }
+      }
+    ],
+    "task11/Gd": [
+      "power_of_attorney",
+      {
+        "mocodawca": [],
+        "pelnomocnicy": []
+      }
+    ],
+    "task11/Ge": [
+      "power_of_attorney",
+      {
+        "mocodawca": [],
+        "pelnomocnicy": []
+      }
+    ],
+    "task11/F0": [
+      "appeal",
+      {
+        "OdwolanieKIO": {
+          "data": null,
+          "czynnosc_dzien": null,
+          "czynnosc_powod_id": null,
+          "czynnosc_opis": null,
+          "miejscowosc": null
+        },
+        "Odwolujacy": [
+          {
+            "krs": null,
+            "nazwa": "Luneta",
+            "nip": null,
+            "regon": null,
+            "przez-pelnomocnika": 0,
+            "pelnomocnik": {
+              "imie_nazwisko": null,
+              "nazwa": null,
+              "mail": null
+            }
+          }
+        ],
+        "Zamawiajacy": [],
+        "ZamowieniePubliczne": {
+          "numer_bzp": null,
+          "numer_postepowania": null,
+          "numer_ted": null,
+          "tytul": null
+        }
+      }
+    ],
+    "task11/F1": [
+      "appeal",
+      {
+        "OdwolanieKIO": {
+          "data": null,
+          "czynnosc_dzien": null,
+          "czynnosc_powod_id": null,
+          "czynnosc_opis": null,
+          "miejscowosc": null
+        },
+        "Odwolujacy": [
+          {
+            "krs": null,
+            "nazwa": "Luneta Strona pierwsza",
+            "nip": null,
+            "regon": null,
+            "przez-pelnomocnika": 0,
+            "pelnomocnik": {
+              "imie_nazwisko": null,
+              "nazwa": null,
+              "mail": null
+            }
+          }
+        ],
+        "Zamawiajacy": [],
+        "ZamowieniePubliczne": {
+          "numer_bzp": null,
+          "numer_postepowania": null,
+          "numer_ted": null,
+          "tytul": null
+        }
+      }
+    ],
+    "task11/F2": [
+      "appeal",
+      {
+        "OdwolanieKIO": {
+          "data": null,
+          "czynnosc_dzien": null,
+          "czynnosc_powod_id": null,
+          "czynnosc_opis": null,
+          "miejscowosc": null
+        },
+        "Odwolujacy": [
+          {
+            "krs": null,
+            "nazwa": "Luneta Strona nr 1 z 1",
+            "nip": null,
+            "regon": null,
+            "przez-pelnomocnika": 0,
+            "pelnomocnik": {
+              "imie_nazwisko": null,
+              "nazwa": null,
+              "mail": null
+            }
+          }
+        ],
+        "Zamawiajacy": [],
+        "ZamowieniePubliczne": {
+          "numer_bzp": null,
+          "numer_postepowania": null,
+          "numer_ted": null,
+          "tytul": null
+        }
+      }
+    ],
+    "task11/F3": [
+      "appeal",
+      {
+        "OdwolanieKIO": {
+          "data": null,
+          "czynnosc_dzien": null,
+          "czynnosc_powod_id": null,
+          "czynnosc_opis": null,
+          "miejscowosc": null
+        },
+        "Odwolujacy": [
+          {
+            "krs": null,
+            "nazwa": "Luneta Strona 1 z 1 | Wydruk systemowy",
+            "nip": null,
+            "regon": null,
+            "przez-pelnomocnika": 0,
+            "pelnomocnik": {
+              "imie_nazwisko": null,
+              "nazwa": null,
+              "mail": null
+            }
+          }
+        ],
+        "Zamawiajacy": [],
+        "ZamowieniePubliczne": {
+          "numer_bzp": null,
+          "numer_postepowania": null,
+          "numer_ted": null,
+          "tytul": null
+        }
+      }
+    ],
+    "task22/unblurred-original": [
+      null,
+      {}
+    ],
+    "task22/contact": [
+      "power_of_attorney",
+      {
+        "mocodawca": [
+          {
+            "data": {
+              "imie_nazwisko": null,
+              "krs": null,
+              "nazwa": "Fikcyjne Studio sp. z o.o.",
+              "nip": null,
+              "typ": "osoba_prawna"
+            },
+            "podpisujacy": []
+          }
+        ],
+        "pelnomocnicy": [
+          {
+            "imie_nazwisko": "Idzie Wymyślnej",
+            "pesel": null
+          }
+        ]
+      }
+    ],
+    "task22/repeated-recipient": [
+      null,
+      {}
+    ],
+    "task22/masked-sender-control": [
+      null,
+      {}
+    ],
+    "task22/boxes": [
+      null,
+      {}
+    ],
+    "task22/legal-form-typo": [
+      "power_of_attorney",
+      {
+        "mocodawca": [],
+        "pelnomocnicy": []
+      }
+    ],
+    "task22/plain-numerals": [
+      null,
+      {}
+    ],
+    "task22/legal-form-uppercase": [
+      "power_of_attorney",
+      {
+        "mocodawca": [
+          {
+            "data": {
+              "imie_nazwisko": null,
+              "krs": null,
+              "nazwa": "Studio sp. z O.O.",
+              "nip": null,
+              "typ": "osoba_prawna"
+            },
+            "podpisujacy": []
+          }
+        ],
+        "pelnomocnicy": []
+      }
+    ],
+    "task22/heading-ascii": [
+      null,
+      {}
+    ],
+    "task22/role-ascii": [
+      null,
+      {}
+    ],
+    "task22/domain-after-party": [
+      "appeal",
+      {
+        "OdwolanieKIO": {
+          "data": null,
+          "czynnosc_dzien": null,
+          "czynnosc_powod_id": null,
+          "czynnosc_opis": null,
+          "miejscowosc": null
+        },
+        "Odwolujacy": [
+          {
+            "krs": "9876543211",
+            "nazwa": "Studio sp. z o.o.",
+            "nip": null,
+            "regon": null,
+            "przez-pelnomocnika": 0,
+            "pelnomocnik": {
+              "imie_nazwisko": null,
+              "nazwa": null,
+              "mail": null
+            }
+          }
+        ],
+        "Zamawiajacy": [],
+        "ZamowieniePubliczne": {
+          "numer_bzp": null,
+          "numer_postepowania": null,
+          "numer_ted": null,
+          "tytul": null
+        }
+      }
+    ],
+    "task22/acceptance": [
+      "power_of_attorney",
+      {
+        "mocodawca": [
+          {
+            "data": {
+              "imie_nazwisko": null,
+              "krs": null,
+              "nazwa": "Fikcyjne Studio sp. z o.o.",
+              "nip": null,
+              "typ": "osoba_prawna"
+            },
+            "podpisujacy": []
+          }
+        ],
+        "pelnomocnicy": [
+          {
+            "imie_nazwisko": "Idzie Wymyślnej",
+            "pesel": null
+          }
+        ]
+      }
+    ],
+    "task22/single-undotted": [
+      "power_of_attorney",
+      {
+        "mocodawca": [
+          {
+            "data": {
+              "imie_nazwisko": null,
+              "krs": null,
+              "nazwa": "Fikcyjne Studio sp. z o.o.",
+              "nip": null,
+              "typ": "osoba_prawna"
+            },
+            "podpisujacy": []
+          }
+        ],
+        "pelnomocnicy": [
+          {
+            "imie_nazwisko": "Idzie Wymyślnej",
+            "pesel": null
+          }
+        ]
+      }
+    ],
+    "task22/account-two-os": [
+      null,
+      {}
+    ],
+    "task22/account-bad-check-digits": [
+      null,
+      {}
+    ],
+    "task22/account-three-glyphs": [
+      null,
+      {}
+    ],
+    "task22/account-bad-digits": [
+      "bank_transfer",
+      {
+        "przelew_bankowy": {
+          "data_operacji": "2025-04-03",
+          "kwota": 17.25,
+          "na_rachunek": "87432198765432198765432123",
+          "numer_transakcji": null,
+          "tytul": null,
+          "z_rachunku": "57458700991234567801234567"
+        }
+      }
+    ],
+    "task22/account-slash-one": [
+      null,
+      {}
+    ],
+    "task22/account-slash-seven": [
+      null,
+      {}
+    ],
+    "task22/account-pl-prefix": [
+      null,
+      {}
+    ],
+    "task22/mail-paren-at": [
+      "appeal",
+      {
+        "OdwolanieKIO": {
+          "data": null,
+          "czynnosc_dzien": null,
+          "czynnosc_powod_id": null,
+          "czynnosc_opis": null,
+          "miejscowosc": null
+        },
+        "Odwolujacy": [
+          {
+            "krs": null,
+            "nazwa": "Studio E-mail: anna (at) firma.example",
+            "nip": null,
+            "regon": null,
+            "przez-pelnomocnika": 0,
+            "pelnomocnik": {
+              "imie_nazwisko": null,
+              "nazwa": null,
+              "mail": null
+            }
+          }
+        ],
+        "Zamawiajacy": [],
+        "ZamowieniePubliczne": {
+          "numer_bzp": null,
+          "numer_postepowania": null,
+          "numer_ted": null,
+          "tytul": null
+        }
+      }
+    ],
+    "task22/mail-square-at": [
+      "appeal",
+      {
+        "OdwolanieKIO": {
+          "data": null,
+          "czynnosc_dzien": null,
+          "czynnosc_powod_id": null,
+          "czynnosc_opis": null,
+          "miejscowosc": null
+        },
+        "Odwolujacy": [
+          {
+            "krs": null,
+            "nazwa": "Studio E-mail: anna [at] firma.example",
+            "nip": null,
+            "regon": null,
+            "przez-pelnomocnika": 0,
+            "pelnomocnik": {
+              "imie_nazwisko": null,
+              "nazwa": null,
+              "mail": null
+            }
+          }
+        ],
+        "Zamawiajacy": [],
+        "ZamowieniePubliczne": {
+          "numer_bzp": null,
+          "numer_postepowania": null,
+          "numer_ted": null,
+          "tytul": null
+        }
+      }
+    ],
+    "task22/mail-spaced-at": [
+      "appeal",
+      {
+        "OdwolanieKIO": {
+          "data": null,
+          "czynnosc_dzien": null,
+          "czynnosc_powod_id": null,
+          "czynnosc_opis": null,
+          "miejscowosc": null
+        },
+        "Odwolujacy": [
+          {
+            "krs": null,
+            "nazwa": "Studio",
+            "nip": null,
+            "regon": null,
+            "przez-pelnomocnika": 0,
+            "pelnomocnik": {
+              "imie_nazwisko": null,
+              "nazwa": null,
+              "mail": null
+            }
+          }
+        ],
+        "Zamawiajacy": [],
+        "ZamowieniePubliczne": {
+          "numer_bzp": null,
+          "numer_postepowania": null,
+          "numer_ted": null,
+          "tytul": null
+        }
+      }
+    ],
+    "task22/mail-bare-q": [
+      "appeal",
+      {
+        "OdwolanieKIO": {
+          "data": null,
+          "czynnosc_dzien": null,
+          "czynnosc_powod_id": null,
+          "czynnosc_opis": null,
+          "miejscowosc": null
+        },
+        "Odwolujacy": [
+          {
+            "krs": null,
+            "nazwa": "Studio E-mail: annaQfirma.example",
+            "nip": null,
+            "regon": null,
+            "przez-pelnomocnika": 0,
+            "pelnomocnik": {
+              "imie_nazwisko": null,
+              "nazwa": null,
+              "mail": null
+            }
+          }
+        ],
+        "Zamawiajacy": [],
+        "ZamowieniePubliczne": {
+          "numer_bzp": null,
+          "numer_postepowania": null,
+          "numer_ted": null,
+          "tytul": null
+        }
+      }
+    ],
+    "task22/mail-crop-q": [
+      "appeal",
+      {
+        "OdwolanieKIO": {
+          "data": null,
+          "czynnosc_dzien": null,
+          "czynnosc_powod_id": null,
+          "czynnosc_opis": null,
+          "miejscowosc": null
+        },
+        "Odwolujacy": [
+          {
+            "krs": null,
+            "nazwa": "Studio E-mail: testQx.example",
+            "nip": null,
+            "regon": null,
+            "przez-pelnomocnika": 0,
+            "pelnomocnik": {
+              "imie_nazwisko": null,
+              "nazwa": null,
+              "mail": null
+            }
+          }
+        ],
+        "Zamawiajacy": [],
+        "ZamowieniePubliczne": {
+          "numer_bzp": null,
+          "numer_postepowania": null,
+          "numer_ted": null,
+          "tytul": null
+        }
+      }
+    ],
+    "task22/mail-crop-agree": [
+      "appeal",
+      {
+        "OdwolanieKIO": {
+          "data": null,
+          "czynnosc_dzien": null,
+          "czynnosc_powod_id": null,
+          "czynnosc_opis": null,
+          "miejscowosc": null
+        },
+        "Odwolujacy": [
+          {
+            "krs": null,
+            "nazwa": "Studio",
+            "nip": null,
+            "regon": null,
+            "przez-pelnomocnika": 0,
+            "pelnomocnik": {
+              "imie_nazwisko": null,
+              "nazwa": null,
+              "mail": null
+            }
+          }
+        ],
+        "Zamawiajacy": [],
+        "ZamowieniePubliczne": {
+          "numer_bzp": null,
+          "numer_postepowania": null,
+          "numer_ted": null,
+          "tytul": null
+        }
+      }
+    ],
+    "task22/mail-crop-different": [
+      "appeal",
+      {
+        "OdwolanieKIO": {
+          "data": null,
+          "czynnosc_dzien": null,
+          "czynnosc_powod_id": null,
+          "czynnosc_opis": null,
+          "miejscowosc": null
+        },
+        "Odwolujacy": [
+          {
+            "krs": null,
+            "nazwa": "Studio",
+            "nip": null,
+            "regon": null,
+            "przez-pelnomocnika": 0,
+            "pelnomocnik": {
+              "imie_nazwisko": null,
+              "nazwa": null,
+              "mail": null
+            }
+          }
+        ],
+        "Zamawiajacy": [],
+        "ZamowieniePubliczne": {
+          "numer_bzp": null,
+          "numer_postepowania": null,
+          "numer_ted": null,
+          "tytul": null
+        }
+      }
+    ],
+    "task30/footer-plain": [
+      null,
+      {}
+    ],
+    "task30/footer-nr": [
+      null,
+      {}
+    ],
+    "task30/footer-nr-ocr-transcript": [
+      null,
+      {}
+    ],
+    "task30/coordinator": [
+      "power_of_attorney",
+      {
+        "mocodawca": [
+          {
+            "data": {
+              "imie_nazwisko": null,
+              "krs": null,
+              "nazwa": "Fikcyjne Studio sp. z o.o.",
+              "nip": null,
+              "typ": "osoba_prawna"
+            },
+            "podpisujacy": []
+          }
+        ],
+        "pelnomocnicy": [
+          {
+            "imie_nazwisko": "Idzie Wymyślnej",
+            "pesel": null
+          }
+        ]
+      }
+    ],
+    "task30/signature-then-phone": [
+      "power_of_attorney",
+      {
+        "mocodawca": [
+          {
+            "data": {
+              "imie_nazwisko": null,
+              "krs": null,
+              "nazwa": "Fikcyjne Studio sp. z o.o.",
+              "nip": null,
+              "typ": "osoba_prawna"
+            },
+            "podpisujacy": []
+          }
+        ],
+        "pelnomocnicy": [
+          {
+            "imie_nazwisko": "Idzie Wymyślnej",
+            "pesel": null
+          }
+        ]
+      }
+    ],
+    "task30/contact-sentence": [
+      "power_of_attorney",
+      {
+        "mocodawca": [
+          {
+            "data": {
+              "imie_nazwisko": null,
+              "krs": null,
+              "nazwa": "Fikcyjne Studio sp. z o.o.",
+              "nip": null,
+              "typ": "osoba_prawna"
+            },
+            "podpisujacy": []
+          }
+        ],
+        "pelnomocnicy": [
+          {
+            "imie_nazwisko": "Idzie Wymyślnej",
+            "pesel": null
+          }
+        ]
+      }
+    ],
+    "task30/explicit-dotted": [
+      "power_of_attorney",
+      {
+        "mocodawca": [
+          {
+            "data": {
+              "imie_nazwisko": null,
+              "krs": null,
+              "nazwa": "Fikcyjne Studio sp. z o.o.",
+              "nip": null,
+              "typ": "osoba_prawna"
+            },
+            "podpisujacy": [
+              {
+                "imie_nazwisko": "Nina Fikcyjna"
+              }
+            ]
+          }
+        ],
+        "pelnomocnicy": [
+          {
+            "imie_nazwisko": "Idzie Wymyślnej",
+            "pesel": null
+          }
+        ]
+      }
+    ],
+    "task30/repeated-sender": [
+      null,
+      {}
+    ],
+    "task30/memo-missing-sender": [
+      "bank_transfer",
+      {
+        "przelew_bankowy": {
+          "data_operacji": "2025-04-03",
+          "kwota": 17.25,
+          "na_rachunek": "87432198765432198765432123",
+          "numer_transakcji": null,
+          "tytul": null,
+          "z_rachunku": "71932700000000000000000027"
+        }
+      }
+    ],
+    "task30/fully-printed": [
+      "bank_transfer",
+      {
+        "przelew_bankowy": {
+          "data_operacji": "2025-04-03",
+          "kwota": 17.25,
+          "na_rachunek": "87432198765432198765432123",
+          "numer_transakcji": null,
+          "tytul": null,
+          "z_rachunku": "71932700000000000000000027"
+        }
+      }
+    ],
+    "task30/mask-x": [
+      null,
+      {}
+    ],
+    "task30/plan-only": [
+      null,
+      {}
+    ],
+    "task30/plan-next-page": [
+      null,
+      {}
+    ],
+    "new/appeal-labelled-domain": [
+      "appeal",
+      {
+        "OdwolanieKIO": {
+          "data": null,
+          "czynnosc_dzien": null,
+          "czynnosc_powod_id": null,
+          "czynnosc_opis": null,
+          "miejscowosc": null
+        },
+        "Odwolujacy": [
+          {
+            "krs": "9876423127",
+            "nazwa": "Tkacki Warsztat sp. z o.o.",
+            "nip": null,
+            "regon": null,
+            "przez-pelnomocnika": 0,
+            "pelnomocnik": {
+              "imie_nazwisko": null,
+              "nazwa": null,
+              "mail": null
+            }
+          }
+        ],
+        "Zamawiajacy": [
+          {
+            "krs": null,
+            "nazwa": "Gmina Czółenko",
+            "nip": null,
+            "regon": null,
+            "prowadzacy_postepowanie": null
+          }
+        ],
+        "ZamowieniePubliczne": {
+          "numer_bzp": null,
+          "numer_postepowania": null,
+          "numer_ted": null,
+          "tytul": null
+        }
+      }
+    ],
+    "new/appeal-party-following-mail": [
+      "appeal",
+      {
+        "OdwolanieKIO": {
+          "data": null,
+          "czynnosc_dzien": null,
+          "czynnosc_powod_id": null,
+          "czynnosc_opis": null,
+          "miejscowosc": null
+        },
+        "Odwolujacy": [
+          {
+            "krs": null,
+            "nazwa": "Tkacki Warsztat sp. z o.o.",
+            "nip": "8765432189",
+            "regon": null,
+            "przez-pelnomocnika": 0,
+            "pelnomocnik": {
+              "imie_nazwisko": null,
+              "nazwa": null,
+              "mail": null
+            }
+          }
+        ],
+        "Zamawiajacy": [
+          {
+            "krs": null,
+            "nazwa": "Dom Tkanin",
+            "nip": null,
+            "regon": null,
+            "prowadzacy_postepowanie": null
+          }
+        ],
+        "ZamowieniePubliczne": {
+          "numer_bzp": null,
+          "numer_postepowania": null,
+          "numer_ted": null,
+          "tytul": null
+        }
+      }
+    ],
+    "new/appeal-legal-form-as-printed": [
+      "appeal",
+      {
+        "OdwolanieKIO": {
+          "data": null,
+          "czynnosc_dzien": null,
+          "czynnosc_powod_id": null,
+          "czynnosc_opis": null,
+          "miejscowosc": null
+        },
+        "Odwolujacy": [
+          {
+            "krs": null,
+            "nazwa": "Splot sp. z 0.0.",
+            "nip": null,
+            "regon": null,
+            "przez-pelnomocnika": 0,
+            "pelnomocnik": {
+              "imie_nazwisko": null,
+              "nazwa": null,
+              "mail": null
+            }
+          }
+        ],
+        "Zamawiajacy": [
+          {
+            "krs": null,
+            "nazwa": "Nitka SA",
+            "nip": null,
+            "regon": null,
+            "prowadzacy_postepowanie": null
+          }
+        ],
+        "ZamowieniePubliczne": {
+          "numer_bzp": null,
+          "numer_postepowania": null,
+          "numer_ted": null,
+          "tytul": null
+        }
+      }
+    ],
+    "new/appeal-mask-in-title": [
+      "appeal",
+      {
+        "OdwolanieKIO": {
+          "data": null,
+          "czynnosc_dzien": null,
+          "czynnosc_powod_id": null,
+          "czynnosc_opis": null,
+          "miejscowosc": null
+        },
+        "Odwolujacy": [
+          {
+            "krs": null,
+            "nazwa": "Tkacki Warsztat sp. z o.o.",
+            "nip": null,
+            "regon": null,
+            "przez-pelnomocnika": 0,
+            "pelnomocnik": {
+              "imie_nazwisko": null,
+              "nazwa": null,
+              "mail": null
+            }
+          }
+        ],
+        "Zamawiajacy": [],
+        "ZamowieniePubliczne": {
+          "numer_bzp": null,
+          "numer_postepowania": null,
+          "numer_ted": null,
+          "tytul": null
+        }
+      }
+    ],
+    "new/appeal-body-action": [
+      "appeal",
+      {
+        "OdwolanieKIO": {
+          "data": null,
+          "czynnosc_dzien": "2030-05-17",
+          "czynnosc_powod_id": 9,
+          "czynnosc_opis": "Decyzja o unieważnieniu postępowania",
+          "miejscowosc": null
+        },
+        "Odwolujacy": [
+          {
+            "krs": null,
+            "nazwa": "Tkacki Warsztat sp. z o.o.",
+            "nip": null,
+            "regon": null,
+            "przez-pelnomocnika": 0,
+            "pelnomocnik": {
+              "imie_nazwisko": null,
+              "nazwa": null,
+              "mail": null
+            }
+          }
+        ],
+        "Zamawiajacy": [],
+        "ZamowieniePubliczne": {
+          "numer_bzp": null,
+          "numer_postepowania": null,
+          "numer_ted": null,
+          "tytul": null
+        }
+      }
+    ],
+    "new/appeal-post-scriptum": [
+      "appeal",
+      {
+        "OdwolanieKIO": {
+          "data": null,
+          "czynnosc_dzien": null,
+          "czynnosc_powod_id": null,
+          "czynnosc_opis": null,
+          "miejscowosc": null
+        },
+        "Odwolujacy": [
+          {
+            "krs": null,
+            "nazwa": "Tkacki Warsztat sp. z o.o.",
+            "nip": null,
+            "regon": null,
+            "przez-pelnomocnika": 0,
+            "pelnomocnik": {
+              "imie_nazwisko": null,
+              "nazwa": null,
+              "mail": null
+            }
+          }
+        ],
+        "Zamawiajacy": [
+          {
+            "krs": null,
+            "nazwa": "Cech Przędzarzy",
+            "nip": null,
+            "regon": null,
+            "prowadzacy_postepowanie": null
+          }
+        ],
+        "ZamowieniePubliczne": {
+          "numer_bzp": null,
+          "numer_postepowania": null,
+          "numer_ted": null,
+          "tytul": null
+        }
+      }
+    ],
+    "new/appeal-lawyer": [
+      "appeal",
+      {
+        "OdwolanieKIO": {
+          "data": null,
+          "czynnosc_dzien": null,
+          "czynnosc_powod_id": null,
+          "czynnosc_opis": null,
+          "miejscowosc": null
+        },
+        "Odwolujacy": [
+          {
+            "krs": null,
+            "nazwa": "Tkacki Warsztat sp. z o.o.",
+            "nip": null,
+            "regon": null,
+            "przez-pelnomocnika": 1,
+            "pelnomocnik": {
+              "imie_nazwisko": "Nela Splotna",
+              "nazwa": null,
+              "mail": null
+            }
+          }
+        ],
+        "Zamawiajacy": [],
+        "ZamowieniePubliczne": {
+          "numer_bzp": null,
+          "numer_postepowania": null,
+          "numer_ted": null,
+          "tytul": null
+        }
+      }
+    ],
+    "new/appeal-role-in-quote": [
+      "appeal",
+      {
+        "OdwolanieKIO": {
+          "data": null,
+          "czynnosc_dzien": null,
+          "czynnosc_powod_id": null,
+          "czynnosc_opis": null,
+          "miejscowosc": null
+        },
+        "Odwolujacy": [
+          {
+            "krs": null,
+            "nazwa": "Tkacki Warsztat sp. z o.o.",
+            "nip": null,
+            "regon": null,
+            "przez-pelnomocnika": 0,
+            "pelnomocnik": {
+              "imie_nazwisko": null,
+              "nazwa": null,
+              "mail": null
+            }
+          }
+        ],
+        "Zamawiajacy": [],
+        "ZamowieniePubliczne": {
+          "numer_bzp": null,
+          "numer_postepowania": null,
+          "numer_ted": null,
+          "tytul": null
+        }
+      }
+    ],
+    "new/power-undotted-position": [
+      "power_of_attorney",
+      {
+        "mocodawca": [
+          {
+            "data": {
+              "imie_nazwisko": null,
+              "krs": null,
+              "nazwa": "Tkacki Warsztat sp. z o.o.",
+              "nip": null,
+              "typ": "osoba_prawna"
+            },
+            "podpisujacy": []
+          }
+        ],
+        "pelnomocnicy": [
+          {
+            "imie_nazwisko": "Kalinie Czerwcowej",
+            "pesel": null
+          }
+        ]
+      }
+    ],
+    "new/power-dotted-refusal": [
+      "power_of_attorney",
+      {
+        "mocodawca": [
+          {
+            "data": {
+              "imie_nazwisko": null,
+              "krs": null,
+              "nazwa": "Tkacki Warsztat sp. z o.o.",
+              "nip": null,
+              "typ": "osoba_prawna"
+            },
+            "podpisujacy": [
+              {
+                "imie_nazwisko": "Iwo Splotny"
+              }
+            ]
+          }
+        ],
+        "pelnomocnicy": [
+          {
+            "imie_nazwisko": "Kalinie Czerwcowej",
+            "pesel": null
+          }
+        ]
+      }
+    ],
+    "new/power-archive-copy": [
+      "power_of_attorney",
+      {
+        "mocodawca": [
+          {
+            "data": {
+              "imie_nazwisko": null,
+              "krs": null,
+              "nazwa": "Tkacki Warsztat sp. z o.o.",
+              "nip": null,
+              "typ": "osoba_prawna"
+            },
+            "podpisujacy": []
+          }
+        ],
+        "pelnomocnicy": [
+          {
+            "imie_nazwisko": "Kalinie Czerwcowej",
+            "pesel": null
+          }
+        ]
+      }
+    ],
+    "new/power-lowercase-caption": [
+      "power_of_attorney",
+      {
+        "mocodawca": [
+          {
+            "data": {
+              "imie_nazwisko": null,
+              "krs": null,
+              "nazwa": "Tkacki Warsztat sp. z o.o.",
+              "nip": null,
+              "typ": "osoba_prawna"
+            },
+            "podpisujacy": [
+              {
+                "imie_nazwisko": "Anna Osnowa"
+              }
+            ]
+          }
+        ],
+        "pelnomocnicy": [
+          {
+            "imie_nazwisko": "Kalinie Czerwcowej",
+            "pesel": null
+          }
+        ]
+      }
+    ],
+    "new/power-two-columns": [
+      "power_of_attorney",
+      {
+        "mocodawca": [
+          {
+            "data": {
+              "imie_nazwisko": null,
+              "krs": null,
+              "nazwa": "Tkacki Warsztat sp. z o.o.",
+              "nip": null,
+              "typ": "osoba_prawna"
+            },
+            "podpisujacy": [
+              {
+                "imie_nazwisko": "Ada Czerwcowa"
+              }
+            ]
+          }
+        ],
+        "pelnomocnicy": [
+          {
+            "imie_nazwisko": "Kalinie Czerwcowej",
+            "pesel": null
+          }
+        ]
+      }
+    ],
+    "new/power-other-principal": [
+      "power_of_attorney",
+      {
+        "mocodawca": [
+          {
+            "data": {
+              "imie_nazwisko": null,
+              "krs": null,
+              "nazwa": "Tkacki Warsztat sp. z o.o.",
+              "nip": null,
+              "typ": "osoba_prawna"
+            },
+            "podpisujacy": []
+          }
+        ],
+        "pelnomocnicy": [
+          {
+            "imie_nazwisko": "Kalinie Czerwcowej",
+            "pesel": null
+          }
+        ]
+      }
+    ],
+    "new/power-appendix-percent": [
+      "power_of_attorney",
+      {
+        "mocodawca": [
+          {
+            "data": {
+              "imie_nazwisko": null,
+              "krs": null,
+              "nazwa": "Tkacki Warsztat sp. z o.o.",
+              "nip": null,
+              "typ": "osoba_prawna"
+            },
+            "podpisujacy": []
+          }
+        ],
+        "pelnomocnicy": [
+          {
+            "imie_nazwisko": "Kalinie Czerwcowej",
+            "pesel": null
+          }
+        ]
+      }
+    ],
+    "new/power-line-with-title": [
+      "power_of_attorney",
+      {
+        "mocodawca": [
+          {
+            "data": {
+              "imie_nazwisko": null,
+              "krs": null,
+              "nazwa": "Tkacki Warsztat sp. z o.o.",
+              "nip": null,
+              "typ": "osoba_prawna"
+            },
+            "podpisujacy": [
+              {
+                "imie_nazwisko": "Ada Czerwcowa"
+              }
+            ]
+          }
+        ],
+        "pelnomocnicy": [
+          {
+            "imie_nazwisko": "Kalinie Czerwcowej",
+            "pesel": null
+          }
+        ]
+      }
+    ],
+    "new/bank-amount-in-title": [
+      "bank_transfer",
+      {
+        "przelew_bankowy": {
+          "data_operacji": null,
+          "kwota": 35.76,
+          "na_rachunek": "87432198765432198765432123",
+          "numer_transakcji": null,
+          "tytul": "Zwrot za włókno, kwota brutto 8,19 PLN",
+          "z_rachunku": "71932700000000000000000027"
+        }
+      }
+    ],
+    "new/bank-archive-third": [
+      "bank_transfer",
+      {
+        "przelew_bankowy": {
+          "data_operacji": null,
+          "kwota": 35.76,
+          "na_rachunek": null,
+          "numer_transakcji": null,
+          "tytul": null,
+          "z_rachunku": null
+        }
+      }
+    ],
+    "new/bank-table-two-values": [
+      "bank_transfer",
+      {
+        "przelew_bankowy": {
+          "data_operacji": "2032-08-09",
+          "kwota": null,
+          "na_rachunek": "71932700000000000000000027",
+          "numer_transakcji": null,
+          "tytul": null,
+          "z_rachunku": "87432198765432198765432123"
+        }
+      }
+    ],
+    "new/bank-printed-twice": [
+      "bank_transfer",
+      {
+        "przelew_bankowy": {
+          "data_operacji": null,
+          "kwota": 35.76,
+          "na_rachunek": "87432198765432198765432123",
+          "numer_transakcji": null,
+          "tytul": null,
+          "z_rachunku": "71932700000000000000000027"
+        }
+      }
+    ],
+    "new/bank-inline-opposite-roles": [
+      "bank_transfer",
+      {
+        "przelew_bankowy": {
+          "data_operacji": null,
+          "kwota": 202.12,
+          "na_rachunek": "71932700000000000000000027",
+          "numer_transakcji": null,
+          "tytul": null,
+          "z_rachunku": "87432198765432198765432123"
+        }
+      }
+    ],
+    "new/bank-mask-memo": [
+      "bank_transfer",
+      {
+        "przelew_bankowy": {
+          "data_operacji": null,
+          "kwota": 32.0,
+          "na_rachunek": "71932700000000000000000027",
+          "numer_transakcji": null,
+          "tytul": null,
+          "z_rachunku": "87432198765432198765432123"
+        }
+      }
+    ],
+    "new/bank-negative-status": [
+      null,
+      {}
+    ],
+    "new/bank-partial-iban": [
+      null,
+      {}
+    ],
+    "new/other-archive-index": [
+      null,
+      {}
+    ],
+    "new/other-empty-form": [
+      null,
+      {}
+    ],
+    "new/other-menu": [
+      null,
+      {}
+    ],
+    "new/other-signature-sheet": [
+      null,
+      {}
+    ],
+    "new/other-bank-circular": [
+      null,
+      {}
+    ],
+    "new/other-english": [
+      null,
+      {}
+    ],
+    "new/other-appeal-heading-in-sentence": [
+      null,
+      {}
+    ],
+    "new/other-receipt-no-transfer": [
+      null,
+      {}
+    ],
+    "new/appeal-on-second-page": [
+      "appeal",
+      {
+        "OdwolanieKIO": {
+          "data": null,
+          "czynnosc_dzien": null,
+          "czynnosc_powod_id": null,
+          "czynnosc_opis": null,
+          "miejscowosc": null
+        },
+        "Odwolujacy": [
+          {
+            "krs": null,
+            "nazwa": "Tkacki Warsztat sp. z o.o.",
+            "nip": null,
+            "regon": null,
+            "przez-pelnomocnika": 0,
+            "pelnomocnik": {
+              "imie_nazwisko": null,
+              "nazwa": null,
+              "mail": null
+            }
+          }
+        ],
+        "Zamawiajacy": [
+          {
+            "krs": null,
+            "nazwa": "Młyn Nitki",
+            "nip": null,
+            "regon": null,
+            "prowadzacy_postepowanie": null
+          }
+        ],
+        "ZamowieniePubliczne": {
+          "numer_bzp": null,
+          "numer_postepowania": null,
+          "numer_ted": null,
+          "tytul": null
+        }
+      }
+    ],
+    "new/appeal-third-page-only": [
+      null,
+      {}
+    ],
+    "new/power-caption-next-page": [
+      "power_of_attorney",
+      {
+        "mocodawca": [
+          {
+            "data": {
+              "imie_nazwisko": null,
+              "krs": null,
+              "nazwa": "Tkacki Warsztat sp. z o.o.",
+              "nip": null,
+              "typ": "osoba_prawna"
+            },
+            "podpisujacy": [
+              {
+                "imie_nazwisko": "Ada Czerwcowa"
+              }
+            ]
+          }
+        ],
+        "pelnomocnicy": [
+          {
+            "imie_nazwisko": "Kalinie Czerwcowej",
+            "pesel": null
+          }
+        ]
+      }
+    ],
+    "new/power-header-on-both": [
+      "power_of_attorney",
+      {
+        "mocodawca": [
+          {
+            "data": {
+              "imie_nazwisko": null,
+              "krs": null,
+              "nazwa": "Tkacki Warsztat sp. z o.o.",
+              "nip": null,
+              "typ": "osoba_prawna"
+            },
+            "podpisujacy": [
+              {
+                "imie_nazwisko": "Stefan Osnowa"
+              }
+            ]
+          }
+        ],
+        "pelnomocnicy": [
+          {
+            "imie_nazwisko": "Kalinie Czerwcowej",
+            "pesel": null
+          }
+        ]
+      }
+    ],
+    "new/bank-status-on-continuation": [
+      "bank_transfer",
+      {
+        "przelew_bankowy": {
+          "data_operacji": "2032-08-28",
+          "kwota": 35.76,
+          "na_rachunek": "87432198765432198765432123",
+          "numer_transakcji": null,
+          "tytul": null,
+          "z_rachunku": "71932700000000000000000027"
+        }
+      }
+    ],
+    "new/bank-terms-on-page-two": [
+      null,
+      {}
+    ],
+    "new/other-three-headings": [
+      null,
+      {}
+    ],
+    "new/other-booklet": [
+      null,
+      {}
+    ],
+    "task1/name-case-normalization": [
+      "appeal",
+      {
+        "OdwolanieKIO": {
+          "data": null,
+          "czynnosc_dzien": null,
+          "czynnosc_powod_id": null,
+          "czynnosc_opis": null,
+          "miejscowosc": null
+        },
+        "Odwolujacy": [
+          {
+            "krs": null,
+            "nazwa": "Alfa",
+            "nip": null,
+            "regon": null,
+            "przez-pelnomocnika": 0,
+            "pelnomocnik": {
+              "imie_nazwisko": null,
+              "nazwa": null,
+              "mail": null
+            }
+          }
+        ],
+        "Zamawiajacy": [
+          {
+            "krs": null,
+            "nazwa": "ALFA",
+            "nip": null,
+            "regon": null,
+            "prowadzacy_postepowanie": null
+          }
+        ],
+        "ZamowieniePubliczne": {
+          "numer_bzp": null,
+          "numer_postepowania": null,
+          "numer_ted": null,
+          "tytul": null
+        }
+      }
+    ],
+    "task1/signer-identity-ordered": [
+      "power_of_attorney",
+      {
+        "mocodawca": [
+          {
+            "data": {
+              "imie_nazwisko": null,
+              "krs": null,
+              "nazwa": "Alfa sp. z o.o.",
+              "nip": null,
+              "typ": "osoba_prawna"
+            },
+            "podpisujacy": [
+              {
+                "imie_nazwisko": "Ewa Próbna"
+              },
+              {
+                "imie_nazwisko": "Iga Próbna"
+              }
+            ]
+          },
+          {
+            "data": {
+              "imie_nazwisko": null,
+              "krs": null,
+              "nazwa": "Beta sp. z o.o.",
+              "nip": null,
+              "typ": "osoba_prawna"
+            },
+            "podpisujacy": [
+              {
+                "imie_nazwisko": "Jan Próbny"
+              },
+              {
+                "imie_nazwisko": "Ola Próbna"
+              }
+            ]
+          }
+        ],
+        "pelnomocnicy": []
+      }
+    ],
+    "task1/signer-identity-swapped": [
+      "power_of_attorney",
+      {
+        "mocodawca": [
+          {
+            "data": {
+              "imie_nazwisko": null,
+              "krs": null,
+              "nazwa": "Alfa sp. z o.o.",
+              "nip": null,
+              "typ": "osoba_prawna"
+            },
+            "podpisujacy": [
+              {
+                "imie_nazwisko": "Jan Próbny"
+              },
+              {
+                "imie_nazwisko": "Ola Próbna"
+              }
+            ]
+          },
+          {
+            "data": {
+              "imie_nazwisko": null,
+              "krs": null,
+              "nazwa": "Beta sp. z o.o.",
+              "nip": null,
+              "typ": "osoba_prawna"
+            },
+            "podpisujacy": [
+              {
+                "imie_nazwisko": "Ewa Próbna"
+              },
+              {
+                "imie_nazwisko": "Iga Próbna"
+              }
+            ]
+          }
+        ],
+        "pelnomocnicy": []
+      }
+    ],
+    "task11/identifier-digits": [
+      "power_of_attorney",
+      {
+        "mocodawca": [
+          {
+            "data": {
+              "imie_nazwisko": null,
+              "krs": null,
+              "nazwa": "Fikcyjne Studio sp. z o.o.",
+              "nip": null,
+              "typ": "osoba_prawna"
+            },
+            "podpisujacy": []
+          }
+        ],
+        "pelnomocnicy": [
+          {
+            "imie_nazwisko": "Idzie Wymyślnej",
+            "pesel": "99422967018"
+          }
+        ]
+      }
+    ],
+    "task11/identifier-spaces-hyphen": [
+      "power_of_attorney",
+      {
+        "mocodawca": [
+          {
+            "data": {
+              "imie_nazwisko": null,
+              "krs": null,
+              "nazwa": "Fikcyjne Studio sp. z o.o.",
+              "nip": null,
+              "typ": "osoba_prawna"
+            },
+            "podpisujacy": []
+          }
+        ],
+        "pelnomocnicy": [
+          {
+            "imie_nazwisko": "Idzie Wymyślnej",
+            "pesel": null
+          }
+        ]
+      }
+    ],
+    "task11/identifier-hyphen-spaces": [
+      "power_of_attorney",
+      {
+        "mocodawca": [
+          {
+            "data": {
+              "imie_nazwisko": null,
+              "krs": null,
+              "nazwa": "Fikcyjne Studio sp. z o.o.",
+              "nip": null,
+              "typ": "osoba_prawna"
+            },
+            "podpisujacy": []
+          }
+        ],
+        "pelnomocnicy": [
+          {
+            "imie_nazwisko": "Idzie Wymyślnej",
+            "pesel": null
+          }
+        ]
+      }
+    ]
+  }
+}

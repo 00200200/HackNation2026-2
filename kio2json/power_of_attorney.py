@@ -135,7 +135,7 @@ def _attorneys(text: str) -> list[dict]:
     return list(attorneys.values())
 
 
-def _signers(text: str, principal_names: list[str], attorney_names: set[str]) -> list[list[str]]:
+def _signers(text: str, principal_names: list[str], attorney_names: set[str], *, from_line: int = 0) -> list[list[str]]:
     """Attach each signature to its explicit heading, including the heading before the first rule."""
     signers = [[] for _ in principal_names]
     first = SIGNATURE_LINE_RE.search(text)
@@ -150,6 +150,8 @@ def _signers(text: str, principal_names: list[str], attorney_names: set[str]) ->
         len(prefix),
     )
     lines = prefix[start:] + text[first.start() :].splitlines()
+    # A mixed document can use earlier dotted lines as context for a native page.
+    first_candidate = len(prefix) - start + max(0, from_line - text.count("\n", 0, first.start()))
     current = 0 if len(principal_names) == 1 else None
     for index, line in enumerate(lines):
         if heading.match(line.strip()):
@@ -161,7 +163,7 @@ def _signers(text: str, principal_names: list[str], attorney_names: set[str]) ->
             continue
         if re.match(r"^pełnomocnictwo przyjmuję", line, re.IGNORECASE):
             break
-        if current is None or index < len(prefix) - start:
+        if current is None or index < first_candidate:
             continue
         line = ROLE_WORDS_RE.sub("|", ATTORNEY_RE.sub("|", line))
         for person in re.findall(PERSON, line):
@@ -175,6 +177,10 @@ def extract(text: str) -> dict:
     principals = _principals(text)
     attorneys = _attorneys(text)
     signers = _signers(text, [p["nazwa"] for p in principals], {a["imie_nazwisko"] for a in attorneys})
+    return _record(principals, attorneys, signers)
+
+
+def _record(principals: list[dict], attorneys: list[dict], signers: list[list[str]]) -> dict:
     return {
         "mocodawca": [
             {"data": principal, "podpisujacy": [{"imie_nazwisko": name} for name in names]}

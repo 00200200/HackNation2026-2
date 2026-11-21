@@ -10,6 +10,9 @@ from typing import Annotated, Literal, Self
 
 from pydantic import BaseModel, BeforeValidator, ConfigDict, Field, ImportString, model_validator
 
+from .classify import classify
+from .ocr_accounts import AccountEvidence
+
 DEFAULT_DIR = Path(__file__).resolve().parents[1] / "config" / "classes"
 
 
@@ -150,7 +153,9 @@ def load_classes(directory: Path | None = None) -> list[DocumentClass]:
     return sorted(classes.values(), key=lambda c: (c.priority, c.id))
 
 
-def route(pages: list[str], definitions: list[DocumentClass]) -> DocumentClass | None:
+def route(
+    pages: list[str], definitions: list[DocumentClass], *, ocr_accounts: AccountEvidence | None = None
+) -> DocumentClass | None:
     # Organizer classes share a classifier. Compute its result once for this PDF.
     labels = {}
     for definition in definitions:
@@ -160,7 +165,11 @@ def route(pages: list[str], definitions: list[DocumentClass]) -> DocumentClass |
         if isinstance(routing, ClassifierRouting):
             classifier = routing.classifier
             if classifier not in labels:
-                labels[classifier] = classifier(pages)
+                labels[classifier] = (
+                    classify(pages, ocr_accounts=ocr_accounts)
+                    if classifier is classify and ocr_accounts is not None
+                    else classifier(pages)
+                )
             if labels[classifier] == definition.id:
                 return definition
         elif routing.matches(pages):
