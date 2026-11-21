@@ -1,0 +1,58 @@
+id = "power_of_attorney"
+priority = 20
+engines = ["python"]
+extractor = "kio2json.power_of_attorney.extract"
+
+[routing]
+classifier = "kio2json.classify.classify"
+
+[fields.mocodawca]
+match_by = "data.nazwa"
+type = "list"
+nullable = false
+instruction = "One record per mocodawca granting authority, including each joint grantor. For none, return []."
+
+[fields.mocodawca.items]
+type = "object"
+nullable = false
+instruction = "One principal and its signers."
+
+[fields.mocodawca.items.fields.data]
+type = "object"
+nullable = false
+instruction = "Identity of the person or legal entity granting authority."
+
+[fields.mocodawca.items.fields.data.fields]
+imie_nazwisko = { type = "string", instruction = "Given name and surname if the grantor is a natural person. For a legal entity or an unstated name, null." }
+krs = { type = "string", normalizer = "krs", instruction = "KRS of this legal entity, ten digits including leading zeros. If absent, null." }
+nazwa = { type = "string", instruction = "Full name of this grantor as stated. If absent, null." }
+nip = { type = "string", normalizer = "nip", instruction = "NIP of this grantor, ten digits. If absent, null." }
+typ = { grounding = "typ", type = "string", instruction = "Use osoba_prawna for a legal entity and osoba_fizyczna for a natural person. If unclear, null." }
+
+[fields.mocodawca.items.fields.podpisujacy]
+type = "list"
+nullable = false
+instruction = "Only the people signing for this particular grantor. For none identified, return []."
+
+[fields.mocodawca.items.fields.podpisujacy.items]
+type = "object"
+nullable = false
+instruction = "One signer for this principal."
+
+[fields.mocodawca.items.fields.podpisujacy.items.fields]
+imie_nazwisko = { type = "string", instruction = "Full name of the signer identified for this grantor. If absent, null." }
+
+[fields.pelnomocnicy]
+match_by = "imie_nazwisko"
+type = "list"
+nullable = false
+instruction = "One record per person receiving authority (pełnomocnik). For none identified, return []."
+
+[fields.pelnomocnicy.items]
+type = "object"
+nullable = false
+instruction = "One recipient of the power of attorney."
+
+[fields.pelnomocnicy.items.fields]
+imie_nazwisko = { type = "string", instruction = "Given name and surname of the recipient of authority, in the nominative case. If absent, null." }
+pesel = { type = "string", normalizer = "pesel", instruction = "Eleven-digit PESEL explicitly given for this recipient. Preserve leading zeros. If absent, null." }

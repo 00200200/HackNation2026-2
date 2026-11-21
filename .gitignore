@@ -237,3 +237,6 @@ output/*
 
 # make data cache
 .cache/
+
+# macOS
+.DS_Store

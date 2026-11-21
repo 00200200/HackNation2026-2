@@ -1,0 +1,145 @@
+% Odwołania2json: processing pipeline. Compile with: pdflatex pipeline.tex
+\documentclass[tikz,border=10pt]{standalone}
+\usepackage[T1]{fontenc}
+\usepackage[utf8]{inputenc}
+\usepackage{lmodern}
+\usetikzlibrary{arrows.meta,positioning,fit,backgrounds,calc}
+
+\definecolor{ink}{HTML}{1F2933}
+\definecolor{muted}{HTML}{6B7280}
+\definecolor{flow}{HTML}{1D4ED8}
+\definecolor{flowfill}{HTML}{EFF4FF}
+\definecolor{okfill}{HTML}{ECFDF3}
+\definecolor{ok}{HTML}{15803D}
+\definecolor{warn}{HTML}{B45309}
+\definecolor{warnfill}{HTML}{FFF7ED}
+\definecolor{plan}{HTML}{6B7280}
+\definecolor{planfill}{HTML}{F9FAFB}
+
+\newcommand{\fname}[1]{{\ttfamily\footnotesize\color{muted}#1}}
+\begin{document}
+\begin{tikzpicture}[
+    font=\sffamily\small, text=ink,
+    >={Stealth[length=2.2mm,width=1.8mm]},
+    every node/.append style={execute at begin node={\hyphenpenalty=10000 \exhyphenpenalty=10000 }},
+    base/.style={rounded corners=3pt, align=left, inner sep=6pt},
+    box/.style={base, draw=flow, fill=flowfill, line width=0.7pt, text width=#1},
+    io/.style={base, draw=ok, fill=okfill, line width=0.7pt, text width=#1},
+    fail/.style={base, draw=warn, fill=warnfill, line width=0.7pt, text width=#1},
+    planned/.style={base, draw=plan, fill=planfill, dashed, line width=0.6pt, text width=#1},
+    arrow/.style={->, line width=0.8pt, draw=flow},
+    plannedarrow/.style={->, line width=0.6pt, draw=plan, dashed},
+    failarrow/.style={->, line width=0.7pt, draw=warn},
+    note/.style={font=\sffamily\footnotesize, text=muted, align=left},
+]
+
+% ---------------------------------------------------------------- main column
+\node[io=7.0cm] (input)
+  {\textbf{Input}\quad\texttt{input/<case>/*.pdf}\\[1pt]
+   {\footnotesize\color{muted}any file names; text PDFs and scans}};
+
+\node[box=7.0cm, below=10mm of input] (text)
+  {\textbf{1\quad Page text}\hfill\fname{pdf\_text.py}\\[2pt]
+   Read native text or use Polish Tesseract on scans.
+   Keep page numbers, OCR provenance and word boxes for layout-sensitive fields.};
+
+\node[box=7.0cm, below=10mm of text] (classify)
+  {\textbf{2\quad Classification by content}\\[2pt]
+   Try configured routes on headings and evidence.
+   With an endpoint, ask the model about the first page if the rules reject the document.};
+
+% ---------------------------------------------------------------- extractors
+\node[box=4.7cm, below=20mm of classify] (poa)
+  {\textbf{3b\quad Power of attorney}\\ \fname{power\_of\_attorney.py}\\[2pt]
+   principals with KRS and NIP\\ signers under each principal\\ attorneys with PESEL};
+
+\node[box=4.7cm, left=6mm of poa.north west, anchor=north east] (appeal)
+  {\textbf{3a\quad Appeal}\\ \fname{appeal.py}\\[2pt]
+   filing date and place\\ appellant, attorney, authority\\ procurement numbers and title\\
+   challenged act: date, reason 1--12};
+
+\node[box=4.7cm, right=6mm of poa.north east, anchor=north west] (transfer)
+  {\textbf{3c\quad Bank transfer}\\ \fname{bank\_transfer.py}\\[2pt]
+   sender and recipient account\\ amount and operation date\\ title, transaction number};
+
+\begin{scope}[on background layer]
+  \node[draw=flow!45, dotted, line width=0.8pt, rounded corners=5pt, inner sep=7pt,
+        fit=(appeal)(poa)(transfer)] (engines) {};
+\end{scope}
+\node[note, anchor=south west, text=flow] at ($(engines.north west)+(1mm,0.3mm)$) {3\quad Extraction};
+
+% ---------------------------------------------------------------- outputs
+\node[io=16.6cm, below=12mm of engines] (json)
+  {\textbf{Output}\quad\texttt{output/<case>/<same stem>.json}\quad in the organizer's schema;
+   a field the document does not state is \texttt{null}};
+
+\node[box=16.6cm, below=9mm of json, draw=ink, fill=white] (eval)
+  {\textbf{Evaluation}\quad\fname{evals.run}: field-level F1 against reference JSON, with the PDFs renamed
+   so file names cannot help\\
+   \phantom{\textbf{Evaluation}\quad}\fname{evals.field\_report}: errors per field, list items paired
+   inside their parent, OCR stress run};
+
+% ---------------------------------------------------------------- right column: rejected and failed
+\node[fail=4.9cm, anchor=west] (failure) at ($(engines.east |- text)+(12mm,0)$)
+  {\textbf{Document error}\\[2pt] With a model configured, retry the PDF with local rules after a processing error.
+   An unreadable PDF yields an empty file and a diagnostic.};
+
+\node[fail=4.9cm] (other) at (failure |- poa)
+  {\textbf{Any other document}\\[2pt] judgment, notice, invoice,\\ payment request, \dots};
+
+\node[fail=4.9cm] (empty) at (other |- json) {\textbf{Empty file}\quad\texttt{<same stem>.json}};
+
+% ---------------------------------------------------------------- left column: in progress
+\node[planned=5.2cm, anchor=east] (ocr) at ($(engines.west |- text)+(-12mm,0)$)
+  {\textbf{Second reading for the model}\\[2pt]
+   RapidOCR rereads scanned pages. The model sees bounded text from both readings.};
+
+\node[box=5.2cm] (config) at (ocr |- classify)
+  {\textbf{Class configuration}\\[2pt] \fname{config/classes/*.toml}\\
+   Routing cues, fields, types and extraction engines.};
+
+\node[planned=5.2cm] (llm) at (ocr |- poa)
+  {\textbf{Model-first extraction}\\[2pt] Validate each model value against a quoted span from one reading.
+   Use the class rules to fill missing values or recover from a model error.};
+
+\node[box=4.9cm, draw=ink, fill=white] (gui) at (failure |- input)
+  {\textbf{GUI and start scripts}\\[2pt] \fname{start.bat}, \fname{start.sh}, \fname{kio2json.gui}:\\
+   page next to JSON, results as .zip};
+\draw[->, line width=0.7pt, draw=ink] (gui) -- (input);
+
+% ---------------------------------------------------------------- arrows
+\draw[arrow] (input) -- (text);
+\draw[arrow] (text) -- (classify);
+\coordinate (split) at ($(classify.south)+(0,-9mm)$);
+\draw[line width=0.8pt, draw=flow] (classify.south) -- (split);
+\draw[arrow] (split) -| (appeal.north);
+\draw[arrow] (split) -- (poa.north);
+\draw[arrow] (split) -| (transfer.north);
+\draw[arrow] (appeal.south |- engines.south) -- (appeal.south |- json.north);
+\draw[arrow] (poa.south |- engines.south) -- (poa.south |- json.north);
+\draw[arrow] (transfer.south |- engines.south) -- (transfer.south |- json.north);
+\draw[->, line width=0.7pt, draw=ink] (json) -- (eval);
+
+\draw[failarrow] (text) -- (failure);
+\draw[failarrow] (classify.east) -| (other.north);
+\draw[failarrow] (other) -- (empty);
+\draw[failarrow] (failure.east) -- ++(7mm,0) |- node[pos=0.25, right, note] {unreadable} (empty.east);
+
+\draw[plannedarrow] (ocr) -- (text);
+\draw[arrow] (config) -- (classify);
+\draw[plannedarrow] (llm.east) -- (llm.east -| engines.west);
+\draw[plannedarrow] (config.south) -- (llm.north);
+
+% ---------------------------------------------------------------- title and legend
+\node[font=\sffamily\bfseries\large, anchor=south west] (ttl) at ($(ocr.west |- input.north)+(0,9mm)$)
+  {Odwołania2json: from a case folder of PDFs to one JSON per document};
+\node[note, anchor=north west] at ($(ttl.south west)+(0,-0.5mm)$)
+  {Default profile: local rules. Configure an endpoint, model and credential to enable model routing, extraction and a second OCR reading.};
+
+\node[note, anchor=north west] at ($(ocr.west |- eval.south)+(0,-6mm)$)
+  {\tikz[baseline=-0.6ex]{\draw[draw=flow, fill=flowfill, rounded corners=1.5pt] (0,-0.12) rectangle (0.42,0.12);}\ \ implemented step\qquad
+   \tikz[baseline=-0.6ex]{\draw[draw=ok, fill=okfill, rounded corners=1.5pt] (0,-0.12) rectangle (0.42,0.12);}\ \ files in and out\qquad
+   \tikz[baseline=-0.6ex]{\draw[draw=warn, fill=warnfill, rounded corners=1.5pt] (0,-0.12) rectangle (0.42,0.12);}\ \ rejected or failed\qquad
+   \tikz[baseline=-0.6ex]{\draw[draw=plan, fill=planfill, dashed, rounded corners=1.5pt] (0,-0.12) rectangle (0.42,0.12);}\ \ enabled with a model endpoint};
+\end{tikzpicture}
+\end{document}
