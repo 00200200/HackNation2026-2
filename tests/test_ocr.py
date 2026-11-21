@@ -39,3 +39,46 @@ def test_restore_accents_in_headings_and_labels_without_changing_names():
     assert normalize_ocr("ODWOLANIE\nOdwolujacy: Studio Pelno\nPELNOMOCNICTWO PROCESOWE") == (
         "ODWOŁANIE\nOdwołujący: Studio Pelno\nPEŁNOMOCNICTWO PROCESOWE"
     )
+
+
+def test_email_second_read_must_agree_on_every_other_character():
+    from kio2json.ocr_normalize import confirmed_email
+
+    assert confirmed_email("radaQfikcja.example", "rada@fikcja.example") == "rada@fikcja.example"
+    assert confirmed_email("rada©fikcja.example", "rada@inna.example") == "rada©fikcja.example"
+    assert confirmed_email("radaQfikcja.example", "radę@fikcja.example") == "radaQfikcja.example"
+    assert confirmed_email("radaQfikcja.example", "radaQfikcja.example") == "radaQfikcja.example"
+
+
+def test_scanned_pdf_returns_words_in_pdf_points(tmp_path):
+    from PIL import Image, ImageDraw, ImageFont
+
+    from kio2json.pdf_text import read_pages
+
+    image = Image.new("RGB", (900, 240), "white")
+    ImageDraw.Draw(image).text((60, 50), "ALFA PRZELEW", font=ImageFont.load_default(size=62), fill="black")
+    path = tmp_path / "scan.pdf"
+    image.save(path, resolution=150)
+    words = []
+    assert read_pages(path, word_boxes=words) == ["ALFA PRZELEW"]
+    assert [(w.page, w.text) for w in words] == [(1, "ALFA"), (1, "PRZELEW")]
+    assert 26 < words[0].x0 < 35 and 25 < words[0].y0 < 40
+    assert words[0].x1 < words[1].x0 < words[1].x1 < 900 * 72 / 150
+    assert words[0].y0 < words[0].y1 < 240 * 72 / 150
+
+
+def test_native_word_boxes_keep_pdfplumber_coordinates(monkeypatch):
+    from unittest.mock import MagicMock
+
+    from kio2json import pdf_text
+
+    page = MagicMock(page_number=2)
+    page.extract_text.return_value = "Załącznik"
+    page.extract_words.return_value = [{"text": "Załącznik", "x0": 40, "top": 60, "x1": 91, "bottom": 70}]
+    document = MagicMock()
+    document.__enter__.return_value.pages = [page]
+    monkeypatch.setattr(pdf_text.pdfplumber, "open", lambda _: document)
+    words = []
+    assert pdf_text.read_pages("native.pdf", word_boxes=words) == ["Załącznik"]
+    assert words == [(2, "Załącznik", 40, 60, 91, 70)]
+    page.to_image.assert_not_called()

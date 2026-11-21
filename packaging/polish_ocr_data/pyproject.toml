@@ -1,0 +1,13 @@
+[build-system]
+requires = ["setuptools>=77", "setuptools-download==1.1.0"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "kio-polish-ocr-data"
+version = "1.1.0"
+description = "Tesseract fast language data for Polish pages and a second reading of e-mail addresses"
+license = "Apache-2.0"
+license-files = ["LICENSE"]
+
+[tool.setuptools]
+packages = []

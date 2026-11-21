@@ -10,18 +10,7 @@ import json
 import sys
 from pathlib import Path
 
-import pytesseract
-
 from .pipeline import process_pdf
-
-
-def ocr_problem() -> str | None:
-    """Why scanned PDFs cannot be read on this machine, or None when OCR is ready."""
-    try:
-        languages = pytesseract.get_languages()
-    except (pytesseract.TesseractNotFoundError, UnicodeDecodeError):
-        return "Tesseract not found"
-    return None if "pol" in languages else "Tesseract has no Polish language data (pol)"
 
 
 def main() -> int:
@@ -32,10 +21,6 @@ def main() -> int:
 
     if not args.input_dir.is_dir():
         parser.error(f"input folder not found: {args.input_dir}")
-    problem = ocr_problem()
-    if problem:
-        print(f"{problem}: scanned PDFs cannot be read and will get an empty file.", file=sys.stderr)
-
     pdfs = sorted(p for p in args.input_dir.rglob("*") if p.suffix.lower() == ".pdf")
     failed = 0
     for pdf in pdfs:

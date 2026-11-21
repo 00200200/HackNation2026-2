@@ -179,10 +179,9 @@ def test_registry_ids_and_dates():
 @pytest.mark.parametrize(
     "failure",
     [
-        pdf_text.pytesseract.TesseractNotFoundError(),
-        pdf_text.pytesseract.TesseractError(1, "missing Polish data"),
+        ImportError("OCR library missing"),
+        FileNotFoundError("Polish data missing"),
         RuntimeError("OCR timed out"),
-        pdf_text.pytesseract.TesseractError(2, "OCR engine failed"),
     ],
 )
 def test_required_ocr_failure_reports_path_and_continues(tmp_path, monkeypatch, capsys, failure):
@@ -201,8 +200,7 @@ def test_required_ocr_failure_reports_path_and_continues(tmp_path, monkeypatch, 
         return doc
 
     monkeypatch.setattr(pdf_text.pdfplumber, "open", open_document)
-    monkeypatch.setattr(pdf_text.pytesseract, "image_to_string", MagicMock(side_effect=failure))
-    monkeypatch.setattr(cli, "ocr_problem", lambda: None)
+    monkeypatch.setattr(pdf_text, "_ocr", MagicMock(side_effect=failure))
     monkeypatch.setattr(sys, "argv", ["kio2json", "--input", str(inputs), "--output", str(outputs)])
     assert cli.main() == 1
     stderr = capsys.readouterr().err
@@ -219,7 +217,7 @@ def test_page_number_only_layer_uses_ocr(monkeypatch, stub):
     doc = MagicMock()
     doc.__enter__.return_value.pages = [page]
     monkeypatch.setattr(pdf_text.pdfplumber, "open", lambda _: doc)
-    monkeypatch.setattr(pdf_text, "_ocr", lambda _: "Odwołanie skanowane")
+    monkeypatch.setattr(pdf_text, "_ocr", lambda page, words: "Odwołanie skanowane")
     assert pdf_text.read_pages("test.pdf") == ["Odwołanie skanowane"]
 
 

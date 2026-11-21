@@ -3,10 +3,11 @@ name = "hacknation2026-2"
 version = "0.1.0"
 requires-python = ">=3.13"
 dependencies = [
+    "kio-polish-ocr-data",
     "pdfplumber>=0.11.11",
     "pydantic-ai>=2.71.0",
-    "pytesseract>=0.3.13",
     "python-stdnum>=2.2",
+    "tesserocr==2.13.0",
 ]
 
 [dependency-groups]
@@ -22,3 +23,6 @@ pythonpath = ["."]
 [tool.ruff]
 line-length = 120
 extend-exclude = ["data"]
+
+[tool.uv.sources]
+kio-polish-ocr-data = { path = "packaging/polish_ocr_data" }

@@ -5,6 +5,8 @@ from itertools import product
 
 from stdnum import iban
 
+from .common import EMAIL_RE
+
 # Only substitute characters with a plausible digit shape inside a complete Polish NRB.
 GLYPHS = {"O": "0", "o": "0", "I": "1", "l": "1", "|": "1", "/": "17", "S": "5", "B": "8"}
 _ACCOUNT_CHAR = r"[0-9OoIl|/SB]"
@@ -13,6 +15,7 @@ _FORM = re.compile(r"(?i)(\bsp\.[ \t]*z[ \t]+)[o0]\.[ \t]*[o0]\.")
 # Obfuscated addresses have an explicit separator. A bare Q, O, or space is ambiguous.
 _MAIL = re.compile(r"(?<=\w)[ \t]*(?:\[at\]|\(at\)|@)[ \t]*(?=[\w-]+(?:\.[\w-]+)+\b)", re.IGNORECASE)
 
+MAIL_TOKEN_RE = re.compile(r"[\w.+%©®\-]+\.[a-zA-Z]{2,}")
 
 # Only canonicalize dedicated headings and role labels. Keep ordinary words and proper names verbatim.
 _HEADING = re.compile(r"(?im)^([ \t]*)(ODWOLANIE|PELNOMOCNICTWO)(?=[ \t]*(?:PROCESOWE[ \t]*)?$)")
@@ -26,6 +29,15 @@ def _repair_account(match: re.Match) -> str:
     candidates = ("".join(digits) for digits in product(*(GLYPHS.get(c, c) for c in number)))
     valid = [n for n in candidates if iban.is_valid("PL" + n)]
     return valid[0] if len(valid) == 1 else match[0]
+
+
+def confirmed_email(raw: str, second_read: str) -> str:
+    """Accept a second OCR reading only when the two disagree on the separator alone."""
+    if EMAIL_RE.fullmatch(second_read):
+        local, domain = second_read.split("@")
+        if any(raw == local + glyph + domain for glyph in ("", "Q", "O", "0", "©", "®", "e")):
+            return second_read
+    return raw
 
 
 def normalize_ocr(text: str) -> str:
