@@ -1639,6 +1639,45 @@
           "z_rachunku": "80193000000000000000003145"
         }
       }
+    ],
+    "review52/copy-after-booking": [
+      "bank_transfer",
+      {
+        "przelew_bankowy": {
+          "data_operacji": "2035-08-08",
+          "kwota": 49.27,
+          "na_rachunek": "68214000000000000000002193",
+          "numer_transakcji": null,
+          "tytul": "Wymiana soczewki",
+          "z_rachunku": "80193000000000000000003145"
+        }
+      }
+    ],
+    "review52/archive-after-booking": [
+      "bank_transfer",
+      {
+        "przelew_bankowy": {
+          "data_operacji": "2035-08-08",
+          "kwota": 49.27,
+          "na_rachunek": "68214000000000000000002193",
+          "numer_transakcji": null,
+          "tytul": "Wymiana soczewki",
+          "z_rachunku": "80193000000000000000003145"
+        }
+      }
+    ],
+    "review52/transfer-after-booking": [
+      "bank_transfer",
+      {
+        "przelew_bankowy": {
+          "data_operacji": "2035-08-08",
+          "kwota": 49.27,
+          "na_rachunek": "68214000000000000000002193",
+          "numer_transakcji": null,
+          "tytul": "Wymiana soczewki",
+          "z_rachunku": "80193000000000000000003145"
+        }
+      }
     ]
   }
 }

@@ -502,5 +502,14 @@
   ],
   "review47/execution-label-and-later-booking": [
     "Potwierdzenie przelewu\nRachunek nadawcy: 80193000000000000000003145\nRachunek odbiorcy: 68214000000000000000002193\nData wykonania: 04.07.2033\nData księgowania: 05.07.2033\nKwota: 74,12 PLN\nTytuł: Strojenie instrumentu"
+  ],
+  "review52/copy-after-booking": [
+    "Potwierdzenie wykonania przelewu\nRachunek nadawcy: 80193000000000000000003145\nRachunek odbiorcy: 68214000000000000000002193\nData księgowania: 08.08.2035\nKwota przelewu: 49,27 PLN\nWykonano dnia 11.08.2035 kopię potwierdzenia na życzenie klienta.\nTytuł: Wymiana soczewki"
+  ],
+  "review52/archive-after-booking": [
+    "Potwierdzenie wykonania przelewu\nRachunek nadawcy: 80193000000000000000003145\nRachunek odbiorcy: 68214000000000000000002193\nData księgowania: 08.08.2035\nKwota przelewu: 49,27 PLN\nZrealizowano dnia 12.08.2035 wniosek o archiwizację potwierdzenia przelewu.\nTytuł: Wymiana soczewki"
+  ],
+  "review52/transfer-after-booking": [
+    "Potwierdzenie wykonania przelewu\nRachunek nadawcy: 80193000000000000000003145\nRachunek odbiorcy: 68214000000000000000002193\nData księgowania: 08.08.2035\nKwota przelewu: 49,27 PLN\nZrealizowano dnia 07.08.2035 przelew na rachunek odbiorcy.\nTytuł: Wymiana soczewki"
   ]
 }
