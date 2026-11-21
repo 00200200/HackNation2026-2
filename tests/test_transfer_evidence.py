@@ -181,3 +181,41 @@ def test_conditional_denial_can_continue_on_a_new_line():
 
 def test_bank_can_introduce_a_refusal_with_a_colon():
     assert classify([TRANSFER + "\nBank informuje: nie wykonano przelewu."]) is None
+
+
+@pytest.mark.parametrize(
+    "statement",
+    [
+        "Przelew zrealizowano dnia 07.06.2026.",
+        "W dniu 07.06.2026 wykonano przelew.",
+        "Bank potwierdza, że przelew wykonano w dniu 07.06.2026.",
+    ],
+)
+def test_execution_statement_precedes_debit_date_even_with_labelled_amount(statement):
+    record = extract(TRANSFER + "\n" + statement)["przelew_bankowy"]
+    assert (record["data_operacji"], record["kwota"]) == ("2026-06-07", 782.14)
+
+
+@pytest.mark.parametrize(
+    "note",
+    [
+        "Tytuł: Przelew zrealizowano dnia 07.06.2026.",
+        "Tytuł: Opis faktury\nPrzelew zrealizowano dnia 07.06.2026.",
+        "Przelew zrealizowano zgodnie z umową z dnia 07.06.2026.",
+        "W dniu 07.06.2026 nie wykonano przelewu.",
+        "W dniu 07.06.2026 wykonano przelew?",
+        "Jeżeli rachunek był aktywny,\nw dniu 07.06.2026 wykonano przelew.",
+    ],
+)
+def test_unrelated_date_does_not_displace_debit_date(note):
+    assert extract(TRANSFER + "\n" + note)["przelew_bankowy"]["data_operacji"] == "2026-06-09"
+
+
+@pytest.mark.parametrize(
+    "status",
+    ["Status operacji: Rozliczona", "Status realizacji: Zakończona", "Status płatności: Zapłacona"],
+)
+def test_completed_status_on_an_evidenced_confirmation(status):
+    assert classify([TRANSFER + "\n" + status]) == "bank_transfer"
+    assert classify([TRANSFER.replace("Potwierdzenie przelewu", "Wezwanie do zapłaty") + "\n" + status]) is None
+    assert classify([TRANSFER + "\n" + status + " częściowo"]) is None

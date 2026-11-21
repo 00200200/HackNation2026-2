@@ -44,6 +44,18 @@ LETTER_RE = re.compile(
     re.MULTILINE | re.IGNORECASE | re.DOTALL,
 )
 
+# Only an affirmative, dated execution statement can outrank a printed posting date.
+COMPLETED_PAYMENT = r"(?:wykonano|zrealizowano)"
+PAYMENT_NOUN = r"(?:przelew|transakcję|operację|płatność)"
+EXECUTION_DAY_RE = re.compile(
+    rf"^(?:bank (?:potwierdza|zaświadcza),? że\s+)?(?:"
+    rf"(?:w dniu|dnia)\s+(?P<before>{DATE})\s+(?:z rachunku\s+(?:nr\.?\s+)?{ACCOUNT_RE.pattern}\s+)?"
+    rf"{COMPLETED_PAYMENT}\s+{PAYMENT_NOUN}\b|"
+    rf"(?:{PAYMENT_NOUN}\s+)?{COMPLETED_PAYMENT}"
+    rf"(?:\s+{PAYMENT_NOUN})?\s+(?:w dniu|dnia)\s+(?P<after>{DATE}))",
+    re.IGNORECASE | re.MULTILINE,
+)
+
 
 def _legacy_accounts(text: str) -> tuple[str | None, str | None]:
     """Resolve labelled roles or an ordered pair of column headers."""
@@ -177,21 +189,22 @@ def partial_account_mask(text: str, role: str) -> bool:
     return cells == {(None, True)}
 
 
-def payment_denied(text: str) -> bool:
-    in_title = False
+def _payment_lines(text: str):
+    """Keep assertions, preserving breaks at titles, questions and conditional text."""
     lines = text.splitlines()
+    in_title = False
     for i, raw in enumerate(lines):
         line = raw.strip()
         if TITLE_LABEL_RE.match(line):
             in_title = True
         elif BOUNDARY_RE.match(line):
             in_title = False
-        if in_title or line.endswith("?") or not NEGATED_PAYMENT.match(line):
-            continue
-        if i and re.search(r"\b(?:jeśli|jeżeli|gdy|gdyby|o ile)\b[^.!?;]*$", lines[i - 1], re.IGNORECASE):
-            continue
-        return True
-    return False
+        conditional = i and re.search(r"\b(?:jeśli|jeżeli|gdy|gdyby|o ile)\b[^.!?;]*$", lines[i - 1], re.IGNORECASE)
+        yield "" if in_title or conditional or line.endswith("?") else line
+
+
+def payment_denied(text: str) -> bool:
+    return any(NEGATED_PAYMENT.match(line) for line in _payment_lines(text))
 
 
 def executed_letter(text: str) -> bool:
@@ -297,10 +310,13 @@ def _unique(matches) -> str | None:
     return next(iter(values)) if len(values) == 1 else None
 
 
+PROSE_CLAUSE = re.compile(r"(?<=[.!?])\s+(?=[A-ZĄĆĘŁŃÓŚŹŻ])|\n\s*\n")
+
+
 def _prose_values(text: str) -> tuple[float | None, str | None]:
     if not executed_letter(text):
         return None, None
-    clauses = re.split(r"(?<=[.!?])\s+(?=[A-ZĄĆĘŁŃÓŚŹŻ])|\n\s*\n", text)
+    clauses = PROSE_CLAUSE.split(text)
     amounts, days = [], []
     for clause in clauses:
         if not EXECUTION.search(clause):
@@ -322,6 +338,12 @@ def transaction_values(text: str) -> tuple[float | None, str | None]:
         if money is None:
             money = _amount(raw.lstrip("−-"))
         dates.extend(cells.items())
+    for clause in PROSE_CLAUSE.split("\n".join(_payment_lines(fields))):
+        letter = LETTER_RE.search(clause)
+        if letter and len(DATE_RE.findall(letter[0])) == 1:
+            dates.append(("data wykonania", letter[1]))
+        for statement in EXECUTION_DAY_RE.finditer(clause):
+            dates.append(("data wykonania", statement["before"] or statement["after"]))
     # Select by the meaning of the printed date, across both labelled fields and table cells.
     # A value date is not evidence of execution.
     day = None
