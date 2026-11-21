@@ -95,3 +95,20 @@ udzielamy pełnomocnictwa."""
     (principal,) = extract(text)["mocodawca"]
     assert principal["data"]["krs"] == "0000998123"
     assert principal["podpisujacy"] == [{"imie_nazwisko": "Mira Wietrzna"}, {"imie_nazwisko": "Wit Szklany"}]
+
+
+def test_closing_title_cannot_claim_the_next_principals_signature():
+    text = """Warsztat Miedziany sp. z o.o. i Latarnia S.A. udzielają pełnomocnictwa.
+W imieniu Latarnia S.A.:
+.....................
+Mira Wietrzna
+Prokurent
+W imieniu Warsztat Miedziany sp. z o.o.:
+.....................
+Wit Szklany
+Prezes Zarządu"""
+    result = extract(text)
+    assert [p["podpisujacy"] for p in result["mocodawca"]] == [
+        [{"imie_nazwisko": "Wit Szklany"}],
+        [{"imie_nazwisko": "Mira Wietrzna"}],
+    ]

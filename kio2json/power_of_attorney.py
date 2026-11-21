@@ -370,11 +370,15 @@ def _add_stamp_signers(text: str, principals: list[str], attorneys: set[str], si
             owner, headed = None, False
         if owner is None or not (marker or (headed and SIGNER_ROLE_RE.fullmatch(line))):
             continue
+        if not marker and i and re.fullmatch(PERSON, lines[i - 1].strip()):
+            continue
         following = ([line[marker.end() :]] if marker else []) + lines[i + 1 : i + 4]
         for candidate in following:
             candidate = candidate.strip(" |")
             if (
-                FOOTER.search(candidate)
+                NAMED_SIGNATURE.match(candidate)
+                or SIGNATURE_LINE_RE.search(candidate)
+                or FOOTER.search(candidate)
                 or OTHER_ROLE.match(candidate)
                 or STAMP.match(candidate)
                 or SIGNER_ROLE_RE.fullmatch(candidate)
