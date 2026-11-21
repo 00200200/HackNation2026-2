@@ -88,3 +88,4 @@ These runs used local rules with the three endpoint variables unset. The two loc
 - 21.11.2026 · Codex · Fixed the execution-date regression reported on PR #23, added three native receipts with baseline outputs, and recognized three additional completed payment statuses. All 196 training files matched the baseline byte for byte at `ee6c36e`. The clean training run scored 1.000 micro F1 and the 30 organizer scans scored 0.5633 micro F1.
 
 - 21.11.2026 · Codex · Recovered officers, multiple appointments and register digits on scanned grants, and named signers from embedded certificates on real grants. All 10 organizer grants matched exactly in rules-only mode.
+- 21.11.2026 · Claude · presentation-style README with monochrome visuals in `docs/readme/`; previous README moved to `docs/readme/reference.md` · feat/docs
