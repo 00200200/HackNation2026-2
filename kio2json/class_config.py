@@ -1,4 +1,4 @@
-"""Load trusted TOML class definitions and match their cues against page content."""
+"""Load trusted TOML class definitions and route documents from page content."""
 
 import os
 import re
@@ -36,9 +36,16 @@ class Evidence(Config):
     minimum: int = Field(ge=1)
 
     def matches(self, text: str) -> bool:
-        # Capture group 1 can omit a prefix (e.g. PL). Ignore spacing in repeated identifiers.
-        hits = {re.sub(r"\s+", "", m[1] if m.lastindex else m[0]).casefold() for m in self.pattern.finditer(text)}
-        return len(hits) >= self.minimum
+        hits = set()
+        for match in self.pattern.finditer(text):
+            # Alternatives can identify the same datum in different capture groups.
+            for captured in match.groups() or (match[0],):
+                if captured and (value := "".join(captured.split()).casefold()):
+                    hits.add(value)
+                    break
+            if len(hits) >= self.minimum:
+                return True
+        return False
 
 
 class Routing(Config):
@@ -63,6 +70,10 @@ class Routing(Config):
             and not any(pattern.search(text) for pattern in self.forbidden)
             and (self.evidence is None or self.evidence.matches(text))
         )
+
+
+class ClassifierRouting(Config):
+    classifier: ImportString[Callable[[list[str]], str | None]]
 
 
 class OutputField(Config):
@@ -98,7 +109,7 @@ class DocumentClass(Config):
     id: str = Field(pattern=r"^[a-z][a-z0-9_]*$")
     enabled: bool = True
     priority: int = 100
-    routing: Routing
+    routing: ClassifierRouting | Routing
     engines: list[Literal["python", "labelled_fields", "llm"]] = Field(min_length=1)
     extractor: ImportString[Callable[[str], dict]] | None = None
     fields: dict[str, OutputField] = Field(min_length=1)
@@ -140,4 +151,18 @@ def load_classes(directory: Path | None = None) -> list[DocumentClass]:
 
 
 def route(pages: list[str], definitions: list[DocumentClass]) -> DocumentClass | None:
-    return next((c for c in definitions if c.enabled and c.routing.matches(pages)), None)
+    # Organizer classes share a classifier. Compute its result once for this PDF.
+    labels = {}
+    for definition in definitions:
+        if not definition.enabled:
+            continue
+        routing = definition.routing
+        if isinstance(routing, ClassifierRouting):
+            classifier = routing.classifier
+            if classifier not in labels:
+                labels[classifier] = classifier(pages)
+            if labels[classifier] == definition.id:
+                return definition
+        elif routing.matches(pages):
+            return definition
+    return None

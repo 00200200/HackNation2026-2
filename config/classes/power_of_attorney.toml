@@ -4,7 +4,7 @@ engines = ["python"]
 extractor = "kio2json.power_of_attorney.extract"
 
 [routing]
-headings = ['pełnomocnictwo.{0,16}']
+classifier = "kio2json.classify.classify"
 
 [fields.mocodawca]
 match_by = "data.nazwa"

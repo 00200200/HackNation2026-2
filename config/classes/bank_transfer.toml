@@ -4,12 +4,7 @@ engines = ["python"]
 extractor = "kio2json.bank_transfer.extract"
 
 [routing]
-required = ['przelew', '\b(?:potwierdzenie|dowód)\s+(?:(?:wykonania|realizacji)\s+)?(?:polecenia\s+)?(?:przelewu|transakcji|operacji bankowej)\b|\bwykonano przelew\b|^\s*(?:status[\s.:]*)?(?:przelew\s+)?zrealizowan[yo]\b']
-forbidden = ['^\s*(?:faktura(?: VAT)?|wezwanie do zapłaty|prośba o płatność)\b']
-
-[routing.evidence]
-pattern = '(?<![\d])(?:PL\s?)?(\d{2}(?:[ \n]?\d{4}){6})(?!\d)'
-minimum = 2
+classifier = "kio2json.classify.classify"
 
 [fields.przelew_bankowy]
 type = "object"

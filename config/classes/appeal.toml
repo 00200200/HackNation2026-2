@@ -4,10 +4,7 @@ engines = ["python"]
 extractor = "kio2json.appeal.extract"
 
 [routing]
-pages = 2
-headings = ["odwołanie"]
-required = ["odwołując"]
-forbidden = ['^\s*(?:wyrok|postanowienie|w imieniu rzeczypospolitej polskiej)\s*$']
+classifier = "kio2json.classify.classify"
 
 [fields.OdwolanieKIO]
 type = "object"

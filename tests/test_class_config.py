@@ -7,6 +7,9 @@ from pathlib import Path
 import pytest
 
 from kio2json import __main__ as cli
+from kio2json import pipeline
+from kio2json.class_config import load_classes, route
+from kio2json.classify import classify
 
 REGISTRY = Path(__file__).resolve().parents[1] / "config" / "classes"
 FORM = "KARTA UCZESTNIKA\nUczestnik: Copper Heron\nData: 19.07.2031\nSygnatura: H-77"
@@ -65,21 +68,66 @@ def test_bad_config_reports_file_even_for_empty_batch(tmp_path, monkeypatch, cap
     assert "bad.toml" in capsys.readouterr().err
 
 
-def test_config_routing_scopes_and_distinct_evidence():
-    from kio2json.class_config import load_classes, route
+ACCOUNTS = "Nadawca: " + "9" * 26 + "\nOdbiorca: " + "4" * 26
+CONFIRMATION = "Potwierdzenie przelewu"
+TRANSFER = f"{CONFIRMATION}\n{ACCOUNTS}\nKwota: 48,00"
 
-    definitions = load_classes(REGISTRY)
 
-    def label(*pages):
-        config = route(pages, definitions)
-        return config.id if config else None
+@pytest.mark.parametrize(
+    ("pages", "expected"),
+    [
+        ([TRANSFER + "\nStatus: odrzucony"], None),
+        (["Prosimy o zapłatę należności\n" + TRANSFER], None),
+        (["WYROK W SPRAWIE\nPrzytoczono pismo:", "ODWOŁANIE\nOdwołujący"], None),
+        ([f"{CONFIRMATION}\n{ACCOUNTS}\nOpłata: 17,00"], None),
+        ([TRANSFER + "\nStatus: wykonany\nStatus: anulowany"], None),
+        (["Faktura VAT\n" + TRANSFER], None),
+        ([TRANSFER.replace("4" * 26, "99 " + " ".join(["9999"] * 6))], None),
+        ([TRANSFER], "bank_transfer"),
+        ([f"Status: wykonano\nPrzelew\n{ACCOUNTS}\nData operacji: 19.07.2031"], "bank_transfer"),
+        (["Okładka", "O D W O Ł A N I E\nOdwołujący"], "appeal"),
+        (["Okładka", "P E Ł N O M O C N I C T W O"], "power_of_attorney"),
+        (["PEŁNOMOCNICTWO WZÓR"], None),
+        (["PEŁNOMOCNICTWO", "ODWOŁANIE\nOdwołujący"], "power_of_attorney"),
+    ],
+)
+def test_pipeline_class_matches_base_classifier(monkeypatch, pages, expected):
+    monkeypatch.delenv("KIO_CLASSES_DIR", raising=False)
+    monkeypatch.setattr(pipeline, "read_pages", lambda path, force_ocr: pages)
+    label, record = pipeline.process_pdf(Path("opaque.pdf"))
+    assert classify(pages) == expected
+    assert label == expected
+    if expected is None:
+        assert record == {}
 
-    assert label("A cover", "O D W O Ł A N I E\nOdwołujący") == "appeal"
-    assert label("WYROK", "ODWOŁANIE\nOdwołujący") is None
-    assert label("A cover", "PEŁNOMOCNICTWO") is None
-    assert label("P E Ł N O M O C N I C T W O") == "power_of_attorney"
-    account = "9" * 26
-    title = "Potwierdzenie przelewu\n"
-    assert label(title + account + "\n" + " ".join([account[:2]] + [account[2:6]] * 6)) is None
-    assert label(title + account + "\n" + "4" * 26) == "bank_transfer"
-    assert label("Faktura VAT\n" + title + account + "\n" + "4" * 26) is None
+
+def test_distinct_routing_evidence_uses_participating_captures(tmp_path):
+    example = (REGISTRY / "participation.toml").read_text()
+    path = tmp_path / "participation.toml"
+    path.write_text(
+        example.replace("enabled = false", "enabled = true")
+        + r"""
+[routing.evidence]
+pattern = 'Code: (\w+)|Tag: (\w+)|Blank(?: (x))?'
+minimum = 2
+"""
+    )
+    definitions = load_classes(tmp_path)
+    assert route([FORM + "\nTag: Indigo\nCode: INDIGO\nBlank"], definitions) is None
+    assert route([FORM + "\nCode: Amber\nTag: Indigo"], definitions).id == "participation"
+
+
+@pytest.mark.parametrize(
+    "routing",
+    [
+        'classifier = "kio2json.classify.missing"',
+        'classifier = "kio2json.classify.classify"\nrequired = ["keyword"]',
+    ],
+)
+def test_invalid_classifier_routing_reports_file(tmp_path, routing):
+    original = (REGISTRY / "participation.toml").read_text()
+    before, rest = original.split("[routing]", 1)
+    path = tmp_path / "form.toml"
+    path.write_text(before + "[routing]\n" + routing + "\n[fields." + rest.split("[fields.", 1)[1])
+    with pytest.raises(ValueError, match=r"(?s)form\.toml.*routing"):
+        load_classes(tmp_path)
