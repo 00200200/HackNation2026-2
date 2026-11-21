@@ -1,3 +1,5 @@
+import pytest
+
 from kio2json.power_of_attorney import extract
 
 
@@ -29,7 +31,8 @@ Pełnomocnik: Ida Zimowa, PESEL 92040112345"""
     assert extract(text)["pelnomocnicy"] == [{"imie_nazwisko": "Ida Zimowa", "pesel": "92040112345"}]
 
 
-def test_numbered_grant_joins_supported_letterhead_ids_and_reads_untitled_appointee():
+@pytest.mark.parametrize("stamp_edge", ["|", "."])
+def test_numbered_grant_joins_supported_letterhead_ids_and_reads_untitled_appointee(stamp_edge):
     from kio2json.classify import classify
 
     text = """NIP: 525-00-07-738
@@ -46,6 +49,7 @@ X&@ %
 Mira Wietrzna
 Latarnia S.A., ul. Nowa 1
 Adres do kontaktu: Miasto Pole"""
+    text = text.replace("| PROKURENT", stamp_edge + " PROKURENT")
     assert classify([text]) == "power_of_attorney"
     result = extract(text)
     (principal,) = result["mocodawca"]

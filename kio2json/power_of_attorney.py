@@ -349,7 +349,7 @@ def _add_stamp_signers(text: str, principals: list[str], attorneys: set[str], si
     cores = [re.sub(LEGAL_FORM + r"$", "", name).strip().casefold() for name in principals]
     lines = text.splitlines()
     for i, raw in enumerate(lines):
-        line = raw.strip(" |")
+        line = raw.lstrip(" |.").rstrip(" |")
         if re.match(r"(?i)^pełnomocnictwo przyjmuję", line):
             break
         if SIGNATURE_HEADING.fullmatch(line):

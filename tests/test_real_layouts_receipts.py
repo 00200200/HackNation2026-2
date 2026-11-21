@@ -145,3 +145,67 @@ def test_unreadable_confirmed_scan_retries_first_page_with_inferred_dpi(monkeypa
     assert kind == "bank_transfer"
     assert data["przelew_bankowy"]["numer_transakcji"] == "4"
     assert calls == ["tesseract-dpi", "tesseract"]
+
+
+def test_parallel_party_and_payment_columns_keep_each_fields_values(monkeypatch):
+    from kio2json import pipeline
+    from kio2json.pdf_text import WordBox
+
+    cells = [
+        (20, 10, "Potwierdzenie transakcji"),
+        (20, 25, "Nr transakcji:"),
+        (120, 25, "BF576321"),
+        (215, 25, "Data księgowania:"),
+        (335, 25, "13.05.2024"),
+        (20, 42, "Dane"),
+        (45, 42, "Płatnika:"),
+        (215, 42, "Dane"),
+        (240, 42, "Odbiorcy:"),
+        (20, 55, "?6 4587 0099 1234 5678 0123 4567"),
+        (215, 55, "78 3512 0000 9981 2345 6789 0123"),
+        (20, 105, "Tytuł"),
+        (45, 105, "operacji:"),
+        (215, 105, "Szczegóły"),
+        (265, 105, "operacji:"),
+        (355, 105, "Kwota:"),
+        (20, 119, "Zakup"),
+        (215, 119, "PRZELEW"),
+        (355, 119, "49,12"),
+        (20, 132, "papieru"),
+        (355, 132, "PLN"),
+        (20, 238, "Adres banku"),
+    ]
+
+    def read(path, *, word_boxes=None, ocr_pages=None, **kwargs):
+        if ocr_pages is not None:
+            ocr_pages.append(1)
+        if word_boxes is not None:
+            word_boxes.extend(WordBox(1, t, x, y, x + 12, y + 7) for x, y, t in cells)
+        return ["\n".join(t for x, y, t in cells)]
+
+    monkeypatch.setattr(pipeline, "read_pages", read)
+    kind, data = pipeline.process_pdf("invented.pdf")
+    assert kind == "bank_transfer"
+    assert data["przelew_bankowy"] == {
+        "kwota": 49.12,
+        "data_operacji": "2024-05-13",
+        "tytul": "Zakup papieru",
+        "numer_transakcji": "BF576321",
+        "na_rachunek": "78351200009981234567890123",
+        "z_rachunku": "56458700991234567801234567",
+    }
+
+
+def test_second_read_propagates_a_recognition_timeout(monkeypatch):
+    from kio2json import pipeline
+
+    def read(path, *, engine, ocr_pages=None, **kwargs):
+        if engine == "tesseract":
+            raise pipeline.OCRRecognitionError("OCR timed out")
+        ocr_pages.append(1)
+        return ["Potwierdzenie wykonania operacji\nDzienny numer transakcji"]
+
+    monkeypatch.setenv("KIO_OCR_ENGINE", "tesseract-dpi")
+    monkeypatch.setattr(pipeline, "read_pages", read)
+    with pytest.raises(pipeline.OCRRecognitionError, match="timed out"):
+        pipeline.process_pdf("invented.pdf")

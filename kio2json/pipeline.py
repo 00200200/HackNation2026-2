@@ -20,12 +20,15 @@ def process_pdf(
     readable = False
     for engine in engines:
         ocr_pages = []
+        used_geometry = False
         try:
             pages = read_pages(pdf_path, force_ocr=force_ocr, engine=engine, ocr_pages=ocr_pages)
             if has_detached_labels(pages):
                 boxes = []
                 read_pages(pdf_path, max_pages=1, force_ocr=force_ocr, engine=engine, word_boxes=boxes)
-                pages = restore_receipt_rows(pages, boxes)
+                restored = restore_receipt_rows(pages, boxes)
+                used_geometry = restored != pages
+                pages = restored
         except NoReadableTextError:
             if engine == engines[-1] and not readable:
                 raise
@@ -44,15 +47,12 @@ def process_pdf(
         ):
             # Source resolution influences Tesseract's table segmentation. Retry only
             # a recognized booking form that the first reading could not substantiate.
-            try:
-                alternate = read_pages(pdf_path, max_pages=1, force_ocr=True, engine="tesseract")
-            except (NoReadableTextError, OCRRecognitionError):
-                alternate = []
+            alternate = read_pages(pdf_path, max_pages=1, force_ocr=True, engine="tesseract")
             receipt, evidence = route_with_evidence(alternate, definitions)
             if receipt is not None and receipt.id == "bank_transfer":
                 definition, accounts, pages = receipt, evidence, alternate + pages[1:]
         if definition is not None:
-            if accounts is not None and 1 in ocr_pages:
+            if accounts is not None and (used_geometry or 1 in ocr_pages):
                 accounts = accounts.checked_ocr_numbers()
             return definition.id, extract(definition, join_pages(pages), accounts=accounts)
         if not ocr_pages:

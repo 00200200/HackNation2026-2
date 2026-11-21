@@ -6,7 +6,7 @@ from dataclasses import dataclass
 from stdnum import iban
 
 from .common import DATE, squash, to_iso
-from .receipt_layout import booking_heading
+from .receipt_layout import booking_heading, validated_account
 
 # 26-digit Polish account number, optionally 'PL'-prefixed, grouped or wrapped across lines.
 ACCOUNT_RE = re.compile(r"(?<![\w/|*])(?:PL\s?)?(\d{2}(?:[ \n]?\d{4}){6})(?![\w/|*])")
@@ -23,7 +23,7 @@ ACCOUNT_VALUE = re.compile(rf"(?:{ACCOUNT_RE.pattern}|(?<!\w)(?:\*{{4,}}|[Xx]{{3
 MONEY = r"(?<![\d.,])(?:\d{1,3}(?:[ .\u00a0]\d{3})+[.,]\d{2}|\d+[.,]\d{2})(?![.,]?\d)"
 AMOUNT_LABEL = r"(?:kwota(?: (?:operacji|przelewu|transakcji|zaksięgowana))?|wartość)"
 DATE_LABEL = r"data (?:operacji|transakcji|realizacji|wykonania|księgowania|obciążenia|zlecenia)"
-REFERENCE_LABEL = r"(?:nr ref\.?|numer (?:referencyjny|transakcji)|identyfikator (?:operacji|transakcji))(?: operacji)?"
+REFERENCE_LABEL = r"(?:nr ref\.?|nr transakcji(?: w [^:\n]{1,55}(?=:))?|numer (?:referencyjny|transakcji)|identyfikator (?:operacji|transakcji))(?: operacji)?"
 TITLE_LABEL = r"(?:tytułem|tytu[łl](?: (?:przelewu|operacji))?|opis)"
 FIELD_LABEL = rf"(?:{AMOUNT_LABEL}|{DATE_LABEL}|{REFERENCE_LABEL}|{TITLE_LABEL})"
 GENERIC_LABEL = r"[^\W\d_][\w /().-]{0,55}:"
@@ -52,23 +52,6 @@ LETTER_RE = re.compile(
 
 
 BANK_ACCOUNT = re.compile(r"(?<![\w/?*])(?:PL\s?)?([0-9?]{2}(?:[ \n]?[0-9?]{4}){6})(?![\w/?*])")
-
-
-def validated_account(number: str) -> str | None:
-    if iban.is_valid("PL" + number):
-        return number
-    unknown = [i for i, char in enumerate(number) if char == "?"]
-    if len(unknown) > 1:
-        return None
-    valid = []
-    for i in unknown or range(len(number)):
-        for digit in "0123456789":
-            candidate = number[:i] + digit + number[i + 1 :]
-            if iban.is_valid("PL" + candidate):
-                valid.append(candidate)
-                if len(valid) > 1:
-                    return None
-    return valid[0] if valid else None
 
 
 def booking_form(text: str) -> bool:

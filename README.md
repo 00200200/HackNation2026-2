@@ -256,6 +256,9 @@ were scored for this comparison.
 - OCR can still lose accented letters, split a notice number or reorder columns. Scans with a
   noisy but nonempty text layer follow the native-text path. On an executed receipt with detached
   label and value columns, the extractor uses first-page word positions to restore the rows.
+  It also reads side-by-side party accounts and payment details from their own columns.
+  If explicit-DPI Tesseract reads a booking heading and transaction labels but cannot route the
+  scan, the extractor retries its first page with Tesseract’s automatic source resolution.
   OCR substitutions can still change an amount, damage a reference, or split a word in a title.
 - Booking forms and accounts read by OCR use the Polish IBAN checksum. A single-character repair
   requires exactly one valid candidate. Ambiguous accounts produce null. The original native-text
