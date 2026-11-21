@@ -93,7 +93,7 @@ TRANSFER = f"{CONFIRMATION}\n{ACCOUNTS}\nKwota: 48,00"
 )
 def test_pipeline_class_matches_base_classifier(monkeypatch, pages, expected):
     monkeypatch.delenv("KIO_CLASSES_DIR", raising=False)
-    monkeypatch.setattr(pipeline, "read_pages", lambda path, force_ocr: pages)
+    monkeypatch.setattr(pipeline, "read_pages", lambda path, **kwargs: pages)
     label, record = pipeline.process_pdf(Path("opaque.pdf"))
     assert classify(pages) == expected
     assert label == expected

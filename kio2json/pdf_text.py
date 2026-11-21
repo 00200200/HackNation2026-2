@@ -3,10 +3,9 @@
 import os
 import re
 from contextlib import ExitStack
-from functools import cache
+from functools import cache, partial
 from importlib.metadata import files
 from pathlib import Path
-from threading import Lock
 from typing import NamedTuple
 
 import pdfplumber
@@ -17,6 +16,27 @@ from .ocr_normalize import MAIL_TOKEN_RE, confirmed_email, normalize_ocr
 MAX_PAGES = 3
 OCR_DPI = 300
 OCR_TIMEOUT_SECONDS = 60
+DEFAULT_OCR_ENGINE = "tesseract-dpi"
+
+
+class NoReadableTextError(RuntimeError):
+    """Required OCR finished without finding any document text."""
+
+
+class OCRRecognitionError(RuntimeError):
+    """The OCR engine failed or timed out while recognizing a page."""
+
+
+_PAGE_COUNTER = re.compile(
+    # A printed label identifies a page number. Bare long digit strings can be the document's only content.
+    r"\W*(?:(?:strona|str\.?|page|p\.?|arkusz)\W*\d+(?:\s*(?:/|of|z)\s*\d+)?"
+    r"|\d{1,3}(?:\s*(?:/|of|z)\s*\d{1,3})?)\W*",
+    re.IGNORECASE,
+)
+
+
+def _readable(text: str) -> bool:
+    return any(any(c.isalnum() for c in line) and not _PAGE_COUNTER.fullmatch(line) for line in text.splitlines())
 
 
 def _has_content(text: str) -> bool:
@@ -54,7 +74,7 @@ def _rapid_engine():
         import onnxruntime  # noqa: F401 -- RapidOCR loads the selected runtime lazily.
         from rapidocr import RapidOCR
     except ImportError as error:
-        raise RuntimeError("RapidOCR needs the optional rapidocr and onnxruntime packages (see README)") from error
+        raise RuntimeError("RapidOCR needs the rapidocr and onnxruntime packages (see README)") from error
     return RapidOCR(
         params={
             "EngineConfig.onnxruntime.intra_op_num_threads": 2,
@@ -64,19 +84,25 @@ def _rapid_engine():
     )
 
 
-# RapidOCR mutates per-call options on the engine, including whether to compute word boxes.
-_rapid_lock = Lock()
-
-
-def _ocr(page, words: list[WordBox] | None) -> str:
-    engine = os.environ.get("KIO_OCR_ENGINE", "tesseract")
-    if engine == "tesseract":
-        return _tesseract(page, words)
+def _ocr(page, words: list[WordBox] | None, *, engine: str | None = None) -> str:
+    if engine is None:
+        engine = os.environ.get("KIO_OCR_ENGINE", DEFAULT_OCR_ENGINE)
+    if engine in {"tesseract", "tesseract-dpi", "hybrid"}:
+        return _tesseract(page, words, explicit_dpi=engine != "tesseract")
     if engine != "rapidocr":
-        raise ValueError(f"Unknown KIO_OCR_ENGINE={engine!r}, expected tesseract or rapidocr")
+        raise ValueError(f"Unknown KIO_OCR_ENGINE={engine!r}, expected tesseract, tesseract-dpi, rapidocr or hybrid")
+    from .rapid_worker import recognize
+
+    text, boxes = recognize(page.pdf.path, page.page_number, words is not None, OCR_TIMEOUT_SECONDS)
+    if words is not None:
+        words.extend(WordBox(*box) for box in boxes)
+    return text
+
+
+def _rapidocr(page, words: list[WordBox] | None) -> str:
+    """Run inside the deadline-controlled worker, which owns the mutable ONNX engine."""
     image = page.to_image(resolution=OCR_DPI)
-    with _rapid_lock:
-        result = _rapid_engine()(image.original, return_word_box=words is not None)
+    result = _rapid_engine()(image.original, return_word_box=words is not None)
     if words is not None and result.txts:
         left, top = image.bbox[:2]
         for line in result.word_results or ():
@@ -86,16 +112,16 @@ def _ocr(page, words: list[WordBox] | None) -> str:
                     WordBox(
                         page.page_number,
                         word,
-                        left + min(xs) / image.scale,
-                        top + min(ys) / image.scale,
-                        left + max(xs) / image.scale,
-                        top + max(ys) / image.scale,
+                        left + float(min(xs)) / image.scale,
+                        top + float(min(ys)) / image.scale,
+                        left + float(max(xs)) / image.scale,
+                        top + float(max(ys)) / image.scale,
                     )
                 )
     return "\n".join(result.txts or ())
 
 
-def _tesseract(page, words: list[WordBox] | None) -> str:
+def _tesseract(page, words: list[WordBox] | None, *, explicit_dpi: bool) -> str:
     """Recognize the page and verify suspect e-mail separators against their image crops."""
     from tesserocr import PSM, RIL, PyTessBaseAPI, iterate_level
 
@@ -103,8 +129,10 @@ def _tesseract(page, words: list[WordBox] | None) -> str:
     with ExitStack() as stack:
         api = stack.enter_context(PyTessBaseAPI(path=_language_dir(), lang="pol", psm=PSM.AUTO))
         api.SetImage(image.original)
+        if explicit_dpi:
+            api.SetSourceResolution(OCR_DPI)
         if not api.Recognize(timeout=1000 * OCR_TIMEOUT_SECONDS):
-            raise RuntimeError("Polish OCR failed or timed out")
+            raise OCRRecognitionError("Polish OCR failed or timed out")
         text = api.GetUTF8Text()
         iterator = api.GetIterator() if text.strip() else None
         english = None
@@ -144,6 +172,8 @@ def _tesseract(page, words: list[WordBox] | None) -> str:
                     min(y1 + 8, image.original.height),
                 )
                 english.SetImage(image.original.crop(crop))
+                if explicit_dpi:
+                    english.SetSourceResolution(OCR_DPI)
                 if english.Recognize(timeout=1000):
                     replacement = confirmed_email(token, english.GetUTF8Text().strip())
                     text = text[:start] + replacement + text[cursor:]
@@ -152,22 +182,35 @@ def _tesseract(page, words: list[WordBox] | None) -> str:
 
 
 def read_pages(
-    pdf_path: Path, max_pages: int = MAX_PAGES, force_ocr: bool = False, *, word_boxes: list[WordBox] | None = None
+    pdf_path: Path,
+    max_pages: int = MAX_PAGES,
+    force_ocr: bool = False,
+    *,
+    word_boxes: list[WordBox] | None = None,
+    engine: str | None = None,
+    ocr_pages: list[int] | None = None,
 ) -> list[str]:
-    """Read page text. Pass a list for raw word boxes in the same pass, before OCR substitutions."""
+    """Read text, optionally collecting raw word boxes and the page numbers sent to OCR."""
     pages = []
     words = [] if word_boxes is not None else None
+    used_ocr = False
+    recognize = _ocr if engine is None else partial(_ocr, engine=engine)
     with pdfplumber.open(pdf_path) as pdf:
         for page in pdf.pages[:max_pages]:
             text = "" if force_ocr else page.extract_text() or ""
             if not _has_content(text):
-                text = normalize_ocr(_ocr(page, words))
+                used_ocr = True
+                if ocr_pages is not None:
+                    ocr_pages.append(page.page_number)
+                text = normalize_ocr(recognize(page, words))
             elif words is not None:
                 words.extend(
                     WordBox(page.page_number, w["text"], w["x0"], w["top"], w["x1"], w["bottom"])
                     for w in page.extract_words()
                 )
             pages.append(text)
+    if used_ocr and not any(_readable(text) for text in pages):
+        raise NoReadableTextError("no readable text after OCR")
     if word_boxes is not None and words:
         word_boxes.extend(words)
     return pages

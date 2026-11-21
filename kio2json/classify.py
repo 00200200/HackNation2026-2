@@ -3,9 +3,8 @@
 import re
 
 from rapidfuzz.distance import Levenshtein
-from stdnum import iban
 
-from .bank_transfer import ACCOUNT_RE, transaction_values
+from .bank_transfer import AccountEvidence, account_evidence, transaction_values
 
 UNRELATED_HEADING = re.compile(
     r"^(?:wyrok|postanowienie|w imieniu rzeczypospolitej polskiej|faktura|wezwanie|prośba|wniosek|"
@@ -22,40 +21,31 @@ CONFIRMATION_HEADING = re.compile(
 EXECUTED = re.compile(r"^(?:status[\s.:]*)?(?:przelew\s+)?(?:zrealizowan[yo]|wykonan[yo])\b", re.IGNORECASE)
 STATUS = re.compile(r"^status[\s.:]+(\S.*)$", re.IGNORECASE)
 
-ACCOUNT_LINE = re.compile(r"rachunek (nadawcy|odbiorcy):\s*(.+)", re.IGNORECASE)
-
-
-def _masked_pair(lines: list[str]) -> bool:
-    """One explicitly masked role opposite one checksum-valid, explicitly labelled NRB."""
-    matched = [m.groups() for line in lines if (m := ACCOUNT_LINE.fullmatch(line))]
-    if len(matched) != 2 or len({role.casefold() for role, _ in matched}) != 2:
-        return False
-    values = [value for _, value in matched]
-    return any(re.fullmatch(r"\*{4,}", value) for value in values) and any(
-        (number := ACCOUNT_RE.fullmatch(value)) and iban.is_valid("PL" + re.sub(r"\s", "", number[1]))
-        for value in values
-    )
-
 
 def classify(pages: list[str]) -> str | None:
+    label, _ = classify_with_evidence(pages)
+    return label
+
+
+def classify_with_evidence(pages: list[str]) -> tuple[str | None, AccountEvidence | None]:
     if not pages:
-        return None
+        return None, None
     head = "\n".join(pages[:2])
     transfer_heading = False
     for line in head.splitlines():
         line = line.strip()
         heading = re.sub(r"\s", "", line).upper()
         if UNRELATED_HEADING.match(line):
-            return None
+            return None, None
         if Levenshtein.distance(heading, "ODWOŁANIE", score_cutoff=1) <= 1:
             party = re.search(r"odwo[łl]uj[ąa]c", head, re.IGNORECASE)
             labelled_parties = re.search(r"(?im)^(?:wykonawca|odwo[łl]uj[ąa]cy)\s*[:(]", head) and re.search(
                 r"(?im)^zamawiaj[ąa]cy\s*[:(]", head
             )
             if (heading == "ODWOŁANIE" and party) or labelled_parties:
-                return "appeal"
+                return "appeal", None
         if heading in {"PEŁNOMOCNICTWO", "PEŁNOMOCNICTWOPROCESOWE", "PEŁNOMOCNICTWOSZCZEGÓLNE"}:
-            return "power_of_attorney"
+            return "power_of_attorney", None
         if CONFIRMATION_HEADING.match(line):
             transfer_heading = True
             break
@@ -64,15 +54,17 @@ def classify(pages: list[str]) -> str | None:
     lines = [line.strip() for line in first.splitlines()]
     statuses = [m[1] for line in lines if (m := STATUS.match(line))]
     if any(not EXECUTED.match(status) for status in statuses):
-        return None
+        return None, None
     if not transfer_heading and not any(EXECUTED.match(line) for line in lines):
-        return None
-    accounts = {re.sub(r"\s", "", match[1]) for match in ACCOUNT_RE.finditer(first)}
+        return None, None
     if "przelew" not in first.casefold():
-        return None
+        return None, None
     amount, day = transaction_values(first)
-    if len(accounts) < 2 and not (
-        transfer_heading and len(accounts) == 1 and amount is not None and day and _masked_pair(lines)
+    if amount is None and day is None:
+        return None, None
+    accounts = account_evidence(first)
+    if accounts.distinct_numbers < 2 and not (
+        transfer_heading and accounts.distinct_numbers == 1 and amount is not None and day and accounts.masked_pair
     ):
-        return None
-    return "bank_transfer" if amount is not None or day is not None else None
+        return None, None
+    return "bank_transfer", accounts

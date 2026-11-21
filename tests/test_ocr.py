@@ -118,13 +118,12 @@ def test_rapidocr_uses_engine_word_boxes_in_pdf_points(monkeypatch):
     result = Mock(txts=("Studio Próbne",), word_results=((("Studio", 0.97, [[2, 2], [8, 1], [9, 5], [1, 6]]),),))
     engine = Mock(return_value=result)
     monkeypatch.setattr(pdf_text, "_rapid_engine", lambda: engine)
-    monkeypatch.setenv("KIO_OCR_ENGINE", "rapidocr")
     page = Mock(page_number=3)
     image = page.to_image.return_value
     image.scale = 2
     image.bbox = (10, 20, 110, 120)
     words = []
-    assert pdf_text._ocr(page, words) == "Studio Próbne"
+    assert pdf_text._rapidocr(page, words) == "Studio Próbne"
     assert words == [(3, "Studio", 10.5, 20.5, 14.5, 23)]
     engine.assert_called_once_with(image.original, return_word_box=True)
 

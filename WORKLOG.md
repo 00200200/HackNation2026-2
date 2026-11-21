@@ -13,20 +13,20 @@ Shared state of the project. Rules: `CLAUDE.md` → Worklog.
 - App: `kio2json/`, default jury classes use rule-based extraction. CLI `python -m kio2json --input input --output output`;
   content-based classification with a rejection path; regex and line-layout extraction per class; pdfplumber text
   with wheel-packaged Tesseract for blank or page-number-only text layers. Installation fetches and verifies the
-  language models. Set `KIO_OCR_ENGINE=rapidocr` to use the optional RapidOCR v6 group. Both engines run offline
+  language models or reads supplied copies from `KIO_TESSDATA_SOURCE`. The default is `tesseract-dpi`. RapidOCR and the document retry mode are opt-in. Both engines run offline
   and return word boxes in PDF points on request. Branch `feat/ocr-engine`.
 - The CLI reads class definitions from `config/classes/`.
   The jury classes select the baseline content classifier and their Python extractors by dotted path.
   A disabled participation form demonstrates config-only routing and labelled fields. The optional
   model engine checks each complete source value against its own verbatim quote and reports endpoint failures per PDF.
-- On `feat/gui`, the Polish Shiny viewer compares PDF pages with the CLI's JSON and downloads a ZIP in case folders.
+- The Polish Shiny viewer and CLI share per-document parsing and diagnostics. The viewer compares PDF pages with their JSON and downloads a ZIP in case folders.
 - Research notes on OCR, schema extraction and Polish legal NLP: `docs/kio-extraction-research.md`.
 - Claude Code setup: skills `hacknation-judging`, `odwolania2json-eval`, `build`, `verify`, `humanizer`;
   agents `judge`, `builder`, `reviewer`, `researcher`; pre-push hook in `.githooks/`.
 
 ## Last eval
 
-21.11.2026, full clean run at `ee3c8ca`, pip-installed OCR (`evals/results/latest.json`): `micro_f1` 1.000, cases 51-60 1.000,
+The full clean training run recorded in `evals/results/latest.json` scored `micro_f1` 1.000, cases 51-60 1.000,
 `classification_accuracy` 1.000, `negatives_empty` 1.000. Training data (synthetic). The rules were written with
 sight of these documents, cases 53-60 included, so this is a regression check and the 51-60 figure is not an
 unseen-case estimate for this baseline.
@@ -37,6 +37,11 @@ On the appeal-layout branch, whole-dev micro F1 rose from 0.3864 to 0.7237 and a
 
 Earlier OCR measurements at `c2bf060` follow. The merged forced-OCR field report scored 0.897 on 196 synthetic PDFs. Strict F1 on 17 real dev scans was
 0.331 with Tesseract and 0.419 with RapidOCR v6. Natural dev F1 on 20 PDFs was 0.3864 and 0.4588, respectively.
+
+On the frozen review fixes at `865b1ea`, the 20-document real dev comparison gave T0/T1/R/TR
+micro-F1 0.3864/0.4164/0.4588/0.4297. The default is `tesseract-dpi`. Full timings, macro-F1 and routing are in
+`evals/results/ocr-engines.json`. Synthetic forced-OCR strict F1 was 0.900 for T0 and 0.884 for T1.
+
 21.11.2026, local real corpus. The all-corpus row comes from `00626a5`. The dev and test scores below
 were first measured at `79eef2a` after the baseline merge. Those figures describe the earlier system-Tesseract baseline.
 All three target classes entered each class average. Every PDF had an output and every negative was empty.
@@ -80,12 +85,12 @@ Both splits missed the team’s micro F1 and classification targets. Compared wi
 - 21.11.2026 · Claude · rule-based baseline `kio2json`, field report, data refresh to UZP 7590db8 (reason 6 description is now `Odpowiedzi/wyjaśnienia do SWZ`); full eval `micro_f1` 1.000 on training data
 - 21.11.2026 · Codex · fixed OCR failure reporting, payment and party roles, first-charge dates and field-report matching. Added regressions with invented fixtures. Extraction fixes in `0ecd41c`.
 - 21.11.2026 · Codex · measured CPU OCR engines, shipped pip-only offline scans and word boxes, and repaired OCR fields. Forced-image field F1 0.903, native F1 1.000. `b36ceb5`.
+- 21.11.2026 · Codex · Configured routing and three extraction engines in `00a84f2`. The fourth class uses only TOML. All 196 synthetic corpus outputs matched baseline `4deb354` byte for byte. The field report found zero errors across 2,316 fields.
 - 21.11.2026 · Codex · added corpus scoring and macro F1, then measured the whole-case dev and test splits at `f93b908`.
 - 21.11.2026 · Codex · Bound transfer values, appeal facts, grantors and signers to their document sections. Added invented regression cases, replaced the organizer identifier in the normalization test and checked 40 fresh adversarial inputs. Transfer and appeal changes in `aaa8057` and `a10b5ad`.
 - 21.11.2026 · Codex · fixed private report destinations, corpus I/O diagnostics and invalid UTF-8 scoring in `be82db0`. Re-ran full training and both real-corpus splits.
 - 21.11.2026 · Codex · fixed training reference validation and selected-file enumeration after the second review of PR #9. Added regression tests for quick, full, corpus, saved predictions and field reports.
 - 21.11.2026 · Codex · full training exposed an organizer PDF whose page tree PDFMiner could not find. The harness now confirms that PDFium can render such inputs before scoring them.
-- 21.11.2026 · Codex · Configured routing and three extraction engines in `00a84f2`. The fourth class uses only TOML. All 196 synthetic corpus outputs matched baseline `4deb354` byte for byte. The field report found zero errors across 2,316 fields.
 - 21.11.2026 · Codex · Merged baseline `90d9701` and restored its routing through TOML. All 196 CLI outputs matched that baseline byte for byte, including 16 empty files. The field report found zero errors across 2,316 fields. Added regression tests for model evidence, endpoint diagnostics, alternative evidence captures, signed grouped amounts and malformed NIPs.
 - 21.11.2026 · Codex · Fixed the remaining PR #8 grounding findings from review of `002fbcb`. The model and fallback now check complete numeric runs, account and registry IDs, email addresses and references. Babel validates grouped money with attached currency. Added generated checks for clipped values and nine grouping styles.
 - 21.11.2026 · Codex · Merged `90d9701` and `4b1cc42`, retained configured routing and measured both engines on dev. Final product merge `c2bf060`.
@@ -93,3 +98,7 @@ Both splits missed the team’s micro F1 and classification targets. Compared wi
 - 21.11.2026 · Codex · added training checks for empty or mislabelled positive references. The negative output check now distinguishes a zero-byte prediction from an empty JSON object.
 - 21.11.2026 · Codex · Added the local PDF viewer and start scripts for #11 in `d1c9749`. Browser uploads and ZIP downloads matched the CLI for all three document classes, a scanned appeal and an unrelated PDF.
 - 21.11.2026 · Codex · Recovered appeal parties from detached labels and joint lists, scoped counsel to the appellant, and extracted procurement and first-charge facts from prose. Product `ee3c8ca`.
+
+- 21.11.2026 · Codex · Merged the GUI baseline through `ac78d2d` into the OCR branch. Added unreadable-scan diagnostics, signature ownership checks, labelled account evidence, a RapidOCR worker deadline, and a checksum-verified local model source.
+- 21.11.2026 · Codex · Integrated the corpus and macro-F1 harness from `3210643`. The OCR comparison uses the frozen extraction rules from `865b1ea`.
+- 21.11.2026 · Codex · Measured T0, T1, T1 with PNG input, R and TR on the dev cases. The hybrid gain was 0.0133, below the 0.0300 gate. Selected `tesseract-dpi` and kept RapidOCR optional.

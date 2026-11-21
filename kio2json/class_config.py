@@ -10,6 +10,9 @@ from typing import Annotated, Literal, Self
 
 from pydantic import BaseModel, BeforeValidator, ConfigDict, Field, ImportString, model_validator
 
+from .bank_transfer import AccountEvidence
+from .classify import classify, classify_with_evidence
+
 DEFAULT_DIR = Path(__file__).resolve().parents[1] / "config" / "classes"
 
 
@@ -151,6 +154,13 @@ def load_classes(directory: Path | None = None) -> list[DocumentClass]:
 
 
 def route(pages: list[str], definitions: list[DocumentClass]) -> DocumentClass | None:
+    definition, _ = route_with_evidence(pages, definitions)
+    return definition
+
+
+def route_with_evidence(
+    pages: list[str], definitions: list[DocumentClass]
+) -> tuple[DocumentClass | None, AccountEvidence | None]:
     # Organizer classes share a classifier. Compute its result once for this PDF.
     labels = {}
     for definition in definitions:
@@ -160,9 +170,12 @@ def route(pages: list[str], definitions: list[DocumentClass]) -> DocumentClass |
         if isinstance(routing, ClassifierRouting):
             classifier = routing.classifier
             if classifier not in labels:
-                labels[classifier] = classifier(pages)
-            if labels[classifier] == definition.id:
-                return definition
+                labels[classifier] = (
+                    classify_with_evidence(pages) if classifier is classify else (classifier(pages), None)
+                )
+            label, accounts = labels[classifier]
+            if label == definition.id:
+                return definition, accounts
         elif routing.matches(pages):
-            return definition
-    return None
+            return definition, None
+    return None, None
