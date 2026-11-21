@@ -10,6 +10,8 @@ variables unset. Keyed runs can use a second OCR reading and recover a failed do
 
 The opt-in small-model profile uses Mistral’s regional API, compact source spans and bounded PDF workers. [Provider comparison](docs/small-model-providers.md)
 
+The batch CLI defaults to up to four PDF workers, with one thread per Tesseract instance and up to three concurrent page reads per PDF. The first OCR pass supplies layout word boxes, and optional OCR shares a 27-second per-document deadline.
+
 ## Last eval
 
 The measured Ministral 3B profile uses the integrated rules, evidence-gated routing, selective native gap filling and first-charge verification. Against the rules at `eabbb31`, it raised strict micro F1 on the 91-PDF development pool from .5858 to .7146. A fresh 150-PDF CLI run took 335.64 seconds and scored .7208 micro F1 on its 91-PDF development subset. All 196 organizer training outputs matched the rules byte for byte in keyed and keyless runs. [Per-field results and timing](evals/results/small-model.json)
@@ -125,3 +127,6 @@ Two and four grant JSONs matched exactly. The ten organizer grants remained exac
 - 21.11.2026 · Codex · Verified the merge at `fb08cd7` against `main` at `5297660`. The keyless CLI matched all 196 training outputs by path and bytes, with micro F1 1.000. On 30 organizer scans, both scored 0.6852 micro F1. Main took 9.65 s/PDF with default settings. The first branch run timed out in Polish OCR on the last PDF. The completed branch retry at `37d6352` used `OMP_THREAD_LIMIT=1` and took 3.69 s/PDF.
 - 21.11.2026 · Codex · Merged main through `791dd00`. On the reviewer’s invented PDFs, the regional rules-first profile recovered the date, amount, transaction reference and title on four completed receipts, and the printed full attorney name on three grants. Five negative controls stayed empty. The previous corpus measurements document the earlier product revisions.
 - 21.11.2026 · Codex · After fixing the two keyed extraction regressions at `facdd0c`, the keyless CLI matched main at `791dd00` byte for byte on all 196 training outputs, including 16 empty negatives. Both revisions scored 1.000 micro F1 on full training and cases 51–60. Ruff and all 1,535 tests passed.
+
+
+- 21.11.2026 · Codex · Measured `a32ba1c` against `5297660`. All 226 outputs matched byte for byte. Four workers processed 30 scans in 37.15 s and the 150-PDF mix in 74.42 s on an M1. [Per-PDF runtime profile](evals/results/batch-runtime.json)

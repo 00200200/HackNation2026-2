@@ -5,6 +5,7 @@ import re
 from collections.abc import Iterator
 from concurrent.futures import Future, ThreadPoolExecutor
 from contextlib import ExitStack
+from contextvars import copy_context
 from functools import cache, partial
 from importlib.metadata import files
 from math import ceil
@@ -15,6 +16,7 @@ import pdfplumber
 from pdfplumber.utils import get_bbox_overlap, obj_to_bbox
 from PIL import Image
 
+from .ocr_budget import RereadExpired, remaining_ms, require_remaining_ms
 from .ocr_normalize import MAIL_TOKEN_RE, confirmed_email, normalize_ocr
 
 # The organizer README says the key information sits on the first three pages.
@@ -86,7 +88,9 @@ def _body_word_count(text: str) -> int:
     return sum(len(_WORD.findall(line)) for line in text.splitlines() if not _is_page_counter(line))
 
 
-def _has_visible_marks(page) -> bool:
+def _has_visible_marks(page, *, reread: bool = False) -> bool:
+    if reread:
+        require_remaining_ms()
     darkest, lightest = page.to_image(resolution=72).original.convert("L").getextrema()
     return darkest < 250 or darkest != lightest
 
@@ -169,16 +173,24 @@ def _rapid_engine():
     )
 
 
-def _ocr(page, words: list[WordBox] | None, *, engine: str | None = None) -> str:
+def _ocr(page, words: list[WordBox] | None, *, engine: str | None = None, reread: bool = False) -> str:
     if engine is None:
         engine = os.environ.get("KIO_OCR_ENGINE", DEFAULT_OCR_ENGINE)
     if engine in TESSERACT_ENGINES:
-        return _tesseract(_render(page), words, explicit_dpi=engine != "tesseract")
+        if reread:
+            require_remaining_ms()
+        return _tesseract(_render(page), words, explicit_dpi=engine != "tesseract", reread=reread)
     if engine != "rapidocr":
         raise ValueError(f"Unknown KIO_OCR_ENGINE={engine!r}, expected tesseract, tesseract-dpi, rapidocr or hybrid")
     from .rapid_worker import recognize
 
-    text, boxes = recognize(page.pdf.path, page.page_number, words is not None, OCR_TIMEOUT_SECONDS)
+    timeout = require_remaining_ms(1000 * OCR_TIMEOUT_SECONDS) / 1000 if reread else OCR_TIMEOUT_SECONDS
+    try:
+        text, boxes = recognize(page.pdf.path, page.page_number, words is not None, timeout)
+    except TimeoutError as error:
+        if reread and timeout < OCR_TIMEOUT_SECONDS:
+            raise RereadExpired from error
+        raise
     if words is not None:
         words.extend(WordBox(*box) for box in boxes)
     return text
@@ -222,16 +234,21 @@ def _render(page) -> _Raster:
     return _Raster(image.original, image.bbox, image.scale, page.page_number)
 
 
-def _tesseract(image: _Raster, words: list[WordBox] | None, *, explicit_dpi: bool) -> str:
+def _tesseract(image: _Raster, words: list[WordBox] | None, *, explicit_dpi: bool, reread: bool = False) -> str:
     """Recognize the page and verify suspect e-mail separators against their image crops."""
     from tesserocr import PSM, RIL, PyTessBaseAPI, iterate_level
 
+    if reread:
+        require_remaining_ms()
     with ExitStack() as stack:
         api = stack.enter_context(PyTessBaseAPI(path=_language_dir(), lang="pol", psm=PSM.AUTO))
         api.SetImage(image.original)
         if explicit_dpi:
             api.SetSourceResolution(OCR_DPI)
-        if not api.Recognize(timeout=1000 * OCR_TIMEOUT_SECONDS):
+        timeout = require_remaining_ms(1000 * OCR_TIMEOUT_SECONDS) if reread else 1000 * OCR_TIMEOUT_SECONDS
+        if not api.Recognize(timeout=timeout):
+            if reread and not remaining_ms(1):
+                raise RereadExpired
             raise OCRRecognitionError("Polish OCR failed or timed out")
         text = api.GetUTF8Text()
         iterator = api.GetIterator() if text.strip() else None
@@ -260,7 +277,7 @@ def _tesseract(image: _Raster, words: list[WordBox] | None, *, explicit_dpi: boo
                 if start < 0:
                     continue
                 cursor = start + len(token)
-                if not MAIL_TOKEN_RE.fullmatch(token):
+                if not MAIL_TOKEN_RE.fullmatch(token) or not remaining_ms(1):
                     continue
                 if english is None:
                     english = stack.enter_context(PyTessBaseAPI(path=_language_dir(), lang="eng", psm=PSM.SINGLE_WORD))
@@ -274,7 +291,8 @@ def _tesseract(image: _Raster, words: list[WordBox] | None, *, explicit_dpi: boo
                 english.SetImage(image.original.crop(crop))
                 if explicit_dpi:
                     english.SetSourceResolution(OCR_DPI)
-                if english.Recognize(timeout=1000):
+                timeout = remaining_ms(1000)
+                if timeout and english.Recognize(timeout=timeout):
                     replacement = confirmed_email(token, english.GetUTF8Text().strip())
                     text = text[:start] + replacement + text[cursor:]
                     cursor = start + len(replacement)
@@ -312,7 +330,9 @@ def _recognize_batch(scans, *, explicit_dpi: bool, with_boxes: bool):
                 failed.set_exception(error)
                 jobs[page.page_number] = failed, boxes
                 break
-            jobs[page.page_number] = pool.submit(_tesseract, raster, boxes, explicit_dpi=explicit_dpi), boxes
+            # Full-page primary OCR owns its timeout, but its e-mail crops share the document deadline.
+            job = pool.submit(copy_context().run, _tesseract, raster, boxes, explicit_dpi=explicit_dpi)
+            jobs[page.page_number] = job, boxes
     return jobs
 
 
@@ -327,6 +347,7 @@ def read_pages(
     engine: str | None = None,
     ocr_pages: list[int] | None = None,
     ocr_word_boxes: list[WordBox] | None = None,
+    reread: bool = False,
 ) -> list[str]:
     """Return the first pages and their optional boxes/OCR provenance. Check readability document-wide."""
     pages = []
@@ -336,13 +357,16 @@ def read_pages(
     readable = False
     word_count = 0
     recognize = _ocr if engine is None else partial(_ocr, engine=engine)
+    if reread:
+        require_remaining_ms()
+        recognize = partial(recognize, reread=True)
     with pdfplumber.open(pdf_path) as pdf:
         retained = pdf.pages[:max_pages]
         limit = len(retained)
         layers = {}
         jobs = {}
         selected = engine if engine is not None else os.environ.get("KIO_OCR_ENGINE", DEFAULT_OCR_ENGINE)
-        if selected in TESSERACT_ENGINES and 2 <= limit <= 3:
+        if not reread and selected in TESSERACT_ENGINES and 2 <= limit <= 3:
             for page in retained:
                 try:
                     layers[page.page_number] = _text_layer(page, force_ocr, repair_image_text)
@@ -356,6 +380,8 @@ def read_pages(
             include = index < limit
             if not include and (not used_ocr or readable):
                 break
+            if reread:
+                require_remaining_ms()
             number = page.page_number
             text = layers[number] if number in layers else _text_layer(page, force_ocr, repair_image_text)
             if isinstance(text, Exception):
@@ -386,7 +412,7 @@ def read_pages(
                 page_words = _body_word_count(text)
                 word_count += page_words
                 readable = word_count >= MIN_OCR_WORDS or (not scanned and page_words > 0)
-        if used_ocr and not readable and any(_has_visible_marks(page) for page in pdf.pages):
+        if used_ocr and not readable and any(_has_visible_marks(page, reread=reread) for page in pdf.pages):
             raise NoReadableTextError("no readable text after OCR")
     if word_boxes is not None and words:
         word_boxes.extend(words)

@@ -6,36 +6,34 @@ and continues with empty output if recovery fails. Other document errors give ex
 """
 
 import argparse
+import os
 import sys
-from concurrent.futures import ProcessPoolExecutor
-from multiprocessing import get_context
 from pathlib import Path
 
-from .batch import configure_logging, read_document, read_in_worker
-from .class_config import load_classes
+from .batch import configure_logging, read_batch
+from .class_config import class_sources, parse_classes
 
-
-def document_results(pdfs, classes, jobs):
-    if jobs == 1 or len(pdfs) < 2:
-        for pdf in pdfs:
-            yield read_document(pdf, classes)
-    else:
-        # Isolate native PDF renderers and reuse each worker across its documents.
-        with ProcessPoolExecutor(max_workers=min(jobs, len(pdfs)), mp_context=get_context("spawn")) as pool:
-            yield from pool.map(read_in_worker, pdfs)
+DEFAULT_WORKER_CAP = 4
 
 
 def main() -> int:
     parser = argparse.ArgumentParser(description=__doc__.splitlines()[0])
     parser.add_argument("--input", dest="input_dir", default="input", type=Path)
     parser.add_argument("--output", dest="output_dir", default="output", type=Path)
-    parser.add_argument("--jobs", type=int, choices=range(1, 9), default=1, help="Concurrent PDF workers (default 1)")
+    parser.add_argument(
+        "--workers",
+        "--jobs",
+        type=int,
+        choices=range(1, 9),
+        help=f"PDF processes (default: available CPUs up to {DEFAULT_WORKER_CAP})",
+    )
     args = parser.parse_args()
 
     if not args.input_dir.is_dir():
         parser.error(f"input folder not found: {args.input_dir}")
     try:
-        classes = load_classes()
+        sources = class_sources()
+        classes = parse_classes(sources)
     except (OSError, ValueError) as error:
         print(f"Class configuration: {error}", file=sys.stderr)
         return 1
@@ -43,7 +41,8 @@ def main() -> int:
 
     pdfs = sorted(p for p in args.input_dir.rglob("*") if p.suffix.lower() == ".pdf")
     failed = 0
-    for pdf, result in zip(pdfs, document_results(pdfs, classes, args.jobs), strict=True):
+    workers = args.workers or min(DEFAULT_WORKER_CAP, os.process_cpu_count() or 1)
+    for pdf, result in zip(pdfs, read_batch(pdfs, sources, workers), strict=True):
         if result.error:
             print(f"{pdf}: not processed ({result.error})", file=sys.stderr)
             failed += 1

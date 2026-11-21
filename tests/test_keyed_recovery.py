@@ -16,7 +16,7 @@ PRIVATE = "invented-private-text"
 
 
 @pytest.fixture
-def inputs(tmp_path, monkeypatch):
+def inputs(tmp_path, monkeypatch, in_process_cli):
     monkeypatch.chdir(tmp_path)
     monkeypatch.delenv("KIO_CLASSES_DIR", raising=False)
     for k, v in {

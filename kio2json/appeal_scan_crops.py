@@ -3,7 +3,7 @@
 import math
 import re
 from collections.abc import Callable, Iterator
-from contextlib import ExitStack
+from contextlib import ExitStack, suppress
 from functools import cache
 from os.path import commonprefix
 from pathlib import Path
@@ -15,6 +15,7 @@ from rapidfuzz.distance import Levenshtein
 
 from .appeal_scan_parties import _fold
 from .common import EMAIL_RE
+from .ocr_budget import RereadExpired, remaining_ms, require_remaining_ms
 from .pdf_text import WordBox, _language_dir
 
 _ReadCrop = Callable[[list[WordBox], str, bool], str]
@@ -71,17 +72,19 @@ def _contact(name: str, header: str, words: list[WordBox], read: _ReadCrop) -> s
 
 
 def verify_cover(record: dict, page: str, words: list[WordBox], path: Path) -> None:
-    if not words:
+    if not words or not remaining_ms(1):
         return
     from tesserocr import PSM, PyTessBaseAPI
 
     header = re.split(r"(?im)^\W*odwołanie\W*$", page, maxsplit=1)[0]
-    with ExitStack() as stack:
+    with ExitStack() as stack, suppress(RereadExpired):
 
         @cache
         def raster():
             doc = stack.enter_context(pdfplumber.open(path))
-            return doc.pages[0].to_image(resolution=360)
+            page = doc.pages[0]
+            require_remaining_ms()
+            return page.to_image(resolution=360)
 
         @cache
         def api(language):
@@ -92,7 +95,9 @@ def verify_cover(record: dict, page: str, words: list[WordBox], path: Path) -> N
             return _inclination(words)
 
         def read(span, language, deskew=False):
+            require_remaining_ms()
             frame = raster()
+            require_remaining_ms()
             left, top = frame.bbox[:2]
             coords = (
                 min(w.x0 for w in span) - left - 1,
@@ -107,7 +112,7 @@ def verify_cover(record: dict, page: str, words: list[WordBox], path: Path) -> N
             reader.SetPageSegMode(PSM.SINGLE_WORD if deskew or language == "eng" else PSM.SINGLE_LINE)
             reader.SetImage(crop)
             reader.SetSourceResolution(360)
-            return reader.GetUTF8Text().strip() if reader.Recognize(timeout=1000) else ""
+            return reader.GetUTF8Text().strip() if reader.Recognize(timeout=require_remaining_ms(1000)) else ""
 
         for party in record["Odwolujacy"]:
             counsel = party["pelnomocnik"]

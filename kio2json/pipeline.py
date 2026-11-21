@@ -15,6 +15,7 @@ from .engines import extract
 from .grant_certificates import add_certificate_signers
 from .model_pages import AlternateOCR
 from .ocr_accounts import AccountEvidence, account_evidence, normalize_receipt
+from .ocr_budget import RereadExpired, document_budget, remaining_ms
 from .ocr_grant_register import verified_pages
 from .ocr_signatures import recover_board_stamp
 from .pdf_text import (
@@ -71,10 +72,8 @@ def _read_receipt(
     definitions: list[DocumentClass],
     *,
     scanned: bool,
-    force_ocr: bool,
-    engine: str,
+    boxes: list[WordBox],
     retry: bool,
-    boxes: list[WordBox] | None,
 ) -> tuple[list[str], DocumentClass | None, AccountEvidence | None]:
     definition, accounts = _route_receipt(pages, definitions, scanned)
     if not pages or (definition is not None and not _is_receipt(definition)):
@@ -86,9 +85,6 @@ def _read_receipt(
             pages = recover_account_crops(pdf_path, pages, boxes)
         pages = [normalize_receipt(pages[0]), *pages[1:]]
     if has_detached_labels(pages, ocr=scanned):
-        if boxes is None or not scanned:
-            boxes = []
-            read_pages(pdf_path, max_pages=1, force_ocr=force_ocr, engine=engine, word_boxes=boxes)
         fields = receipt_cell_fields(boxes, ocr=scanned)
         # Keep the complete title already bound to a native label, including wrapped lines.
         if (
@@ -109,7 +105,12 @@ def _read_receipt(
         else:
             pages = original
     if definition is None and scanned and retry and incomplete_booking_scan(pages[0]):
-        alternate = read_pages(pdf_path, max_pages=1, force_ocr=True, engine="tesseract")
+        if not remaining_ms(1):
+            return pages, definition, accounts
+        try:
+            alternate = read_pages(pdf_path, max_pages=1, force_ocr=True, engine="tesseract", reread=True)
+        except RereadExpired:
+            return pages, definition, accounts
         if alternate:
             alternate = [normalize_receipt(alternate[0]), *pages[1:]]
             receipt, evidence = _route_receipt(alternate, definitions, True)
@@ -152,6 +153,7 @@ def _document_rules(definition, pdf_path, pages, ocr_pages, boxes, engine, selec
     return definition.extractor(join_pages(pages))
 
 
+@document_budget()
 def process_pdf(
     pdf_path: Path,
     force_ocr: bool = False,
@@ -166,11 +168,18 @@ def process_pdf(
     def read(engine: str) -> tuple[list[str], list[int], list[WordBox]]:
         scanned = []
         boxes = []
-        pages = read_pages(pdf_path, force_ocr=force_ocr, engine=engine, ocr_pages=scanned, ocr_word_boxes=boxes)
+        pages = read_pages(
+            pdf_path,
+            force_ocr=force_ocr,
+            engine=engine,
+            ocr_pages=scanned,
+            word_boxes=boxes,
+            reread=engine == "rapidocr" and os.getenv("KIO_OCR_ENGINE") == "hybrid",
+        )
         return pages, scanned, boxes
 
     try:
-        return _process(pdf_path, definitions, read, force_ocr)
+        return _process(pdf_path, definitions, read)
     except Exception:  # The PDF, OCR and model libraries raise unrelated per-document errors.
         if not any(d.enabled and d.profile.keyed for d in definitions):
             raise
@@ -178,7 +187,7 @@ def process_pdf(
     message = "Could not read document. Returning empty output."
     if read.cache_info().currsize:
         try:
-            result = _process(pdf_path, [d.rules_only for d in definitions if d.profile.keyed], read, force_ocr)
+            result = _process(pdf_path, [d.rules_only for d in definitions if d.profile.keyed], read)
             message = "Used rules after document processing failed."
         except Exception:  # noqa: BLE001 - a failed per-document rule retry must yield an empty output
             message = "Document processing and rule recovery failed. Returning empty output."
@@ -192,29 +201,35 @@ def _process(
     pdf_path: Path,
     definitions: list[DocumentClass],
     read: Callable[[str], tuple[list[str], list[int], list[WordBox]]],
-    force_ocr: bool,
 ) -> tuple[str | None, dict]:
     selected = os.getenv("KIO_OCR_ENGINE", DEFAULT_OCR_ENGINE)
     engines = ("tesseract-dpi", "rapidocr") if selected == "hybrid" else (selected,)
     readable = False
+    primary_error = None
     for engine in engines:
         try:
+            if engine != engines[0] and not remaining_ms(1):
+                raise RereadExpired
             primary, ocr_pages, boxes = read(engine)
             pages, definition, accounts = _read_receipt(
                 primary,
                 pdf_path,
                 definitions,
                 scanned=1 in ocr_pages,
-                force_ocr=force_ocr,
-                engine=engine,
-                retry=engine == selected == "tesseract-dpi",
                 boxes=boxes,
+                retry=engine == selected == "tesseract-dpi",
             )
-        except NoReadableTextError:
+        except RereadExpired:
+            if primary_error is not None:
+                raise primary_error
+            break
+        except NoReadableTextError as error:
+            primary_error = error
             if engine == engines[-1] and not readable:
                 raise
             continue
-        except OCRRecognitionError:
+        except OCRRecognitionError as error:
+            primary_error = error
             if engine == engines[-1]:
                 raise
             continue
@@ -229,10 +244,18 @@ def _process(
             and any(d.enabled and d.extractor is appeal.extract and d.profile.rules_first for d in definitions)
         ):
             repaired_pages, repaired_boxes = [], []
-            repaired = read_pages(
-                pdf_path, engine=engine, repair_image_text=True, ocr_pages=repaired_pages, ocr_word_boxes=repaired_boxes
-            )
-            if 1 in repaired_pages:
+            try:
+                repaired = read_pages(
+                    pdf_path,
+                    engine=engine,
+                    repair_image_text=True,
+                    reread=True,
+                    ocr_pages=repaired_pages,
+                    word_boxes=repaired_boxes,
+                )
+            except RereadExpired:
+                repaired = []
+            if repaired and 1 in repaired_pages:
                 candidate, _ = _route_receipt(repaired, definitions, True)
                 if candidate is not None and candidate.extractor is appeal.extract and candidate.profile.rules_first:
                     primary = pages = repaired
@@ -267,11 +290,10 @@ def _process(
                 and definition.profile.gap_scope == "incomplete"
             )
             if definition.id == "appeal":
-                pages = restore_party_columns(
-                    pdf_path, pages, force_ocr, engine=engine, boxes=boxes, ocr_pages=ocr_pages
-                )
+                pages = restore_party_columns(pages, boxes)
+            scan_boxes = [box for box in boxes if box.page in ocr_pages]
             python_rules = partial(
-                _document_rules, definition, pdf_path, pages, ocr_pages, boxes, engine, selected, accounts
+                _document_rules, definition, pdf_path, pages, ocr_pages, scan_boxes, engine, selected, accounts
             )
             record = extract(
                 definition,

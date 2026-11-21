@@ -1,9 +1,8 @@
 """Rejoin a column of role labels to the adjacent values in a scanned appeal."""
 
 import re
-from pathlib import Path
 
-from .pdf_text import WordBox, read_pages
+from .pdf_text import WordBox
 
 _ROLE = r"(?:zamawiający|odwołujący|wykonawca|pełnomocnik odwołującego|nazwa postępowania):"
 DETACHED_ROLES = re.compile(rf"(?im)^({_ROLE})[ \t]*\n({_ROLE})[ \t]*$")
@@ -41,24 +40,10 @@ def restore_labels(page: str, words: list[WordBox]) -> str:
     )
 
 
-def restore_party_columns(
-    path: Path,
-    pages: list[str],
-    force_ocr: bool,
-    *,
-    engine: str | None = None,
-    first_words: list[WordBox] | None = None,
-    boxes: list[WordBox] | None = None,
-    ocr_pages: list[int] | None = None,
-) -> list[str]:
+def restore_party_columns(pages: list[str], boxes: list[WordBox]) -> list[str]:
     detached = [i for i, page in enumerate(pages) if DETACHED_ROLES.search(page)]
     if not detached:
         return pages
-    if detached == [0] and first_words:
-        return [restore_labels(pages[0], first_words), *pages[1:]]
-    if boxes is None or not all(i + 1 in (ocr_pages or []) for i in detached):
-        boxes = []
-        read_pages(path, max_pages=max(detached) + 1, force_ocr=force_ocr, word_boxes=boxes, engine=engine)
     return [
         restore_labels(page, [w for w in boxes if w.page == i + 1]) if i in detached else page
         for i, page in enumerate(pages)

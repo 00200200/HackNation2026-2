@@ -217,12 +217,12 @@ def test_parallel_party_and_payment_columns_keep_each_fields_values(monkeypatch)
 
     reads = []
 
-    def read(path, *, ocr_word_boxes=None, ocr_pages=None, **kwargs):
+    def read(path, *, word_boxes=None, ocr_pages=None, **kwargs):
         reads.append(path)
         if ocr_pages is not None:
             ocr_pages.append(1)
-        if ocr_word_boxes is not None:
-            ocr_word_boxes.extend(WordBox(1, t, x, y, x + 12, y + 7) for x, y, t in cells)
+        if word_boxes is not None:
+            word_boxes.extend(WordBox(1, t, x, y, x + 12, y + 7) for x, y, t in cells)
         return ["\n".join(t for x, y, t in cells)]
 
     monkeypatch.setattr(pipeline, "read_pages", read)

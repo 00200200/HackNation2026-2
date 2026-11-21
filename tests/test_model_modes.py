@@ -219,9 +219,9 @@ def test_rules_first_keeps_verified_receipt_title_before_model_gap_fill(keyed, m
     monkeypatch.setenv("KIO_LLM_DUAL_OCR", "false")
     receipt = "Potwierdzenie przelewu\n" + "3" * 26 + "\n" + "4" * 26 + "\nKwota: 12,00"
 
-    def read(*args, ocr_pages, ocr_word_boxes, **kwargs):
+    def read(*args, ocr_pages, word_boxes, **kwargs):
         ocr_pages.append(1)
-        ocr_word_boxes.append(pipeline.WordBox(1, "Tytuł", 10, 10, 30, 20))
+        word_boxes.append(pipeline.WordBox(1, "Tytuł", 10, 10, 30, 20))
         return [receipt]
 
     monkeypatch.setattr(pipeline, "read_pages", read)

@@ -10,6 +10,7 @@ from PIL import ImageFilter
 from stdnum import iban
 
 from .ocr_accounts import ACCOUNT_RE
+from .ocr_budget import RereadExpired, remaining_ms, require_remaining_ms
 from .pdf_text import OCR_DPI, WordBox, _language_dir
 
 # Account nouns survive OCR more reliably than the adjoining party labels.
@@ -37,12 +38,16 @@ def _read_crops(path: Path, groups: list[list[WordBox]]) -> list[set[str]]:
     from tesserocr import PSM, PyTessBaseAPI
 
     with pdfplumber.open(path) as pdf:
-        image = pdf.pages[0].to_image(resolution=OCR_DPI)
+        page = pdf.pages[0]
+        require_remaining_ms()
+        image = page.to_image(resolution=OCR_DPI)
+    require_remaining_ms()
     left, top = image.bbox[:2]
     readings = []
     with PyTessBaseAPI(path=_language_dir(), lang="pol", psm=PSM.SINGLE_LINE) as api:
         api.SetVariable("tessedit_char_whitelist", "0123456789")
         for group in groups:
+            require_remaining_ms()
             bounds = (
                 (min(w.x0 for w in group) - left - 2) * image.scale,
                 (min(w.y0 for w in group) - top - 2) * image.scale,
@@ -54,7 +59,7 @@ def _read_crops(path: Path, groups: list[list[WordBox]]) -> list[set[str]]:
             for variant in (crop, crop.filter(ImageFilter.MedianFilter(3))):
                 api.SetImage(variant)
                 api.SetSourceResolution(OCR_DPI)
-                if api.Recognize(timeout=2000):
+                if api.Recognize(timeout=require_remaining_ms(2000)):
                     candidates.add("".join(api.GetUTF8Text().split()))
             readings.append(candidates)
     return readings
@@ -75,12 +80,12 @@ def recover_account_crops(path: Path, pages: list[str], boxes: list[WordBox]) ->
             span = _number_boxes(words, prefix.split()[-1], match[0])
             if span:
                 targets.append((line.start() + match.start(1), match[1], raw, span))
-    if not 1 <= len(targets) <= 2:
+    if not 1 <= len(targets) <= 2 or not remaining_ms(1):
         return pages
     text = pages[0]
     try:
         readings = _read_crops(path, [span for _, _, _, span in targets])
-    except (OSError, RuntimeError, ValueError, PdfminerException):
+    except (OSError, RuntimeError, ValueError, PdfminerException, RereadExpired):
         # An optional reread can fail after the primary receipt was read successfully.
         return pages
     for (offset, printed, raw, _), candidates in zip(targets, readings, strict=True):

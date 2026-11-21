@@ -10,6 +10,7 @@ from PIL import Image
 from rapidfuzz.fuzz import ratio
 
 from .bank_transfer import BOUNDARY_RE, STATUS, _field_text, _title
+from .ocr_budget import RereadExpired, require_remaining_ms
 from .pdf_text import OCR_DPI, WordBox, _language_dir
 
 _LABEL = re.compile(
@@ -118,6 +119,7 @@ def _line_image(image, row: list[WordBox], slope: float) -> Image.Image:
 def _read_sloped_lines(pdf_path: Path, selected: list[list[WordBox]], tilt: float, lines: list[str]) -> bool:
     from tesserocr import PSM, PyTessBaseAPI
 
+    require_remaining_ms()
     with pdfplumber.open(pdf_path) as pdf:
         page = pdf.pages[0]
         dpi = OCR_DPI
@@ -126,12 +128,15 @@ def _read_sloped_lines(pdf_path: Path, selected: list[list[WordBox]], tilt: floa
             # Upsampling a bilevel source can merge tiny punctuation with
             # neighbouring strokes. Its native resolution preserves the dots.
             dpi = min(dpi, max(150, round(raster["srcsize"][0] * 72 / raster["width"])))
+        require_remaining_ms()
         image = page.to_image(resolution=dpi)
+        require_remaining_ms()
         with PyTessBaseAPI(path=_language_dir(), lang="pol", psm=PSM.SINGLE_LINE) as api:
             for i, row in enumerate(selected):
+                require_remaining_ms()
                 api.SetImage(_line_image(image, row, tilt))
                 api.SetSourceResolution(dpi)
-                if not api.Recognize(timeout=400):
+                if not api.Recognize(timeout=require_remaining_ms(400)):
                     return False
                 candidate = api.GetUTF8Text().strip()
                 if not candidate:
@@ -177,7 +182,7 @@ def reread_title(pdf_path: Path | None, boxes: list[WordBox], primary_title: str
         try:
             if not _read_sloped_lines(pdf_path, selected, tilt, lines):
                 return None
-        except (OSError, RuntimeError, ValueError, PdfminerException):
+        except (OSError, RuntimeError, ValueError, PdfminerException, RereadExpired):
             # The first pass already established the receipt. Keep its fields.
             return None
     # Reuse native quote handling and boundaries for another labelled field on

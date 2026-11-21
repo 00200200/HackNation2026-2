@@ -36,6 +36,9 @@ python -m kio2json                                   # reads ./input, writes ./o
 python -m kio2json --input some/input --output some/output
 ```
 
+By default the CLI uses up to four worker processes, limited by the CPUs available to Python.
+Use `--workers 1` for a sequential run, or set `--workers` (also spelled `--jobs`) to a value from 1 to 8. Each Tesseract instance uses one thread. A PDF worker can recognize up to three retained scan pages concurrently. The CLI writes results in sorted input order.
+
 The default OCR setting is `tesseract-dpi`. Set `KIO_OCR_ENGINE` to choose another mode for the CLI or viewer.
 
 | Setting | Pages requiring OCR |
@@ -79,7 +82,9 @@ works offline. Page provenance is used internally and the output follows the org
    only when the rest of both readings agrees. Call `read_pages(path, word_boxes=boxes)` with
    an empty list to collect raw words and their rectangles alongside the page strings. Coordinates
    are PDF points from the top left, with one-based page numbers. Polish Tesseract has 60 seconds per
-   recognition call and each English verification crop has one second. RapidOCR runs in a reusable
+   primary page and each English verification crop has one second. Optional OCR calls also share a
+   27-second deadline measured from the start of each PDF. When it expires, extraction continues with the
+   available readings. Every page required for the first reading still gets its full recognition timeout. RapidOCR runs in a reusable
    child process. A 60-second page deadline kills a stalled worker so processing can continue.
 2. The CLI loads `config/classes/*.toml` once per batch. `kio2json/class_config.py` matches the
    page text against enabled definitions in ascending `priority`, then class ID order. The first
@@ -171,7 +176,7 @@ export KIO_LLM_INLINE_SYSTEM_PROMPTS=false KIO_LLM_TIMEOUT_SECONDS=120
 python -m kio2json --input input --output output --jobs 3
 ```
 
-In `spans` mode the model copies one short passage per scalar into a class-specific native schema. The application locates the passage in up to 8,192 UTF-8 bytes of page text, checks token boundaries and derives dates, amounts, identifiers and organizer codes locally. Each class can supply a short `span_instructions` string in its TOML. The example uses local Tesseract for scans. The model receives text; its vision encoder is included in the published parameter count. The CLI accepts 1–8 document workers and defaults to one.
+In `spans` mode the model copies one short passage per scalar into a class-specific native schema. The application locates the passage in up to 8,192 UTF-8 bytes of page text, checks token boundaries and derives dates, amounts, identifiers and organizer codes locally. Each class can supply a short `span_instructions` string in its TOML. The example uses local Tesseract for scans. The model receives text; its vision encoder is included in the published parameter count. The measured model profile selects three document workers.
 
 The rules read each document first. In the profile above, a rejected first page needs evidence of a filing, mandate or payment before the model can route it. On native documents and on locally recognized scanned appeals and receipts, a general model call requires a missing party or core payment detail. Scanned powers and documents routed by the model remain eligible for gap filling. A separate appeal request uses the first charge and the dated introductory act, with a 320-token limit and a 30-second deadline. The rules verify the quoted act and date and supply the organizer’s canonical description.
 
@@ -271,6 +276,11 @@ The scanned-transfer update was evaluated on a five-case organizer development h
 On all 30 organizer development scans, the rules routed 10/10 transfer confirmations. Nine matched every field literally (59/60 fields, transfer F1 0.9833). The outstanding title contains a severely degraded name and abbreviation. Across all three classes the run averaged 9.23 s/PDF on the shared Apple M1, with a maximum of 19.02 s. With the integrated power-of-attorney rules, micro F1 reached 0.6312 on corpus 1 all, 0.7160 on its dev subset and 0.6816 on corpus 2 dev. [Round 2 measurements](evals/results/scanned-transfers-round2.json)
 
 The organizer allows 45 minutes for its 150-PDF batch, an average budget of 18 seconds per PDF.
+On a 16 GiB M1 MacBook Air, four workers processed 30 organizer scans in 37.15 seconds and a mix of
+60 scans and 90 training PDFs in 74.42 seconds. Peak sampled process-tree RSS for the mix was
+1,504 MiB. All 226 training and scan outputs matched sequential main (`5297660`) byte for byte.
+[Batch timings and per-PDF profile](evals/results/batch-runtime.json)
+
 The reported times cover these local datasets. OCR runs locally. Under the updated rules, a remote
 OCR service would count toward model parameters. [Organizer evaluation rules](data/uzp/README.md)
 

@@ -3,6 +3,8 @@
 from dataclasses import dataclass, field
 from pathlib import Path
 
+from .ocr_budget import remaining_ms
+
 MODEL_INPUT_BYTES = 16384
 _DIVIDER = "\n\n--- Alternate OCR of the scanned pages above ---\n\n"
 
@@ -49,7 +51,15 @@ class AlternateOCR:
             from .pdf_text import OCR_TIMEOUT_SECONDS
             from .rapid_worker import recognize
 
-            text, _ = recognize(self.path, page, False, OCR_TIMEOUT_SECONDS)
+            timeout = remaining_ms(1000 * OCR_TIMEOUT_SECONDS) / 1000
+            if not timeout:
+                return ""
+            try:
+                text, _ = recognize(self.path, page, False, timeout)
+            except TimeoutError:
+                if timeout < OCR_TIMEOUT_SECONDS:
+                    return ""
+                raise
             self._text[page] = normalize_ocr(text)
         return self._text[page]
 
