@@ -28,7 +28,7 @@ check `git diff data/uzp`, commit it, and compare F1 only between runs on the sa
 uv run python -m evals.run --quick                       # przyklad_01-05, _24 + 3 negatives; before a push
 uv run python -m evals.run                               # all 60 cases + all negatives; before submitting
 uv run python -m evals.run --pred output/                # score an existing output tree (original file names)
-make eval-real HN_REAL_SPLIT=dev                         # local corpus, override with HN_REAL_CORPUS
+make eval-real HN_REAL_CORPUS=/path/to/corpus HN_REAL_SPLIT=dev   # HN_REAL_CORPUS is required
 uv run python -m evals.run --corpus "$corpus" --split test
 uv run python -m evals.run --corpus "$corpus" --split dev --detail-out "$corpus/dev-detail.json"
 uv run python -m evals.field_report --corpus "$corpus" --split dev --force-ocr --errors
@@ -53,7 +53,7 @@ Set `corpus` to the local corpus root. Each `cases/<case_id>/<name>.pdf` needs a
 `gold/<case_id>/<name>.json`, including an empty file for each unrelated PDF. Use `--pred DIR` to read
 `DIR/<case_id>/<name>.json` from a previous extraction. Corpus mode writes aggregates to
 `evals/results/corpus-latest.json` and leaves the training gate alone.
-Set `HN_REAL_SPLIT` to `dev`, `test`, or `all` (default) for `make eval-real`.
+`make eval-real` needs `HN_REAL_CORPUS` and fails with a message when it is unset. Set `HN_REAL_SPLIT` to `dev`, `test`, or `all` (default).
 The optional `--detail-out` file must be outside every checkout of this repository and its Git metadata.
 On test splits, corpus I/O failures report an error count and type on the console.
 Invalid inputs, an empty selection and extractor failures exit 2 before writing results or the training gate.

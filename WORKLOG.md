@@ -155,6 +155,7 @@ Two and four grant JSONs matched exactly. The ten organizer grants remained exac
 - 21.11.2026 · Claude · #47 `HN_REAL_CORPUS` empty by default, `make eval-real` fails with a message when unset, personal path removed; #51 "8B cap" wording replaced by the organizer's "smaller model scores more, scoring being revised" · docs/paths-and-llm-scoring
 
 - 21.11.2026 · Integrated #27 and #34 with streamed upload limits and a disposable OCR process per document. The request deadline includes upload and queue time.
+- 22.11.2026 · Claude · PR #53 review fixes: the 3B "smallest" claim now names its table, the 14.97 s on-device smoke test cites `evals/results/small-model.json` (`local_smoke`), an unsourced local-grant sentence was removed, the provider table drops its "eligibility" and "qualifying" wording and the eval skill example requires `HN_REAL_CORPUS` · claude/pr53-docs
 
 ## Frontend branch snapshot before API integration
 
@@ -174,7 +175,7 @@ These runs used local rules with the three endpoint variables unset. The two loc
 
 | Item | Owner |
 |---|---|
-| Evaluate the planned Mistral API model (at most 8B parameters) on dev | Open |
+| Evaluate the planned Mistral API model (the smaller the model, the more it scores) on dev | Open |
 | Score corpus 2 test once after selecting and freezing the merged profile | Open |
 | Wire the doc2json.pl upload to the extraction (serve the GUI backend behind `/api/` or point the page at it) | Open |
 
