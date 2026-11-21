@@ -2,10 +2,19 @@
 name = "hacknation2026-2"
 version = "0.1.0"
 requires-python = ">=3.13"
-dependencies = []
+dependencies = [
+    "pydantic-ai>=2.71.0",
+]
 
 [dependency-groups]
 dev = [
     "pytest>=9.2.0",
     "ruff>=0.17.6",
 ]
+
+[tool.pytest.ini_options]
+pythonpath = ["."]
+
+[tool.ruff]
+line-length = 120
+extend-exclude = ["data"]

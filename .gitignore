@@ -226,3 +226,10 @@ __marimo__/
 .claude/settings.local.json
 CLAUDE.local.md
 !.claude/skills/build/
+
+# Organizer data (make data) and local runs
+data/
+input/*
+output/*
+!input/.gitkeep
+!output/.gitkeep

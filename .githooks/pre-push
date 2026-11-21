@@ -1,0 +1,152 @@
+#!/usr/bin/env bash
+# Pre-push gate for HackNation 2026 (Odwołania2json, UZP). Setup once per clone:
+#   git config core.hooksPath .githooks
+# Blocks the push on: secrets in pushed lines, tracked .env files, files over 10 MB,
+# failing ruff (lint or format) or pytest, requirements.txt out of sync with uv.lock, product code without a clean eval run on the pushed commit,
+# and no judge PASS recorded for the pushed commit.
+# Rules: .claude/skills/hacknation-judging/SKILL.md, .claude/skills/odwolania2json-eval/SKILL.md
+# Submission push: HN_FINAL=1 git push (full eval, every metric passing, even if already pushed).
+# Emergency bypasses: HN_SKIP_EVAL=1, HN_SKIP_JUDGE=1 (tell the team).
+set -u
+
+ZERO=0000000000000000000000000000000000000000
+MAX_BYTES=$((10 * 1024 * 1024))
+GIT_DIR=$(git rev-parse --git-dir)
+ROOT=$(git rev-parse --show-toplevel)
+EVAL="$GIT_DIR/eval-latest.json"
+FINAL="${HN_FINAL:-0}"
+NON_PRODUCT_RE='^(docs/|data/|\.claude/|\.githooks/|\.github/|evals/results/)|^(\.gitignore|LICENSE.*)$|\.md$'
+EMPTY_TREE=$(git hash-object -t tree /dev/null)
+# sk- keys need a left boundary, or slugs like task-force-... would match.
+SECRET_RE='((^|[^A-Za-z0-9_-])sk-(ant|proj)-[A-Za-z0-9_-]{20,}|(^|[^A-Za-z0-9_-])sk-[A-Za-z0-9]{40,}|AKIA[0-9A-Z]{16}|gh[pousr]_[A-Za-z0-9]{36,}|xox[baprs]-[A-Za-z0-9-]{10,}|AIza[0-9A-Za-z_-]{35}|-----BEGIN [A-Z ]*PRIVATE KEY-----)'
+fail=0
+checked=0
+
+say() { printf 'pre-push: %s\n' "$*" >&2; }
+block() { say "BLOCK: $*"; fail=1; }
+
+# Eval gate for one commit. $1 = sha, $2 = first changed product file ("" if none).
+check_eval() {
+  sha=$1 product=$2
+  if [ "${HN_SKIP_EVAL:-0}" = "1" ]; then
+    say "WARNING: eval check skipped (HN_SKIP_EVAL=1) for ${sha:0:9}"
+    return
+  fi
+  [ -z "$product" ] && [ "$FINAL" != "1" ] && return
+  if [ ! -f "$EVAL" ]; then
+    if [ "$FINAL" = "1" ]; then
+      block "HN_FINAL=1 needs a full eval run on ${sha:0:9}: uv run python -m evals.run"
+    else
+      say "WARNING: product code changed ($product) and no eval has run in this clone yet."
+      say "         Run: uv run python -m evals.run --quick   (the gate turns on after the first run)"
+    fi
+    return
+  fi
+  IFS='|' read -r e_commit e_dirty e_mode e_pass e_failing <<EOF_EVAL
+$(python3 -I -c 'import json,sys
+r=json.load(open(sys.argv[1]))
+bad=[k for k,m in r.get("metrics",{}).items() if m.get("pass") is not True]
+bad+=[] if r.get("coverage_ok",True) else ["coverage(%s cases, need all 60 + negatives)" % r.get("n_cases")]
+print("|".join([r.get("commit",""),str(r.get("dirty")),r.get("mode",""),str(r.get("overall_pass")),",".join(bad) or "-"]))' "$EVAL" 2>/dev/null)
+EOF_EVAL
+  if [ -n "${e_commit:-}" ] && git cat-file -e "$e_commit^{commit}" 2>/dev/null; then
+    since=$(git diff --name-only "$e_commit" "$sha" | grep -vE "$NON_PRODUCT_RE" | head -n 1)
+  else
+    since="(results unreadable or commit unknown)"
+  fi
+  if [ -n "$since" ]; then
+    block "eval results are for ${e_commit:0:9}; product code changed since ($since). Run: uv run python -m evals.run --quick"
+  elif [ "$e_dirty" = "True" ]; then
+    block "last eval ran with uncommitted product changes; commit, then rerun it"
+  elif [ "$FINAL" = "1" ] && { [ "$e_mode" != "full" ] || [ "$e_pass" != "True" ]; }; then
+    block "submission push needs a full eval with every metric passing (mode=$e_mode, failing: $e_failing)"
+  elif [ "$e_pass" != "True" ]; then
+    say "WARNING: eval ($e_mode, ${e_commit:0:9}) fails or misses: $e_failing. The judge decides; fix before submitting."
+  else
+    say "eval OK ($e_mode, ${e_commit:0:9})"
+  fi
+}
+
+# Judge PASS for one commit.
+check_judge() {
+  if [ "${HN_SKIP_JUDGE:-0}" = "1" ]; then
+    say "WARNING: judge check skipped (HN_SKIP_JUDGE=1) for ${1:0:9}"
+    return
+  fi
+  stamp=$(head -n 1 "$GIT_DIR/judge-pass" 2>/dev/null | cut -d' ' -f1-2)
+  [ "$stamp" = "$1 PASS" ] || block "no judge PASS for ${1:0:9}. In Claude Code run the pre-push check from the hacknation-judging skill."
+}
+
+while read -r local_ref local_sha remote_ref remote_sha; do
+  [ "$local_sha" = "$ZERO" ] && continue # branch deletion
+  if [ "$remote_sha" != "$ZERO" ] && ! git cat-file -e "$remote_sha^{commit}" 2>/dev/null; then
+    block "$remote_ref has commits you do not have locally; run git fetch and rebase first"
+    continue
+  fi
+  if [ "$remote_sha" = "$ZERO" ]; then
+    new=$(git rev-list "$local_sha" --not --remotes | head -n 1)
+    base=$(git merge-base "$local_sha" origin/HEAD 2>/dev/null || echo "$EMPTY_TREE")
+  else
+    new=$(git rev-list "$remote_sha..$local_sha" 2>/dev/null | head -n 1)
+    base=$remote_sha
+  fi
+  [ -z "$new" ] && [ "$FINAL" != "1" ] && continue # nothing new
+  checked=1
+
+  # 1. Secrets in added lines
+  added=$(git diff "$base" "$local_sha" -U0 | grep -E '^\+' | grep -v '^+++')
+  if printf '%s\n' "$added" | grep -Eq "$SECRET_RE"; then
+    block "possible secret in pushed changes:"
+    printf '%s\n' "$added" | grep -Eo "$SECRET_RE" | cut -c1-12 | sed 's/$/… /' >&2
+  fi
+
+  # 2. Tracked .env files (examples are fine)
+  envs=$(git ls-tree -r --name-only "$local_sha" | grep -E '(^|/)\.env(\..+)?$' | grep -vE '\.(example|sample|template)$')
+  [ -n "$envs" ] && block "tracked env file(s): $envs"
+
+  # 3. Large files (datasets, model weights)
+  big=$(git diff --name-only --diff-filter=AM "$base" "$local_sha" | while IFS= read -r f; do
+    size=$(git cat-file -s "$local_sha:$f" 2>/dev/null || echo 0)
+    [ "$size" -gt "$MAX_BYTES" ] && printf '%s (%s bytes); ' "$f" "$size"
+  done)
+  [ -n "$big" ] && block "file(s) over 10 MB: $big"
+
+  # 4. Eval results, 5. judge PASS
+  check_eval "$local_sha" "$(git diff --name-only "$base" "$local_sha" | grep -vE "$NON_PRODUCT_RE" | head -n 1)"
+  check_judge "$local_sha"
+done
+
+# Submission push with nothing new to send: still check the current commit.
+if [ "$FINAL" = "1" ] && [ "$checked" = "0" ]; then
+  head_sha=$(git rev-parse HEAD)
+  check_eval "$head_sha" ""
+  check_judge "$head_sha"
+fi
+
+# 6. Lint and tests on the working tree (only when the project has them)
+cd "$ROOT" || exit 1
+if [ -f pyproject.toml ] && command -v uv >/dev/null 2>&1; then
+  if find . -path ./.venv -prune -o -name '*.py' -print -quit | grep -q .; then
+    uv run --quiet ruff check . >&2 || block "ruff check failed"
+    uv run --quiet ruff format --check . >&2 || block "ruff format --check failed (run: make format)"
+  fi
+  if find . -path ./.venv -prune -o \( -name 'test_*.py' -o -name '*_test.py' \) -print -quit | grep -q .; then
+    uv run --quiet pytest -q >&2 || block "pytest failed"
+  fi
+  # 7. requirements.txt (jury installs with pip) must match uv.lock
+  if [ -f uv.lock ]; then
+    if [ ! -f requirements.txt ]; then
+      block "requirements.txt missing (run: make requirements)"
+    elif ! diff -q <(uv export --quiet --frozen --no-hashes --no-dev --no-emit-project 2>/dev/null | grep -v '^#') \
+      <(grep -v '^#' requirements.txt) >/dev/null; then
+      block "requirements.txt out of sync with uv.lock (run: make requirements)"
+    fi
+  fi
+fi
+
+if [ "$fail" -ne 0 ]; then
+  say "push refused. Fix the items above (never --force)."
+  exit 1
+fi
+say "OK"
+exit 0

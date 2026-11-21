@@ -1,0 +1,84 @@
+import json
+from pathlib import Path
+
+import pytest
+
+from evals.metrics import NEGATIVE, compare, doc_class, flatten, load_json, normalise, score_doc, summarise
+from evals.run import DATA, GOLD_FOR, load_cases
+
+GOLD = {
+    "przelew_bankowy": {
+        "data_operacji": "2026-03-21",
+        "kwota": 200.0,
+        "na_rachunek": "68438223049992295262834736",
+        "numer_transakcji": None,
+        "tytul": "Wpis od odwołania",
+        "z_rachunku": "05470680287581539721455024",
+    }
+}
+
+
+def test_perfect_prediction_scores_one():
+    assert compare(GOLD, GOLD).f1 == 1.0
+
+
+def test_normalisation_ignores_spacing_case_and_number_format():
+    pred = json.loads(json.dumps(GOLD))
+    pred["przelew_bankowy"].update(
+        kwota=200, na_rachunek="68 4382 2304 9992 2952 6283 4736", tytul=" WPIS OD  ODWOŁANIA "
+    )
+    assert compare(pred, GOLD).f1 == 1.0
+    assert normalise(10000.00) == normalise(10000) == "10000"
+    assert normalise(85120133547) == normalise("85120133547")
+
+
+def test_wrong_and_hallucinated_values_cost_precision_and_recall():
+    pred = json.loads(json.dumps(GOLD))
+    pred["przelew_bankowy"]["numer_transakcji"] = "INVENTED"
+    counts = compare(pred, GOLD)
+    assert (counts.tp, counts.fp, counts.fn) == (5, 1, 1)
+    non_null = compare(pred, GOLD, skip_gold_nulls=True)
+    assert (non_null.tp, non_null.fp, non_null.fn) == (5, 0, 0)
+
+
+def test_lists_are_order_insensitive():
+    gold = {"pelnomocnicy": [{"imie_nazwisko": "A B", "pesel": None}, {"imie_nazwisko": "C D", "pesel": None}]}
+    pred = {"pelnomocnicy": list(reversed(gold["pelnomocnicy"]))}
+    assert compare(pred, gold).f1 == 1.0
+    assert sum(flatten(gold).values()) == 4
+
+
+def test_negative_document_must_be_empty(tmp_path: Path):
+    empty = tmp_path / "neg.json"
+    empty.write_text("")
+    assert load_json(empty) == {}
+    assert doc_class({}) == NEGATIVE
+    ok = score_doc("negatywne", "x.pdf", empty, {})
+    assert (ok.counts.tp, ok.counts.fp, ok.counts.fn) == (0, 0, 0)
+    wrong = tmp_path / "wrong.json"
+    wrong.write_text(json.dumps(GOLD))
+    bad = score_doc("negatywne", "x.pdf", wrong, {})
+    assert bad.counts.fp == 6 and bad.pred_class == "przelew"
+
+
+def test_missing_output_counts_as_all_missed(tmp_path: Path):
+    result = score_doc("c", "x.pdf", tmp_path / "missing.json", GOLD)
+    assert result.errors and result.counts.fn == 6
+    summary = summarise([result])
+    assert summary["outputs_complete"] == 0.0 and summary["micro_f1"] == 0.0
+
+
+@pytest.mark.skipif(not DATA.is_dir(), reason="organizer data not cloned (make data)")
+def test_gold_outputs_score_one_on_training_data(tmp_path: Path):
+    cases = load_cases(DATA, quick=True)
+    docs = []
+    for case, items in cases.items():
+        for name, gold in items.items():
+            out = tmp_path / case / f"{Path(name).stem}.json"
+            out.parent.mkdir(parents=True, exist_ok=True)
+            out.write_text(json.dumps(gold) if gold else "", encoding="utf-8")
+            docs.append(score_doc(case, name, out, gold))
+    summary = summarise(docs)
+    assert summary["micro_f1"] == 1.0
+    assert summary["negatives_empty"] == summary["classification_accuracy"] == 1.0
+    assert set(GOLD_FOR) <= {name for items in cases.values() for name in items}
