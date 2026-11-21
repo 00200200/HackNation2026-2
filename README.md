@@ -239,9 +239,11 @@ These runs used local rules with the three endpoint variables unset. The two loc
 
 | Dataset | PDFs | Micro F1 | Macro F1 by class | Appeal | Power of attorney | Transfer | Correct routes (appeal / power / transfer) | Empty negatives | Wall s/PDF |
 |---|---:|---:|---:|---:|---:|---:|---|---:|---:|
-| Local corpus 1, all | 39 | 0.6307 | 0.6607 | 0.6016 | 0.9189 | 0.4615 | 12/13 / 6/6 / 4/9 | 11/11 | 7.39 |
-| Local corpus 2, dev | 39 | 0.6045 | 0.5662 | 0.6008 | 0.9462 | 0.1515 | 12/13 / 5/5 / 1/10 | 11/11 | 6.33 |
-| Organizer scans | 30 | 0.6852 | 0.6023 | 0.6123 | 1.0000 | 0.1944 | 9/10 / 10/10 / 2/10 | n/a | 10.05 |
+| Local corpus 1, all | 39 | 0.8587 | 0.7571 | 0.8910 | 0.9189 | 0.4615 | 13/13 / 6/6 / 4/9 | 11/11 | 16.27 |
+| Local corpus 2, dev | 39 | 0.8154 | 0.6563 | 0.8713 | 0.9462 | 0.1515 | 13/13 / 5/5 / 1/10 | 11/11 | 15.02 |
+| Organizer scans | 30 | 0.9203 | 0.7315 | 1.0000 | 1.0000 | 0.1944 | 10/10 / 10/10 / 2/10 | n/a | 7.83 |
+
+The corpus 2 timing includes the complete batch before the final date-boundary change. One native-text prediction was regenerated and the complete split rescored. [Real appeal round](evals/results/appeal-real-development.json)
 
 Micro F1 pools field matches across documents. Macro F1 averages the three class scores. The routing columns count correctly classified documents in each target class. The negatives column counts zero-byte outputs. Timing includes OCR and extraction on a shared host. [Appeal development measurements](evals/results/appeal-scan-development.json) · [Grant development measurements](evals/results/poa-development.json) · [Organizer scan report](evals/results/organizer-scans.json)
 
