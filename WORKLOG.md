@@ -16,6 +16,8 @@ The grant certificate and board-stamp readers share the copy-attestation check s
 Public landing https://doc2json.pl (`frontend/`, static nginx, monochrome) runs on the team VPS as `doc2json-web`
 behind the faktczyfejk Caddy; deploy in `docs/deploy.md`. Its upload calls `kio2json.web_api` (`/api/extract`, rules engine, no keys) in the `doc2json-api` container.
 
+behind the faktczyfejk Caddy; deploy in `docs/deploy.md`. Its upload is not wired to the extraction yet: it calls
+`/api/health` and keeps files in the browser while that returns 404.
 ## Last eval
 
 In the earlier small-model experiment the profile used evidence-gated routing, selective native gap filling and first-charge verification. Against the rules at `eabbb31`, it raised strict micro F1 on the 91-PDF development pool from .5858 to .7146. A fresh 150-PDF CLI run took 335.64 seconds and scored .7208 micro F1 on its 91-PDF development subset. All 196 organizer training outputs matched the rules byte for byte in keyed and keyless runs. [Per-field results and timing](evals/results/small-model.json)
@@ -51,14 +53,24 @@ The subsequent real-grant round found six labelled grants in corpus 1 and five i
 On these development documents, grant field F1 rose to 0.9558 and 0.9895 respectively.
 Two and four grant JSONs matched exactly. The ten organizer grants remained exact.
 
+These runs used local rules with the three endpoint variables unset. The two local datasets contain real documents and use whole-case splits. Corpus 1 contributes all 39 development PDFs, including its previously evaluated split. Corpus 2 contributes 39 development PDFs from 14 cases. Its 60 test PDFs are reserved for the merged system. The organizer supplied a separate set of 30 labelled scans, ten per target class, in revision `0b360a9`.
+| Dataset | PDFs | Micro F1 | Macro F1 by class | Appeal | Power of attorney | Transfer | Correct routes (appeal / power / transfer) | Empty negatives | Wall s/PDF |
+|---|---:|---:|---:|---:|---:|---:|---|---:|---:|
+| Local corpus 1, all | 39 | 0.6307 | 0.6607 | 0.6016 | 0.9189 | 0.4615 | 12/13 / 6/6 / 4/9 | 11/11 | 7.39 |
+| Local corpus 2, dev | 39 | 0.6045 | 0.5662 | 0.6008 | 0.9462 | 0.1515 | 12/13 / 5/5 / 1/10 | 11/11 | 6.33 |
+| Organizer scans | 30 | 0.6852 | 0.6023 | 0.6123 | 1.0000 | 0.1944 | 9/10 / 10/10 / 2/10 | n/a | 10.05 |
+[Grant development measurements](evals/results/poa-development.json) · [Organizer scan aggregate](evals/results/organizer-scans.json)
 ## Next
 
 | Item | Owner |
 |---|---|
 | Obtain an EU/EEA-only processing commitment for Mistral or deploy the same weights within the EEA | Deployment |
 | Score corpus 2 test once after the class rules and small-model profile are integrated | Coordinator |
+| Evaluate the planned Mistral API model (at most 8B parameters) on dev | Open |
+| Score corpus 2 test once after selecting and freezing the merged profile | Open |
 | Improve receipt routing and recover damaged party names on development inputs | Open |
 | Confirm the organizer’s F1 formula and Stage II weights with UZP | Open |
+| Wire the doc2json.pl upload to the extraction (serve the GUI backend behind `/api/` or point the page at it) | Open |
 | Promote HackNation2026 PR #48 to `prod` after the faktczyfejk demo, so the doc2json.pl Caddy block survives a redeploy | Open |
 
 ## Decisions
