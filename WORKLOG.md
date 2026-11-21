@@ -24,6 +24,10 @@ These runs used local rules with the three endpoint variables unset. The two loc
 
 [Grant development measurements](evals/results/poa-development.json) · [Organizer scan aggregate](evals/results/organizer-scans.json)
 
+The subsequent real-grant round found six labelled grants in corpus 1 and five in corpus 2 dev.
+On these development documents, grant field F1 rose to 0.9558 and 0.9895 respectively.
+Two and four grant JSONs matched exactly. The ten organizer grants remained exact.
+
 ## Next
 
 | Item | Owner |
@@ -88,3 +92,4 @@ These runs used local rules with the three endpoint variables unset. The two loc
 - 21.11.2026 · Codex · Fixed the execution-date regression reported on PR #23, added three native receipts with baseline outputs, and recognized three additional completed payment statuses. All 196 training files matched the baseline byte for byte at `ee6c36e`. The clean training run scored 1.000 micro F1 and the 30 organizer scans scored 0.5633 micro F1.
 
 - 21.11.2026 · Codex · Recovered officers, multiple appointments and register digits on scanned grants, and named signers from embedded certificates on real grants. All 10 organizer grants matched exactly in rules-only mode.
+- 21.11.2026 · Codex · Recovered stamp signers by column, resolved a damaged initial in a titled appointment list, joined grantor registry rows and completed inflected company names. Side-by-side approval signatures now follow their visible reading order.

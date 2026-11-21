@@ -164,13 +164,17 @@ def _ocr(page, words: list[WordBox] | None, *, engine: str | None = None) -> str
     return text
 
 
-def _rapidocr(page, words: list[WordBox] | None) -> str:
+def _rapidocr(page, words: list[WordBox] | None, *, lines: bool = False) -> str:
     """Run inside the deadline-controlled worker, which owns the mutable ONNX engine."""
     image = page.to_image(resolution=OCR_DPI)
-    result = _rapid_engine()(image.original, return_word_box=words is not None)
+    result = _rapid_engine()(image.original, return_word_box=words is not None and not lines)
     if words is not None and result.txts:
         left, top = image.bbox[:2]
-        for line in result.word_results or ():
+        if lines:
+            groups = [zip(result.txts, result.scores, result.boxes, strict=True)]
+        else:
+            groups = result.word_results or ()
+        for line in groups:
             for word, _, box in line or ():
                 xs, ys = zip(*box)
                 words.append(

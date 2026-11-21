@@ -16,6 +16,7 @@ from .grant_certificates import add_certificate_signers
 from .model_pages import AlternateOCR
 from .ocr_accounts import AccountEvidence, account_evidence, normalize_receipt
 from .ocr_grant_register import verified_pages
+from .ocr_signatures import recover_board_stamp
 from .pdf_text import DEFAULT_OCR_ENGINE, NoReadableTextError, OCRRecognitionError, WordBox, join_pages, read_pages
 from .receipt_layout import append_receipt_fields, has_detached_labels, receipt_cell_fields
 
@@ -194,6 +195,8 @@ def _process(
             )
             if definition.extractor is power_of_attorney.extract and not definition.profile.keyed:
                 add_certificate_signers(pdf_path, record, join_pages(pages))
+                if engine.startswith("tesseract") and len(pages) == 1 and 1 in ocr_pages:
+                    recover_board_stamp(pdf_path, record, pages[0])
             return definition.id, record
         if not ocr_pages:
             break

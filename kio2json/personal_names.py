@@ -31,16 +31,23 @@ def _readings(word: str, label: str, case: str) -> set[tuple[str, str]]:
     return result
 
 
-def nominative(name: str, case: str) -> str | None:
+def _name_readings(name: str, case: str, *, printed_given: bool = False) -> set[str]:
     parts = name.split()
     if len(parts) != 2:
-        return None
-    readings = [_readings(parts[0], "imię", case), *(_readings(w, "nazwisko", case) for w in parts[1].split("-"))]
-    names = {
+        return set()
+    given = _readings(parts[0], "imię", case)
+    if printed_given:
+        given |= {(lemma, gender) for lemma, gender in _readings(parts[0], "imię", "nom") if lemma == parts[0]}
+    readings = [given, *(_readings(w, "nazwisko", case) for w in parts[1].split("-"))]
+    return {
         variant[0][0] + " " + "-".join(word for word, _ in variant[1:])
         for variant in product(*readings)
         if len({gender for _, gender in variant}) == 1
     }
+
+
+def nominative(name: str, case: str) -> str | None:
+    names = _name_readings(name, case)
     return next(iter(names)) if len(names) == 1 else None
 
 
@@ -95,3 +102,32 @@ def resolve_attorneys(text: str, attorneys: list[dict]) -> list[dict]:
             if form:
                 person["imie_nazwisko"] = form
     return attorneys
+
+
+TITLED_ROW = re.compile(r"(?i:^[ \t]*(?:adw\.|r\.[ \t]*pr\.)[ \t]+)(\w+[ \t]+[\w-]+)[ \t]*[,;]?[ \t]*$")
+LIST_START = re.compile(r"\b(udziela(?:m|my|ją)?|ustanawia(?:m|my|ją)?|upoważnia(?:m|my|ją)?)\s*:\s*$", re.IGNORECASE)
+
+
+def repair_appointment_initials(page: str) -> str:
+    """Distinguish capital I from L only in a scanned list governed by an appointment verb."""
+    lines = page.split("\n")
+    case = None
+    for index, line in enumerate(lines):
+        if start := LIST_START.search(line):
+            case = "dat" if start[1].lower().startswith("udziel") else "acc"
+            continue
+        row = TITLED_ROW.fullmatch(line)
+        if not row:
+            case = None
+            continue
+        if case and row[1].startswith("l"):
+            variants = [initial + squash(row[1])[1:] for initial in "IL"]
+            attested = {
+                squash(m[1])
+                for m in ATTESTED.finditer(page)
+                if any(compatible_names(v, squash(m[1])) for v in variants)
+            }
+            names = attested or {n for v in variants for n in _name_readings(v, case, printed_given=True)}
+            if len(names) == 1:
+                lines[index] = line[: row.start(1)] + names.pop() + line[row.end(1) :]
+    return "\n".join(lines)

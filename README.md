@@ -303,7 +303,9 @@ rules. [OCR results](evals/results/ocr-engines.json)
 - Grant extraction reads numbered and coordinated appointments, officers in representation clauses,
   and digital approval signatures. Where a name is inflected, rules use a compatible printed form
   or a unique case- and gender-compatible personal-name reading from Morfeusz2. Ambiguous readings
-  retain the printed spelling. A damaged or handwritten signature can still leave the signer missing.
+  retain the printed spelling. On single-page scans with a sole corporate grantor and no identified
+  signer, a local RapidOCR pass can read a board title and a name in the same stamp column after
+  the mandate. It has a 35-second deadline. A damaged or handwritten signature can still leave the signer missing.
   PDF signer names are extracted from embedded CMS certificates without validating trust or revocation.
 - UNCONFIRMED: what "empty JSON" means for unrelated documents. We write an empty file, as the
   organizer README words it.
