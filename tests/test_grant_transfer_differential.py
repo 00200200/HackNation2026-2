@@ -4,7 +4,15 @@ import json
 from copy import deepcopy
 
 import pytest
-from snapshots.generate_grant_transfer import BASE, CASES, EXTRA_CASES, EXTRA_OUTPUTS, NATIVE_OUTPUTS, load_json
+from snapshots.generate_grant_transfer import (
+    BASE,
+    CASES,
+    EXTRA_CASES,
+    EXTRA_OUTPUTS,
+    NATIVE_BASE,
+    NATIVE_OUTPUTS,
+    load_json,
+)
 from snapshots.generate_native import write_native_pdf
 
 from kio2json import pdf_text, pipeline
@@ -267,7 +275,10 @@ def expected_result(case, original):
 
 
 def test_base_snapshot_coverage():
-    assert NATIVE["base"] == EXTRA["base"] == BASE
+    assert NATIVE["base"] == NATIVE_BASE and EXTRA["base"] == BASE
+    parity_cases = {k for k in INPUTS if k.startswith(("task40/", "simple/"))}
+    assert len(parity_cases) == 42 and parity_cases.isdisjoint(INTENDED_CHANGES)
+    assert all(BASE_OUTPUTS[k][0] is not None for k in parity_cases)
     assert INPUTS.keys() == BASE_OUTPUTS.keys()
     assert set(INTENDED_CHANGES) <= INPUTS.keys()
     assert INTENDED_CHANGES.keys() & NATIVE["outputs"].keys() == NATIVE_IMPROVEMENTS

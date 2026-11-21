@@ -4,7 +4,7 @@ Run from the PR checkout (the generated JSON goes to stdout)::
 
     src=$PWD
     dest=$(mktemp -d)
-    git worktree add --detach "$dest/base" 32106434f746628c7080191597f0766d4151d786
+    git worktree add --detach "$dest/base" e051dfa11cde0139fdd75e3f104bbe74ffb0f6ca
     (cd "$dest/base" && PYTHONPATH="$PWD:$src/tests" uv run --frozen python -m snapshots.generate_grant_transfer) \
         > "$dest/base.json" && cp "$dest/base.json" "$src/tests/snapshots/grant_transfer_outputs.json"
     git worktree remove "$dest/base"
@@ -25,7 +25,8 @@ from pathlib import Path
 from tempfile import TemporaryDirectory
 from unittest.mock import patch
 
-from snapshots.generate_native import BASE, CASES, write_native_pdf
+from snapshots.generate_native import BASE as NATIVE_BASE
+from snapshots.generate_native import CASES, write_native_pdf
 
 from kio2json.pipeline import process_pdf
 
@@ -34,6 +35,7 @@ def load_json(path):
     return json.loads(path.read_text(encoding="utf-8"))
 
 
+BASE = "e051dfa11cde0139fdd75e3f104bbe74ffb0f6ca"
 EXTRA_CASES = CASES.with_name("grant_transfer_cases.json")
 EXTRA_OUTPUTS = CASES.with_name("grant_transfer_outputs.json")
 NATIVE_OUTPUTS = CASES.with_name("native_outputs.json")
@@ -48,7 +50,7 @@ def main():
     native_cases = load_json(CASES)
     recorded = load_json(NATIVE_OUTPUTS)
     extra_cases = load_json(EXTRA_CASES)
-    assert recorded["base"] == BASE and native_cases.keys() == recorded["outputs"].keys()
+    assert recorded["base"] == NATIVE_BASE and native_cases.keys() == recorded["outputs"].keys()
     assert not native_cases.keys() & extra_cases.keys()
     extra_outputs = {}
     with (

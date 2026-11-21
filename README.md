@@ -224,7 +224,7 @@ of how the rules generalize. The hidden test set holds real cases, and this is n
 
 A separate native-text differential test compares the class and serialized fields of 175 invented PDFs
 with a snapshot from integration base `3210643`. It includes 135 review cases and 40 additional
-documents. The grant and transfer suite extends this comparison to 237 invented PDFs. Each
+documents. The grant and transfer suite replays 279 invented PDFs against integration base `e051dfa`. Each
 permitted field change records the original value, its replacement and a reason. [Fixtures and regeneration command](tests/snapshots/README.md)
 
 Forced OCR on all 196 training PDFs (307 rendered pages) gave strict field F1 **0.900**
@@ -269,7 +269,7 @@ rules. [OCR results](evals/results/ocr-engines.json)
   action is missing. The organizer supplies no reference JSON for this file.
 - Receipt routing uses evidence that a payment was executed, its amount or date, and the participating
   accounts. A booking table or bank letter needs both an amount and a date. The extractor binds payer
-  and payee separately from fee and refund accounts. Explicit operation dates and transaction IDs take
+  and payee separately from fee and refund accounts. Explicit operation or execution dates and transaction IDs take
   precedence over posting dates and daily sequence numbers. An unclear role or conflicting value can
   leave a field empty.
 - First-page word positions can recover fields whose labels and values occupy different rows or columns.

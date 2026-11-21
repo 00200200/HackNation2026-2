@@ -30,8 +30,26 @@ BANK_FIELDS = re.compile(
 )
 
 
+# A "stan" field can also describe a balance or another bank-specific state.
+# It vetoes a confirmation only when the value actually describes a pending or failed payment.
+NONEXECUTED_STATE = re.compile(
+    r"^(?:przelew\s+)?(?:oczekuj|odrzucon|anulowan|wstrzyman|zaplanowan|"
+    r"nie\s*(?:wykon|opłac|zrealiz|zaksięgow|zatwierdz|rozlicz)|w (?:realizacji|toku)|do (?:realizacji|akceptacji))",
+    re.IGNORECASE,
+)
+
+
 def _nonexecuted(lines: list[str]) -> bool:
-    return any(not EXECUTED.match(m[1]) for line in lines if (m := bank_transfer.STATUS.match(line)))
+    for line in lines:
+        state = bank_transfer.STATUS.match(line)
+        if state is None:
+            continue
+        if line.casefold().startswith("stan"):
+            if NONEXECUTED_STATE.match(state["value"]):
+                return True
+        elif not EXECUTED.match(state["value"]):
+            return True
+    return False
 
 
 def incomplete_booking_scan(text: str) -> bool:

@@ -32,8 +32,10 @@ STATUS = re.compile(
 )
 PADDING = r"[\s.:]*"
 AMOUNT_RE = re.compile(rf"^{AMOUNT_LABEL}{PADDING}(?:PLN\s*)?[−-]?[ \t]*({MONEY})", re.IGNORECASE | re.MULTILINE)
-OPERATION_DATE_RE = re.compile(rf"^{DATE_LABEL}{PADDING}({DATE})", re.IGNORECASE | re.MULTILINE)
-REFERENCE_RE = re.compile(rf"^(?i:{REFERENCE_LABEL}){PADDING}((?=[A-Z0-9/_-]*\d)[A-Z0-9][A-Z0-9/_-]*)", re.MULTILINE)
+OPERATION_DATE_RE = re.compile(rf"^({DATE_LABEL}){PADDING}({DATE})", re.IGNORECASE | re.MULTILINE)
+REFERENCE_RE = re.compile(
+    rf"^(?i:{REFERENCE_LABEL}){PADDING}((?=[A-Z0-9/_.-]*\d)[A-Z0-9][A-Z0-9/_-]*(?:\.[A-Z0-9/_-]+)*)", re.MULTILINE
+)
 TITLE_LABEL_RE = re.compile(rf"^{TITLE_LABEL}\b\s*:?\s*(.*)$", re.IGNORECASE)
 # Bank letters attest a dated debit and a completed payment in one sentence.
 LETTER_RE = re.compile(
@@ -139,7 +141,10 @@ EXECUTION = re.compile(
     re.IGNORECASE,
 )
 NEGATED_PAYMENT = re.compile(
-    r"\bnie\s+"
+    # Require a direct assertion by the bank or an impersonal refusal. A conditional,
+    # historical note or complaint instruction elsewhere in the receipt cannot veto it.
+    r"^(?:(?:bank\s+)?(?:oświadcz|potwierdz|poświadcz|zaświadcz|informuj)\w*(?:,?\s+że\s+|:\s*))?"
+    rf"(?:(?:w dniu\s+)?{DATE}\s+)?(?:bank\s+)?nie\s+"
     + EXECUTION.pattern
     + r"\s+(?:(?:zlecon\w*|tego|tej|środk\w*|na|z)\s+){0,2}(?:przelew|transakcj|operacj|płatnoś|dyspozycj|rachun|kont|środk)\w*",
     re.IGNORECASE,
@@ -174,14 +179,18 @@ def partial_account_mask(text: str, role: str) -> bool:
 
 def payment_denied(text: str) -> bool:
     in_title = False
-    for raw in text.splitlines():
+    lines = text.splitlines()
+    for i, raw in enumerate(lines):
         line = raw.strip()
         if TITLE_LABEL_RE.match(line):
             in_title = True
         elif BOUNDARY_RE.match(line):
             in_title = False
-        if not in_title and NEGATED_PAYMENT.search(line):
-            return True
+        if in_title or line.endswith("?") or not NEGATED_PAYMENT.match(line):
+            continue
+        if i and re.search(r"\b(?:jeśli|jeżeli|gdy|gdyby|o ile)\b[^.!?;]*$", lines[i - 1], re.IGNORECASE):
+            continue
+        return True
     return False
 
 
@@ -306,29 +315,25 @@ def transaction_values(text: str) -> tuple[float | None, str | None]:
     fields = _field_text(text)
     amount = AMOUNT_RE.search(fields)
     money = _amount(amount[1]) if amount else None
-    date = re.search(rf"(?im)^data (?:operacji|transakcji){PADDING}({DATE})", fields)
-    day = to_iso(date[1]) if date else None
+    dates = [(m[1].casefold(), m[2]) for m in OPERATION_DATE_RE.finditer(fields)]
     posted = _posted_row(fields)
     if posted:
-        raw, dates = posted
+        raw, cells = posted
         if money is None:
             money = _amount(raw.lstrip("−-"))
-        if day is None:
-            for label in (
-                "data operacji",
-                "data transakcji",
-                "data wykonania",
-                "data realizacji",
-                "data księgowania",
-                "data obciążenia",
-                "data zlecenia",
-            ):
-                if label in dates:
-                    day = to_iso(dates[label])
-                    break
-    if day is None:
-        date = OPERATION_DATE_RE.search(fields)
-        day = to_iso(date[1]) if date else None
+        dates.extend(cells.items())
+    # Select by the meaning of the printed date, across both labelled fields and table cells.
+    # A value date is not evidence of execution.
+    day = None
+    for labels in (
+        {"data operacji", "data transakcji"},
+        {"data wykonania", "data realizacji"},
+        {"data księgowania", "data zlecenia"},
+        {"data obciążenia"},
+    ):
+        day = next((parsed for label, raw in dates if label in labels and (parsed := to_iso(raw))), None)
+        if day is not None:
+            break
     if money is None or day is None:
         letter = LETTER_RE.search(fields)
         narrative_amount, narrative_day = (_amount(letter[2]), to_iso(letter[1])) if letter else _prose_values(fields)

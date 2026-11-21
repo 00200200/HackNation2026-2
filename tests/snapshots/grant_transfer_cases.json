@@ -367,5 +367,131 @@
   ],
   "invented/transfer-directional-account-labels": [
     "Potwierdzenie przelewu\nZ konta: 46137900000000000000471362\nNa konto: 97298300000000000000836412\nData operacji: 09.06.2026\nKwota: 782,14 PLN\nNumer transakcji: QJ684291\nTytuł: Dostawa magnesów"
+  ],
+  "task40/execution-with-posting-row": [
+    "Potwierdzenie przelewu\nRachunek nadawcy: 46137900000000000000471362\nRachunek odbiorcy: 97298300000000000000836412\nData wykonania: 04.07.2031\nKwota: 95,20 PLN\nNumer transakcji: RM937411\nData księgowania   Kwota\n05.07.2031   -95,20 PLN\nTytuł: Zakup kredy"
+  ],
+  "task40/debit-before-execution": [
+    "Potwierdzenie przelewu\nRachunek nadawcy: 46137900000000000000471362\nRachunek odbiorcy: 97298300000000000000836412\nData obciążenia: 05.07.2031\nData wykonania: 04.07.2031\nKwota: 95,20 PLN\nNumer transakcji: RM937411\nTytuł: Zakup kredy"
+  ],
+  "task40/realization-with-reversed-row": [
+    "Potwierdzenie przelewu\nRachunek nadawcy: 46137900000000000000471362\nRachunek odbiorcy: 97298300000000000000836412\nData realizacji: 04.07.2031\nKwota: 95,20 PLN\nNumer transakcji: RM937411\nKwota   Data księgowania\n-95,20 PLN   05.07.2031\nTytuł: Zakup kredy"
+  ],
+  "task40/debit-before-realization": [
+    "Potwierdzenie przelewu\nRachunek nadawcy: 46137900000000000000471362\nRachunek odbiorcy: 97298300000000000000836412\nData obciążenia: 05.07.2031\nData realizacji: 04.07.2031\nKwota: 95,20 PLN\nNumer transakcji: RM937411\nTytuł: Zakup kredy"
+  ],
+  "task40/paid": [
+    "Potwierdzenie przelewu\nRachunek nadawcy: 46137900000000000000471362\nRachunek odbiorcy: 97298300000000000000836412\nData wykonania: 04.07.2031\nStan płatności: opłacona\nKwota: 95,20 PLN\nNumer transakcji: RM937411\nTytuł: Zakup kredy"
+  ],
+  "task40/finished": [
+    "Potwierdzenie przelewu\nRachunek nadawcy: 46137900000000000000471362\nRachunek odbiorcy: 97298300000000000000836412\nData wykonania: 04.07.2031\nStan realizacji: zakończona\nKwota: 95,20 PLN\nNumer transakcji: RM937411\nTytuł: Zakup kredy"
+  ],
+  "task40/settled": [
+    "Potwierdzenie przelewu\nRachunek nadawcy: 46137900000000000000471362\nRachunek odbiorcy: 97298300000000000000836412\nData wykonania: 04.07.2031\nStan transakcji: rozliczona\nKwota: 95,20 PLN\nNumer transakcji: RM937411\nTytuł: Zakup kredy"
+  ],
+  "task40/completed": [
+    "Potwierdzenie przelewu\nRachunek nadawcy: 46137900000000000000471362\nRachunek odbiorcy: 97298300000000000000836412\nData wykonania: 04.07.2031\nStan przelewu: sfinalizowany\nKwota: 95,20 PLN\nNumer transakcji: RM937411\nTytuł: Zakup kredy"
+  ],
+  "task40/conditional": [
+    "Potwierdzenie przelewu\nStatus: wykonany\nRachunek nadawcy: 46137900000000000000471362\nRachunek odbiorcy: 97298300000000000000836412\nData wykonania: 04.07.2031\nKwota: 95,20 PLN\nNumer transakcji: RM937411\nTytuł: Zakup kredy\nInformacja: Jeżeli bank nie wykonał przelewu w terminie, przysługuje Ci prawo do reklamacji."
+  ],
+  "task40/prior": [
+    "Potwierdzenie przelewu\nStatus: wykonany\nRachunek nadawcy: 46137900000000000000471362\nRachunek odbiorcy: 97298300000000000000836412\nData wykonania: 04.07.2031\nKwota: 95,20 PLN\nNumer transakcji: RM937411\nTytuł: Zakup kredy\nInformacja: Wczoraj nie wykonano przelewu. Niniejszy przelew wykonano dzisiaj."
+  ],
+  "task40/complaints": [
+    "Potwierdzenie przelewu\nStatus: wykonany\nRachunek nadawcy: 46137900000000000000471362\nRachunek odbiorcy: 97298300000000000000836412\nData wykonania: 04.07.2031\nKwota: 95,20 PLN\nNumer transakcji: RM937411\nTytuł: Zakup kredy\nReklamacje: Zgłoś się do banku, jeśli nie wykonano transakcji w terminie."
+  ],
+  "task40/question": [
+    "Potwierdzenie przelewu\nStatus: wykonany\nRachunek nadawcy: 46137900000000000000471362\nRachunek odbiorcy: 97298300000000000000836412\nData wykonania: 04.07.2031\nKwota: 95,20 PLN\nNumer transakcji: RM937411\nTytuł: Zakup kredy\nPomoc: Co zrobić, gdy nie zrealizowano przelewu?"
+  ],
+  "simple/receipt-01": [
+    "Potwierdzenie przelewu\nNadawca: 46137900000000000000471362\nOdbiorca: 97298300000000000000836412\nData operacji: 01.05.2032\nKwota: 21,15 PLN\nNr ref.: WL731000"
+  ],
+  "simple/receipt-02": [
+    "Dowód wykonania przelewu\nData realizacji: 02.05.2032\nKwota operacji: 22,15 PLN\nTytułem: Zakup linijek\nBeneficjent: 97298300000000000000836412\nRachunek nadawcy: 46137900000000000000471362"
+  ],
+  "simple/receipt-03": [
+    "Potwierdzenie realizacji przelewu\nZleceniodawca: 46137900000000000000471362\nRachunek odbiorcy: 97298300000000000000836412\nWartość: 23,15 PLN\nIdentyfikator operacji: WL731002\nTytuł przelewu: Zakup linijek"
+  ],
+  "simple/receipt-04": [
+    "Potwierdzenie przelewu\nOdbiorca: 97298300000000000000836412\nNadawca: 46137900000000000000471362\nData wykonania: 04.05.2032\nNr ref.: WL731003\nOpis: Zakup linijek"
+  ],
+  "simple/receipt-05": [
+    "Dowód wykonania przelewu\nRachunek nadawcy: 46137900000000000000471362\nBeneficjent: 97298300000000000000836412\nData operacji: 05.05.2032\nKwota operacji: 25,15 PLN\nNumer referencyjny: WL731004\nTytułem: Zakup linijek"
+  ],
+  "simple/receipt-06": [
+    "Potwierdzenie realizacji przelewu\nData realizacji: 06.05.2032\nWartość: 26,15 PLN\nIdentyfikator operacji: WL731005\nRachunek odbiorcy: 97298300000000000000836412\nZleceniodawca: 46137900000000000000471362"
+  ],
+  "simple/receipt-07": [
+    "Potwierdzenie przelewu\nNadawca: 46137900000000000000471362\nOdbiorca: 97298300000000000000836412\nData transakcji: 07.05.2032\nKwota: 27,15 PLN\nOpis: Zakup linijek"
+  ],
+  "simple/receipt-08": [
+    "Dowód wykonania przelewu\nBeneficjent: 97298300000000000000836412\nRachunek nadawcy: 46137900000000000000471362\nKwota operacji: 28,15 PLN\nNumer referencyjny: WL731007\nTytułem: Zakup linijek"
+  ],
+  "simple/receipt-09": [
+    "Potwierdzenie realizacji przelewu\nZleceniodawca: 46137900000000000000471362\nRachunek odbiorcy: 97298300000000000000836412\nData operacji: 09.05.2032\nIdentyfikator operacji: WL731008\nTytuł przelewu: Zakup linijek"
+  ],
+  "simple/receipt-10": [
+    "Potwierdzenie przelewu\nData realizacji: 10.05.2032\nKwota: 30,15 PLN\nNr ref.: WL731009\nOpis: Zakup linijek\nOdbiorca: 97298300000000000000836412\nNadawca: 46137900000000000000471362"
+  ],
+  "simple/receipt-11": [
+    "Dowód wykonania przelewu\nRachunek nadawcy: 46137900000000000000471362\nBeneficjent: 97298300000000000000836412\nData transakcji: 11.05.2032\nKwota operacji: 31,15 PLN\nNumer referencyjny: WL731010"
+  ],
+  "simple/receipt-12": [
+    "Potwierdzenie realizacji przelewu\nRachunek odbiorcy: 97298300000000000000836412\nZleceniodawca: 46137900000000000000471362\nData wykonania: 12.05.2032\nWartość: 32,15 PLN\nTytuł przelewu: Zakup linijek"
+  ],
+  "simple/receipt-13": [
+    "Potwierdzenie przelewu\nNadawca: 46137900000000000000471362\nOdbiorca: 97298300000000000000836412\nKwota: 33,15 PLN\nNr ref.: WL731012\nOpis: Zakup linijek"
+  ],
+  "simple/receipt-14": [
+    "Dowód wykonania przelewu\nData realizacji: 14.05.2032\nNumer referencyjny: WL731013\nTytułem: Zakup linijek\nBeneficjent: 97298300000000000000836412\nRachunek nadawcy: 46137900000000000000471362"
+  ],
+  "simple/receipt-15": [
+    "Potwierdzenie realizacji przelewu\nZleceniodawca: 46137900000000000000471362\nRachunek odbiorcy: 97298300000000000000836412\nData transakcji: 15.05.2032\nWartość: 35,15 PLN\nIdentyfikator operacji: WL731014\nTytuł przelewu: Zakup linijek"
+  ],
+  "simple/grant-01": [
+    "PEŁNOMOCNICTWO\nMocodawca: Sosnowy Rulon S.A.\nKRS: 0000841237\nUdzielamy pełnomocnictwa adw. Ewie Warstwowej do reprezentacji."
+  ],
+  "simple/grant-02": [
+    "PEŁNOMOCNICTWO PROCESOWE\nMocodawca: Stromy Szlak sp. z o.o.\nNIP: 7831846213\nUstanawiamy radcę prawnego Janowi Kredowemu do reprezentacji."
+  ],
+  "simple/grant-03": [
+    "PEŁNOMOCNICTWO SZCZEGÓLNE\nMocodawca: Barwna Sonda S.A.\nKRS: 0000841237\nUpoważniamy adw. Idzie Płaskiej do reprezentacji.\nPESEL: 92110714869"
+  ],
+  "simple/grant-04": [
+    "PEŁNOMOCNICTWO\nMocodawca: Sosnowy Rulon S.A.\nNIP: 7831846213\nKRS: 0000841237\nUdzielamy pełnomocnictwa adw. Ewie Warstwowej do reprezentacji."
+  ],
+  "simple/grant-05": [
+    "PEŁNOMOCNICTWO PROCESOWE\nMocodawca: Stromy Szlak sp. z o.o.\nKRS: 0000841237\nUstanawiamy radcę prawnego Janowi Kredowemu do reprezentacji.\nW imieniu Stromy Szlak sp. z o.o.\n........................\nOlga Drobna"
+  ],
+  "simple/grant-06": [
+    "PEŁNOMOCNICTWO SZCZEGÓLNE\nMocodawca: Barwna Sonda S.A.\nKRS: 0000841237\nUpoważniamy adw. Idzie Płaskiej do reprezentacji."
+  ],
+  "simple/grant-07": [
+    "PEŁNOMOCNICTWO\nMocodawca: Sosnowy Rulon S.A.\nNIP: 7831846213\nUdzielamy pełnomocnictwa adw. Ewie Warstwowej do reprezentacji."
+  ],
+  "simple/grant-08": [
+    "PEŁNOMOCNICTWO PROCESOWE\nMocodawca: Stromy Szlak sp. z o.o.\nKRS: 0000841237\nUstanawiamy radcę prawnego Janowi Kredowemu do reprezentacji.\nPESEL: 92110714869"
+  ],
+  "simple/grant-09": [
+    "PEŁNOMOCNICTWO SZCZEGÓLNE\nMocodawca: Barwna Sonda S.A.\nNIP: 7831846213\nKRS: 0000841237\nUpoważniamy adw. Idzie Płaskiej do reprezentacji."
+  ],
+  "simple/grant-10": [
+    "PEŁNOMOCNICTWO\nMocodawca: Sosnowy Rulon S.A.\nKRS: 0000841237\nUdzielamy pełnomocnictwa adw. Ewie Warstwowej do reprezentacji.\nW imieniu Sosnowy Rulon S.A.\n........................\nOlga Drobna"
+  ],
+  "simple/grant-11": [
+    "PEŁNOMOCNICTWO PROCESOWE\nMocodawca: Stromy Szlak sp. z o.o.\nKRS: 0000841237\nUstanawiamy radcę prawnego Janowi Kredowemu do reprezentacji."
+  ],
+  "simple/grant-12": [
+    "PEŁNOMOCNICTWO SZCZEGÓLNE\nMocodawca: Barwna Sonda S.A.\nNIP: 7831846213\nUpoważniamy adw. Idzie Płaskiej do reprezentacji."
+  ],
+  "simple/grant-13": [
+    "PEŁNOMOCNICTWO\nMocodawca: Sosnowy Rulon S.A.\nKRS: 0000841237\nUdzielamy pełnomocnictwa adw. Ewie Warstwowej do reprezentacji.\nPESEL: 92110714869"
+  ],
+  "simple/grant-14": [
+    "PEŁNOMOCNICTWO PROCESOWE\nMocodawca: Stromy Szlak sp. z o.o.\nNIP: 7831846213\nKRS: 0000841237\nUstanawiamy radcę prawnego Janowi Kredowemu do reprezentacji."
+  ],
+  "simple/grant-15": [
+    "PEŁNOMOCNICTWO SZCZEGÓLNE\nMocodawca: Barwna Sonda S.A.\nKRS: 0000841237\nUpoważniamy adw. Idzie Płaskiej do reprezentacji.\nW imieniu Barwna Sonda S.A.\n........................\nOlga Drobna"
   ]
 }

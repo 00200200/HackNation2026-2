@@ -163,3 +163,21 @@ def test_conflicting_sender_in_second_ocr_read_does_not_complete_receipt(monkeyp
     monkeypatch.setattr(pipeline, "read_pages", read)
     monkeypatch.setattr(pipeline, "DEFAULT_OCR_ENGINE", "tesseract-dpi")
     assert pipeline.process_pdf("document.pdf") == (None, {})
+
+
+def test_internal_period_is_part_of_the_printed_reference():
+    fields = extract(TRANSFER + "\nNumer transakcji: RM937411.05")["przelew_bankowy"]
+    assert fields["numer_transakcji"] == "RM937411.05"
+
+
+def test_state_about_authorization_does_not_deny_execution():
+    assert classify([TRANSFER + "\nStan płatności: nie wymaga autoryzacji"]) == "bank_transfer"
+
+
+def test_conditional_denial_can_continue_on_a_new_line():
+    notice = "\nInformacja: Jeśli bank\nnie wykonał przelewu w terminie, prosimy o kontakt."
+    assert classify([TRANSFER + notice]) == "bank_transfer"
+
+
+def test_bank_can_introduce_a_refusal_with_a_colon():
+    assert classify([TRANSFER + "\nBank informuje: nie wykonano przelewu."]) is None
