@@ -98,3 +98,4 @@ These runs used local rules with the three endpoint variables unset. The two loc
 - 21.11.2026 · Codex · Recovered officers, multiple appointments and register digits on scanned grants, and named signers from embedded certificates on real grants. All 10 organizer grants matched exactly in rules-only mode.
 
 - 21.11.2026 · Codex · Synced the small-model branch with main at `5297660`, including scanned grant extraction and the bank execution-date rules.
+- 21.11.2026 · Codex · Verified training on the clean merge `fb08cd7` and on `main` at `5297660`. Both scored 1.000 micro F1 and produced identical paths and bytes for all 196 PDFs, including all 16 empty negative outputs.
