@@ -212,3 +212,49 @@ def test_incomplete_gap_scope(keyed, monkeypatch, recognized, scanned, expected_
     label, _ = pipeline.process_pdf(Path("opaque.pdf"))
     assert label == "power_of_attorney"
     assert len(calls) == expected_calls
+
+
+@pytest.mark.parametrize(
+    ("opening", "accepted"),
+    [
+        ("Przelew krajowy\nStatus: wykonany", True),
+        ("Potwierdzenie płatności\nBank potwierdza wykonanie przelewu.", True),
+        ("Kopia potwierdzenia przelewu\nStatus: wykonany", True),
+        ("Potwierdzenie przelewu\nWniosek nr Z/19\nStatus: wykonany", True),
+        ("Kopia potwierdzenia przelewu\nStatus: oczekujący", False),
+        ("W załączeniu przesyłamy:\nKopia potwierdzenia przelewu\nStatus: wykonany", False),
+        ("1.\nKopia potwierdzenia przelewu\nStatus: wykonany", False),
+        ("Wniosek nr Z/19\nPotwierdzenie przelewu\nStatus: wykonany", False),
+        ("Potwierdzenie przelewu\nWniosek o wypłatę\nStatus: wykonany", False),
+        ("Faktura\nPrzelew krajowy\nStatus: wykonany", False),
+        ("Potwierdzenie płatności\nBank nie potwierdza wykonania przelewu.", False),
+        ("Przelew krajowy\nStatus: oczekujący", False),
+        ("Przelew krajowy", False),
+    ],
+)
+def test_supported_routing_of_completed_native_receipts(keyed, monkeypatch, tmp_path, opening, accepted):
+    from tests.snapshots.generate_native import write_native_pdf
+
+    monkeypatch.setenv("KIO_LLM_ROUTING", "supported")
+    monkeypatch.setenv("KIO_LLM_MODE", "R")
+    monkeypatch.setattr(llm, "classify_llm", lambda text: "bank_transfer")
+    path = tmp_path / "document.pdf"
+    write_native_pdf(
+        path,
+        [
+            opening + "\nNadawca: Studio Planu\nOdbiorca: Rada Projektu\nData operacji: 04.05.2026"
+            "\nKwota: 163,41 PLN\nTytuł: Opłata rezerwacyjna\nNumer transakcji: TK-903"
+        ],
+    )
+    label, data = pipeline.process_pdf(path)
+    if accepted:
+        assert label == "bank_transfer"
+        payment = data["przelew_bankowy"]
+        assert (payment["kwota"], payment["data_operacji"], payment["numer_transakcji"], payment["tytul"]) == (
+            163.41,
+            "2026-05-04",
+            "TK-903",
+            "Opłata rezerwacyjna",
+        )
+    else:
+        assert (label, data) == (None, {})

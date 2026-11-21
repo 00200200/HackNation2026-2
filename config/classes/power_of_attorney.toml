@@ -55,5 +55,5 @@ nullable = false
 instruction = "One recipient of the power of attorney."
 
 [fields.pelnomocnicy.items.fields]
-imie_nazwisko = { type = "string", instruction = "Given name and surname of the recipient of authority, in the nominative case. If absent, null." }
+imie_nazwisko = { type = "string", span_evidence = "attorney_name", instruction = "Given name and surname of the recipient of authority, in the nominative case. If absent, null." }
 pesel = { type = "string", normalizer = "pesel", instruction = "Eleven-digit PESEL explicitly given for this recipient. Preserve leading zeros. If absent, null." }

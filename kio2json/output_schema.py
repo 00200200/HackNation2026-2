@@ -198,7 +198,7 @@ def record_model(
     members = {
         f"field_{i}": (
             field_type(field, f"{name}_{i}", cited, allow_abstention, spans),
-            Field(alias=key, description=None if spans else field.instruction),
+            Field(alias=key, description=field.instruction if not spans or field.span_evidence else None),
         )
         for i, (key, field) in enumerate(fields.items())
     }

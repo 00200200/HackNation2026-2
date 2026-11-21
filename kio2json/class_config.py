@@ -82,6 +82,7 @@ class ClassifierRouting(Config):
 
 
 class OutputField(Config):
+    span_evidence: Literal["attorney_name"] | None = None
     type: Literal["string", "integer", "number", "boolean", "object", "list"]
     instruction: Instruction
     nullable: bool = True
@@ -106,6 +107,8 @@ class OutputField(Config):
                 member = (member.fields or {}).get(key) if member else None
             if not member or member.type in ("object", "list"):
                 raise ValueError("match_by must name a scalar field of a list item")
+        if self.span_evidence and self.type != "string":
+            raise ValueError("attorney name span evidence requires a string field")
         if self.normalizer and self.type != ("number" if self.normalizer == "money" else "string"):
             raise ValueError("normalizer does not match field type")
         if self.pattern and self.pattern.groups != 1:

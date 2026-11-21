@@ -37,6 +37,20 @@ ATTACHMENT_REFERENCE = re.compile(
 )
 LIST_MARKER = re.compile(r"^(?:\(?\d{1,3}[.)]|[-–—•])(?:\s+|$)")
 PRINTED_AMOUNT = re.compile(r"\b\d+(?:[.,]\d{2})?[ \t]*(?:PLN|zł|EUR)\b", re.IGNORECASE)
+PAYMENT_COPY = re.compile(
+    r"kopia potwierdzenia (?:przelewu|płatności|transakcji|operacji(?: bankowej)?)", re.IGNORECASE
+)
+PAYMENT_RECORD = re.compile(
+    r"przelew(?: (?:krajowy|zagraniczny|bankowy|natychmiastowy|wewnętrzny|wychodzący|przychodzący))?"
+    r"|potwierdzenie płatności",
+    re.IGNORECASE,
+)
+REQUEST_REFERENCE = re.compile(r"wniosek (?:nr\.?|numer)\s*:?\s*(?=[\w./-]*\d)[\w/-]+", re.IGNORECASE)
+EXECUTION_ATTESTATION = re.compile(
+    r"bank (?:potwierdza|poświadcza|zaświadcza) (?:wykonanie|realizację|zaksięgowanie) "
+    r"(?:przelewu|płatności|transakcji|operacji)\.?",
+    re.IGNORECASE,
+)
 
 
 # A "stan" field can also describe a balance or another bank-specific state.
@@ -69,11 +83,21 @@ def incomplete_booking_scan(text: str) -> bool:
     return bool((confirmation or bank_transfer.executed_letter(text)) and BANK_FIELDS.search(text))
 
 
+def _confirms_execution(line: str) -> bool:
+    state = bank_transfer.STATUS.match(line)
+    if state:
+        return bool(EXECUTED.fullmatch(state["value"]) or COMPLETED_STATUS.fullmatch(state["value"]))
+    return bool(EXECUTION_ATTESTATION.fullmatch(line))
+
+
 def routing_evidence(first_page: str) -> tuple[set[str], bool]:
     """Return eligible classes and whether the payment details independently confirm a transfer."""
     lines = [line.strip() for line in first_page.splitlines() if line.strip()]
-    if any(UNRELATED_HEADING.match(line) for line in lines):
-        return set(), False
+    for i, line in enumerate(lines):
+        if UNRELATED_HEADING.match(line):
+            if REQUEST_REFERENCE.fullmatch(line) and any(CONFIRMATION_HEADING.match(h) for h in lines[:i]):
+                continue
+            return set(), False
     labels = set()
     headings = ["".join(line.upper().split()) for line in lines]
     if "ODWOŁANIE" in headings or FILING.search(first_page):
@@ -86,29 +110,43 @@ def routing_evidence(first_page: str) -> tuple[set[str], bool]:
         return labels, False
     # The entries below an enclosure introduction describe other documents, even when
     # OCR puts the introduction, a list marker and the receipt heading on separate lines.
-    cutoff = next((i for i, line in enumerate(lines) if ATTACHMENT_REFERENCE.search(line)), len(lines))
+    cutoff = next(
+        (i for i, line in enumerate(lines) if ATTACHMENT_REFERENCE.search(line) and not PAYMENT_COPY.fullmatch(line)),
+        len(lines),
+    )
     lines = lines[:cutoff]
     receipt = "\n".join(lines)
     account = bank_transfer.ACCOUNT_RE.search(receipt)
+    own_lines = [
+        line
+        for i, line in enumerate(lines)
+        if not LIST_MARKER.match(line) and not (i and LIST_MARKER.fullmatch(lines[i - 1]))
+    ]
     bank_heading = any(
         CONFIRMATION_HEADING.match(line)
         or booking_heading(line, ocr=True)
         or PAYMENT_DETAILS.match(line)
         # An exported bank table can place the heading beside an account or bank label.
         or (account and PAYMENT_DETAILS.search(line))
-        for i, line in enumerate(lines)
-        if not LIST_MARKER.match(line) and not (i and LIST_MARKER.fullmatch(lines[i - 1]))
+        for line in own_lines
     )
     numbered_field = any(
         BANK_FIELDS.search(line) and re.search(r"\d", " ".join(lines[i : i + 2])) for i, line in enumerate(lines)
     )
-    if not bank_heading or not (numbered_field or account):
+    if not (numbered_field or account):
         return labels, False
-    labels.add("bank_transfer")
+    if not bank_heading:
+        # A transaction-type title or a copy needs independent evidence that this payment was executed.
+        record_heading = any(PAYMENT_COPY.fullmatch(line) or PAYMENT_RECORD.fullmatch(line) for line in own_lines)
+        if not record_heading or not any(_confirms_execution(line) for line in own_lines):
+            return labels, False
     sender = re.search(r"(?im)^(?:nadawca|zleceniodawca|płatnik)\s*:[ \t]*\S", receipt)
     recipient = re.search(r"(?im)^(?:odbiorca|beneficjent)\s*:[ \t]*\S", receipt)
     has_amount = PRINTED_AMOUNT.search(receipt) or bank_transfer.transaction_values(receipt)[0] is not None
-    return labels, bool(has_amount and (account or (sender and recipient)))
+    confirmed_transfer = bool(has_amount and (account or (sender and recipient)))
+    if bank_heading or confirmed_transfer:
+        labels.add("bank_transfer")
+    return labels, confirmed_transfer
 
 
 def classify(pages: list[str], *, ocr_accounts: AccountEvidence | None = None) -> str | None:
