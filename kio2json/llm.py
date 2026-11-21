@@ -103,15 +103,34 @@ def source_quote(quote: str, excerpt: str) -> str | None:
     return None if re.search(r"\d[ \t]*[\t\n][ \t]*\d", span) else span
 
 
-def grounded(field: OutputField, data, text: str, excerpt: str, *, alternates=()):
+def grounded(field: OutputField, data, text: str, excerpt: str, *, alternates=(), spans: bool = False):
     if data is None:
         return None
     if field.type == "object":
         return {
-            key: grounded(child, data[key], text, excerpt, alternates=alternates) for key, child in field.fields.items()
+            key: grounded(child, data[key], text, excerpt, alternates=alternates, spans=spans)
+            for key, child in field.fields.items()
         }
     if field.type == "list":
-        return [grounded(field.items, item, text, excerpt, alternates=alternates) for item in data]
+        recipient = (field.items.fields or {}).get("imie_nazwisko")
+        if (
+            spans
+            and recipient
+            and recipient.span_evidence == "attorney_name"
+            and set(field.items.fields) == {"imie_nazwisko", "pesel"}
+        ):
+            from .attorney_spans import ground_recipients
+
+            identifiers = [
+                grounded(field.items.fields["pesel"], row["pesel"], text, excerpt, alternates=alternates)
+                for row in data
+            ]
+            return ground_recipients(data, identifiers, ((text, excerpt), *alternates))
+        return [grounded(field.items, item, text, excerpt, alternates=alternates, spans=spans) for item in data]
+    if isinstance(data, str) and field.span_evidence == "attorney_name":
+        from .attorney_spans import printed_attorney_name
+
+        return printed_attorney_name(data, ((text, excerpt), *alternates))
     for full, shown in ((text, excerpt), *alternates):
         span_only = isinstance(data, str)
         quote = source_quote(data if span_only else data["quote"], shown)
@@ -204,5 +223,6 @@ def extract_llm(definition: DocumentClass, text: str, model=None, *, alternate_p
     data = result.model_dump(by_alias=True)
     primary, *alternates = sources
     return {
-        key: grounded(field, data[key], *primary, alternates=alternates) for key, field in definition.fields.items()
+        key: grounded(field, data[key], *primary, alternates=alternates, spans=spans)
+        for key, field in definition.fields.items()
     }
