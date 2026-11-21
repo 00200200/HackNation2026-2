@@ -196,3 +196,23 @@ def test_roman_numeral_stops_before_independent_second_act():
     action = extract_action([text], {1})
     assert action["czynnosc_powod_id"] is None
     assert action["czynnosc_dzien"] is None
+
+
+@pytest.mark.parametrize(
+    ("subject", "expected"), [("odrzuceniu oferty", "2031-06-04"), ("wyborze oferty", "2031-06-02")]
+)
+def test_separate_notification_must_name_the_first_decision(subject, expected):
+    text = (
+        "Wnoszę odwołanie wobec:\n1. odrzucenia oferty w dniu 2 czerwca 2031 r.;\n2. wyboru oferty.\n"
+        f"W dniu 4 czerwca 2031 r. Odwołujący otrzymał informację o\n  {subject}."
+    )
+    assert extract_action([text], {1})["czynnosc_dzien"] == expected
+
+
+def test_separate_notice_of_another_bidders_rejection_keeps_the_first_date():
+    text = (
+        "Wnoszę odwołanie wobec:\n1. odrzucenia oferty spółki Alfa w dniu 2 czerwca 2031 r.;\n"
+        "2. odrzucenia oferty spółki Beta.\n"
+        "W dniu 4 czerwca 2031 r. Odwołujący otrzymał informację o odrzuceniu oferty spółki Beta."
+    )
+    assert extract_action([text], {1})["czynnosc_dzien"] == "2031-06-02"

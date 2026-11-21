@@ -91,21 +91,34 @@ def apply_action(record: dict, pages: list[str], ocr_pages: Collection[int]) -> 
         if action["czynnosc_powod_id"] != reason:
             action["czynnosc_dzien"] = None
         action.update(czynnosc_powod_id=reason, czynnosc_opis=REASONS[reason])
+    decision_object = None
     if act and action["czynnosc_powod_id"] == reason:
         previous = act.end()
         for match in _WHEN.finditer(text, act.end(), end):
             before = text[previous : match.start()].strip(" \t\n,:")
             previous = match.end()
-            if before and not _DATE_LINK.search(before):
+            named_bidder = reason in (1, 2, 3, 7, 8) and re.fullmatch(
+                r"(?:(?:spolki|wykonawcy)\s+)?[A-Z][\w-]*(?: [A-Z][\w-]*){0,3}", before
+            )
+            if before and not (_DATE_LINK.search(before) or named_bidder):
                 continue
             if re.search(r"\b(?:zlozon\w*|ustaw\w*|rozporzadzeni\w*|dyrektyw\w*)\s*z?$", before, re.IGNORECASE):
                 continue
             if scanned(match) and (day := _iso(match["day"])):
                 action["czynnosc_dzien"] = day
                 if re.search(r"poinform|zawiadom|przekaz|powzi|dorecz", before, re.IGNORECASE):
+                    decision_object = None
                     break
+                if scanned(act):
+                    decision_object = squash(before).casefold()
     if not action["czynnosc_dzien"]:
         action["czynnosc_dzien"] = _notice_date(text, action["czynnosc_powod_id"], scanned)
+    elif decision_object is not None:
+        # A later timeliness paragraph can explicitly name the same act and
+        # give its communication date separately from the decision date.
+        notice = _notice_date(text, reason, scanned, decision=(end, decision_object))
+        if notice and notice >= action["czynnosc_dzien"]:
+            action["czynnosc_dzien"] = notice
     if 1 in ocr_pages and action["data"] and action["czynnosc_dzien"]:
         # A repeated transmission timestamp can corroborate a one-digit OCR
         # error in the dateline year when it fits the independently dated act.
@@ -202,7 +215,7 @@ _CONTRACT_NOTICE = (
 )
 
 
-def _notice_date(text, reason, scanned):
+def _notice_date(text, reason, scanned, *, decision=None):
     patterns = _NOTIFICATION
     if reason in (4, 5, 6, 11, 12):
         patterns += _PUBLICATION
@@ -215,17 +228,32 @@ def _notice_date(text, reason, scanned):
         patterns += _CONTRACT_NOTICE
     if reason == 10 and re.search(r"wszczeci\w*\s+(?:nowego\s+)?postepowania", text, re.IGNORECASE):
         patterns += (rf"\bpostepowanie\s+(?:zostalo\s+)?opublikowan\w*[^;!?]{{0,80}}?\bw\s+dniu\s+{_DAY_CAPTURE}",)
+    named_dates = set()
     for pattern in patterns:
         dates = set()
         for match in re.finditer(pattern, text, re.IGNORECASE):
             if not scanned(match):
                 continue
-            if reason and match[0].split()[-1].casefold() == "o":
-                subject = _ACT.match(text[match.end() :].lstrip())
-                if subject and int(subject.lastgroup[1:]) != reason:
+            subject = None
+            if match[0].split()[-1].casefold() == "o":
+                start = re.compile(r"\s*").match(text, match.end()).end()
+                subject = _ACT.match(text, start)
+                if subject and (not scanned(subject) or (reason is not None and int(subject.lastgroup[1:]) != reason)):
+                    continue
+            if decision is not None:
+                first_end, object_text = decision
+                if subject is None or match.start() < first_end:
+                    continue
+                # Keep the full object qualification. Two bidders can both
+                # challenge a rejection, and a notice about one cannot date the other.
+                notice_object = re.split(r"[.;!?\n]", text[subject.end() :], maxsplit=1)[0]
+                competing = any(m.lastgroup == subject.lastgroup for m in _ACT.finditer(text, first_end, match.start()))
+                if competing or squash(notice_object).casefold() != object_text:
                     continue
             if day := _iso(match["day"]):
                 dates.add(day)
-        if len(dates) == 1:
+        if decision is not None:
+            named_dates.update(dates)
+        elif len(dates) == 1:
             return dates.pop()
-    return None
+    return named_dates.pop() if len(named_dates) == 1 else None
