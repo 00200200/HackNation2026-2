@@ -253,6 +253,11 @@ These runs used local rules with the three endpoint variables unset. The two loc
 Micro F1 pools field matches across documents. Macro F1 averages the three class scores. The routing columns count correctly classified documents in each target class. The negatives column counts zero-byte outputs. Timing includes OCR and extraction on a shared host. [Grant development measurements](evals/results/poa-development.json) · [Organizer scan report](evals/results/organizer-scans.json)
 
 The organizer allows 45 minutes for its 150-PDF batch, an average budget of 18 seconds per PDF.
+On a 16 GiB M1 MacBook Air, four workers processed 30 organizer scans in 37.15 seconds and a mix of
+60 scans and 90 training PDFs in 74.42 seconds. Peak sampled process-tree RSS for the mix was
+1,504 MiB. All 226 training and scan outputs matched sequential main (`5297660`) byte for byte.
+[Batch timings and per-PDF profile](evals/results/batch-runtime.json)
+
 The reported times cover these local datasets. OCR runs locally. Under the updated rules, a remote
 OCR service would count toward model parameters. [Organizer evaluation rules](data/uzp/README.md)
 

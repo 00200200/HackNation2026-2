@@ -91,4 +91,4 @@ These runs used local rules with the three endpoint variables unset. The two loc
 
 - 21.11.2026 · Codex · Recovered officers, multiple appointments and register digits on scanned grants, and named signers from embedded certificates on real grants. All 10 organizer grants matched exactly in rules-only mode.
 
-- 21.11.2026 · Codex · Added process-based batch extraction, first-pass layout box reuse and a shared deadline for optional OCR on `perf/batch-runtime`.
+- 21.11.2026 · Codex · Measured `a32ba1c` against `5297660`. All 226 outputs matched byte for byte. Four workers processed 30 scans in 37.15 s and the 150-PDF mix in 74.42 s on an M1. [Per-PDF runtime profile](evals/results/batch-runtime.json)
