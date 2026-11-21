@@ -35,12 +35,12 @@ def load_json(path: Path) -> dict | None:
     """Empty file -> {}; missing or invalid file -> None."""
     if not path.is_file():
         return None
-    text = path.read_text(encoding="utf-8").strip()
-    if not text:
-        return {}
     try:
+        text = path.read_text(encoding="utf-8").strip()
+        if not text:
+            return {}
         data = json.loads(text)
-    except json.JSONDecodeError:
+    except (UnicodeDecodeError, json.JSONDecodeError):
         return None
     return data if isinstance(data, dict) else None
 

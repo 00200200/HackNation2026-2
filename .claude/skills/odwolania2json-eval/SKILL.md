@@ -28,7 +28,7 @@ check `git diff data/uzp`, commit it, and compare F1 only between runs on the sa
 uv run python -m evals.run --quick                       # przyklad_01-05, _24 + 3 negatives; before a push
 uv run python -m evals.run                               # all 60 cases + all negatives; before submitting
 uv run python -m evals.run --pred output/                # score an existing output tree (original file names)
-make eval-real                                          # local corpus, override with HN_REAL_CORPUS
+make eval-real HN_REAL_SPLIT=dev                         # local corpus, override with HN_REAL_CORPUS
 uv run python -m evals.run --corpus "$corpus" --split test
 uv run python -m evals.run --corpus "$corpus" --split dev --detail-out "$corpus/dev-detail.json"
 uv run python -m evals.field_report --corpus "$corpus" --split dev --force-ocr --errors
@@ -48,9 +48,11 @@ documents and fields before changing prompts.
 Set `corpus` to the local corpus root. Each `cases/<case_id>/<name>.pdf` needs a matching
 `gold/<case_id>/<name>.json`, including an empty file for each unrelated PDF. Use `--pred DIR` to read
 `DIR/<case_id>/<name>.json` from a previous extraction. Corpus mode writes aggregates to
-`evals/results/corpus-latest.json` and leaves the training gate alone. Use `--detail-out` outside the repository
-for document-level counts. An empty corpus or a missed target gives exit code 1. Targets with no applicable
-documents, such as negative handling on an all-positive corpus, are skipped.
+`evals/results/corpus-latest.json` and leaves the training gate alone.
+Set `HN_REAL_SPLIT` to `dev`, `test`, or `all` (default) for `make eval-real`.
+The optional `--detail-out` file must be outside every checkout of this repository and its Git metadata.
+On test splits, corpus I/O failures report an error count and type on the console.
+An empty corpus or a missed target gives exit code 1. Targets with no applicable documents, such as negative handling on an all-positive corpus, are skipped.
 
 An optional `SPLIT.json` at the corpus root gives two lists of case folder names, `dev` and `test`.
 Together they must cover each case exactly once. Both commands accept `--split dev|test|all` (default `all`).

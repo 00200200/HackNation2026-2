@@ -194,10 +194,42 @@ def document_rows(docs: list[DocResult]) -> list[dict]:
 
 
 def external_detail_path(value: str) -> Path:
-    path = Path(value).resolve()
-    if any(p.is_dir() and p.samefile(ROOT) for p in (path, *path.parents)):
-        raise argparse.ArgumentTypeError("detail output must be outside the repository")
+    # A caller such as a Git hook may export a different repository or index.
+    env = {key: value for key, value in os.environ.items() if not key.startswith("GIT_")}
+
+    def git(*args: str) -> bytes:
+        return subprocess.check_output(["git", *args], cwd=ROOT, env=env, stderr=subprocess.PIPE, timeout=10)
+
+    try:
+        path = Path(value).resolve()
+        protected = {ROOT.resolve()}
+        for entry in git("worktree", "list", "--porcelain", "-z").split(b"\0"):
+            if entry.startswith(b"worktree "):
+                protected.add(Path(os.fsdecode(entry.removeprefix(b"worktree "))).resolve())
+        for option in ("--git-common-dir", "--git-dir"):
+            raw = git("rev-parse", "--path-format=absolute", option)
+            protected.add(Path(os.fsdecode(raw.removesuffix(b"\n"))).resolve())
+
+        # samefile also catches case aliases on case-insensitive volumes.
+        ancestors = (path, *path.parents)
+        for root in protected:
+            if root in ancestors or (root.is_dir() and any(p.is_dir() and p.samefile(root) for p in ancestors)):
+                raise argparse.ArgumentTypeError(
+                    "detail output must be outside all repository worktrees and Git metadata"
+                )
+    except (OSError, subprocess.SubprocessError, RuntimeError) as exc:
+        raise argparse.ArgumentTypeError("cannot verify the private output destination") from exc
     return path
+
+
+@contextmanager
+def corpus_io_errors(parser: argparse.ArgumentParser, corpus: Path | None):
+    try:
+        yield
+    except OSError as exc:
+        if corpus is None:
+            raise
+        parser.exit(2, f"corpus I/O errors=1 ({type(exc).__name__})\n")
 
 
 @contextmanager
@@ -227,6 +259,11 @@ def main() -> int:
     parser.add_argument("--data", type=Path, help="override the organizer training data directory")
     args = parser.parse_args()
 
+    with corpus_io_errors(parser, args.corpus):
+        return evaluate(args, parser)
+
+
+def evaluate(args: argparse.Namespace, parser: argparse.ArgumentParser) -> int:
     if (args.detail_out or args.split) and not args.corpus:
         parser.error("--detail-out and --split require --corpus")
     if args.corpus:
@@ -235,7 +272,7 @@ def main() -> int:
         mode, data = "corpus", args.corpus / "cases"
         try:
             cases = load_corpus(args.corpus, args.split or "all")
-        except (ValueError, OSError) as exc:
+        except ValueError as exc:
             parser.error(str(exc))
     else:
         mode, data = ("quick" if args.quick else "full"), args.data or DATA

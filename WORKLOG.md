@@ -8,6 +8,7 @@ Shared state of the project. Rules: `CLAUDE.md` → Worklog.
   template example in `input/case1`.
 - The eval harness scores training cases and local paired PDF/JSON corpora. It reports micro F1 and macro F1 by
   document, represented class and field. Both layouts support per-field errors and OCR stress runs (`--force-ocr`).
+  Private detail files must be outside all worktrees and Git metadata. Corpus I/O errors report counts and types.
 - App: `kio2json/`, a rule-based baseline with no language model. CLI `python -m kio2json --input input --output output`;
   classification by heading and transaction evidence; field and role boundaries in each extractor; pdfplumber text
   with Tesseract (`pol`) for blank or page-number-only text layers. Required OCR failures identify the PDF on stderr. Branch `baseline/rule-based-extraction`.

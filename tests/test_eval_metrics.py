@@ -135,3 +135,12 @@ def test_class_macro_counts_predicted_only_class_and_misrouting(tmp_path):
     assert scores["per_class_f1"] == {"odwolanie": 0, "pelnomocnictwo": 2 / 3, "przelew": 0}
     assert scores["macro_f1_class_count"] == 3
     assert scores["macro_f1_classes"] == pytest.approx(2 / 9)
+
+
+def test_invalid_utf8_prediction_is_incomplete_and_misses_reference(tmp_path):
+    output = tmp_path / "invented.json"
+    output.write_bytes(bytes([255]))
+    doc = score_doc("invented", "one.pdf", output, {"mocodawca": {"a": 1, "b": 2}})
+    summary = summarise([doc])
+    assert summary["outputs_complete"] == 0
+    assert summary["counts"] == {"tp": 0, "fp": 0, "fn": 2}

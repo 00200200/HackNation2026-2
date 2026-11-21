@@ -1,6 +1,8 @@
 import json
+import os
 import subprocess
 import sys
+from pathlib import Path
 
 import pytest
 
@@ -27,6 +29,9 @@ def add_document(corpus, case, name, gold):
 
 @pytest.fixture
 def repo(tmp_path, monkeypatch):
+    for key in os.environ.copy():
+        if key.startswith("GIT_"):
+            monkeypatch.delenv(key)
     root = tmp_path / "repo"
     subprocess.run(["git", "init", "-q", root], check=True)
     result = root / "evals/results/latest.json"
@@ -188,3 +193,69 @@ def test_field_report_protects_test_diagnostics(corpus, tmp_path, monkeypatch, c
     captured = capsys.readouterr()
     assert "secret" not in captured.out + captured.err
     assert "secret-value" in dest.read_text() and "secret-error" in dest.read_text()
+
+
+@pytest.mark.parametrize("command", [run, field_report])
+def test_private_report_rejects_all_worktrees_and_git_dirs(corpus, repo, tmp_path, monkeypatch, command):
+    def git(*args, cwd=repo):
+        return subprocess.check_output(["git", *args], cwd=cwd)
+
+    git("-c", "user.name=Tester", "-c", "user.email=test@example.invalid", "commit", "--allow-empty", "-m", "test")
+    active, sibling = tmp_path / "active", tmp_path / "other checkout"
+    for checkout in (active, sibling):
+        git("worktree", "add", "--detach", str(checkout))
+    monkeypatch.setattr(run, "ROOT", active)
+    alias = tmp_path / "alias"
+    alias.symlink_to(sibling, target_is_directory=True)
+    git_dir = Path(git("rev-parse", "--absolute-git-dir", cwd=active).decode().strip())
+    unrelated = tmp_path / "unrelated"
+    git("init", "--bare", "-q", str(unrelated))
+    monkeypatch.setenv("GIT_DIR", str(unrelated))
+    for directory in (repo, alias, repo / ".git", git_dir):
+        destination = directory / "missing" / "details.json"
+        monkeypatch.setattr(sys, "argv", ["eval", "--corpus", str(corpus), "--detail-out", str(destination)])
+        # The command must reject the argument before it can touch corpus data.
+        monkeypatch.setattr(command, "load_corpus", lambda *args: pytest.fail("accepted repository destination"))
+        with pytest.raises(SystemExit) as error:
+            command.main()
+        assert error.value.code == 2
+        assert not destination.parent.exists()
+
+
+@pytest.mark.parametrize("command", [run, field_report])
+@pytest.mark.parametrize("source", ["manifest", "gold", "pdf"])
+def test_test_split_io_errors_report_only_type_and_count(corpus, repo, monkeypatch, capsys, command, source):
+    add_document(corpus, "private-case", "private-doc", {})
+    manifest = corpus / "SPLIT.json"
+    manifest.write_text(json.dumps({"dev": [], "test": ["private-case"]}))
+
+    def denied(*args, **kwargs):
+        raise PermissionError(13, "private-message", "private-path")
+
+    if source == "pdf":
+        if command is run:
+            monkeypatch.setattr(run.shutil, "copy", denied)
+        else:
+            monkeypatch.setattr(field_report, "process_pdf", denied)
+    else:
+        target = manifest if source == "manifest" else corpus / "gold/private-case/private-doc.json"
+        read_text = Path.read_text
+
+        def read(path, *args, **kwargs):
+            if path == target:
+                denied()
+            return read_text(path, *args, **kwargs)
+
+        monkeypatch.setattr(Path, "read_text", read)
+
+    monkeypatch.setattr(sys, "argv", ["eval", "--corpus", str(corpus), "--split", "test"])
+    if command is field_report and source == "pdf":
+        command.main()
+    else:
+        with pytest.raises(SystemExit) as error:
+            command.main()
+        assert error.value.code == 2
+    captured = capsys.readouterr()
+    console = captured.out + captured.err
+    assert "PermissionError" in console and "1" in console
+    assert "private" not in console and str(corpus) not in console
