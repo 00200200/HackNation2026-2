@@ -247,6 +247,8 @@ Micro F1 pools field matches across documents. Macro F1 averages the three class
 
 The scanned-transfer update was evaluated on a five-case organizer development half and a five-case holdout per class. Their combined transfer routing was 8/10, up from 2/10 on the integration baseline. Transfer field F1 was 0.8667 on the development half and 0.5833 on the holdout. [Scanned-transfer measurements](evals/results/scanned-transfers.json)
 
+On all 30 organizer development scans, the rules routed 10/10 transfer confirmations. Nine matched every field literally (59/60 fields, transfer F1 0.9833). The outstanding title contains a severely degraded name and abbreviation. Across all three classes the run averaged 9.23 s/PDF on the shared Apple M1, with a maximum of 19.02 s. With the integrated power-of-attorney rules, micro F1 reached 0.6312 on corpus 1 all, 0.7160 on its dev subset and 0.6816 on corpus 2 dev. [Round 2 measurements](evals/results/scanned-transfers-round2.json)
+
 The organizer allows 45 minutes for its 150-PDF batch, an average budget of 18 seconds per PDF.
 The reported times cover these local datasets. OCR runs locally. Under the updated rules, a remote
 OCR service would count toward model parameters. [Organizer evaluation rules](data/uzp/README.md)
