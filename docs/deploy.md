@@ -5,7 +5,7 @@ The landing (`frontend/`, static nginx) runs on the team VPS next to the faktczy
 ## Server
 
 - OVHcloud VPS-2, Ubuntu 24.04, IPv4 135.125.239.206. Login: `ssh -i ~/.ssh/faktczyfejk ubuntu@135.125.239.206`
-  (key on Michał's Mac; never commit keys).
+  (key held by the deployment operator; never commit keys).
 - Docker Compose stacks live in `/opt/<name>`. This repo: `/opt/doc2json`, Compose project `doc2json`.
 - HTTPS: one Caddy container, owned by the faktczyfejk stack (`/opt/faktczyfejk`, checkout of HackNation2026
   branch `prod`, reset every minute by a systemd timer). It holds ports 80/443 and issues Let's Encrypt certificates.

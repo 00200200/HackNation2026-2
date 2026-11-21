@@ -1,6 +1,6 @@
 """HTTP API for the public page (doc2json.pl): the same per-document extraction as the CLI and GUI.
 
-    GET  /api/health   -> {"status": "ok"}
+    GET  /api/health   -> {"status": "ok" | "busy"}
     POST /api/extract  multipart `files` (PDF) -> {"results": [{"index", "file", "class", "data", "error"}]}
     GET  /api/docs     -> OpenAPI docs
 
@@ -12,18 +12,20 @@ Run: `uvicorn kio2json.web_api:app --host 0.0.0.0 --port 8000`.
 import asyncio
 import json
 import os
+import signal
+import subprocess
+import sys
 import tempfile
-import time
-from concurrent.futures import ThreadPoolExecutor
-from functools import cache
+from contextlib import suppress
 from pathlib import Path
 from typing import Any
 
-from fastapi import FastAPI, HTTPException, UploadFile
+from fastapi import FastAPI, HTTPException, Request
 from pydantic import BaseModel, ConfigDict, Field
+from starlette.datastructures import FormData, UploadFile
+from starlette.formparsers import MultiPartException, MultiPartParser
 
-from .batch import Result, configure_logging, read_document
-from .class_config import DocumentClass, load_classes
+from .batch import Result
 
 MAX_FILES = int(os.environ.get("KIO_WEB_MAX_FILES", "10"))
 MAX_FILE_MB = int(os.environ.get("KIO_WEB_MAX_FILE_MB", "20"))
@@ -31,9 +33,6 @@ DOC_TIMEOUT_S = int(os.environ.get("KIO_WEB_DOC_TIMEOUT_S", "90"))
 REQUEST_BUDGET_S = int(os.environ.get("KIO_WEB_REQUEST_BUDGET_S", "500"))  # under the 600 s proxy and page limits
 MAX_QUEUED_REQUESTS = int(os.environ.get("KIO_WEB_MAX_QUEUED", "4"))
 
-# OCR is CPU-heavy and the VPS is shared with another demo: one document at a time, server-wide. A document's
-# timeout counts from when it starts; the slot stays taken until its thread really ends (threads cannot be killed).
-_pool = ThreadPoolExecutor(max_workers=1)
 _slot = asyncio.Semaphore(1)
 _queued = 0
 
@@ -54,67 +53,163 @@ class ExtractResponse(BaseModel):
     results: list[DocumentResult]
 
 
-@cache
-def _classes() -> list[DocumentClass]:
-    classes = load_classes()
-    configure_logging(classes)
-    return classes
+class UploadParser(MultiPartParser):
+    """Count file bytes in parser callbacks, before Starlette writes them to the spool."""
+
+    complete = False
+
+    def on_part_begin(self) -> None:
+        super().on_part_begin()
+        self.file_bytes = 0
+
+    def on_part_data(self, data: bytes, start: int, end: int) -> None:
+        if self._current_part.file is not None:
+            self.file_bytes += end - start
+            if self.file_bytes > MAX_FILE_MB * 1024 * 1024:
+                raise HTTPException(413, f"Plik większy niż {MAX_FILE_MB} MB.")
+        super().on_part_data(data, start, end)
+
+    def on_end(self) -> None:
+        self.complete = True
+
+    async def parse(self) -> FormData:
+        form = await super().parse()
+        if not self.complete:
+            # A truncated last part may have a spool which is not yet in FormData.
+            for spool in self._files_to_close_on_error:
+                spool.close()
+            raise HTTPException(400, "Niepełne dane formularza.")
+        return form
 
 
-def _read_and_delete(path: Path) -> Result:
+async def _uploads(request: Request, deadline: float) -> FormData:
+    if request.headers.get("content-type", "").split(";")[0].strip().lower() != "multipart/form-data":
+        raise HTTPException(422, "Wybierz pliki PDF.")
+    # Reserve 1 MiB for form headers and boundaries, including on chunked requests.
+    limit = (MAX_FILE_MB * MAX_FILES + 1) * 1024 * 1024
+    length = request.headers.get("content-length")
+    if length is not None:
+        if not length.isascii() or not length.isdigit() or len(length) > 20:
+            raise HTTPException(400, "Nieprawidłowa długość żądania.")
+        if int(length) > limit:
+            raise HTTPException(413, "Za duże żądanie.")
+
+    async def stream():
+        received = 0
+        async for chunk in request.stream():
+            if asyncio.get_running_loop().time() >= deadline:
+                raise TimeoutError
+            received += len(chunk)
+            if received > limit:
+                raise HTTPException(413, "Za duże żądanie.")
+            yield chunk
+
+    parser = UploadParser(request.headers, stream(), max_files=MAX_FILES, max_fields=0)
     try:
-        return read_document(path, _classes())
-    finally:
-        path.unlink(missing_ok=True)
+        return await parser.parse()
+    except MultiPartException as exc:
+        status = 413 if parser._current_files > MAX_FILES else 400
+        raise HTTPException(status, exc.message) from exc
+
+
+def _start_worker(pdf: Path, output: Path) -> subprocess.Popen:
+    return subprocess.Popen(
+        [sys.executable, "-m", "kio2json.web_worker", str(pdf), str(output)],
+        start_new_session=os.name == "posix",
+    )
+
+
+def _stop_worker(process: subprocess.Popen) -> None:
+    # RapidOCR may run a child of its own. Reap the whole job before admitting the next document.
+    if os.name == "posix":
+        with suppress(ProcessLookupError):
+            os.killpg(process.pid, signal.SIGKILL)
+    elif process.poll() is None:
+        subprocess.run(["taskkill", "/PID", str(process.pid), "/T", "/F"], capture_output=True, check=False)
+        process.kill()
+    process.wait()
 
 
 async def _read(content: bytes, deadline: float) -> Result:
-    try:
-        await asyncio.wait_for(_slot.acquire(), max(0.0, deadline - time.monotonic()))
-    except TimeoutError:
-        return Result(None, "", "Nie zmieścił się w limicie czasu tego żądania. Wyślij go osobno.")
-    try:
-        with tempfile.NamedTemporaryFile(suffix=".pdf", delete=False) as handle:
-            handle.write(content)
-        job = asyncio.get_running_loop().run_in_executor(_pool, _read_and_delete, Path(handle.name))
-    except BaseException:
-        _slot.release()  # the job never started, so its done-callback will not release the slot
-        raise
-    job.add_done_callback(lambda _: _slot.release())
-    try:
-        return await asyncio.wait_for(asyncio.shield(job), DOC_TIMEOUT_S)
-    except TimeoutError:
-        return Result(None, "", f"Przekroczono limit {DOC_TIMEOUT_S} s na dokument.")
+    async with _slot:
+        async with asyncio.timeout_at(min(deadline, asyncio.get_running_loop().time() + DOC_TIMEOUT_S)):
+            with tempfile.TemporaryDirectory() as directory:
+                pdf = Path(directory) / "document.pdf"
+                output = Path(directory) / "result.json"
+                pdf.write_bytes(content)
+                process = _start_worker(pdf, output)
+                try:
+                    code = await asyncio.to_thread(process.wait)
+                finally:
+                    # Cancellation leaves the waiting thread alive until the child has exited.
+                    if process.returncode != 0:
+                        cleanup = asyncio.create_task(asyncio.to_thread(_stop_worker, process))
+                        try:
+                            await asyncio.shield(cleanup)
+                        except asyncio.CancelledError:
+                            await cleanup
+                            raise
+                if code or not output.exists():
+                    return Result(None, "", "Proces odczytu dokumentu zakończył się błędem.")
+                return Result(**json.loads(output.read_bytes()))
+
+
+async def _extract_one(index: int, upload: UploadFile, deadline: float) -> DocumentResult:
+    item = DocumentResult(index=index, file=Path(upload.filename or f"plik_{index + 1}.pdf").name)
+    content = await upload.read()
+    if not content.lstrip().startswith(b"%PDF-"):
+        item.error = "To nie jest plik PDF."
+    else:
+        try:
+            result = await _read(content, deadline)
+        except TimeoutError:
+            item.error = f"Przekroczono limit {DOC_TIMEOUT_S} s na dokument."
+        else:
+            item.class_id, item.error = result.label, result.error
+            item.data = json.loads(result.text) if result.text else ({} if result.error is None else None)
+    return item
 
 
 @app.get("/api/health")
-def health() -> dict[str, str]:
-    return {"status": "ok"}
+async def health() -> dict[str, str]:
+    return {"status": "busy" if _slot.locked() or _queued >= MAX_QUEUED_REQUESTS else "ok"}
 
 
-@app.post("/api/extract", response_model_by_alias=True)
-async def extract(files: list[UploadFile]) -> ExtractResponse:
+_UPLOAD_SCHEMA = {
+    "requestBody": {
+        "required": True,
+        "content": {
+            "multipart/form-data": {
+                "schema": {
+                    "type": "object",
+                    "required": ["files"],
+                    "properties": {"files": {"type": "array", "items": {"type": "string", "format": "binary"}}},
+                }
+            }
+        },
+    }
+}
+
+
+@app.post("/api/extract", response_model_by_alias=True, openapi_extra=_UPLOAD_SCHEMA)
+async def extract(request: Request) -> ExtractResponse:
     global _queued
-    if len(files) > MAX_FILES:
-        raise HTTPException(413, f"Najwyżej {MAX_FILES} plików naraz.")
     if _queued >= MAX_QUEUED_REQUESTS:
         raise HTTPException(503, "Serwer przetwarza teraz inne pliki. Spróbuj za chwilę.")
     _queued += 1
+    deadline = asyncio.get_running_loop().time() + REQUEST_BUDGET_S
     try:
-        deadline = time.monotonic() + REQUEST_BUDGET_S
-        results = []
-        for index, upload in enumerate(files):
-            item = DocumentResult(index=index, file=Path(upload.filename or f"plik_{index + 1}.pdf").name)
-            content = await upload.read(MAX_FILE_MB * 1024 * 1024 + 1)
-            if len(content) > MAX_FILE_MB * 1024 * 1024:
-                item.error = f"Plik większy niż {MAX_FILE_MB} MB."
-            elif content.lstrip()[:5] != b"%PDF-":
-                item.error = "To nie jest plik PDF."
-            else:
-                result = await _read(content, deadline)
-                item.class_id, item.error = result.label, result.error
-                item.data = json.loads(result.text) if result.text else ({} if result.error is None else None)
-            results.append(item)
-        return ExtractResponse(results=results)
+        async with asyncio.timeout_at(deadline):
+            form = await _uploads(request, deadline)
+            try:
+                files = form.getlist("files")
+                if not files or any(not isinstance(f, UploadFile) for f in files):
+                    raise HTTPException(422, "Wybierz pliki PDF.")
+                results = [await _extract_one(i, upload, deadline) for i, upload in enumerate(files)]
+                return ExtractResponse(results=results)
+            finally:
+                await form.close()
+    except TimeoutError as exc:
+        raise HTTPException(408, "Przekroczono limit czasu żądania.") from exc
     finally:
         _queued -= 1
