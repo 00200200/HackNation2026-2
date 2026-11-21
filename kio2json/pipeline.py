@@ -158,11 +158,15 @@ def _process(
                 raise
             continue
         readable = True
+        rule_class = definition
         alternate = None
         if selected == "tesseract-dpi" and ocr_pages and any(d.enabled and d.profile.dual_ocr for d in definitions):
             alternate = AlternateOCR(pdf_path, ocr_pages)
         if any(
-            d.enabled and (d.profile.routing == "model" or (definition is None and d.profile.routing == "fallback"))
+            d.enabled
+            and (
+                d.profile.routing == "model" or (definition is None and d.profile.routing in {"fallback", "supported"})
+            )
             for d in definitions
         ):
             routed = route(primary, definitions, ocr_accounts=accounts, alternate=alternate)
@@ -171,6 +175,12 @@ def _process(
                 accounts = account_evidence(primary[0]) if 1 in ocr_pages else None
             definition = routed
         if definition is not None:
+            check_native_roles = (
+                definition is rule_class
+                and not ocr_pages
+                and definition.profile.mode == "RL"
+                and definition.profile.gap_scope == "incomplete"
+            )
             if definition.id == "appeal":
                 pages = restore_party_columns(pdf_path, pages, force_ocr, engine=engine)
             ocr_python = None
@@ -187,6 +197,7 @@ def _process(
                 ocr_python=ocr_python,
                 alternate=alternate if definition.profile.dual_ocr else None,
                 model_text=join_pages(primary) if pages is not primary else None,
+                check_native_roles=check_native_roles,
             )
         if not ocr_pages:
             break

@@ -6,7 +6,10 @@ from pydantic import SecretStr
 from pydantic_settings import BaseSettings, SettingsConfigDict
 
 Mode = Literal["R", "L", "RL", "LR", "V"]
-RoutingPolicy = Literal["rules", "fallback", "model"]
+RoutingPolicy = Literal["rules", "fallback", "model", "supported"]
+
+
+GapScope = Literal["all", "incomplete"]
 
 
 class Profile(NamedTuple):
@@ -14,6 +17,7 @@ class Profile(NamedTuple):
     routing: RoutingPolicy = "rules"
     dual_ocr: bool = False
     keyed: bool = False
+    gap_scope: GapScope = "all"
 
 
 class ProfileSettings(BaseSettings):
@@ -24,10 +28,15 @@ class ProfileSettings(BaseSettings):
     mode: Mode = "LR"
     routing: RoutingPolicy = "fallback"
     dual_ocr: bool = True
+    gap_scope: GapScope = "all"
 
     def profile(self) -> Profile:
         if self.base_url.strip() and self.model.strip() and self.api_key.get_secret_value().strip():
             return Profile(
-                self.mode, self.routing, self.dual_ocr and (self.mode != "R" or self.routing != "rules"), True
+                self.mode,
+                self.routing,
+                self.dual_ocr and (self.mode != "R" or self.routing != "rules"),
+                True,
+                self.gap_scope,
             )
         return Profile()

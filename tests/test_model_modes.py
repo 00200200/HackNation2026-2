@@ -108,3 +108,107 @@ def test_v_rejects_malformed_account_from_model(keyed, monkeypatch):
     _, data = pipeline.process_pdf(Path("opaque.pdf"))
     assert data.get("przelew_bankowy", {}).get("numer_transakcji") == "ABC"
     assert data["przelew_bankowy"]["na_rachunek"] is None
+
+
+@pytest.mark.parametrize(
+    ("first", "model_label", "expected", "model_calls"),
+    [
+        ("Krajowa Izba Odwoławcza\nPrzesyłamy kopię odwołania.", "appeal", None, 0),
+        ("Wyciąg z rachunku\nSzczegóły transakcji\nKwota: 125 PLN", "bank_transfer", None, 0),
+        ("Odwołujący wnosi niniejsze odwołanie wobec czynności.", "appeal", "appeal", 1),
+        ("Odwołujący wnosi niniejsze odwołanie wobec czynności.", "bank_transfer", None, 1),
+        ("Pełnomocnictwo do reprezentacji", "power_of_attorney", "power_of_attorney", 1),
+        ("Szczegóły transakcji\nKwota: 9 PLN", "power_of_attorney", None, 1),
+        ("Szczegóły transakcji\nKwota: 9 PLN\nRachunek: " + "7" * 26, "power_of_attorney", "bank_transfer", 1),
+        (
+            "Szczegóły transakcji\nKwota: 9 PLN\nNadawca: Firma A\nOdbiorca: Firma B",
+            "power_of_attorney",
+            "bank_transfer",
+            1,
+        ),
+        ("Szczegóły transakcji\nRachunek: " + "7" * 26, "power_of_attorney", None, 1),
+        ("Szczegóły transakcji\nKwota: 9 PLN", "appeal", None, 1),
+        ("Szczegóły transakcji\nStatus: odrzucony\nKwota: 9 PLN", "bank_transfer", None, 0),
+        ("Szczegóły transakcji", "power_of_attorney", None, 0),
+        ("Szczegóły transakcji\nKwota: ........", "power_of_attorney", None, 0),
+        ("Załącznik: Potwierdzenie przelewu\nKwota: 9 PLN", "bank_transfer", None, 0),
+        ("Załącznik: Potwierdzenie przelewu\nRachunek: " + "7" * 26, "bank_transfer", None, 0),
+        ("Pismo przewodnie\nPotwierdzenie przelewu przesyłamy w załączeniu.\nKwota: 99 PLN", "bank_transfer", None, 0),
+        (
+            "Pismo przewodnie\nPotwierdzenie przelewu przesyłamy w załączeniu.\nKwota: 99 PLN",
+            "power_of_attorney",
+            None,
+            0,
+        ),
+        ("Szczegóły transakcji przesyłamy w załączeniu.\nKwota: 99 PLN", "power_of_attorney", None, 0),
+        (
+            "Szanowni Państwo,\nW załączeniu przesyłamy:\nPotwierdzenie przelewu\nKwota: 99 PLN",
+            "bank_transfer",
+            None,
+            0,
+        ),
+        (
+            "Załączniki:\n1. Odpis dokumentu\n\n2) Potwierdzenie przelewu\nKwota: 99 PLN\nRachunek: " + "7" * 26,
+            "power_of_attorney",
+            None,
+            0,
+        ),
+        ("2. Potwierdzenie przelewu\nRachunek: " + "7" * 26 + "\nKwota: 99 PLN", "bank_transfer", None, 0),
+        ("2.\nPotwierdzenie przelewu\nRachunek: " + "7" * 26 + "\nKwota: 99 PLN", "bank_transfer", None, 0),
+        ("Potwierdzenie przelewu\nprzesyłamy w załączeniu.\nKwota: 99 PLN", "bank_transfer", None, 0),
+        ("Informacje o rachunku | Szczegóły transakcji\nRachunek: " + "7" * 26, "bank_transfer", "bank_transfer", 1),
+        (
+            "Pełnomocnictwo do reprezentacji\nSzczegóły transakcji\nKwota: 9 PLN",
+            "power_of_attorney",
+            "power_of_attorney",
+            1,
+        ),
+        ("PEŁNOMOCNICTWO", "unrelated", "power_of_attorney", 0),
+    ],
+)
+def test_supported_routing_through_document_pipeline(keyed, monkeypatch, first, model_label, expected, model_calls):
+    monkeypatch.setenv("KIO_LLM_ROUTING", "supported")
+    monkeypatch.setenv("KIO_LLM_MODE", "R")
+    monkeypatch.setattr(pipeline, "read_pages", lambda *a, **kw: [first, "Wnoszę odwołanie od czynności."])
+    seen = []
+
+    def classify(page):
+        seen.append(page)
+        return model_label
+
+    monkeypatch.setattr(llm, "classify_llm", classify)
+    label, _ = pipeline.process_pdf(Path("invented.pdf"))
+    assert label == expected
+    assert seen == [first] * model_calls
+
+
+@pytest.mark.parametrize(
+    ("recognized", "scanned", "expected_calls"), [(True, False, 0), (False, False, 1), (True, True, 1)]
+)
+def test_incomplete_gap_scope(keyed, monkeypatch, recognized, scanned, expected_calls):
+    monkeypatch.setenv("KIO_LLM_MODE", "RL")
+    monkeypatch.setenv("KIO_LLM_GAP_SCOPE", "incomplete")
+    monkeypatch.setenv("KIO_LLM_ROUTING", "fallback")
+    monkeypatch.setenv("KIO_LLM_DUAL_OCR", "false")
+
+    def read(*args, **kwargs):
+        if scanned and (pages := kwargs.get("ocr_pages")) is not None:
+            pages.append(1)
+        return [
+            "PEŁNOMOCNICTWO\nMocodawca: Przykładowa sp. z o.o.\nUdziela pełnomocnictwa Pani Idzie Zimowej."
+            if recognized
+            else "Instrument appointing a representative"
+        ]
+
+    monkeypatch.setattr(pipeline, "read_pages", read)
+    monkeypatch.setattr(llm, "classify_llm", lambda text: "power_of_attorney")
+    calls = []
+
+    def infer(definition, text, model=None):
+        calls.append(definition.id)
+        return {"pelnomocnicy": [], "mocodawca": []}
+
+    monkeypatch.setattr(llm, "extract_llm", infer)
+    label, _ = pipeline.process_pdf(Path("opaque.pdf"))
+    assert label == "power_of_attorney"
+    assert len(calls) == expected_calls

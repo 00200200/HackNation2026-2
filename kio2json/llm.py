@@ -143,7 +143,7 @@ def bounded_text(text: str) -> str:
     return text.encode("utf-8")[:MODEL_INPUT_BYTES].decode("utf-8", errors="ignore")
 
 
-def structured(output_type, instructions: str, text: str, *, max_tokens: int, model=None):
+def structured(output_type, instructions: str, text: str, *, max_tokens: int, model=None, single_request: bool = False):
     try:
         timeout = 180
         settings = {"max_retries": 0, "max_tokens": max_tokens, "temperature": 0}
@@ -160,11 +160,14 @@ def structured(output_type, instructions: str, text: str, *, max_tokens: int, mo
                     output_type,
                     template="Return a JSON object matching this schema and its field definitions: {schema}",
                 )
+        if single_request:
+            settings["max_tokens"] = min(settings["max_tokens"], max_tokens)
+            timeout = min(timeout, 30)
         agent = Agent(
             model,
             output_type=output_type,
             instructions=instructions,
-            retries=1,
+            retries=0 if single_request else 1,
             model_settings=settings,
         )
         return agent.run_sync(text, timeout=timeout).output

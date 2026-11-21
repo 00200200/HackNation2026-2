@@ -10,7 +10,7 @@ from typing import Annotated, Literal, Self
 
 from pydantic import BaseModel, BeforeValidator, ConfigDict, Field, ImportString, PrivateAttr, model_validator
 
-from .classify import classify
+from .classify import classify, routing_evidence
 from .model_pages import AlternateOCR, model_readings
 from .model_profile import Profile, ProfileSettings
 from .ocr_accounts import AccountEvidence
@@ -241,7 +241,7 @@ def route(
             classifier = (
                 model_classifier if not rules_only and definition.profile.routing == "model" else routing.classifier
             )
-            if not rules_only and definition.profile.routing == "fallback":
+            if not rules_only and definition.profile.routing in {"fallback", "supported"}:
                 fallback[definition.id] = definition
             if classifier not in labels:
                 labels[classifier] = (
@@ -253,4 +253,18 @@ def route(
                 return definition
         elif routing.matches(pages):
             return definition
-    return fallback.get(model_classifier(pages)) if fallback else None
+    supported = {key for key, definition in fallback.items() if definition.profile.routing == "supported"}
+    evidence, confirmed_transfer = routing_evidence(pages[0]) if pages and supported else (set(), False)
+    for key in supported - evidence:
+        del fallback[key]
+    if not fallback:
+        return None
+    label = model_classifier(pages)
+    if (
+        label == "power_of_attorney"
+        and "bank_transfer" in supported
+        and evidence == {"bank_transfer"}
+        and confirmed_transfer
+    ):
+        label = "bank_transfer"
+    return fallback.get(label)

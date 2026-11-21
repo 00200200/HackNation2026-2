@@ -89,3 +89,5 @@ These runs used local rules with the three endpoint variables unset. The two loc
 
 - 21.11.2026 · Merged the OCR integration at `e051dfa` and selected model-first extraction with rules filling gaps and model routing on rule rejection. On 22 dev PDFs, DeepSeek Flash with two OCR readings scored 0.6951 micro-F1 against 0.4356 for rules.
 - 21.11.2026 · Codex · Integrated PRs #20, #18 and #22, verified training byte parity and measured both dev corpora at `d177cbc7`. Refreshed organizer revision `0b360a9` in `cf98ef3` and verified synthetic training and the dedicated scan evaluation at `8d79e66`.
+
+- 21.11.2026 · Codex · Merged integrated rules at `21737c1`. The Ministral profile now checks the document’s own heading before fallback routing, limits native gap calls to missing parties or payment facts, and can verify the first allegation in one short request. On corpus 2 dev, eight targeted requests added four correct fields in a paired comparison.
