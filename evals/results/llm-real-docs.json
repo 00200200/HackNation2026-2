@@ -6,7 +6,10 @@
     "mode": "LR",
     "routing": "fallback",
     "dual_ocr": true,
-    "development_model": "deepseek-v4-pro",
+    "submission_profile": "Flash",
+    "development_model": "deepseek-flash",
+    "submission_host": "EU/EEA deployment, provider performance unmeasured",
+    "measured_alternative": "deepseek-v4-pro",
     "page_count": 3,
     "text_bytes": 16384
   },
@@ -1850,6 +1853,71 @@
       "responses_with_reasoning": 4
     }
   ],
+  "test": {
+    "deepseek_v4_pro": {
+      "model": "deepseek-v4-pro",
+      "runtime_commit": "d288af1cb1c9f4acdc8d5125d25e3dc6ee6b78cd",
+      "evaluator_commit_at_report_write": "a6ccde0d71db3a93c1c6fa4db12d8eb961b42911",
+      "evaluator_dirty_at_report_write": true,
+      "cases": 7,
+      "pdfs": 17,
+      "positive_pdfs": 13,
+      "unrelated_pdfs": 4,
+      "micro_f1": 0.70020964360587,
+      "macro_f1_classes": 0.7100632547441058,
+      "per_class_f1": {
+        "odwolanie": 0.6918918918918919,
+        "pelnomocnictwo": 0.6382978723404256,
+        "przelew": 0.8
+      },
+      "micro_f1_non_null": 0.5119453924914675,
+      "classification_accuracy": 1.0,
+      "negatives_empty": 1.0,
+      "outputs_complete": 1.0,
+      "seconds_per_doc": 64.2837128113024,
+      "counts": {
+        "tp": 167,
+        "fp": 69,
+        "fn": 74
+      },
+      "completed_evaluations": 1,
+      "batch_attempts": 1
+    },
+    "deepseek_flash": {
+      "model": "deepseek-flash",
+      "runtime_commit": "15f4fbb2e6036cb4ce47d7521aee234610ee3921",
+      "evaluator_commit_at_report_write": "15f4fbb2e6036cb4ce47d7521aee234610ee3921",
+      "evaluator_dirty_at_report_write": false,
+      "cases": 7,
+      "pdfs": 17,
+      "positive_pdfs": 13,
+      "unrelated_pdfs": 4,
+      "micro_f1": 0.6054590570719603,
+      "macro_f1_classes": 0.6625706214689265,
+      "per_class_f1": {
+        "odwolanie": 0.5627118644067797,
+        "pelnomocnictwo": 0.625,
+        "przelew": 0.8
+      },
+      "micro_f1_non_null": 0.5681818181818182,
+      "classification_accuracy": 1.0,
+      "negatives_empty": 1.0,
+      "outputs_complete": 1.0,
+      "seconds_per_doc": 6.4343886617571115,
+      "counts": {
+        "tp": 122,
+        "fp": 40,
+        "fn": 119
+      },
+      "completed_evaluations": 1,
+      "batch_attempts": 2,
+      "rules_recoveries": 1,
+      "observed_error_type": "OutputTokenLimitExceeded",
+      "secondary_ocr_errors": 0,
+      "first_attempt_diagnostic": "Batch failed before scoring; underlying exception was not retained."
+    },
+    "protocol": "Both profiles were selected and frozen using dev only. Each scored evaluation was the first to produce held-out aggregate metrics. After an initial CLI batch failure, the coordinator authorized per-document rules-only recovery and a retry without tuning any successful-path settings. Diagnostics were restricted to code stages, exception types and aggregate counters."
+  },
   "qwen_dev": {
     "completed": 11,
     "scheduled": 22,
@@ -1911,5 +1979,29 @@
     "completed_prefix_wall_seconds": 1255.96,
     "completed_prefix_wall_seconds_per_pdf": 114.18,
     "total_comparison_budget_minutes": 30
+  },
+  "independent_flash_dev_repeat": {
+    "frozen_runtime_commit": "d288af1cb1c9f4acdc8d5125d25e3dc6ee6b78cd",
+    "method": "Separate uncached call of the repository evaluator and the original CLI with aggregate diagnostic counters. The primary mode comparison shares identical model responses across modes.",
+    "pdfs": 22,
+    "cases": 14,
+    "micro_f1": 0.680161943319838,
+    "macro_f1_classes": 0.6262180046538685,
+    "per_class_f1": {
+      "odwolanie": 0.7015706806282722,
+      "pelnomocnictwo": 0.71875,
+      "przelew": 0.4583333333333333
+    },
+    "micro_f1_non_null": 0.5426829268292683,
+    "classification_accuracy": 1.0,
+    "negatives_empty": 1.0,
+    "outputs_complete": 1.0,
+    "seconds_per_pdf": 29.177300912920725,
+    "stage_seconds": {
+      "primary_reading": 164.75,
+      "secondary_ocr": 414.57,
+      "routing": 12.99,
+      "extraction": 47.65
+    }
   }
 }
