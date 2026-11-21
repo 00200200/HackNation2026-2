@@ -73,9 +73,13 @@ async def _read(content: bytes, deadline: float) -> Result:
         await asyncio.wait_for(_slot.acquire(), max(0.0, deadline - time.monotonic()))
     except TimeoutError:
         return Result(None, "", "Nie zmieścił się w limicie czasu tego żądania. Wyślij go osobno.")
-    with tempfile.NamedTemporaryFile(suffix=".pdf", delete=False) as handle:
-        handle.write(content)
-    job = asyncio.get_running_loop().run_in_executor(_pool, _read_and_delete, Path(handle.name))
+    try:
+        with tempfile.NamedTemporaryFile(suffix=".pdf", delete=False) as handle:
+            handle.write(content)
+        job = asyncio.get_running_loop().run_in_executor(_pool, _read_and_delete, Path(handle.name))
+    except BaseException:
+        _slot.release()  # the job never started, so its done-callback will not release the slot
+        raise
     job.add_done_callback(lambda _: _slot.release())
     try:
         return await asyncio.wait_for(asyncio.shield(job), DOC_TIMEOUT_S)
