@@ -16,8 +16,17 @@ from .grant_certificates import add_certificate_signers
 from .model_pages import AlternateOCR
 from .ocr_accounts import AccountEvidence, account_evidence, normalize_receipt
 from .ocr_grant_register import verified_pages
-from .pdf_text import DEFAULT_OCR_ENGINE, NoReadableTextError, OCRRecognitionError, WordBox, join_pages, read_pages
+from .pdf_text import (
+    DEFAULT_OCR_ENGINE,
+    NoReadableTextError,
+    OCRRecognitionError,
+    WordBox,
+    join_pages,
+    read_pages,
+)
+from .receipt_account_crop import recover_account_crops
 from .receipt_layout import append_receipt_fields, has_detached_labels, receipt_cell_fields
+from .receipt_title import reread_title
 
 
 def _is_receipt(definition: DocumentClass | None) -> bool:
@@ -31,11 +40,19 @@ def _route_receipt(
     if evidence is not None and cells:
         # A source cell keeps its owner even if the linear transcript interleaves the columns.
         roles = {}
+        prefixed = set(evidence.prefixed_roles)
         for label, role in (("Rachunek nadawcy", "sender"), ("Rachunek odbiorcy", "recipient")):
             if label in cells:
                 raw = "".join(cells[label].split())
-                roles[role] = raw if raw.isdigit() else None
-        evidence = replace(evidence, **roles, declared=evidence.declared | roles.keys())
+                digits = raw.removeprefix("PL")
+                roles[role] = digits if digits.isdigit() else None
+                if raw.startswith("PL"):
+                    prefixed.add(role)
+                else:
+                    prefixed.discard(role)
+        evidence = replace(
+            evidence, **roles, declared=evidence.declared | roles.keys(), prefixed_roles=frozenset(prefixed)
+        )
     return route(pages, definitions, ocr_accounts=evidence, rules_only=True), evidence
 
 
@@ -55,6 +72,7 @@ def _read_receipt(
     force_ocr: bool,
     engine: str,
     retry: bool,
+    boxes: list[WordBox] | None,
 ) -> tuple[list[str], DocumentClass | None, AccountEvidence | None]:
     definition, accounts = _route_receipt(pages, definitions, scanned)
     if not pages or (definition is not None and not _is_receipt(definition)):
@@ -62,10 +80,13 @@ def _read_receipt(
     original = pages
     fields = {}
     if scanned and (definition is not None or incomplete_booking_scan(pages[0])):
+        if boxes:
+            pages = recover_account_crops(pdf_path, pages, boxes)
         pages = [normalize_receipt(pages[0]), *pages[1:]]
     if has_detached_labels(pages, ocr=scanned):
-        boxes = []
-        read_pages(pdf_path, max_pages=1, force_ocr=force_ocr, engine=engine, word_boxes=boxes)
+        if boxes is None or not scanned:
+            boxes = []
+            read_pages(pdf_path, max_pages=1, force_ocr=force_ocr, engine=engine, word_boxes=boxes)
         fields = receipt_cell_fields(boxes, ocr=scanned)
         # Keep the complete title already bound to a native label, including wrapped lines.
         if (
@@ -151,6 +172,7 @@ def _process(
                 force_ocr=force_ocr,
                 engine=engine,
                 retry=engine == selected == "tesseract-dpi",
+                boxes=boxes,
             )
         except NoReadableTextError:
             if engine == engines[-1] and not readable:
@@ -178,7 +200,9 @@ def _process(
             if selected == "tesseract-dpi" and definition.extractor is appeal.extract and not definition.profile.keyed:
                 words = [box for box in boxes if box.page == 1]
             if definition.id == "appeal":
-                pages = restore_party_columns(pdf_path, pages, force_ocr, engine=engine, first_words=words)
+                pages = restore_party_columns(
+                    pdf_path, pages, force_ocr, engine=engine, boxes=boxes, ocr_pages=ocr_pages
+                )
             ocr_python = None
             if ocr_pages:
                 if definition.extractor is bank_transfer.extract:
@@ -198,6 +222,16 @@ def _process(
                 alternate=alternate if definition.profile.dual_ocr else None,
                 model_text=join_pages(primary) if pages is not primary else None,
             )
+            if (
+                boxes
+                and 1 in ocr_pages
+                and definition.engines == ["python"]
+                and definition.extractor is bank_transfer.extract
+            ):
+                fields = record["przelew_bankowy"]
+                title = reread_title(pdf_path, boxes, fields["tytul"])
+                if title is not None:
+                    fields["tytul"] = title
             if definition.extractor is power_of_attorney.extract and not definition.profile.keyed:
                 add_certificate_signers(pdf_path, record, join_pages(pages))
             return definition.id, record

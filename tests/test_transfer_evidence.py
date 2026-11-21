@@ -188,6 +188,7 @@ def test_bank_can_introduce_a_refusal_with_a_colon():
     [
         "Przelew zrealizowano dnia 07.06.2026.",
         "W dniu 07.06.2026 wykonano przelew.",
+        "Wykonano dnia 07.06.2026 przelew na rachunek beneficjenta.",
         "Bank potwierdza, że przelew wykonano w dniu 07.06.2026.",
         "Zrealizowano płatność dnia 07.06.2026.",
         "Zlecenie wykonano w dniu 07.06.2026.",
@@ -210,6 +211,7 @@ def test_execution_statement_precedes_debit_date_even_with_labelled_amount(state
         "Tytuł: Przelew zrealizowano dnia 07.06.2026.",
         "Tytuł: Opis faktury\nPrzelew zrealizowano dnia 07.06.2026.",
         "Przelew zrealizowano zgodnie z umową z dnia 07.06.2026.",
+        "Wykonano dnia 17.08.2034 kopię archiwalną przelewu.",
         "W dniu 07.06.2026 nie wykonano przelewu.",
         "W dniu 07.06.2026 wykonano przelew?",
         "Jeżeli rachunek był aktywny,\nw dniu 07.06.2026 wykonano przelew.",

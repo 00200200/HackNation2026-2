@@ -24,6 +24,10 @@ These runs used local rules with the three endpoint variables unset. The two loc
 
 [Merged development measurements](evals/results/appeal-scan-development.json) · [Earlier grant development measurements](evals/results/poa-development.json) · [Organizer scan aggregate](evals/results/organizer-scans.json)
 
+The scanned-transfer rules routed 5/5 organizer dev transfers and 3/5 on the single organizer holdout, along with 4/4 and 9/10 transfers on the two private dev partitions. The synthetic regression still matched all 196 outputs byte for byte. [Per-step and holdout aggregates](evals/results/scanned-transfers.json)
+
+On all 30 organizer development scans, the rules routed 10/10 transfer confirmations. Nine matched every field literally (59/60 fields, transfer F1 0.9833). The outstanding title contains a severely degraded name and abbreviation. Across all three classes the run averaged 9.23 s/PDF on the shared Apple M1, with a maximum of 19.02 s. With the integrated power-of-attorney rules, micro F1 reached 0.6312 on corpus 1 all, 0.7160 on its dev subset and 0.6816 on corpus 2 dev. [Round 2 measurements](evals/results/scanned-transfers-round2.json)
+
 ## Next
 
 | Item | Owner |
@@ -85,6 +89,8 @@ These runs used local rules with the three endpoint variables unset. The two loc
 
 - 21.11.2026 · Merged the OCR integration at `e051dfa` and selected model-first extraction with rules filling gaps and model routing on rule rejection. On 22 dev PDFs, DeepSeek Flash with two OCR readings scored 0.6951 micro-F1 against 0.4356 for rules.
 - 21.11.2026 · Codex · Integrated PRs #20, #18 and #22, verified training byte parity and measured both dev corpora at `d177cbc7`. Refreshed organizer revision `0b360a9` in `cf98ef3` and verified synthetic training and the dedicated scan evaluation at `8d79e66`.
+
+- 21.11.2026 · Codex · Recovered scanned transfer confirmations from debit details and posted rows, preserved printed IBAN prefixes on scans and corrected tilted receipt columns on `feat/scanned-transfers`.
 - 21.11.2026 · Codex · Fixed the execution-date regression reported on PR #23, added three native receipts with baseline outputs, and recognized three additional completed payment statuses. All 196 training files matched the baseline byte for byte at `ee6c36e`. The clean training run scored 1.000 micro F1 and the 30 organizer scans scored 0.5633 micro F1.
 
 - 21.11.2026: the appeal-scan branch recovers first-act dates, role and counsel blocks, and procurement fields using OCR provenance and first-page word boxes. All ten public appeal references matched exactly in development.
@@ -92,3 +98,5 @@ These runs used local rules with the three endpoint variables unset. The two loc
 - 21.11.2026 · Codex · Required the dated execution statement to name the payment. Added the reviewer's copy-of-receipt case, an archival request and a transfer executed before booking. All 196 training outputs at `36afcb7` matched the baseline byte for byte, and full training scored 1.000 micro F1. The organizer scan run exhausted shared disk space while writing the 30th output. The table retains the earlier scan measurement.
 - 21.11.2026 · Codex · Merged main at `5297660` into the appeal scan branch and combined cover-page OCR evidence with scanned grant and certificate extraction.
 - 21.11.2026 · Codex · Verified merge `6f55ef6` against main: all 196 training outputs matched byte for byte. Organizer scan micro F1 rose from 0.6852 to 0.9203. Refreshed both real development cohorts.
+
+- 21.11.2026 · Codex · Measured the second scanned-transfer pass at `12a5681`. Nine of ten development receipts matched exactly, and all 196 training outputs retained byte parity. [Round 2 measurements](evals/results/scanned-transfers-round2.json)

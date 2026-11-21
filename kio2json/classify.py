@@ -8,10 +8,11 @@ from stdnum import iban
 from . import bank_transfer, power_of_attorney
 from .appeal_charges import FILING
 from .ocr_accounts import AccountEvidence
+from .ocr_booking import INTERLEAVED_DEBIT, ORDER_TYPE
 from .receipt_layout import booking_heading
 
 UNRELATED_HEADING = re.compile(
-    r"^(?:wyrok|postanowienie|w imieniu rzeczypospolitej polskiej|faktura|wyciąg (?:bankowy|z rachunku)|wezwanie|prośba|wniosek|"
+    r"^(?:wyrok|postanowienie|w imieniu rzeczypospolitej polskiej|faktura|wyciąg(?: bankowy| z rachunku| nr| okresowy)|historia (?:operacji|rachunku|transakcji)|wezwanie|prośba|wniosek|"
     r"prosimy o|proszę o|instrukcja|zamówienie|oferta handlowa)\b",
     re.IGNORECASE,
 )
@@ -22,6 +23,7 @@ CONFIRMATION = (
 CONFIRMATION_HEADING = re.compile(
     rf"^(?:dotyczy:\s*|(?-i:[A-ZĄĆĘŁŃÓŚŹŻ][A-ZĄĆĘŁŃÓŚŹŻ &.-]+)\s+)?{CONFIRMATION}", re.IGNORECASE
 )
+DEBIT_DETAILS = re.compile(r"^przelew z rachunku\s*[-–—]?\s+szczegóły transakcji zrealizowanej\b", re.IGNORECASE)
 EXECUTED = re.compile(
     r"^(?:status[\s.:]*)?(?:przelew\s+)?(?:zrealizowan[yaoe]|wykonan[yaoe]|zaksięgowan[yaoe])\b", re.IGNORECASE
 )
@@ -55,12 +57,30 @@ def _nonexecuted(lines: list[str]) -> bool:
     return False
 
 
+def _debit_printout(text: str) -> bool:
+    if bank_transfer.description_debit(text):
+        return bool(re.search(r"(?im)^data księgowania\b", text))
+    return bool(
+        re.search(r"(?im)^typ transakcji[ :]+przelew z rachunku\b", text)
+        and re.search(rf"(?im)^kwota[ :]+[−-]{bank_transfer.MONEY}", text)
+    )
+
+
 def incomplete_booking_scan(text: str) -> bool:
     lines = [line.strip() for line in text.splitlines()]
     if _nonexecuted(lines) or any(UNRELATED_HEADING.match(line) for line in lines):
         return False
-    confirmation = any(CONFIRMATION_HEADING.match(line) or booking_heading(line, ocr=True) for line in lines)
-    return bool((confirmation or bank_transfer.executed_letter(text)) and BANK_FIELDS.search(text))
+    confirmation = any(
+        CONFIRMATION_HEADING.match(line.lstrip(" |/–-")) or DEBIT_DETAILS.match(line) or booking_heading(line, ocr=True)
+        for line in lines
+    )
+    order = ORDER_TYPE.search(text) or INTERLEAVED_DEBIT.search(text)
+    if order and re.search(r"(?im)^dane zleceniodawcy\b", text):
+        return True
+    return bool(
+        (confirmation or order or _debit_printout(text) or bank_transfer.executed_letter(text))
+        and (BANK_FIELDS.search(text) or bank_transfer.completed_value_block(text))
+    )
 
 
 def classify(pages: list[str], *, ocr_accounts: AccountEvidence | None = None) -> str | None:
@@ -112,7 +132,11 @@ def classify(pages: list[str], *, ocr_accounts: AccountEvidence | None = None) -
                 r"PEŁNOMOCNICTWONR[.:]?[A-Z]{1,8}[-/]\d[\dA-Z./-]*", heading
             ) and power_of_attorney.GRANT.search(head):
                 return "power_of_attorney"
-            if CONFIRMATION_HEADING.match(line) or booking_heading(line, ocr=index == 0 and ocr_accounts is not None):
+            if (
+                CONFIRMATION_HEADING.match(line)
+                or DEBIT_DETAILS.match(line)
+                or booking_heading(line, ocr=index == 0 and ocr_accounts is not None)
+            ):
                 transfer_heading = True
                 break
         if transfer_heading:
@@ -125,7 +149,8 @@ def classify(pages: list[str], *, ocr_accounts: AccountEvidence | None = None) -
     if _nonexecuted(lines) or bank_transfer.payment_denied(first):
         return None
     letter = bank_transfer.executed_letter(first)
-    if not (transfer_heading or letter or any(EXECUTED.match(line) for line in lines)):
+    debit = ocr_accounts is not None and _debit_printout(first)
+    if not (transfer_heading or debit or letter or any(EXECUTED.match(line) for line in lines)):
         return None
     amount, day = bank_transfer.transaction_values(first)
     if amount is None and day is None:
@@ -154,6 +179,21 @@ def classify(pages: list[str], *, ocr_accounts: AccountEvidence | None = None) -
     if bound_pair:
         return "bank_transfer"
     if transfer_heading:
+        if (
+            ocr_accounts is not None
+            and {"sender", "recipient"} <= ocr_accounts.declared
+            and re.search(rf"(?im)^{bank_transfer.REFERENCE_LABEL}[ \t]*[:.]", first)
+            and any(account and iban.is_valid("PL" + account) for account in (sender, recipient))
+        ):
+            return "bank_transfer"
+        if (
+            ocr_accounts is not None
+            and bank_transfer.completed_value_block(first)
+            and ocr_accounts.distinct_numbers == 2
+        ):
+            return "bank_transfer"
+        if ocr_accounts is not None and bank_transfer.posted_party_debit(first):
+            return "bank_transfer"
         if ocr_accounts is not None and ocr_accounts.masked_pair:
             return "bank_transfer"
         visible = sender or recipient

@@ -3,20 +3,25 @@
 import os
 import re
 from collections.abc import Iterator
+from concurrent.futures import Future, ThreadPoolExecutor
 from contextlib import ExitStack
 from functools import cache, partial
 from importlib.metadata import files
+from math import ceil
 from pathlib import Path
 from typing import NamedTuple
 
 import pdfplumber
 from pdfplumber.utils import get_bbox_overlap, obj_to_bbox
+from PIL import Image
 
 from .ocr_normalize import MAIL_TOKEN_RE, confirmed_email, normalize_ocr
 
 # The organizer README says the key information sits on the first three pages.
 MAX_PAGES = 3
 OCR_DPI = 300
+# Three A4 pages at 300 DPI fit within this limit (about 105 MiB of RGB pixels in Pillow).
+MAX_PARALLEL_PIXELS = 28_000_000
 OCR_TIMEOUT_SECONDS = 60
 DEFAULT_OCR_ENGINE = "tesseract-dpi"
 TESSERACT_ENGINES = frozenset({"tesseract", "tesseract-dpi", "hybrid"})
@@ -153,7 +158,7 @@ def _ocr(page, words: list[WordBox] | None, *, engine: str | None = None) -> str
     if engine is None:
         engine = os.environ.get("KIO_OCR_ENGINE", DEFAULT_OCR_ENGINE)
     if engine in TESSERACT_ENGINES:
-        return _tesseract(page, words, explicit_dpi=engine != "tesseract")
+        return _tesseract(_render(page), words, explicit_dpi=engine != "tesseract")
     if engine != "rapidocr":
         raise ValueError(f"Unknown KIO_OCR_ENGINE={engine!r}, expected tesseract, tesseract-dpi, rapidocr or hybrid")
     from .rapid_worker import recognize
@@ -186,11 +191,22 @@ def _rapidocr(page, words: list[WordBox] | None) -> str:
     return "\n".join(result.txts or ())
 
 
-def _tesseract(page, words: list[WordBox] | None, *, explicit_dpi: bool) -> str:
+class _Raster(NamedTuple):
+    original: Image.Image
+    bbox: tuple[float, ...]
+    scale: float
+    page_number: int
+
+
+def _render(page) -> _Raster:
+    image = page.to_image(resolution=OCR_DPI)
+    return _Raster(image.original, image.bbox, image.scale, page.page_number)
+
+
+def _tesseract(image: _Raster, words: list[WordBox] | None, *, explicit_dpi: bool) -> str:
     """Recognize the page and verify suspect e-mail separators against their image crops."""
     from tesserocr import PSM, RIL, PyTessBaseAPI, iterate_level
 
-    image = page.to_image(resolution=OCR_DPI)
     with ExitStack() as stack:
         api = stack.enter_context(PyTessBaseAPI(path=_language_dir(), lang="pol", psm=PSM.AUTO))
         api.SetImage(image.original)
@@ -213,7 +229,7 @@ def _tesseract(page, words: list[WordBox] | None, *, explicit_dpi: bool) -> str:
                 if words is not None:
                     words.append(
                         WordBox(
-                            page.page_number,
+                            image.page_number,
                             token,
                             left + x0 / image.scale,
                             top + y0 / image.scale,
@@ -246,6 +262,39 @@ def _tesseract(page, words: list[WordBox] | None, *, explicit_dpi: bool) -> str:
     return "\n".join(line for line in text.splitlines() if line.strip())
 
 
+def _text_layer(page, force_ocr: bool) -> str | None:
+    text = "" if force_ocr else page.extract_text() or ""
+    return None if _needs_ocr(page, text) else text
+
+
+def _fits_parallel_batch(pages) -> bool:
+    pixels = 0
+    for page in pages:
+        # PDFium initially renders the full page, before pdfplumber applies any crop.
+        x0, y0, x1, y1 = page.mediabox
+        if page.page_obj.attrs.get("UserUnit", 1) != 1:
+            return False
+        pixels += ceil((x1 - x0) * OCR_DPI / 72) * ceil((y1 - y0) * OCR_DPI / 72)
+    return pixels <= MAX_PARALLEL_PIXELS
+
+
+def _recognize_batch(scans, *, explicit_dpi: bool, with_boxes: bool):
+    """Render on the caller's thread. Each Tesseract instance owns one raster and its word list."""
+    jobs = {}
+    with ThreadPoolExecutor(max_workers=len(scans)) as pool:
+        for page in scans:
+            boxes = [] if with_boxes else None
+            try:
+                raster = _render(page)
+            except Exception as error:  # noqa: BLE001 -- deliver backend failures in page order.
+                failed = Future()
+                failed.set_exception(error)
+                jobs[page.page_number] = failed, boxes
+                break
+            jobs[page.page_number] = pool.submit(_tesseract, raster, boxes, explicit_dpi=explicit_dpi), boxes
+    return jobs
+
+
 def read_pages(
     pdf_path: Path,
     max_pages: int = MAX_PAGES,
@@ -259,35 +308,52 @@ def read_pages(
 ) -> list[str]:
     """Return the first pages and their optional boxes/OCR provenance. Check readability document-wide."""
     pages = []
-    words = [] if word_boxes is not None else None
+    words = [] if any(out is not None for out in (word_boxes, ocr_word_boxes, first_ocr_words)) else None
+    scanned_numbers = set()
     used_ocr = False
     readable = False
     word_count = 0
     recognize = _ocr if engine is None else partial(_ocr, engine=engine)
     with pdfplumber.open(pdf_path) as pdf:
-        limit = len(pdf.pages[:max_pages])
+        retained = pdf.pages[:max_pages]
+        limit = len(retained)
+        layers = {}
+        jobs = {}
+        selected = engine if engine is not None else os.environ.get("KIO_OCR_ENGINE", DEFAULT_OCR_ENGINE)
+        if selected in TESSERACT_ENGINES and 2 <= limit <= 3:
+            for page in retained:
+                try:
+                    layers[page.page_number] = _text_layer(page, force_ocr)
+                except Exception as error:  # noqa: BLE001 -- earlier pages must finish before this error is raised.
+                    layers[page.page_number] = error
+                    break
+            scans = [page for page in retained if page.page_number in layers and layers[page.page_number] is None]
+            if len(scans) >= 2 and _fits_parallel_batch(scans):
+                jobs = _recognize_batch(scans, explicit_dpi=selected != "tesseract", with_boxes=words is not None)
         for index, page in enumerate(pdf.pages):
             include = index < limit
             if not include and (not used_ocr or readable):
                 break
-            text = "" if force_ocr else page.extract_text() or ""
-            scanned = _needs_ocr(page, text)
+            number = page.page_number
+            text = layers[number] if number in layers else _text_layer(page, force_ocr)
+            if isinstance(text, Exception):
+                raise text
+            scanned = text is None
             if scanned:
                 used_ocr = True
-                if include and ocr_pages is not None:
-                    ocr_pages.append(page.page_number)
-                collect_first = index == 0 and first_ocr_words is not None
-                collect = include and (collect_first or words is not None or ocr_word_boxes is not None)
-                page_boxes = [] if collect else None
-                text = normalize_ocr(recognize(page, page_boxes))
-                if page_boxes:
-                    if words is not None:
+                if include:
+                    scanned_numbers.add(number)
+                    if ocr_pages is not None:
+                        ocr_pages.append(number)
+                if number in jobs:
+                    future, page_boxes = jobs[number]
+                    text = future.result()
+                    if page_boxes:
                         words.extend(page_boxes)
-                    if ocr_word_boxes is not None:
-                        ocr_word_boxes.extend(page_boxes)
-                    if collect_first:
-                        first_ocr_words.extend(page_boxes)
-            elif include and words is not None:
+                else:
+                    text = recognize(page, words if include else None)
+                text = normalize_ocr(text)
+            elif include and word_boxes is not None:
                 words.extend(
                     WordBox(page.page_number, w["text"], w["x0"], w["top"], w["x1"], w["bottom"])
                     for w in page.extract_words()
@@ -302,6 +368,10 @@ def read_pages(
             raise NoReadableTextError("no readable text after OCR")
     if word_boxes is not None and words:
         word_boxes.extend(words)
+    if ocr_word_boxes is not None and ocr_word_boxes is not word_boxes and words:
+        ocr_word_boxes.extend(box for box in words if box.page in scanned_numbers)
+    if first_ocr_words is not None and first_ocr_words is not word_boxes and first_ocr_words is not ocr_word_boxes:
+        first_ocr_words.extend(box for box in words if box.page == 1 and 1 in scanned_numbers)
     return pages
 
 

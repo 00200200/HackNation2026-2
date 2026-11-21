@@ -67,14 +67,19 @@ def test_two_columns_use_printed_rows_for_detached_labels(monkeypatch):
         for x, word in zip((65, 200, 244), row, strict=True)
     ]
 
+    reads = []
+
     def read(path, **options):
-        if (out := options.get("word_boxes")) is not None:
+        reads.append(path)
+        options.get("ocr_pages", []).append(1)
+        if (out := options.get("ocr_word_boxes", options.get("word_boxes"))) is not None:
             out.extend(boxes)
         return ["Zamawiający:\nOdwołujący:\nFabryka Tęczy\nPort Mgły\nODWOŁANIE"]
 
     monkeypatch.setattr(pipeline, "read_pages", read)
     monkeypatch.setattr(appeal_layout, "read_pages", read)
     label, result = pipeline.process_pdf(Path("invented.pdf"))
+    assert len(reads) == 1
     assert label == "appeal"
     assert [a["nazwa"] for a in result["Zamawiajacy"]] == ["Fabryka Tęczy"]
     assert result["Odwolujacy"][0]["nazwa"] == "Port Mgły"
