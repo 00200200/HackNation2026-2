@@ -228,7 +228,7 @@ def _employer(after: str) -> str | None:
         if not candidate or SECTION_LABEL.match(candidate) or ADDRESS_RE.match(candidate) or CONTACT.search(candidate):
             continue
         if FIRM_NAME.match(candidate) or (field and (candidate != value or not field[0].lower().startswith("adres"))):
-            return candidate
+            return candidate.rstrip(" ,;")
     return None
 
 

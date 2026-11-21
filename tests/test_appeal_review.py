@@ -243,3 +243,11 @@ def test_introductory_date_does_not_cross_into_another_act_clause():
     text = "Zamawiający w dniu 4 maja 2034 odebrał fakturę, a później odrzucił ofertę. Zarzut nr 1 – odrzucenie oferty."
     action = extract(text)["OdwolanieKIO"]
     assert (action["czynnosc_powod_id"], action["czynnosc_dzien"]) == (1, None)
+
+
+def test_counsel_firm_keeps_legal_period_and_drops_address_separator():
+    text = (
+        "Odwołujący: Dom Grobli\nPełnomocnik Odwołującego: Ada Grobla\n"
+        "adres do korespondencji: Kancelaria Śluza sp. z o.o.,\nul. Wodna 8\nZamawiający: Scena"
+    )
+    assert extract(text)["Odwolujacy"][0]["pelnomocnik"]["nazwa"] == "Kancelaria Śluza sp. z o.o."
