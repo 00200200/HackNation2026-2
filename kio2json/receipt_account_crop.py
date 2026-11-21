@@ -10,7 +10,7 @@ from PIL import ImageFilter
 from stdnum import iban
 
 from .ocr_accounts import ACCOUNT_RE
-from .ocr_budget import RereadExpired, remaining_ms, require_remaining_ms
+from .ocr_budget import CROP_TIMEOUT_MS, RereadExpired, remaining_ms, require_remaining_ms
 from .pdf_text import OCR_DPI, WordBox, _language_dir
 
 # Account nouns survive OCR more reliably than the adjoining party labels.
@@ -59,7 +59,7 @@ def _read_crops(path: Path, groups: list[list[WordBox]]) -> list[set[str]]:
             for variant in (crop, crop.filter(ImageFilter.MedianFilter(3))):
                 api.SetImage(variant)
                 api.SetSourceResolution(OCR_DPI)
-                if api.Recognize(timeout=require_remaining_ms(2000)):
+                if api.Recognize(timeout=require_remaining_ms(CROP_TIMEOUT_MS)):
                     candidates.add("".join(api.GetUTF8Text().split()))
             readings.append(candidates)
     return readings
