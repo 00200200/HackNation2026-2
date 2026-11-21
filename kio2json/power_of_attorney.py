@@ -93,12 +93,69 @@ def _attorneys(text: str) -> list[dict]:
     return list(attorneys.values())
 
 
+SIGNER_ROLE_RE = re.compile(
+    r"(?:Prezes|Wiceprezes|Członek|Prokurent|Dyrektor|Wspólnik|Właściciel|Komplementariusz)"
+    r"(?: (?:Zarządu|Generalny))?",
+    re.IGNORECASE,
+)
+
+
+def _undotted_signers(text: str, principals: list[str], attorneys: set[str]) -> list[list[str]]:
+    """Read the trailing signature block. A title or an explicit grantor heading must support the names."""
+    names = [[] for _ in principals]
+    signature = []
+    for raw in reversed(text.splitlines()):
+        line = raw.strip(" :.")
+        if not line or line.casefold() == "miejsce na pieczęć firmową":
+            continue
+        if line.casefold().startswith(("za ", "w imieniu ")):
+            declared = re.sub(r"^(?:za|w imieniu) ", "", line.casefold())
+            matches = [i for i, name in enumerate(principals) if declared == name.casefold().rstrip(".")]
+            signature.append(("principal", matches[0] if len(matches) == 1 else None))
+        elif re.fullmatch(
+            r"(?:Mocodawca|Podpis(?: mocodawcy)?)(?::?\s+Pełnomocnictwo przyjmuję)?", line, re.IGNORECASE
+        ):
+            signature.append(("heading", None))
+        elif re.fullmatch(r"Pełnomocnictwo przyjmuję", line, re.IGNORECASE):
+            signature.append(("acceptance", None))
+        elif SIGNER_ROLE_RE.sub("", line).strip() == "":
+            signature.append(("role", None))
+        else:
+            line = ATTORNEY_RE.sub("", line).strip()
+            if not line:
+                continue
+            if not re.fullmatch(rf"{PERSON}(?: +{PERSON})*", line):
+                break
+            signature.append(("names", re.findall(PERSON, line)))
+    current = 0 if len(principals) == 1 else None
+    pending = []
+    headed = False
+    for kind, value in reversed(signature):
+        if kind in ("principal", "heading", "acceptance"):
+            pending.clear()
+            headed = kind != "acceptance"
+            if kind == "principal":
+                current = value
+            elif kind == "acceptance":
+                current = None
+        elif kind == "names":
+            pending.extend(value)
+        if current is not None and pending and (headed or kind == "role"):
+            for person in pending:
+                if person not in attorneys and person not in names[current]:
+                    names[current].append(person)
+            pending.clear()
+    return names
+
+
 def _signers(text: str, principal_names: list[str], attorney_names: set[str]) -> list[list[str]]:
     """Names under the signature lines, grouped by the principal named above them
     ('W imieniu X:', 'Za X'). Without such a marker they belong to the first principal."""
     signers = [[] for _ in principal_names]
     signature_start = SIGNATURE_LINE_RE.search(text)
-    if not signature_start or not principal_names:
+    if not signature_start:
+        return _undotted_signers(text, principal_names, attorney_names)
+    if not principal_names:
         return signers
     # The first principal heading can precede the first signature line and wrap in a PDF.
     before = squash(text[: signature_start.start()]).rstrip(" :").casefold()

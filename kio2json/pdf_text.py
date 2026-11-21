@@ -6,6 +6,8 @@ from pathlib import Path
 import pdfplumber
 import pytesseract
 
+from .ocr_normalize import normalize_ocr
+
 # The organizer README says the key information sits on the first three pages.
 MAX_PAGES = 3
 OCR_DPI = 300
@@ -32,7 +34,7 @@ def read_pages(pdf_path: Path, max_pages: int = MAX_PAGES, force_ocr: bool = Fal
         for page in pdf.pages[:max_pages]:
             text = "" if force_ocr else page.extract_text() or ""
             has_content = any(line.strip() and not PAGE_NUMBER_RE.fullmatch(line) for line in text.splitlines())
-            pages.append(text if has_content else _ocr(page))
+            pages.append(text if has_content else normalize_ocr(_ocr(page)))
     return pages
 
 
