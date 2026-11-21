@@ -378,6 +378,9 @@ rules. [OCR results](evals/results/ocr-engines.json)
   passes the Polish IBAN checksum, and the confirmation supplies the amount and date. The masked number
   is null. OCR also supports fully masked fields. Digit repairs apply only to OCR text and require a
   single checksum-valid candidate. A number printed in a native text layer keeps its printed digits.
+- On appeals and mandates, side-by-side role headings and a consistent gutter can delimit separate party cards.
+  A signer caption can supply a name when its column identifies the principal. Conflicting identities or
+  an unlabelled signature can leave the signer missing.
 - Grant extraction reads numbered and coordinated appointments, officers in representation clauses,
   and digital approval signatures. Where a name is inflected, rules use a compatible printed form
   or a unique case- and gender-compatible personal-name reading from Morfeusz2. Ambiguous readings
