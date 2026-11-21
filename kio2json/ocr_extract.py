@@ -78,9 +78,16 @@ def extract_bank_transfer(
 
 
 def extract_power_of_attorney(pages: list[str], ocr_pages: Collection[int]) -> dict:
+    pages = [
+        power_of_attorney.normalize_registry_labels(page) if index in ocr_pages else page
+        for index, page in enumerate(pages, 1)
+    ]
     lines = list(_lines(pages, ocr_pages))
-    text = join_pages(pages)
-    principals = power_of_attorney._principals(text)
+    original = join_pages(pages)
+    text = power_of_attorney.operative_grant_text(original)
+    if text != original:
+        lines = list(zip((ocr for ocr, _ in lines), (text + "\n").splitlines(), strict=True))
+    principals, officers = power_of_attorney.grant_parties(text)
     # Drawn signature lines on scans terminate the appointment section just like dots.
     appointment = "\n".join(re.sub(r"_{5,}|[─━—]{4,}", "." * 10, line) if ocr else line for ocr, line in lines)
     attorneys = power_of_attorney._attorneys(appointment)
@@ -100,4 +107,4 @@ def extract_power_of_attorney(pages: list[str], ocr_pages: Collection[int]) -> d
         prefix.extend(run)
         for owner, found in zip(signers, names, strict=True):
             owner.extend(name for name in found if name not in owner)
-    return power_of_attorney._record(principals, attorneys, signers)
+    return power_of_attorney.finish_record(text, principals, officers, attorneys, signers)

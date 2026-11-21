@@ -225,6 +225,7 @@ def route(
     *,
     ocr_accounts: AccountEvidence | None = None,
     alternate: AlternateOCR | None = None,
+    rules_only: bool = False,
 ) -> DocumentClass | None:
     # Organizer classes share a classifier. Compute its result once for this PDF.
     labels = {}
@@ -237,8 +238,10 @@ def route(
             continue
         routing = definition.routing
         if isinstance(routing, ClassifierRouting):
-            classifier = model_classifier if definition.profile.routing == "model" else routing.classifier
-            if definition.profile.routing == "fallback":
+            classifier = (
+                model_classifier if not rules_only and definition.profile.routing == "model" else routing.classifier
+            )
+            if not rules_only and definition.profile.routing == "fallback":
                 fallback[definition.id] = definition
             if classifier not in labels:
                 labels[classifier] = (

@@ -51,6 +51,12 @@ def test_reason_must_be_supported_by_the_first_charge():
     assert check("czynnosc_powod_id", 1, "odrzucenie oferty", "Uzasadnienie: odrzucenie oferty") is None
 
 
+def test_first_charge_quote_uses_original_character_offsets():
+    text = "Zarzut nr 1: w sprawie\n      zaniechanie odrzucenia oferty."
+    assert check("czynnosc_powod_id", 7, "zaniechanie odrzucenia oferty", text) == 7
+    assert check("czynnosc_powod_id", 7, "w sprawie", text) is None
+
+
 @pytest.mark.parametrize(
     ("key", "value", "line", "accepted"),
     [

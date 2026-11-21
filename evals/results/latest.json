@@ -1,8 +1,8 @@
 {
-  "commit": "8479b15a9cd2a7a9418acfff5ac30314f3506fa5",
+  "commit": "8d79e66ccde434d240665a615fca5f142ac3ac82",
   "dirty": false,
   "mode": "full",
-  "timestamp": "2026-11-21T18:46:44+00:00",
+  "timestamp": "2026-11-21T19:02:05+00:00",
   "n_cases": 60,
   "n_docs": 196,
   "coverage_ok": true,
@@ -30,7 +30,7 @@
       "pass": true
     },
     "seconds_per_doc": {
-      "value": 0.15059567963210296,
+      "value": 0.14758142028051446,
       "target": null,
       "pass": true
     }
@@ -319,7 +319,7 @@
     },
     {
       "case": "przyklad_01",
-      "file": "potwierdzenie_przelewu.pdf",
+      "file": "przelew.pdf",
       "gold_class": "przelew",
       "pred_class": "przelew",
       "counts": {
@@ -370,7 +370,7 @@
     },
     {
       "case": "przyklad_02",
-      "file": "potwierdzenie_przelewu.pdf",
+      "file": "przelew.pdf",
       "gold_class": "przelew",
       "pred_class": "przelew",
       "counts": {

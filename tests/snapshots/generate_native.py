@@ -33,8 +33,17 @@ def write_native_pdf(path, pages):
             "<< /Type /Page /Parent 2 0 R /MediaBox [0 0 1600 800] "
             f"/Resources << /Font << /F1 3 0 R >> >> /Contents {content_id} 0 R >>"
         )
-        lines = [f"<{line.encode('cp1250').hex()}> Tj" for line in text.splitlines()]
-        stream = "BT /F1 10 Tf 20 770 Td 14 TL " + " T* ".join(lines) + " ET"
+        if isinstance(text, str):
+            lines = [f"<{line.encode('cp1250').hex()}> Tj" for line in text.splitlines()]
+            stream = "BT /F1 10 Tf 20 770 Td 14 TL " + " T* ".join(lines) + " ET"
+        else:
+            # Independent text objects give neighbouring cells a real horizontal gap.
+            cells = [
+                f"1 0 0 1 {x} {780 - 20 * i} Tm <{value.encode('cp1250').hex()}> Tj"
+                for i, row in enumerate(text["rows"])
+                for x, value in row
+            ]
+            stream = "BT /F1 10 Tf " + " ".join(cells) + " ET"
         objects.append(f"<< /Length {len(stream)} >>\nstream\n{stream}\nendstream")
     data = bytearray(b"%PDF-1.4\n")
     offsets = ["0000000000 65535 f "]

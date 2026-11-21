@@ -1,16 +1,16 @@
 {
-  "commit": "15f4fbb2e6036cb4ce47d7521aee234610ee3921",
+  "commit": "d177cbc7854a17d9a27e49dd79e9420d8eccd1f9",
   "dirty": false,
   "mode": "corpus",
-  "timestamp": "2026-11-21T18:42:57+00:00",
-  "n_cases": 7,
-  "n_docs": 17,
+  "timestamp": "2026-11-21T18:49:17+00:00",
+  "n_cases": 14,
+  "n_docs": 39,
   "coverage_ok": false,
   "overall_pass": false,
   "run_error": null,
   "metrics": {
     "micro_f1": {
-      "value": 0.6054590570719603,
+      "value": 0.5248447204968945,
       "target": 0.9,
       "pass": false
     },
@@ -25,38 +25,56 @@
       "pass": true
     },
     "classification_accuracy": {
-      "value": 1.0,
+      "value": 0.6071428571428571,
       "target": 1.0,
-      "pass": true
+      "pass": false
     },
     "seconds_per_doc": {
-      "value": 6.4343886617571115,
+      "value": 3.6084908835398846,
       "target": null,
       "pass": true
     }
   },
   "detail": {
-    "micro_f1": 0.6054590570719603,
-    "macro_f1_documents": 0.7072510822510822,
-    "macro_f1_classes": 0.6625706214689265,
+    "micro_f1": 0.5248447204968945,
+    "macro_f1_documents": 0.3430006757195697,
+    "macro_f1_classes": 0.3618796662274923,
     "macro_f1_class_count": 3,
-    "macro_f1_fields": 0.6566666666666667,
-    "micro_f1_non_null": 0.5681818181818182,
+    "macro_f1_fields": 0.46520282186948847,
+    "micro_f1_non_null": 0.3719806763285024,
     "per_class_f1": {
-      "odwolanie": 0.5627118644067797,
-      "pelnomocnictwo": 0.625,
-      "przelew": 0.8
+      "odwolanie": 0.6007905138339921,
+      "pelnomocnictwo": 0.3333333333333333,
+      "przelew": 0.15151515151515152
     },
-    "classification_accuracy": 1.0,
+    "classification_accuracy": 0.6071428571428571,
     "negatives_empty": 1.0,
     "outputs_complete": 1.0,
     "counts": {
-      "tp": 122,
-      "fp": 40,
-      "fn": 119
+      "tp": 169,
+      "fp": 81,
+      "fn": 225
+    },
+    "routing_by_class": {
+      "odwolanie": {
+        "correct": 12,
+        "total": 13
+      },
+      "pelnomocnictwo": {
+        "correct": 4,
+        "total": 5
+      },
+      "przelew": {
+        "correct": 1,
+        "total": 10
+      },
+      "negatywny": {
+        "correct": 11,
+        "total": 11
+      }
     }
   },
   "holdout_51_60": null,
   "f1_definition": "evals/metrics.py docstring (organizer formula UNCONFIRMED)",
-  "split": "test"
+  "split": "dev"
 }

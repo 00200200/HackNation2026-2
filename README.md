@@ -10,13 +10,20 @@ label patterns or an optional language model.
 
 ## Run
 
-From the repository root, use 64-bit CPython 3.13 and a virtual environment. pip installs the
+From the repository root, create a virtual environment with 64-bit CPython 3.13.
+
+| Shell | Create | Activate |
+|---|---|---|
+| Windows PowerShell | `py -3.13 -m venv .venv` | `.\.venv\Scripts\Activate.ps1` |
+| macOS or Linux | `python3.13 -m venv .venv` | `. .venv/bin/activate` |
+
+Use the activated shell for the install and run commands below. pip installs the
 Tesseract native libraries from PyPI. The local language-data wheel downloads the Polish and
 English fast models (8.88 MB combined) from a pinned revision on `raw.githubusercontent.com`
-and verifies both SHA-256 hashes. Once installed, the CLI and viewer process PDFs offline.
+and verifies both SHA-256 hashes. Once installed, the rules-only CLI and viewer process PDFs offline.
 [Platform wheels](https://pypi.org/project/tesserocr/2.13.0/#files)
 
-If the model host is unreachable, download both files on a connected machine and copy them into
+If the Tesseract data host is unreachable, download both language files on a connected machine and copy them into
 one directory. Before rerunning the install command below, set
 `export KIO_TESSDATA_SOURCE=/absolute/path/to/models` in a POSIX shell or
 `$env:KIO_TESSDATA_SOURCE = 'C:\models'` in PowerShell. Keep the original filenames.
@@ -24,7 +31,7 @@ The installer verifies the same hashes for locally supplied files.
 [pol.traineddata](https://raw.githubusercontent.com/tesseract-ocr/tessdata_fast/87416418657359cb625c412a48b6e1d6d41c29bd/pol.traineddata) · [eng.traineddata](https://raw.githubusercontent.com/tesseract-ocr/tessdata_fast/87416418657359cb625c412a48b6e1d6d41c29bd/eng.traineddata)
 
 ```
-pip install -r requirements.txt
+python -m pip install -r requirements.txt
 python -m kio2json                                   # reads ./input, writes ./output
 python -m kio2json --input some/input --output some/output
 ```
@@ -80,12 +87,13 @@ works offline. Page provenance is used internally and the output follows the org
    It reads headings in document order. A transfer normally needs two distinct accounts, a confirmation
    heading or execution status, and a transaction amount or date. Rejected payments and payment
    requests get an empty file.
-3. `kio2json/engines.py` sends the joined page text to the selected extractor. The three jury
-   classes use `python` with a dotted path to the existing rule function. Native pages follow
-   the integration baseline. The reader records which pages needed OCR so account repair,
-   damaged e-mail handling and signature recovery can use the source of each field.
-   A scanned attachment does not enable masked-account routing on a native receipt. `labelled_fields` extracts values by pattern. `llm`
-   generates a Pydantic AI output model from the same field definitions.
+3. The rule extractors recover party blocks and receipt fields from columns. Each page keeps its source,
+   so a scanned attachment cannot enable OCR repairs on a native receipt. Configuring an endpoint enables
+   first-page model routing after the rules reject a document. The model extracts from the original reading
+   and, on scans, an independent OCR reading. Each accepted value needs a supporting span. The class rules
+   fill gaps using the reconstructed layout. The CLI and viewer share this pipeline.
+
+[Pipeline diagram (PDF)](docs/pipeline/pipeline.pdf)
 
 ## Enable the fourth class
 
@@ -167,112 +175,30 @@ In `spans` mode the model copies one short passage per scalar into a class-speci
 Set all three variables in the process environment or in an ignored `.env` in the working directory.
 Environment values take precedence. The application has no built-in endpoint or credential.
 
-| Variable | What to supply |
+| Variable | Value |
 |---|---|
-| `KIO_LLM_BASE_URL` | The provider’s OpenAI-compatible Chat Completions base URL, including its version path if required |
-| `KIO_LLM_MODEL` | The model ID from that provider’s catalogue |
-| `KIO_LLM_API_KEY` | Its API credential |
+| `KIO_LLM_BASE_URL` | Your provider’s API base URL, including its version path if required |
+| `KIO_LLM_MODEL` | Model ID served at that endpoint |
+| `KIO_LLM_API_KEY` | Credential accepted by the endpoint |
 
-Run `python -m kio2json --input input --output output` as usual. To compare profiles, set
-`KIO_LLM_MODE` to `R` (rules), `L` (model), `RL` (rules fill first), `LR` (model fills first) or
-`V` (model with format and checksum validation). With all three credentials present the bundled registry defaults to `LR` and `fallback`.
-Both hybrid modes fill missing fields and empty lists. Within an existing list, a unique configured identity connects the two engines’ records.
-`KIO_LLM_ROUTING` accepts `rules`, `fallback` (consult the model only after rule rejection) and
-`model` (ask on every first page). Custom class directories retain their explicit TOML engine chains.
+Run the same CLI or viewer command. With all three variables set, the bundled classes use model-first
+extraction with rule fallback (`KIO_LLM_MODE=LR`). The router asks the model about the first page after
+the local rules reject the document (`KIO_LLM_ROUTING=fallback`). On a scan, RapidOCR provides a second
+reading alongside Tesseract. The two readings share a 16,384-byte budget. A citation must match one
+displayed source. Dates, amounts and identifiers must cover complete printed values.
 
-On scanned pages in the default Tesseract profile, the model receives the primary text and a
-second reading by RapidOCR. Rules continue to use their primary page text and OCR provenance.
-The 16,384-byte excerpt budget is shared between readings. Each citation is checked against a
-single displayed source. Set `KIO_LLM_DUAL_OCR=false` to measure one reading. Native pages
-do not trigger alternate OCR. Use a model context large enough for the excerpt, schema and up
-to 1,800 generated tokens for a non-reasoning response. The class’s field definitions accompany the excerpt. Pydantic AI requests
-a JSON object, validates it against the cited schema and permits one correction within a
-180-second call deadline. `KIO_LLM_TIMEOUT_SECONDS` accepts 1–600 seconds. Endpoints
-with native JSON schema constraints can use `KIO_LLM_OUTPUT=schema`; the default is `json`.
-For another endpoint, set `KIO_LLM_ROUTE_REASONING` and `KIO_LLM_EXTRACT_REASONING` to a
-`reasoning_effort` supported by the model. `KIO_LLM_ROUTE_MAX_TOKENS` and `KIO_LLM_EXTRACT_MAX_TOKENS`
-set positive completion budgets, including reasoning. `KIO_LLM_ROUTE_TIMEOUT_SECONDS` and
-`KIO_LLM_EXTRACT_TIMEOUT_SECONDS` override the shared deadline for their stage (1–600 seconds).
-Use `KIO_LLM_TOKEN_PARAMETER` to select `max_tokens` or `max_completion_tokens` when the server
-requires a specific field. Set `KIO_LLM_INLINE_SYSTEM_PROMPTS=false` for servers requiring system
-messages at the beginning of the conversation. `KIO_LLM_THINKING_TYPE=enabled` sends
-`thinking.type=enabled` and preserves the returned `reasoning_content` on a validation retry.
-These optional settings apply to whichever model ID and base URL you supply.
-
-The earlier large-model development measurements used the following explicit settings in addition to endpoint credentials.
-A dash uses the application default.
-
-| Setting | DeepSeek Pro | DeepSeek Flash |
-|---|---|---|
-| `KIO_LLM_TOKEN_PARAMETER` | `max_tokens` | `max_tokens` |
-| `KIO_LLM_INLINE_SYSTEM_PROMPTS` | `false` | `false` |
-| `KIO_LLM_THINKING_TYPE` | `enabled` | — |
-| `KIO_LLM_ROUTE_REASONING` / `KIO_LLM_EXTRACT_REASONING` | `low` / `high` | `none` / `none` |
-| `KIO_LLM_ROUTE_MAX_TOKENS` / `KIO_LLM_EXTRACT_MAX_TOKENS` | `24576` / `32768` | `32` / `1800` |
-| `KIO_LLM_TIMEOUT_SECONDS` | `480` | `180` |
-
-Transport retries are disabled. In the keyed organizer profile, a model error, timeout, invalid answer or secondary OCR failure triggers the local rules for that PDF. If the rules also fail or the source cannot be read, the CLI writes an empty file and reports a diagnostic on stderr. It continues with the remaining PDFs. A missing input directory, invalid class configuration or output write failure still fails the batch.
-
-Each accepted value needs a citation in the displayed text. If a model flattens line breaks,
-the extractor looks for a unique span containing the same words and checks the original characters.
-Dates, amounts and IDs must cover complete tokens. Selected organizer fields can derive a canonical
-value from printed evidence, such as a TED reference in the alternate year/series format. A quote
-from the wrong party can still support a value. PDF table cells and party boundaries remain open
-work in [issue 10](https://github.com/00200200/HackNation2026-2/issues/10).
-
-### European small-model providers
-
-The provider comparison records the total parameter counts, hosted features, model licences, regions, privacy terms, prices and free-access conditions checked on 21 November 2026. [Small-model provider research](docs/small-model-providers.md)
-
-### Earlier large-model measurements on real KIO documents
-
-On the private dev split (22 PDFs in 14 cases), the Flash profile scored **0.6951 field micro-F1**, the Pro comparison scored **0.7236**, and keyless rules scored **0.4356**. The keyed profile asks the model to classify a first page only when the rules reject it. This recovered all five positive documents the rule router missed, and all seven unrelated PDFs still produced empty files. The EU-hosted submission endpoint still needs its own evaluation. [Aggregate results](evals/results/llm-real-docs.json)
-
-The table uses model routing after rule rejection for all modes, including `R`, where rules extract every field. Macro F1 gives equal weight to the three classes. Both models classified 15/15 positives correctly and returned empty files for 7/7 negatives with this router.
-
-| Mode | Flash micro | Flash macro | Flash appeal / POA / transfer | Pro micro | Pro macro | Pro appeal / POA / transfer |
-|---|---:|---:|---|---:|---:|---|
-| R | 0.4203 | 0.3228 | 0.4685 / 0.5000 / 0.0000 | 0.4203 | 0.3228 | 0.4685 / 0.5000 / 0.0000 |
-| L | 0.6870 | 0.5997 | 0.7277 / 0.6129 / 0.4583 | 0.7114 | 0.6767 | 0.7277 / 0.6774 / 0.6250 |
-| RL | 0.6492 | 0.6137 | 0.6615 / 0.7213 / 0.4583 | 0.6734 | 0.6819 | 0.6667 / 0.7541 / 0.6250 |
-| LR | 0.6951 | 0.6302 | 0.7225 / 0.7097 / 0.4583 | 0.7236 | 0.7090 | 0.7277 / 0.7742 / 0.6250 |
-| V | 0.6870 | 0.5997 | 0.7277 / 0.6129 / 0.4583 | 0.7114 | 0.6767 | 0.7277 / 0.6774 / 0.6250 |
-
-With Pro and `LR`, rule-only routing scored 0.6783 micro-F1 and found 10/15 positives. Asking Pro about every first page produced the same score and routes as fallback and required 22 classification calls instead of 12. The Flash configuration took 14.12 serial stage seconds per PDF, compared with 69.91 for Pro. These timings sum the measured OCR, routing and extraction durations and divide by 22. The comparison reuses identical calls across modes. An independent uncached Flash run scored 0.6802 micro-F1 and 0.6262 macro-F1 with the same 15/15 positive routes and 7/7 empty negatives. It took 29.18 wall seconds/PDF. Of its recorded stage times, 164.75 seconds went to the primary reading and 414.57 to secondary OCR across the batch.
-
-
-In a separate uncached test on two invented native-text PDFs, one worker took 2.56 s/PDF with Flash and 15.09 s/PDF with Pro. Two simultaneous document workers took 1.15 and 12.55 s/PDF respectively. Each PDF needed one route followed by one extraction. The class decision selects the extraction schema, so these calls run in sequence within each PDF. The fixture had no OCR cost.
-
-The model reads up to three pages. Scanned pages receive a second OCR reading, and the two readings share a 16,384-byte input budget. The extractor can recover a line-wrapped citation when its words map to one source span. It checks typed values and canonical organizer codes against that evidence. Across the development iterations, Flash `L` with fallback routing improved from 0.5418 with the 8,192-byte single reading to 0.6870 with the final profile. Multiple changes contributed to this difference.
-
-In a strict audit that paired repeated records within their parent, Pro `L` had 72 errors across 247 dev field comparisons. In 53 cases the raw response proposed the reference value and grounding replaced it with null. Fifteen quotes could not be recovered. Another 38 quotes matched the source but failed the check for the proposed value. The audit found one nonnull output against a null reference, three name or title convention differences and four incorrect or omitted values recognizable in the input. Eleven cases remained unresolved. This audit used the cached primary and secondary readings and could not establish an input-loss count beyond the first three pages.
-
-
-**Held-out results.** Both development profiles were frozen before scoring the same 17 PDFs from seven cases. The repository evaluator measured elapsed CLI wall time with OCR.
-
-| Model | Micro F1 | Macro F1 | Appeal | POA | Transfer | Positive routes | Empty negatives | Wall s/PDF |
-|---|---:|---:|---:|---:|---:|---:|---:|---:|
-| Flash | 0.6055 | 0.6626 | 0.5627 | 0.6250 | 0.8000 | 13/13 | 4/4 | 6.43 |
-| Pro | 0.7002 | 0.7101 | 0.6919 | 0.6383 | 0.8000 | 13/13 | 4/4 | 64.28 |
-
-The first Flash batch exited before scoring and the evaluator discarded its diagnostics. The authorized second attempt added document-level rule recovery. A diagnostic counter on that run observed an extraction response exceeding its token limit. Flash used rule recovery on 1 of the 17 PDFs. Prompts, generation limits, class definitions and routing were frozen throughout. Pro completed its first attempt before the recovery change.
-
-**Local Qwen comparison.** On the 16 GB Apple M1 we served Unsloth’s Apache-2.0 GGUF of Qwen3-4B-Instruct-2507 (`Q4_K_M`, 2,497,281,120 bytes) using llama.cpp build `b12608`. From the directory containing the binary distribution and the model saved as `qwen.gguf`, run the following command. The measured model file has SHA-256 `3605803b982cb64aead44f6c1b2ae36e3acdb41d8e46c8a94c6533bc4c67e597`. [Model files](https://huggingface.co/unsloth/Qwen3-4B-Instruct-2507-GGUF) · [llama.cpp release](https://github.com/ggml-org/llama.cpp/releases/tag/b12608)
-
-```sh
-./llama-b12608/llama-server -m qwen.gguf --host 127.0.0.1 --port 18089 \
-  -c 16384 -np 1 -ngl 99 --cache-type-k q8_0 --cache-type-v q8_0 --alias qwen-local
-```
-
-The local base URL is `http://127.0.0.1:18089/v1` and the model ID is `qwen-local`. The native-schema run used `KIO_LLM_OUTPUT=schema` and `KIO_LLM_TIMEOUT_SECONDS=360`. Supply a nonempty placeholder for `KIO_LLM_API_KEY` when running this local server without authentication.
-
-Within the 30-minute local budget, Qwen completed 11 of 22 dev PDFs (nine positive, two unrelated). On those same PDFs, Qwen scored 0.4323 micro-F1, Flash 0.7266 and Pro 0.7682. The respective gaps to Flash and Pro were 0.2943 and 0.3359. The completed Qwen prefix averaged 114.18 wall seconds/PDF using cached OCR. The remaining 11 have no local score.
+For compatible servers, `KIO_LLM_OUTPUT=schema` requests native JSON schema support. The default is
+`json`. `KIO_LLM_TIMEOUT_SECONDS` sets the request deadline (1–600 seconds, default 180). The engine
+allows one structured-output correction. On a model or secondary OCR error, the keyed organizer
+profile retries the document with local rules, reports recovery, and continues the batch. An unreadable
+document yields an empty file. Custom class directories use the engine chains in their own TOML files.
 
 ## Measure
 
 ```
 uv run python -m evals.run --quick            # dev subset, before a push
-uv run python -m evals.run                    # all 60 training cases and the negatives
+uv run python -m evals.run                    # all 60 synthetic training cases and the negatives
+uv run python -m evals.run --organizer-scans  # 30 separately labelled scans
 uv run python -m evals.field_report --errors  # which fields fail, with list items paired inside their parent
 uv run python -m evals.field_report --force-ocr --errors   # ignore the text layer: what OCR costs
 make eval-real HN_REAL_SPLIT=dev              # /Users/domin/hn2-real-eval, or set HN_REAL_CORPUS
@@ -292,7 +218,7 @@ Training mode checks selected files against the organizer inventory committed in
 positive reference needs fields for its expected class. The negative-output target requires zero-byte predictions.
 For a case-level split, put `{"dev": [...], "test": [...]}` in `SPLIT.json` at the corpus root. Each list
 contains case folder names. The default `--split all` scores the whole corpus, including corpora without a split.
-Inspect field errors on dev. Use aggregate scores to evaluate test.
+Inspect field errors on dev. Use aggregate scores to evaluate test. The organizer scan mode validates the committed PDF/reference pairs in `data/uzp/dane/skany` and writes `evals/results/organizer-scans.json`. The synthetic training and scan scores have separate result files.
 
 `evals.run` reports pooled micro F1 and macro F1 by document, class and field path.
 The working definitions are in `evals/metrics.py`. The organizer's formula is UNCONFIRMED.
@@ -314,12 +240,28 @@ of how the rules generalize. The hidden test set holds real cases, and this is n
 
 A separate native-text differential test compares the class and serialized fields of 175 invented PDFs
 with a snapshot from integration base `3210643`. It includes 135 review cases and 40 additional
-documents. [Fixtures and regeneration command](tests/snapshots/README.md)
+documents. Two suites compare 279 invented grant, receipt and routing PDFs and 205 appeal and routing inputs with integration base `e051dfa`. Each expected change records the original value, replacement and reason. [Fixtures and regeneration commands](tests/snapshots/README.md)
 
 Forced OCR on all 196 training PDFs (307 rendered pages) gave strict field F1 **0.900**
 with automatic source resolution and **0.884** with explicit 300 dpi. The comparison used the rules recorded in the measurement file. To run the
 current rules, select `KIO_OCR_ENGINE=tesseract-dpi` and run
 `uv run python -m evals.field_report --force-ocr --errors`. [OCR measurements](evals/results/ocr-engines.json)
+
+## Rules on real documents and organizer scans
+
+These runs used local rules with the three endpoint variables unset. The two local datasets contain real documents and use whole-case splits. Corpus 1 dev has 22 PDFs from 14 cases. Corpus 2 dev has 39 PDFs from 14 cases. The held-out splits remain reserved until a model is selected. The organizer supplied a separate set of 30 labelled scans, ten per target class. The scan command stages the committed PDF/reference pairs as one batch with neutral filenames. [Organizer scan set at the measured revision](https://github.com/Urzad-Zamowien-Publicznych/hacknation-2026/tree/0b360a9da4b482a6a280696df6714404e0953505/dane/skany)
+
+| Dataset | PDFs | Micro F1 | Macro F1 by class | Appeal | Power of attorney | Transfer | Correct routes (appeal / power / transfer) | Empty negatives | Wall s/PDF |
+|---|---:|---:|---:|---:|---:|---:|---|---:|---:|
+| Local corpus 1, dev | 22 | 0.6973 | 0.6628 | 0.7056 | 0.7273 | 0.5556 | 8/8 / 3/3 / 2/4 | 7/7 | 6.69 |
+| Local corpus 2, dev | 39 | 0.5248 | 0.3619 | 0.6008 | 0.3333 | 0.1515 | 12/13 / 4/5 / 1/10 | 11/11 | 3.61 |
+| Organizer scans | 30 | 0.5633 | 0.4711 | 0.6123 | 0.6065 | 0.1944 | 9/10 / 10/10 / 2/10 | n/a | 4.35 |
+
+Micro F1 pools field matches across documents. Macro F1 averages the three class scores. The routing columns count correctly classified documents in each target class. The negatives column counts zero-byte outputs. Timing includes OCR and extraction on a shared host. [Real development reports](evals/results/integration-rules.json) · [Organizer scan report](evals/results/organizer-scans.json)
+
+The organizer allows 45 minutes for its 150-PDF batch, an average budget of 18 seconds per PDF.
+The reported times cover these local datasets. OCR runs locally. Under the updated rules, a remote
+OCR service would count toward model parameters. [Organizer evaluation rules](data/uzp/README.md)
 
 ## OCR on real development documents
 
@@ -344,26 +286,38 @@ the interpreter. The six unrelated documents contribute routing outcomes. No pri
 were scored for this comparison.
 
 The default engine was measured again after the extraction rules began tracking page sources.
-The real-dev result is in [the corpus report](evals/results/corpus-latest.json). The
+The real-dev result is in [the OCR branch corpus report](https://github.com/00200200/HackNation2026-2/blob/5c4eff29d5872d64845ec533a3df0af9ba174740/evals/results/corpus-latest.json). The
 `provenance_check` entry records the paired native-text and forced-OCR checks on the same
 rules. [OCR results](evals/results/ocr-engines.json)
 
 ## Known limits
 
-- The rules follow the two layout families in the training data. `input/case1` holds the
-  organizer's one real, redacted, scanned appeal, which has a different layout. For that file
-  the extractor finds the class, filing date, place, procurement reference, BZP number and title.
-  The appellant name contains OCR noise. The contracting-authority list is empty and the challenged
-  action is missing. The organizer supplies no reference JSON for this file.
-- OCR can still lose accented letters, split a notice number or reorder columns. Scans with a
-  noisy but nonempty text layer follow the native-text path. A Polish account containing OCR
-  glyphs is repaired only if a unique candidate passes the IBAN mod-97 check. A fully printed
-  digit string is retained as read, including when the printed checksum is invalid. Ambiguous
-  signatures and e-mail addresses can remain missing.
-- On a scanned receipt, the single-account route needs a confirmation heading, a transaction amount and date,
-  and two explicitly labelled accounts. One must show a mask (asterisks, Xs or a dash) and the other a checksum-valid number.
-  The classifier passes the labelled account evidence to the extractor. A repeated number elsewhere in the text cannot fill a masked role. Unlabelled or conflicting roles can leave account fields empty.
-- OCR can recover a signer from a signature caption, a signature line in the grantor’s block, or a closing name with a representation title directly beneath the grant. Ambiguous roles can leave a signer out. Attorney names retain the grammatical case used in the document.
+- On corpus 2 dev, rules routed only one of ten transfers. A missing route makes every reference field in that document a miss.
+- A model can cite the wrong party’s valid source text. The integration measurements above cover the rules-only profile.
+
+- Appeal extraction reads the first three pages. A signature or dated notice later in the PDF can be missed.
+  The extractor uses printed word positions when a scan groups party labels into a separate column.
+  Explicit party labels and filing clauses can identify the parties. An unlabelled list, an ambiguous
+  column alignment or an inflected company name can still leave a party missing. A plain title can include
+  lowercase continuation rows before the next labelled field. A challenge date needs a link to the act
+  or its notification. Separate filing, invoice and statutory dates can appear on the same page.
+- Receipt routing uses evidence that a payment was executed, its amount or date, and the participating
+  accounts. A booking table or bank letter needs both an amount and a date. The extractor binds payer
+  and payee separately from fee and refund accounts. Explicit operation or execution dates and transaction IDs take
+  precedence over posting dates and daily sequence numbers. An unclear role or conflicting value can
+  leave a field empty.
+- First-page word positions can recover fields whose labels and values occupy different rows or columns.
+  OCR can still split a title or change an amount. For an unrouted scan with confirmation and transaction
+  evidence, the default engine can reread the first page at automatic resolution. Conflicting dates,
+  amounts or transaction IDs prevent that retry from supplying a result.
+- A partially masked account can identify a payment role when its field is explicit, the other account
+  passes the Polish IBAN checksum, and the confirmation supplies the amount and date. The masked number
+  is null. OCR also supports fully masked fields. Digit repairs apply only to OCR text and require a
+  single checksum-valid candidate. A number printed in a native text layer keeps its printed digits.
+- Grant extraction handles numbered or bulleted declarations and current appointments in notarial deeds.
+  A signer's name needs an identifiable owner and evidence of signing. The organizer requests nominative forms for attorney and individual grantor names. A labelled nominative can resolve
+  an inflected appointee when the identity is unambiguous. Unreadable signatures and ambiguous identities
+  can leave fields empty.
 - UNCONFIRMED: what "empty JSON" means for unrelated documents. We write an empty file, as the
   organizer README words it.
 - UNCONFIRMED: value types. `pesel` is a number in the organizer's annotated example and a string

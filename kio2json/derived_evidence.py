@@ -2,7 +2,8 @@
 
 import re
 
-from .appeal import REASON_RULES, REASONS, _first_sentence
+from .appeal import REASON_RULES, REASONS
+from .appeal_charges import raw_sentences
 from .class_config import OutputField
 from .common import UPPER
 from .output_schema import quote_covers, scalar_value
@@ -69,7 +70,7 @@ def _reason(key: str, quote: str, text: str, visible_end: int | None):
     if marker is None:
         return None
     stop = END_CHARGE.search(text, marker.end())
-    opening = _first_sentence(text[marker.end() : stop.start() if stop else None])
+    opening = next(raw_sentences(text[marker.end() : stop.start() if stop else None]))
     for reason, pattern in REASON_WORDS:
         cue = pattern.search(opening)
         if cue:

@@ -33,7 +33,16 @@ import pdfplumber
 import pypdfium2 as pdfium
 from pdfminer import settings as pdf_settings
 
-from evals.metrics import CLASSES, DocResult, flatten, load_reference, reject_json_constant, score_doc, summarise
+from evals.metrics import (
+    CLASSES,
+    NEGATIVE,
+    DocResult,
+    flatten,
+    load_reference,
+    reject_json_constant,
+    score_doc,
+    summarise,
+)
 
 ROOT = Path(__file__).resolve().parent.parent
 DATA = ROOT / "data" / "uzp" / "dane"
@@ -109,15 +118,15 @@ def training_inventory() -> dict[str, set[str]]:
     inventory = defaultdict(set)
     for entry in raw.split(b"\0"):
         path = Path(os.fsdecode(entry))
-        if len(path.parts) == 2 and path.suffix.lower() in {".pdf", ".json"}:
-            inventory[path.parent.name].add(path.name)
+        if len(path.parts) >= 2 and path.suffix.lower() in {".pdf", ".json"}:
+            inventory[path.parts[0]].add(Path(*path.parts[1:]).as_posix())
     return inventory
 
 
 def load_cases(data: Path, quick: bool, *, holdout: bool = False) -> dict[str, dict[str, dict]]:
     selected = HOLDOUT if holdout else QUICK if quick else FULL
     inventory = training_inventory()
-    if not (quick or holdout) and case_names(data) != FULL:
+    if not (quick or holdout) and case_names(data) - {"skany"} != FULL:
         raise ValueError("full training requires cases 01–60 and the negatives directory")
     cases = {}
     for case in sorted(selected):
@@ -134,18 +143,21 @@ def load_cases(data: Path, quick: bool, *, holdout: bool = False) -> dict[str, d
             expected = {name for name in expected if Path(name).stem in selected_stems}
         if found != expected or not pdfs:
             raise ValueError(f"training files differ from the committed organizer inventory in {case}")
-        if case != "negatywne" and not GOLD_FOR.keys() <= set(pdfs):
+        positive_refs = {pdf: GOLD_FOR[pdf] for pdf in pdfs if pdf in GOLD_FOR}
+        if "przelew.pdf" in pdfs:
+            positive_refs["przelew.pdf"] = "przelew.json"
+        if case != "negatywne" and sorted(positive_refs.values()) != sorted(GOLD_FOR.values()):
             raise ValueError(f"missing required organizer PDF in {case}")
         refs = {name for name in found if name.lower().endswith(".json")}
-        pairs = {name: GOLD_FOR.get(name, Path(name).with_suffix(".json").name) for name in pdfs}
+        pairs = {name: positive_refs.get(name, Path(name).with_suffix(".json").name) for name in pdfs}
         if not refs <= set(pairs.values()):
             raise ValueError(f"an organizer reference has no corresponding PDF in {case}")
         docs = {}
         for name in pdfs:
             check_pdf(folder / name)
             ref = pairs[name]
-            reference = load_reference(folder / ref) if name in GOLD_FOR or ref in refs else {}
-            if name in GOLD_FOR:
+            reference = load_reference(folder / ref) if name in positive_refs or ref in refs else {}
+            if name in positive_refs:
                 marker = CLASSES[Path(ref).stem]
                 markers = reference.keys() & CLASSES.values()
                 if markers != {marker} or not flatten(reference[marker]):
@@ -153,6 +165,27 @@ def load_cases(data: Path, quick: bool, *, holdout: bool = False) -> dict[str, d
             docs[name] = reference
         cases[case] = docs
     return cases
+
+
+def load_organizer_scans(data: Path) -> dict[str, dict[str, dict]]:
+    """Stage the nested public scan pairs as one batch with neutral document names."""
+    folder = data / "skany"
+    expected = training_inventory().get("skany", set())
+    found = {p.relative_to(folder).as_posix() for p in folder.rglob("*") if p.suffix.lower() in {".pdf", ".json"}}
+    pdfs = sorted(name for name in found if name.endswith(".pdf"))
+    references = {Path(name).with_suffix(".json").as_posix() for name in pdfs}
+    if not pdfs or found != expected or found != references | set(pdfs):
+        raise ValueError("organizer scan pairs differ from the committed inventory")
+    groups = {"odwolania": "odwolanie", "pelnomocnictwa": "pelnomocnictwo", "potwierdzenia": "przelew"}
+    docs = {}
+    for name in pdfs:
+        check_pdf(folder / name)
+        gold = load_reference((folder / name).with_suffix(".json"))
+        label = groups.get(Path(name).parts[0])
+        if label is None or gold.keys() & CLASSES.values() != {CLASSES[label]} or not flatten(gold[CLASSES[label]]):
+            raise ValueError("organizer scan reference must contain fields for its expected class")
+        docs[name] = gold
+    return {"skany": docs}
 
 
 def corpus_partition(root: Path, split: str, folders: set[str]) -> set[str]:
@@ -260,7 +293,7 @@ def build_results(docs: list[DocResult], mode: str, seconds_per_doc: float | Non
     commit, dirty = git_state()
     n_cases = len(cases) if mode == "corpus" else sum(1 for c in cases if c != "negatywne")
     coverage_ok = mode == "full" and cases.keys() == FULL
-    required = [m for m in metrics.values() if mode != "corpus" or m["value"] is not None]
+    required = [m for m in metrics.values() if mode in {"quick", "full"} or m["value"] is not None]
     return {
         "commit": commit,
         "dirty": dirty,
@@ -358,6 +391,7 @@ def main() -> int:
     parser = argparse.ArgumentParser(description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter)
     mode_args = parser.add_mutually_exclusive_group()
     mode_args.add_argument("--quick", action="store_true", help="dev subset: 6 cases + 3 negatives")
+    mode_args.add_argument("--organizer-scans", action="store_true", help="score the organizer’s labelled scan set")
     mode_args.add_argument("--corpus", type=Path, help="corpus with separate cases/ and gold/ trees")
     parser.add_argument(
         "--split", choices=("dev", "test", "all"), help="case partition in corpus SPLIT.json (default all)"
@@ -382,6 +416,9 @@ def evaluate(args: argparse.Namespace, parser: argparse.ArgumentParser) -> int:
             parser.error("--data and --corpus select different layouts and cannot be used together")
         mode, data = "corpus", args.corpus / "cases"
         cases = load_corpus(args.corpus, args.split or "all")
+    elif args.organizer_scans:
+        mode, data = "organizer-scans", args.data or DATA
+        cases = load_organizer_scans(data)
     else:
         mode, data = ("quick" if args.quick else "full"), args.data or DATA
         if not data.is_dir():
@@ -393,7 +430,7 @@ def evaluate(args: argparse.Namespace, parser: argparse.ArgumentParser) -> int:
     with tempfile.TemporaryDirectory(prefix="odw-eval-") as tmp:
         if args.pred:
             out_dir, elapsed = args.pred, None
-            names = {(c, n): Path(n).stem for c, docs in cases.items() for n in docs}
+            names = {(c, n): Path(n).with_suffix("").as_posix() for c, docs in cases.items() for n in docs}
         else:
             in_dir, out_dir = Path(tmp) / "input", Path(tmp) / "output"
             in_dir.mkdir()
@@ -411,9 +448,15 @@ def evaluate(args: argparse.Namespace, parser: argparse.ArgumentParser) -> int:
     seconds_per_doc = None if elapsed is None or not n_docs else elapsed / n_docs
     results = build_results(docs, mode, seconds_per_doc, cases)
     destination = RESULTS
-    if args.corpus:
+    if args.corpus or args.organizer_scans:
         results["split"] = args.split or "all"
-        destination = RESULTS.with_name("corpus-latest.json")
+        routing = {}
+        for label in (*CLASSES, NEGATIVE):
+            selected = [d for d in docs if d.gold_class == label]
+            correct = sum(d.empty_output if label == NEGATIVE else d.pred_class == label for d in selected)
+            routing[label] = {"correct": correct, "total": len(selected)}
+        results["detail"]["routing_by_class"] = routing
+        destination = RESULTS.with_name("organizer-scans.json" if args.organizer_scans else "corpus-latest.json")
         if args.detail_out:
             with private_output(args.detail_out) as tmp:
                 json.dump({**results, "docs": document_rows(docs)}, tmp, ensure_ascii=False, indent=2)
@@ -423,7 +466,7 @@ def evaluate(args: argparse.Namespace, parser: argparse.ArgumentParser) -> int:
     payload = json.dumps(results, ensure_ascii=False, indent=2) + "\n"
     destination.parent.mkdir(parents=True, exist_ok=True)
     destination.write_text(payload, encoding="utf-8")
-    if not args.corpus:
+    if not (args.corpus or args.organizer_scans):
         git_dir = subprocess.run(
             ["git", "rev-parse", "--git-dir"], check=False, cwd=ROOT, capture_output=True, text=True
         ).stdout

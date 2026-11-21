@@ -1,0 +1,497 @@
+{
+  "task32/T1": [
+    {
+      "rows": [
+        [
+          [
+            35,
+            "Potwierdzenie przelewu"
+          ]
+        ],
+        [
+          [
+            35,
+            "Dane nadawcy"
+          ],
+          [
+            355,
+            "Dane odbiorcy"
+          ]
+        ],
+        [
+          [
+            35,
+            "Ogrody Tęczowe"
+          ],
+          [
+            355,
+            "Magnesy Fioletowe"
+          ]
+        ],
+        [
+          [
+            35,
+            "46137900000000000000471362"
+          ],
+          [
+            355,
+            "97298300000000000000836412"
+          ]
+        ],
+        [
+          [
+            35,
+            "Data operacji: 09.06.2026"
+          ],
+          [
+            355,
+            "Kwota: 782,14 PLN"
+          ]
+        ],
+        [
+          [
+            35,
+            "Numer transakcji: QJ684291"
+          ]
+        ],
+        [
+          [
+            35,
+            "Tytuł: Dostawa magnesów"
+          ]
+        ]
+      ]
+    }
+  ],
+  "task32/T2": [
+    "Potwierdzenie wykonanej operacji\nHistoria jednej operacji\nRachunek właściciela: 46137900000000000000471362\nDane kontrahenta\nRachunek 97298300000000000000836412\nData waluty   Data księgowania   Kwota\n08.06.2026   09.06.2026   -782,14 PLN\nNumer transakcji: QJ684291\nTytuł: Dostawa magnesów"
+  ],
+  "task32/T3": [
+    {
+      "rows": [
+        [
+          [
+            35,
+            "Potwierdzenie przelewu"
+          ]
+        ],
+        [
+          [
+            35,
+            "Rachunek nadawcy: 46137900000000000000471362"
+          ]
+        ],
+        [
+          [
+            35,
+            "Rachunek odbiorcy: 97298300000000000000836412"
+          ]
+        ],
+        [
+          [
+            35,
+            "Data operacji: 09.06.2026"
+          ]
+        ],
+        [
+          [
+            35,
+            "Data obciążenia: 09.06.2026"
+          ]
+        ],
+        [
+          [
+            35,
+            "Kwota przelewu: 782,14 PLN"
+          ]
+        ],
+        [
+          [
+            35,
+            "Data księgowania"
+          ],
+          [
+            245,
+            "Kwota"
+          ]
+        ],
+        [
+          [
+            35,
+            "09.06.2026"
+          ],
+          [
+            245,
+            "-782,14 PLN"
+          ]
+        ],
+        [
+          [
+            35,
+            "Numer transakcji: QJ684291"
+          ]
+        ],
+        [
+          [
+            35,
+            "Tytuł: Dostawa magnesów"
+          ]
+        ]
+      ]
+    }
+  ],
+  "task32/T4": [
+    "Potwierdzenie realizacji przelewu\nZ rachunku\n46137900000000000000471362\nNa rachunek\n97298300000000000000836412\nKwota\n782,14 PLN\nData operacji\n09.06.2026\nNumer transakcji\nQJ684291\nTytuł\nDostawa magnesów"
+  ],
+  "task32/T5": [
+    "Zaświadczenie o wykonaniu przelewu\nNiniejszym poświadczamy, że 09.06.2026 obciążyliśmy konto 46137900000000000000471362\nkwotą 782,14 PLN. Środki przekazaliśmy na konto 97298300000000000000836412.\nZapisana przez zleceniodawcę treść płatności: Dostawa magnesów.\nPod identyfikatorem QJ684291 bank zarejestrował wykonanie dyspozycji."
+  ],
+  "task32/T6": [
+    "Potwierdzenie przelewu\nStatus: wykonany\nRachunek nadawcy: **** **** **** 1362\nRachunek odbiorcy: 97298300000000000000836412\nData operacji: 09.06.2026\nKwota: 782,14 PLN\nNumer transakcji: QJ684291\nTytuł: Dostawa magnesów"
+  ],
+  "task32/P1": [
+    "PEŁNOMOCNICTWO\nMocodawca: Bursztynowy Splot sp. z o.o.\nUdzielamy pełnomocnictwa Pani Aldonie Mgielnej do reprezentowania spółki.\nPełnomocnik: Aldona Mgielna, PESEL 92020367898"
+  ],
+  "task32/P2": [
+    "PEŁNOMOCNICTWO\nMy niżej podpisani:\n1) Eliza Falista - prezes zarządu Miedziany Wir S.A., KRS 0000786194\n2) Zenon Kruchy - prokurent Jasny Puch S.A., KRS 0000871593\nustanawiamy radcę prawnego Adama Rybnego do reprezentowania obu spółek."
+  ],
+  "task32/P3": [
+    "PEŁNOMOCNICTWO\nBursztynowy Splot sp. z o.o. udziela pełnomocnictwa adw. Iwonie Rytmicznej.\nZa Bursztynowy Splot sp. z o.o.\nPodpisano elektronicznie przez: Laura Migotliwa\nData podpisu: 09.06.2026"
+  ],
+  "task32/P4": [
+    "AKT NOTARIALNY\nRepertorium A numer 742198/2026\nPrzed notariuszem stawiła się Laura Migotliwa, prezes zarządu spółki Bursztynowy Splot sp. z o.o.\nDziałając w imieniu spółki udziela pełnomocnictwa adw. Iwonie Rytmicznej.\nOdczytano, przyjęto i podpisano."
+  ],
+  "task32/C3": [
+    "Potwierdzenie przelewu\nRachunek nadawcy: 46137900000000000000471362\nRachunek odbiorcy: 97298300000000000000836412\nData operacji: 09.06.2026\nKwota: 782,14 PLN\nNumer transakcji: QJ684291\nData obciążenia: 09.06.2026\nRachunek do rozliczenia prowizji: 88381900000000000000026512\nTytuł: Dostawa magnesów"
+  ],
+  "task32/CD": [
+    "Potwierdzenie przelewu\nRachunek nadawcy: 46137900000000000000471362\nRachunek odbiorcy: 97298300000000000000836412\nData operacji: 09.06.2026\nKwota: 782,14 PLN\nNumer transakcji: QJ684291\nDzienny numer transakcji: 7\nTytuł: Dostawa magnesów"
+  ],
+  "task32/CM": [
+    "Potwierdzenie przelewu\nRachunek nadawcy: 46137900000000000000471362\nRachunek odbiorcy: 97298300000000000000836412\nData operacji: 09.06.2026\nKwota: 1.782.14 PLN\nNumer transakcji: QJ684291\nTytuł: Dostawa magnesów"
+  ],
+  "task32/C1": [
+    "Potwierdzenie przelewu\nRachunek nadawcy: 46137900000000000000471362\nRachunek odbiorcy: 97298300000000000000836412\nData operacji: 09.06.2026\nKwota: 782,14 PLN\nNumer transakcji: QJ684291\nTytuł: Dostawa magnesów"
+  ],
+  "task32/C2": [
+    "Potwierdzenie przelewu\nRachunek nadawcy: 46137900000000000000471362\nRachunek odbiorcy: 97298300000000000000836412\nData operacji: 09.06.2026\nKwota: 782,14 PLN\nNumer transakcji: QJ684291\nData obciążenia: 09.06.2026\nTytuł: Dostawa magnesów"
+  ],
+  "task32/CB": [
+    "Potwierdzenie przelewu\nRachunek nadawcy: 46137900000000000000471362\nDane kontrahenta\nRachunek odbiorcy: 97298300000000000000836412\nData operacji: 09.06.2026\nKwota: 782,14 PLN\nNumer transakcji: QJ684291\nData obciążenia: 09.06.2026\nData księgowania Kwota\n10.06.2026 -782,14 PLN\nTytuł: Dostawa magnesów"
+  ],
+  "task32/CREF": [
+    "Potwierdzenie przelewu\nRachunek nadawcy: 46137900000000000000471362\nRachunek odbiorcy: 97298300000000000000836412\nData operacji: 09.06.2026\nKwota: 782,14 PLN\nIdentyfikator transakcji: QJ684291\nDzienny numer transakcji: 7\nTytuł: Dostawa magnesów"
+  ],
+  "task32/public-C3": [
+    "Potwierdzenie przelewu\nRachunek nadawcy: 46137900000000000000471362\nRachunek odbiorcy: 97298300000000000000836412\nData operacji: 09.06.2026\nKwota: 782,14 PLN\nIdentyfikator transakcji: QJ684291\nData obciążenia: 09.06.2026\nRachunek do rozliczenia prowizji: 88381900000000000000026512\nTytuł: Dostawa magnesów"
+  ],
+  "task32/public-CB": [
+    "Potwierdzenie przelewu\nRachunek nadawcy: 46137900000000000000471362\nDane kontrahenta\nRachunek odbiorcy: 97298300000000000000836412\nData operacji: 09.06.2026\nKwota: 782,14 PLN\nIdentyfikator transakcji: QJ684291\nData obciążenia: 09.06.2026\nData księgowania Kwota\n10.06.2026 -782,14 PLN\nTytuł: Dostawa magnesów"
+  ],
+  "task32/public-CREF": [
+    "Potwierdzenie przelewu\nRachunek nadawcy: 46137900000000000000471362\nRachunek odbiorcy: 97298300000000000000836412\nData operacji: 09.06.2026\nKwota: 782,14 PLN\nIdentyfikator transakcji: QJ684291\nDzienny numer transakcji: 7\nTytuł: Dostawa magnesów"
+  ],
+  "task32/public-T3": [
+    "Potwierdzenie przelewu\nRachunek nadawcy: 46137900000000000000471362\nRachunek odbiorcy: 97298300000000000000836412\nData operacji: 09.06.2026\nKwota: 782,14 PLN\nIdentyfikator transakcji: QJ684291\nData obciążenia: 09.06.2026\nData księgowania Kwota\n09.06.2026 -782,14 PLN\nTytuł: Dostawa magnesów"
+  ],
+  "invented/transfer-reversed-parties": [
+    "Potwierdzenie przelewu\nRachunek odbiorcy: 96481100000000000000942673\nRachunek nadawcy: 70182600000000000000673815\nData operacji: 11.02.2031\nKwota przelewu: 918,73 PLN\nIdentyfikator transakcji: TWQ641803\nTytuł: Próbniki pigmentów"
+  ],
+  "invented/transfer-refund-after-parties": [
+    "Potwierdzenie przelewu\nRachunek nadawcy: 70182600000000000000673815\nRachunek odbiorcy: 96481100000000000000942673\nData operacji: 11.02.2031\nKwota przelewu: 918,73 PLN\nIdentyfikator transakcji: TWQ641803\nRachunek do zwrotu opłaty: 06729200000000000000208631\nTytuł: Próbniki pigmentów"
+  ],
+  "invented/transfer-commission-before-parties": [
+    "Potwierdzenie przelewu\nKonto do rozliczeń prowizji: 06729200000000000000208631\nRachunek nadawcy: 70182600000000000000673815\nRachunek odbiorcy: 96481100000000000000942673\nData operacji: 11.02.2031\nKwota przelewu: 918,73 PLN\nIdentyfikator transakcji: TWQ641803\nTytuł: Próbniki pigmentów"
+  ],
+  "invented/transfer-booking-date-first": [
+    "Potwierdzenie przelewu\nRachunek nadawcy: 70182600000000000000673815\nRachunek odbiorcy: 96481100000000000000942673\nData księgowania: 12.02.2031\nData operacji: 11.02.2031\nKwota przelewu: 918,73 PLN\nIdentyfikator transakcji: TWQ641803\nTytuł: Próbniki pigmentów"
+  ],
+  "invented/transfer-print-date-first": [
+    "Potwierdzenie przelewu\nRachunek nadawcy: 70182600000000000000673815\nRachunek odbiorcy: 96481100000000000000942673\nData wydruku: 24.02.2031\nData operacji: 11.02.2031\nKwota przelewu: 918,73 PLN\nIdentyfikator transakcji: TWQ641803\nTytuł: Próbniki pigmentów"
+  ],
+  "invented/transfer-negative-debit": [
+    "Potwierdzenie przelewu\nRachunek nadawcy: 70182600000000000000673815\nRachunek odbiorcy: 96481100000000000000942673\nData operacji: 11.02.2031\nKwota przelewu: -918,73 PLN\nIdentyfikator transakcji: TWQ641803\nTytuł: Próbniki pigmentów"
+  ],
+  "invented/transfer-daily-and-explicit": [
+    "Potwierdzenie przelewu\nRachunek nadawcy: 70182600000000000000673815\nRachunek odbiorcy: 96481100000000000000942673\nData operacji: 11.02.2031\nKwota przelewu: 918,73 PLN\nDzienny numer transakcji: 81\nIdentyfikator transakcji: TWQ641803\nTytuł: Próbniki pigmentów"
+  ],
+  "invented/transfer-only-daily": [
+    "Potwierdzenie przelewu\nRachunek nadawcy: 70182600000000000000673815\nRachunek odbiorcy: 96481100000000000000942673\nData operacji: 11.02.2031\nKwota przelewu: 918,73 PLN\nDzienny numer transakcji: 81\nTytuł: Próbniki pigmentów"
+  ],
+  "invented/transfer-masked-recipient": [
+    "Potwierdzenie przelewu\nRachunek nadawcy: 70182600000000000000673815\nRachunek odbiorcy: **** **** 2673\nData operacji: 11.02.2031\nKwota przelewu: 918,73 PLN\nIdentyfikator transakcji: TWQ641803\nTytuł: Próbniki pigmentów"
+  ],
+  "invented/transfer-masked-payer-with-dashes": [
+    "Potwierdzenie przelewu\nRachunek nadawcy: **-**-**-3815\nRachunek odbiorcy: 96481100000000000000942673\nData operacji: 11.02.2031\nKwota przelewu: 918,73 PLN\nIdentyfikator transakcji: TWQ641803\nTytuł: Próbniki pigmentów"
+  ],
+  "invented/transfer-both-parties-on-one-row": [
+    "Potwierdzenie przelewu\nRachunek nadawcy: 70182600000000000000673815    Rachunek odbiorcy: 96481100000000000000942673\nData operacji: 11.02.2031\nKwota przelewu: 918,73 PLN\nIdentyfikator transakcji: TWQ641803\nTytuł: Próbniki pigmentów"
+  ],
+  "invented/transfer-amount-label-next-row": [
+    "Potwierdzenie przelewu\nRachunek nadawcy: 70182600000000000000673815\nRachunek odbiorcy: 96481100000000000000942673\nData operacji: 11.02.2031\nKwota przelewu:\n918,73 PLN\nIdentyfikator transakcji: TWQ641803\nTytuł: Próbniki pigmentów"
+  ],
+  "invented/transfer-same-number-in-memo": [
+    "Potwierdzenie przelewu\nRachunek nadawcy: 70182600000000000000673815\nRachunek odbiorcy: 96481100000000000000942673\nData operacji: 11.02.2031\nKwota przelewu: 918,73 PLN\nIdentyfikator transakcji: TWQ641803\nNotatka służbowa: sprawdzono rachunek 96481100000000000000942673\nTytuł: Próbniki pigmentów"
+  ],
+  "invented/transfer-labelled-separate-fee": [
+    "Potwierdzenie przelewu\nRachunek nadawcy: 70182600000000000000673815\nRachunek odbiorcy: 96481100000000000000942673\nData operacji: 11.02.2031\nKwota przelewu: 918,73 PLN\nIdentyfikator transakcji: TWQ641803\nOpłata bankowa: 3,20 PLN\nTytuł: Próbniki pigmentów"
+  ],
+  "invented/transfer-title-wrap": [
+    "Potwierdzenie przelewu\nRachunek nadawcy: 70182600000000000000673815\nRachunek odbiorcy: 96481100000000000000942673\nData operacji: 11.02.2031\nKwota przelewu: 918,73 PLN\nIdentyfikator transakcji: TWQ641803\nTytuł: Próbniki\npigmentów"
+  ],
+  "invented/transfer-partial-reference-absent": [
+    "Potwierdzenie przelewu\nRachunek nadawcy: 70182600000000000000673815\nRachunek odbiorcy: 96481100000000000000942673\nData operacji: 11.02.2031\nKwota przelewu: 918,73 PLN\nIdentyfikator transakcji: brak\nTytuł: Próbniki pigmentów"
+  ],
+  "invented/transfer-value-date-cannot-replace": [
+    "Potwierdzenie przelewu\nRachunek nadawcy: 70182600000000000000673815\nRachunek odbiorcy: 96481100000000000000942673\nData operacji: 11.02.2031\nKwota przelewu: 918,73 PLN\nIdentyfikator transakcji: TWQ641803\nData waluty: 14.02.2031\nTytuł: Próbniki pigmentów"
+  ],
+  "invented/transfer-interleaved-cells": [
+    {
+      "rows": [
+        [
+          [
+            35,
+            "Potwierdzenie przelewu"
+          ]
+        ],
+        [
+          [
+            35,
+            "Rachunek nadawcy"
+          ],
+          [
+            320,
+            "Rachunek odbiorcy"
+          ]
+        ],
+        [
+          [
+            35,
+            "70182600000000000000673815"
+          ],
+          [
+            320,
+            "96481100000000000000942673"
+          ]
+        ],
+        [
+          [
+            35,
+            "Kwota: 918,73 PLN"
+          ],
+          [
+            320,
+            "Data operacji: 11.02.2031"
+          ]
+        ],
+        [
+          [
+            35,
+            "Tytuł: Próbniki pigmentów"
+          ]
+        ],
+        [
+          [
+            35,
+            "Identyfikator transakcji: TWQ641803"
+          ]
+        ]
+      ]
+    }
+  ],
+  "invented/transfer-pending-status": [
+    "Potwierdzenie przelewu\nRachunek nadawcy: 70182600000000000000673815\nRachunek odbiorcy: 96481100000000000000942673\nData operacji: 11.02.2031\nStatus: oczekujący\nKwota przelewu: 918,73 PLN\nIdentyfikator transakcji: TWQ641803\nTytuł: Próbniki pigmentów"
+  ],
+  "invented/transfer-invoice-with-quoted-receipt": [
+    "Faktura pro forma\nWzór potwierdzenia dla księgowości:\nPotwierdzenie przelewu\nRachunek nadawcy: 70182600000000000000673815\nRachunek odbiorcy: 96481100000000000000942673\nData operacji: 11.02.2031\nKwota przelewu: 918,73 PLN\nIdentyfikator transakcji: TWQ641803\nTytuł: Próbniki pigmentów"
+  ],
+  "invented/grant-plain-title": [
+    "PEŁNOMOCNICTWO\nMocodawca: Srebrny Kil S.A. udziela pełnomocnictwa adw. Oliwie Łagodnej."
+  ],
+  "invented/grant-numbered-heading": [
+    "PEŁNOMOCNICTWO NR 314/2031\nMocodawca: Srebrny Kil S.A. udziela pełnomocnictwa adw. Oliwie Łagodnej."
+  ],
+  "invented/grant-wrapped-attorney": [
+    "PEŁNOMOCNICTWO\nMocodawca: Srebrny Kil S.A. udziela pełnomocnictwa adw.\nOliwie Łagodnej."
+  ],
+  "invented/grant-labelled-nominative": [
+    "PEŁNOMOCNICTWO\nMocodawca: Lniana Baszta sp. z o.o..\nUdzielamy pełnomocnictwa Pani Wandzie Lnistej do reprezentacji.\nPełnomocnik: Wanda Lnista, PESEL 90050714569"
+  ],
+  "invented/grant-two-different-appointees": [
+    "PEŁNOMOCNICTWO\nMocodawca: Srebrny Kil S.A..\nUdzielamy pełnomocnictwa Pani Wandzie Lnistej do reprezentacji.\nPełnomocnik: Basia Szeroka, PESEL 93040797245"
+  ],
+  "invented/grant-natural-person-trader": [
+    "PEŁNOMOCNICTWO\nJa, niżej podpisana Tamara Snopna, prowadząca działalność gospodarczą pod firmą Żwirownia Tamary, udzielam pełnomocnictwa adw. Oliwie Łagodnej."
+  ],
+  "invented/grant-with-ids": [
+    "PEŁNOMOCNICTWO\nMocodawca: Srebrny Kil S.A., KRS 0000865321, NIP 5863248792, udziela pełnomocnictwa adw. Oliwie Łagodnej."
+  ],
+  "invented/grant-other-registrant-after-grant": [
+    "PEŁNOMOCNICTWO\nMocodawca: Srebrny Kil S.A. udziela pełnomocnictwa adw. Oliwie Łagodnej.\nPostępowanie prowadzi Lniana Baszta sp. z o.o., KRS 0000562917."
+  ],
+  "invented/grant-explicit-electronic": [
+    "PEŁNOMOCNICTWO\nMocodawca: Srebrny Kil S.A. udziela pełnomocnictwa adw. Oliwie Łagodnej.\nZa Srebrny Kil S.A.\nPodpisano elektronicznie przez: Lena Wrzosowa"
+  ],
+  "invented/grant-explicit-electronic-on-next-row": [
+    "PEŁNOMOCNICTWO\nMocodawca: Srebrny Kil S.A. udziela pełnomocnictwa adw. Oliwie Łagodnej.\nW imieniu Srebrny Kil S.A.:\nPodpisano elektronicznie przez:\nLena Wrzosowa"
+  ],
+  "invented/grant-unreadable-mark": [
+    "PEŁNOMOCNICTWO\nMocodawca: Srebrny Kil S.A. udziela pełnomocnictwa adw. Oliwie Łagodnej.\nPodpis mocodawcy: [nieczytelny]"
+  ],
+  "invented/grant-contact-after-signature": [
+    "PEŁNOMOCNICTWO\nMocodawca: Srebrny Kil S.A. udziela pełnomocnictwa adw. Oliwie Łagodnej.\nZa Srebrny Kil S.A.:\n......................\nLena Wrzosowa\nOsoba do kontaktu: Kalina Zwinna"
+  ],
+  "invented/grant-joint-companies": [
+    "PEŁNOMOCNICTWO\nLniana Baszta sp. z o.o. oraz Srebrny Kil S.A. udzielają pełnomocnictwa adw. Oliwie Łagodnej."
+  ],
+  "invented/grant-explicit-joint-signatures": [
+    "PEŁNOMOCNICTWO\nLniana Baszta sp. z o.o. oraz Srebrny Kil S.A. udzielają pełnomocnictwa.\nZa Srebrny Kil S.A.:\n.......................\nLena Wrzosowa\nZa Lniana Baszta sp. z o.o.:\n......................\nLeon Piaskowy"
+  ],
+  "invented/grant-deed-with-active-grant": [
+    "AKT NOTARIALNY\nRepertorium A 927/2031\nPrzed notariuszem stanął Leon Piaskowy, prokurent spółki Lniana Baszta sp. z o.o.\nDziałając w imieniu spółki udziela pełnomocnictwa adw. Oliwie Łagodnej."
+  ],
+  "invented/grant-deed-mentions-old-grant": [
+    "AKT NOTARIALNY\nRepertorium A 928/2031\nPrzedstawiono dokument pełnomocnictwa, którego Srebrny Kil S.A. udzieliła adw. Oliwie Łagodnej w zeszłym roku.\nStrony zawarły umowę sprzedaży."
+  ],
+  "invented/grant-other-partys-nip": [
+    "PEŁNOMOCNICTWO\nMocodawca: Srebrny Kil S.A.\nZamawiający: Tkany Łuk S.A., NIP: 7526000005\nSrebrny Kil S.A. udziela adw. Oliwie Łagodnej pełnomocnictwa do reprezentowania spółki."
+  ],
+  "invented/transfer-currency-before-amount-in-header-row": [
+    "Potwierdzenie przelewu\nRachunek nadawcy: 46137900000000000000471362\nRachunek odbiorcy: 97298300000000000000836412\nKwota Data operacji\nPLN 782,14 09.06.2026\nNumer transakcji: QJ684291\nTytuł: Dostawa magnesów"
+  ],
+  "invented/transfer-balance-is-not-status": [
+    "Potwierdzenie przelewu\nRachunek nadawcy: 46137900000000000000471362\nRachunek odbiorcy: 97298300000000000000836412\nData operacji: 09.06.2026\nKwota: 782,14 PLN\nNumer transakcji: QJ684291\nStan rachunku po operacji: 98,50 PLN\nTytuł: Dostawa magnesów"
+  ],
+  "invented/transfer-negative-clause-in-purpose": [
+    "Potwierdzenie przelewu\nRachunek nadawcy: 46137900000000000000471362\nRachunek odbiorcy: 97298300000000000000836412\nData operacji: 09.06.2026\nKwota: 782,14 PLN\nNumer transakcji: QJ684291\nTytuł: Zwrot za usługę, której nie wykonano"
+  ],
+  "invented/transfer-directional-account-labels": [
+    "Potwierdzenie przelewu\nZ konta: 46137900000000000000471362\nNa konto: 97298300000000000000836412\nData operacji: 09.06.2026\nKwota: 782,14 PLN\nNumer transakcji: QJ684291\nTytuł: Dostawa magnesów"
+  ],
+  "task40/execution-with-posting-row": [
+    "Potwierdzenie przelewu\nRachunek nadawcy: 46137900000000000000471362\nRachunek odbiorcy: 97298300000000000000836412\nData wykonania: 04.07.2031\nKwota: 95,20 PLN\nNumer transakcji: RM937411\nData księgowania   Kwota\n05.07.2031   -95,20 PLN\nTytuł: Zakup kredy"
+  ],
+  "task40/debit-before-execution": [
+    "Potwierdzenie przelewu\nRachunek nadawcy: 46137900000000000000471362\nRachunek odbiorcy: 97298300000000000000836412\nData obciążenia: 05.07.2031\nData wykonania: 04.07.2031\nKwota: 95,20 PLN\nNumer transakcji: RM937411\nTytuł: Zakup kredy"
+  ],
+  "task40/realization-with-reversed-row": [
+    "Potwierdzenie przelewu\nRachunek nadawcy: 46137900000000000000471362\nRachunek odbiorcy: 97298300000000000000836412\nData realizacji: 04.07.2031\nKwota: 95,20 PLN\nNumer transakcji: RM937411\nKwota   Data księgowania\n-95,20 PLN   05.07.2031\nTytuł: Zakup kredy"
+  ],
+  "task40/debit-before-realization": [
+    "Potwierdzenie przelewu\nRachunek nadawcy: 46137900000000000000471362\nRachunek odbiorcy: 97298300000000000000836412\nData obciążenia: 05.07.2031\nData realizacji: 04.07.2031\nKwota: 95,20 PLN\nNumer transakcji: RM937411\nTytuł: Zakup kredy"
+  ],
+  "task40/paid": [
+    "Potwierdzenie przelewu\nRachunek nadawcy: 46137900000000000000471362\nRachunek odbiorcy: 97298300000000000000836412\nData wykonania: 04.07.2031\nStan płatności: opłacona\nKwota: 95,20 PLN\nNumer transakcji: RM937411\nTytuł: Zakup kredy"
+  ],
+  "task40/finished": [
+    "Potwierdzenie przelewu\nRachunek nadawcy: 46137900000000000000471362\nRachunek odbiorcy: 97298300000000000000836412\nData wykonania: 04.07.2031\nStan realizacji: zakończona\nKwota: 95,20 PLN\nNumer transakcji: RM937411\nTytuł: Zakup kredy"
+  ],
+  "task40/settled": [
+    "Potwierdzenie przelewu\nRachunek nadawcy: 46137900000000000000471362\nRachunek odbiorcy: 97298300000000000000836412\nData wykonania: 04.07.2031\nStan transakcji: rozliczona\nKwota: 95,20 PLN\nNumer transakcji: RM937411\nTytuł: Zakup kredy"
+  ],
+  "task40/completed": [
+    "Potwierdzenie przelewu\nRachunek nadawcy: 46137900000000000000471362\nRachunek odbiorcy: 97298300000000000000836412\nData wykonania: 04.07.2031\nStan przelewu: sfinalizowany\nKwota: 95,20 PLN\nNumer transakcji: RM937411\nTytuł: Zakup kredy"
+  ],
+  "task40/conditional": [
+    "Potwierdzenie przelewu\nStatus: wykonany\nRachunek nadawcy: 46137900000000000000471362\nRachunek odbiorcy: 97298300000000000000836412\nData wykonania: 04.07.2031\nKwota: 95,20 PLN\nNumer transakcji: RM937411\nTytuł: Zakup kredy\nInformacja: Jeżeli bank nie wykonał przelewu w terminie, przysługuje Ci prawo do reklamacji."
+  ],
+  "task40/prior": [
+    "Potwierdzenie przelewu\nStatus: wykonany\nRachunek nadawcy: 46137900000000000000471362\nRachunek odbiorcy: 97298300000000000000836412\nData wykonania: 04.07.2031\nKwota: 95,20 PLN\nNumer transakcji: RM937411\nTytuł: Zakup kredy\nInformacja: Wczoraj nie wykonano przelewu. Niniejszy przelew wykonano dzisiaj."
+  ],
+  "task40/complaints": [
+    "Potwierdzenie przelewu\nStatus: wykonany\nRachunek nadawcy: 46137900000000000000471362\nRachunek odbiorcy: 97298300000000000000836412\nData wykonania: 04.07.2031\nKwota: 95,20 PLN\nNumer transakcji: RM937411\nTytuł: Zakup kredy\nReklamacje: Zgłoś się do banku, jeśli nie wykonano transakcji w terminie."
+  ],
+  "task40/question": [
+    "Potwierdzenie przelewu\nStatus: wykonany\nRachunek nadawcy: 46137900000000000000471362\nRachunek odbiorcy: 97298300000000000000836412\nData wykonania: 04.07.2031\nKwota: 95,20 PLN\nNumer transakcji: RM937411\nTytuł: Zakup kredy\nPomoc: Co zrobić, gdy nie zrealizowano przelewu?"
+  ],
+  "simple/receipt-01": [
+    "Potwierdzenie przelewu\nNadawca: 46137900000000000000471362\nOdbiorca: 97298300000000000000836412\nData operacji: 01.05.2032\nKwota: 21,15 PLN\nNr ref.: WL731000"
+  ],
+  "simple/receipt-02": [
+    "Dowód wykonania przelewu\nData realizacji: 02.05.2032\nKwota operacji: 22,15 PLN\nTytułem: Zakup linijek\nBeneficjent: 97298300000000000000836412\nRachunek nadawcy: 46137900000000000000471362"
+  ],
+  "simple/receipt-03": [
+    "Potwierdzenie realizacji przelewu\nZleceniodawca: 46137900000000000000471362\nRachunek odbiorcy: 97298300000000000000836412\nWartość: 23,15 PLN\nIdentyfikator operacji: WL731002\nTytuł przelewu: Zakup linijek"
+  ],
+  "simple/receipt-04": [
+    "Potwierdzenie przelewu\nOdbiorca: 97298300000000000000836412\nNadawca: 46137900000000000000471362\nData wykonania: 04.05.2032\nNr ref.: WL731003\nOpis: Zakup linijek"
+  ],
+  "simple/receipt-05": [
+    "Dowód wykonania przelewu\nRachunek nadawcy: 46137900000000000000471362\nBeneficjent: 97298300000000000000836412\nData operacji: 05.05.2032\nKwota operacji: 25,15 PLN\nNumer referencyjny: WL731004\nTytułem: Zakup linijek"
+  ],
+  "simple/receipt-06": [
+    "Potwierdzenie realizacji przelewu\nData realizacji: 06.05.2032\nWartość: 26,15 PLN\nIdentyfikator operacji: WL731005\nRachunek odbiorcy: 97298300000000000000836412\nZleceniodawca: 46137900000000000000471362"
+  ],
+  "simple/receipt-07": [
+    "Potwierdzenie przelewu\nNadawca: 46137900000000000000471362\nOdbiorca: 97298300000000000000836412\nData transakcji: 07.05.2032\nKwota: 27,15 PLN\nOpis: Zakup linijek"
+  ],
+  "simple/receipt-08": [
+    "Dowód wykonania przelewu\nBeneficjent: 97298300000000000000836412\nRachunek nadawcy: 46137900000000000000471362\nKwota operacji: 28,15 PLN\nNumer referencyjny: WL731007\nTytułem: Zakup linijek"
+  ],
+  "simple/receipt-09": [
+    "Potwierdzenie realizacji przelewu\nZleceniodawca: 46137900000000000000471362\nRachunek odbiorcy: 97298300000000000000836412\nData operacji: 09.05.2032\nIdentyfikator operacji: WL731008\nTytuł przelewu: Zakup linijek"
+  ],
+  "simple/receipt-10": [
+    "Potwierdzenie przelewu\nData realizacji: 10.05.2032\nKwota: 30,15 PLN\nNr ref.: WL731009\nOpis: Zakup linijek\nOdbiorca: 97298300000000000000836412\nNadawca: 46137900000000000000471362"
+  ],
+  "simple/receipt-11": [
+    "Dowód wykonania przelewu\nRachunek nadawcy: 46137900000000000000471362\nBeneficjent: 97298300000000000000836412\nData transakcji: 11.05.2032\nKwota operacji: 31,15 PLN\nNumer referencyjny: WL731010"
+  ],
+  "simple/receipt-12": [
+    "Potwierdzenie realizacji przelewu\nRachunek odbiorcy: 97298300000000000000836412\nZleceniodawca: 46137900000000000000471362\nData wykonania: 12.05.2032\nWartość: 32,15 PLN\nTytuł przelewu: Zakup linijek"
+  ],
+  "simple/receipt-13": [
+    "Potwierdzenie przelewu\nNadawca: 46137900000000000000471362\nOdbiorca: 97298300000000000000836412\nKwota: 33,15 PLN\nNr ref.: WL731012\nOpis: Zakup linijek"
+  ],
+  "simple/receipt-14": [
+    "Dowód wykonania przelewu\nData realizacji: 14.05.2032\nNumer referencyjny: WL731013\nTytułem: Zakup linijek\nBeneficjent: 97298300000000000000836412\nRachunek nadawcy: 46137900000000000000471362"
+  ],
+  "simple/receipt-15": [
+    "Potwierdzenie realizacji przelewu\nZleceniodawca: 46137900000000000000471362\nRachunek odbiorcy: 97298300000000000000836412\nData transakcji: 15.05.2032\nWartość: 35,15 PLN\nIdentyfikator operacji: WL731014\nTytuł przelewu: Zakup linijek"
+  ],
+  "simple/grant-01": [
+    "PEŁNOMOCNICTWO\nMocodawca: Sosnowy Rulon S.A.\nKRS: 0000841237\nUdzielamy pełnomocnictwa adw. Ewie Warstwowej do reprezentacji."
+  ],
+  "simple/grant-02": [
+    "PEŁNOMOCNICTWO PROCESOWE\nMocodawca: Stromy Szlak sp. z o.o.\nNIP: 7831846213\nUstanawiamy radcę prawnego Janowi Kredowemu do reprezentacji."
+  ],
+  "simple/grant-03": [
+    "PEŁNOMOCNICTWO SZCZEGÓLNE\nMocodawca: Barwna Sonda S.A.\nKRS: 0000841237\nUpoważniamy adw. Idzie Płaskiej do reprezentacji.\nPESEL: 92110714869"
+  ],
+  "simple/grant-04": [
+    "PEŁNOMOCNICTWO\nMocodawca: Sosnowy Rulon S.A.\nNIP: 7831846213\nKRS: 0000841237\nUdzielamy pełnomocnictwa adw. Ewie Warstwowej do reprezentacji."
+  ],
+  "simple/grant-05": [
+    "PEŁNOMOCNICTWO PROCESOWE\nMocodawca: Stromy Szlak sp. z o.o.\nKRS: 0000841237\nUstanawiamy radcę prawnego Janowi Kredowemu do reprezentacji.\nW imieniu Stromy Szlak sp. z o.o.\n........................\nOlga Drobna"
+  ],
+  "simple/grant-06": [
+    "PEŁNOMOCNICTWO SZCZEGÓLNE\nMocodawca: Barwna Sonda S.A.\nKRS: 0000841237\nUpoważniamy adw. Idzie Płaskiej do reprezentacji."
+  ],
+  "simple/grant-07": [
+    "PEŁNOMOCNICTWO\nMocodawca: Sosnowy Rulon S.A.\nNIP: 7831846213\nUdzielamy pełnomocnictwa adw. Ewie Warstwowej do reprezentacji."
+  ],
+  "simple/grant-08": [
+    "PEŁNOMOCNICTWO PROCESOWE\nMocodawca: Stromy Szlak sp. z o.o.\nKRS: 0000841237\nUstanawiamy radcę prawnego Janowi Kredowemu do reprezentacji.\nPESEL: 92110714869"
+  ],
+  "simple/grant-09": [
+    "PEŁNOMOCNICTWO SZCZEGÓLNE\nMocodawca: Barwna Sonda S.A.\nNIP: 7831846213\nKRS: 0000841237\nUpoważniamy adw. Idzie Płaskiej do reprezentacji."
+  ],
+  "simple/grant-10": [
+    "PEŁNOMOCNICTWO\nMocodawca: Sosnowy Rulon S.A.\nKRS: 0000841237\nUdzielamy pełnomocnictwa adw. Ewie Warstwowej do reprezentacji.\nW imieniu Sosnowy Rulon S.A.\n........................\nOlga Drobna"
+  ],
+  "simple/grant-11": [
+    "PEŁNOMOCNICTWO PROCESOWE\nMocodawca: Stromy Szlak sp. z o.o.\nKRS: 0000841237\nUstanawiamy radcę prawnego Janowi Kredowemu do reprezentacji."
+  ],
+  "simple/grant-12": [
+    "PEŁNOMOCNICTWO SZCZEGÓLNE\nMocodawca: Barwna Sonda S.A.\nNIP: 7831846213\nUpoważniamy adw. Idzie Płaskiej do reprezentacji."
+  ],
+  "simple/grant-13": [
+    "PEŁNOMOCNICTWO\nMocodawca: Sosnowy Rulon S.A.\nKRS: 0000841237\nUdzielamy pełnomocnictwa adw. Ewie Warstwowej do reprezentacji.\nPESEL: 92110714869"
+  ],
+  "simple/grant-14": [
+    "PEŁNOMOCNICTWO PROCESOWE\nMocodawca: Stromy Szlak sp. z o.o.\nNIP: 7831846213\nKRS: 0000841237\nUstanawiamy radcę prawnego Janowi Kredowemu do reprezentacji."
+  ],
+  "simple/grant-15": [
+    "PEŁNOMOCNICTWO SZCZEGÓLNE\nMocodawca: Barwna Sonda S.A.\nKRS: 0000841237\nUpoważniamy adw. Idzie Płaskiej do reprezentacji.\nW imieniu Barwna Sonda S.A.\n........................\nOlga Drobna"
+  ]
+}

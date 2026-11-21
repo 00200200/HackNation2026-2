@@ -94,6 +94,7 @@ def extract(
     model=None,
     ocr_python: Callable[[], dict] | None = None,
     alternate: AlternateOCR | None = None,
+    model_text: str | None = None,
 ) -> dict:
     values = None
     fill_empty = definition.profile.mode in ("RL", "LR")
@@ -105,7 +106,8 @@ def extract(
         if engine == "python" and ocr_python is not None:
             candidate = ocr_python()
         else:
-            candidate = bind_engine(engine, definition, model, alternate=alternate)(text)
+            source = model_text if engine == "llm" and model_text is not None else text
+            candidate = bind_engine(engine, definition, model, alternate=alternate)(source)
         if values is None:
             values = candidate
         else:

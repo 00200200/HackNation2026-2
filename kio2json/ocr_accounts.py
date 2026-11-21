@@ -5,7 +5,9 @@ from dataclasses import dataclass
 
 from stdnum import iban
 
-from .bank_transfer import BOUNDARY_RE
+from .bank_transfer import BOUNDARY_RE, printed_accounts
+from .common import to_iso
+from .receipt_layout import validated_account
 
 # 26-digit Polish account number, optionally 'PL'-prefixed, grouped or wrapped across lines.
 ACCOUNT_RE = re.compile(r"(?<![\w/|*])(?:PL\s?)?(\d{2}(?:[ \n]?\d{4}){6})(?![\w/|*])")
@@ -124,4 +126,29 @@ def account_evidence(text: str) -> AccountEvidence:
         and sum(number is None for _, number in strict) == 1
         and any(number and iban.is_valid("PL" + number) for number in (sender, recipient))
     )
-    return AccountEvidence(sender, recipient, len(numbers), masked_pair, frozenset(declared))
+    # Supplement bank statements in prose and debit tables only with role-specific evidence.
+    printed = printed_accounts(text)
+    if "sender" not in declared:
+        sender = printed.get("sender", sender)
+    if "recipient" not in declared:
+        recipient = printed.get("recipient", recipient)
+    return AccountEvidence(sender, recipient, len(numbers), masked_pair, frozenset(declared | printed.keys()))
+
+
+# Normalize only complete account tokens and calendar dates read by OCR on a receipt.
+OCR_NRB = re.compile(r"(?<![\w/?*])(?:PL\s?)?([0-9?]{2}(?:[ \n]?[0-9?]{4}){6})(?![\w/?*])")
+OCR_DATE = re.compile(r"(?<!\d)(\d{2})\.(\d{2})(\d{4})(?!\d)")
+
+
+def normalize_receipt(text: str) -> str:
+    def number(match: re.Match) -> str:
+        compact = "".join(match[1].split())
+        if iban.is_valid("PL" + compact):
+            return match[0]
+        return validated_account(compact) or "?"
+
+    def date(match: re.Match) -> str:
+        candidate = ".".join(match.groups())
+        return candidate if to_iso(candidate) else match[0]
+
+    return OCR_NRB.sub(number, OCR_DATE.sub(date, text))
