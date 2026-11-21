@@ -6,7 +6,6 @@ from dataclasses import dataclass
 from stdnum import iban
 
 from .common import DATE, squash, to_iso
-from .output_schema import normalize
 from .receipt_layout import booking_heading
 
 # 26-digit Polish account number, optionally 'PL'-prefixed, grouped or wrapped across lines.
@@ -185,6 +184,9 @@ def _accounts(text: str) -> tuple[str | None, str | None]:
 
 
 def _amount(raw: str) -> float | None:
+    # The configured output schema also imports the routing evidence type.
+    from .output_schema import normalize
+
     amount = normalize("money", raw)
     return float(abs(amount)) if amount is not None else None
 
