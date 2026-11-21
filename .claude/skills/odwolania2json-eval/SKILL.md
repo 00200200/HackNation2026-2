@@ -28,6 +28,9 @@ check `git diff data/uzp`, commit it, and compare F1 only between runs on the sa
 uv run python -m evals.run --quick                       # przyklad_01-05, _24 + 3 negatives; before a push
 uv run python -m evals.run                               # all 60 cases + all negatives; before submitting
 uv run python -m evals.run --pred output/                # score an existing output tree (original file names)
+make eval-real                                          # local corpus, override with HN_REAL_CORPUS
+uv run python -m evals.run --corpus "$corpus" --detail-out "$corpus/detail-latest.json"
+uv run python -m evals.field_report --corpus "$corpus" --force-ocr --errors
 uv run pytest -q tests/test_eval_metrics.py              # metric code only
 ```
 
@@ -37,9 +40,16 @@ copies each case to `input/<case>/dokument_NN.pdf` in shuffled order, so the app
 reads `output/<case>/dokument_NN.json`. `ODW_TIMEOUT_S` bounds the run (default 3600 s). Exit code 1 when a
 required metric fails or is unknown.
 
-Each run writes `evals/results/latest.json` (commit it: it is the "own quality test results" deliverable) and
+Each training run writes `evals/results/latest.json` (commit it: it is the "own quality test results" deliverable) and
 `.git/eval-latest.json`, which the pre-push hook reads. Results carry per-document TP/FP/FN, so look at the worst
 documents and fields before changing prompts.
+
+Set `corpus` to the local corpus root. Each `cases/<case_id>/<name>.pdf` needs a matching
+`gold/<case_id>/<name>.json`, including an empty file for each unrelated PDF. Use `--pred DIR` to read
+`DIR/<case_id>/<name>.json` from a previous extraction. Corpus mode writes aggregates to
+`evals/results/corpus-latest.json` and leaves the training gate alone. Use `--detail-out` outside the repository
+for document-level counts. An empty corpus or a missed target gives exit code 1. Targets with no applicable
+documents, such as negative handling on an all-positive corpus, are skipped. The field report can print private document values to the terminal with `--errors`.
 
 ## F1 definition (`evals/metrics.py`)
 
@@ -55,6 +65,13 @@ this section when they answer. Working definition:
   document does not state (FAQ 6). `micro_f1_non_null` shows the variant that ignores gold-null fields.
 - Negative document: gold is empty, every predicted pair is a FP. Missing/invalid output: every gold pair is a FN.
 - The micro-F1 is pooled over all documents. `holdout_51_60` (full run) reports the same on cases 51–60.
+- `macro_f1_documents` averages F1 over documents with at least one predicted or reference leaf.
+  An invented field on a negative gives that document zero.
+- `macro_f1_classes` averages the field-level F1 scores for the target classes with reference or predicted fields.
+  A wrong class incurs missed fields in the reference class and spurious fields in the predicted class.
+  `macro_f1_class_count` gives the number of classes in the mean and `per_class_f1` names them.
+- `macro_f1_fields` gives each distinct leaf path the same weight. Match values within each document,
+  pool TP/FP/FN for each path across documents, then average the path scores. An empty average is JSON null.
 
 ## Metrics and targets
 

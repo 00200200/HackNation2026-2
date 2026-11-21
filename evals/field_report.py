@@ -1,6 +1,6 @@
-"""Per-field error report: uv run python -m evals.field_report [--holdout] [--force-ocr] [--errors]
+"""Per-field error report: uv run python -m evals.field_report [--holdout | --corpus DIR] [--force-ocr] [--errors]
 
-`evals.run` gives the headline F1. This report runs the pipeline in-process on the same training
+`evals.run` gives the headline F1. This report runs the pipeline in-process on the selected
 documents and shows which fields fail. Two differences from `evals.metrics`:
 - list items are paired one-to-one inside their parent before fields are compared, so a signer
   attached to the wrong principal is an error (the headline metric compares lists as multisets);
@@ -12,11 +12,12 @@ import argparse
 import re
 import time
 from collections import Counter, defaultdict
+from pathlib import Path
 
 from munkres import linear_sum_assignment
 
 from evals.metrics import NEGATIVE, doc_class
-from evals.run import DATA, HOLDOUT, load_cases
+from evals.run import DATA, HOLDOUT, load_cases, load_corpus
 from kio2json.pipeline import process_pdf
 
 _ABSENT = object()  # a field or list item that one side does not have
@@ -132,12 +133,18 @@ def f1(records: list[dict], key: str = "strict") -> tuple[float, float, float]:
 
 def main() -> None:
     parser = argparse.ArgumentParser(description=__doc__.splitlines()[0])
-    parser.add_argument("--holdout", action="store_true", help="only the holdout cases 51-60")
+    source = parser.add_mutually_exclusive_group()
+    source.add_argument("--holdout", action="store_true", help="only the holdout cases 51-60")
+    source.add_argument("--corpus", type=Path, help="paired cases/ and gold/ directories")
     parser.add_argument("--force-ocr", action="store_true", help="ignore the PDF text layer and OCR every page")
     parser.add_argument("--errors", action="store_true", help="list every field error")
     args = parser.parse_args()
 
-    cases = load_cases(DATA, quick=False)
+    data = args.corpus / "cases" if args.corpus else DATA
+    try:
+        cases = load_corpus(args.corpus) if args.corpus else load_cases(data, quick=False)
+    except (ValueError, OSError) as exc:
+        parser.error(str(exc))
     if args.holdout:
         cases = {case: documents for case, documents in cases.items() if case in HOLDOUT}
     confusion = Counter()
@@ -150,7 +157,7 @@ def main() -> None:
         for name, gold in documents.items():
             started = time.perf_counter()
             try:
-                _, predicted = process_pdf(DATA / case / name, force_ocr=args.force_ocr)
+                _, predicted = process_pdf(data / case / name, force_ocr=args.force_ocr)
             except Exception as error:  # noqa: BLE001 - a damaged PDF scores as an empty prediction
                 print(f"{case}/{name}: not processed ({type(error).__name__}: {error})")
                 predicted = {}
@@ -170,7 +177,12 @@ def main() -> None:
             exact[gold_class] += all(r["status"] == "ok" for r in records)
             counts[gold_class] += 1
 
+    if not seconds:
+        print(f"cases={len(cases)}  documents=0")
+        return
     classes = ["odwolanie", "pelnomocnictwo", "przelew", NEGATIVE]
+    if "unknown" in counts or any(predicted == "unknown" for _, predicted in confusion):
+        classes.append("unknown")
     print(
         f"cases={len(cases)}  documents={len(seconds)}  force_ocr={args.force_ocr}  "
         f"mean {sum(seconds) / len(seconds):.2f} s/doc, max {max(seconds):.2f} s"

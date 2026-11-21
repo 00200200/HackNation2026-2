@@ -1,8 +1,9 @@
-"""Run the app on the organizer's training cases and score it like the jury (field-level F1).
+"""Score the app on organizer training cases or a paired PDF and JSON corpus (field-level F1).
 
     uv run python -m evals.run --quick                 # small dev subset, before a push
     uv run python -m evals.run                         # all 60 cases + negatives, before submitting
     uv run python -m evals.run --pred output/          # score an existing output tree, no app run
+    uv run python -m evals.run --corpus DIR            # cases/<case>/*.pdf with matching gold/<case>/*.json
 
 The app is called as a black box with the jury's contract: `input/<case>/*.pdf` -> `output/<case>/<stem>.json`.
 PDFs are copied under neutral names, so classification cannot lean on file names.
@@ -56,6 +57,29 @@ def load_cases(data: Path, quick: bool) -> dict[str, dict[str, dict]]:
     return cases
 
 
+def load_corpus(root: Path) -> dict[str, dict[str, dict]]:
+    """Pair every PDF with its reference by case and stem. An empty reference explicitly labels a negative."""
+    data, gold = root / "cases", root / "gold"
+    if not data.is_dir() or not gold.is_dir():
+        raise ValueError("corpus must contain cases/ and gold/ directories")
+    cases: dict[str, dict[str, dict]] = {}
+    references = {p.relative_to(gold) for p in gold.glob("*/*.json") if p.is_file()}
+    for pdf in sorted(data.glob("*/*.pdf", case_sensitive=False)):
+        if not pdf.is_file():
+            continue
+        relative = pdf.relative_to(data).with_suffix(".json")
+        if relative not in references:
+            raise ValueError(f"missing or already matched reference: gold/{relative}")
+        reference = load_json(gold / relative)
+        if reference is None:
+            raise ValueError(f"invalid reference: gold/{relative}")
+        references.remove(relative)
+        cases.setdefault(pdf.parent.name, {})[pdf.name] = reference
+    if references:
+        raise ValueError(f"reference has no matching PDF: gold/{min(references)}")
+    return cases
+
+
 def stage(cases: dict[str, dict[str, dict]], data: Path, input_dir: Path) -> dict[tuple[str, str], str]:
     """Copy PDFs under shuffled neutral names. Returns {(case, original name): staged stem}."""
     names: dict[tuple[str, str], str] = {}
@@ -106,38 +130,71 @@ def build_results(docs: list[DocResult], mode: str, seconds_per_doc: float | Non
         "seconds_per_doc": {"value": seconds_per_doc, "target": None, "pass": True},
     }
     commit, dirty = git_state()
-    n_positive = sum(1 for c in cases if c != "negatywne")
+    n_cases = len(cases) if mode == "corpus" else sum(1 for c in cases if c != "negatywne")
+    required = [m for m in metrics.values() if mode != "corpus" or m["value"] is not None]
     return {
         "commit": commit,
         "dirty": dirty,
         "mode": mode,
         "timestamp": datetime.now(UTC).isoformat(timespec="seconds"),
-        "n_cases": n_positive,
+        "n_cases": n_cases,
         "n_docs": len(docs),
-        "coverage_ok": mode == "full" and n_positive >= 60 and "negatywne" in cases,
-        "overall_pass": run_error is None and all(m["pass"] is True for m in metrics.values()),
-        "run_error": run_error,
+        "coverage_ok": mode == "full" and n_cases >= 60 and "negatywne" in cases,
+        "overall_pass": bool(docs) and run_error is None and all(m["pass"] is True for m in required),
+        "run_error": "app failed" if mode == "corpus" and run_error else run_error,
         "metrics": metrics,
         "detail": summary,
         "holdout_51_60": holdout,
         "f1_definition": "evals/metrics.py docstring (organizer formula UNCONFIRMED)",
-        "docs": [asdict(d) for d in docs],
     }
+
+
+def document_rows(docs: list[DocResult]) -> list[dict]:
+    return [
+        {
+            "case": d.case,
+            "file": d.file,
+            "gold_class": d.gold_class,
+            "pred_class": d.pred_class,
+            "counts": asdict(d.counts),
+            "counts_non_null": asdict(d.counts_non_null),
+            "errors": d.errors,
+        }
+        for d in docs
+    ]
 
 
 def main() -> int:
     parser = argparse.ArgumentParser(description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter)
-    parser.add_argument("--quick", action="store_true", help="dev subset: 6 cases + 3 negatives")
+    mode_args = parser.add_mutually_exclusive_group()
+    mode_args.add_argument("--quick", action="store_true", help="dev subset: 6 cases + 3 negatives")
+    mode_args.add_argument("--corpus", type=Path, help="corpus with separate cases/ and gold/ trees")
+    parser.add_argument(
+        "--detail-out", type=Path, help="write corpus document rows to this file outside the repository"
+    )
     parser.add_argument("--cmd", default=os.environ.get("ODW_CMD", DEFAULT_CMD))
     parser.add_argument("--pred", type=Path, help="score this output tree (original file names) instead of running")
-    parser.add_argument("--data", type=Path, default=DATA)
+    parser.add_argument("--data", type=Path, help="override the organizer training data directory")
     args = parser.parse_args()
 
-    if not args.data.is_dir():
-        print(f"no data at {args.data}; run: make data", file=sys.stderr)
-        return 2
-    mode = "quick" if args.quick else "full"
-    cases = load_cases(args.data, args.quick)
+    if args.detail_out:
+        detail_path = args.detail_out.resolve()
+        if not args.corpus or any(p.is_dir() and p.samefile(ROOT) for p in (detail_path, *detail_path.parents)):
+            parser.error("--detail-out requires --corpus and a destination outside the repository")
+    if args.corpus:
+        if args.data:
+            parser.error("--data and --corpus select different layouts and cannot be used together")
+        mode, data = "corpus", args.corpus / "cases"
+        try:
+            cases = load_corpus(args.corpus)
+        except (ValueError, OSError) as exc:
+            parser.error(str(exc))
+    else:
+        mode, data = ("quick" if args.quick else "full"), args.data or DATA
+        if not data.is_dir():
+            print(f"no data at {data}; run: make data", file=sys.stderr)
+            return 2
+        cases = load_cases(data, args.quick)
     n_docs = sum(len(d) for d in cases.values())
 
     with tempfile.TemporaryDirectory(prefix="odw-eval-") as tmp:
@@ -146,7 +203,8 @@ def main() -> int:
             names = {(c, n): Path(n).stem for c, docs in cases.items() for n in docs}
         else:
             in_dir, out_dir = Path(tmp) / "input", Path(tmp) / "output"
-            names = stage(cases, args.data, in_dir)
+            in_dir.mkdir()
+            names = stage(cases, data, in_dir)
             out_dir.mkdir()
             elapsed, run_error = run_app(args.cmd, in_dir, out_dir)
         docs = [
@@ -155,31 +213,52 @@ def main() -> int:
             for name, gold in items.items()
         ]
 
-    seconds_per_doc = None if elapsed is None else elapsed / max(n_docs, 1)
+    seconds_per_doc = None if elapsed is None or not n_docs else elapsed / n_docs
     results = build_results(docs, mode, seconds_per_doc, cases, run_error)
-    payload = json.dumps(results, ensure_ascii=False, indent=2)
-    RESULTS.parent.mkdir(parents=True, exist_ok=True)
-    RESULTS.write_text(payload + "\n", encoding="utf-8")
-    git_dir = subprocess.run(
-        ["git", "rev-parse", "--git-dir"], check=False, cwd=ROOT, capture_output=True, text=True
-    ).stdout
-    if git_dir.strip():
-        (ROOT / git_dir.strip() / "eval-latest.json").write_text(payload + "\n", encoding="utf-8")
+    destination = RESULTS
+    if args.corpus:
+        destination = RESULTS.with_name("corpus-latest.json")
+        if args.detail_out:
+            detail_path.parent.mkdir(parents=True, exist_ok=True)
+            with tempfile.NamedTemporaryFile(mode="w", dir=detail_path.parent, encoding="utf-8", delete=False) as tmp:
+                json.dump({**results, "docs": document_rows(docs)}, tmp, ensure_ascii=False, indent=2)
+                tmp.write("\n")
+            Path(tmp.name).replace(detail_path)
+    else:
+        results["docs"] = document_rows(docs)
+    payload = json.dumps(results, ensure_ascii=False, indent=2) + "\n"
+    destination.parent.mkdir(parents=True, exist_ok=True)
+    destination.write_text(payload, encoding="utf-8")
+    if not args.corpus:
+        git_dir = subprocess.run(
+            ["git", "rev-parse", "--git-dir"], check=False, cwd=ROOT, capture_output=True, text=True
+        ).stdout
+        if git_dir.strip():
+            (ROOT / git_dir.strip() / "eval-latest.json").write_text(payload, encoding="utf-8")
 
     if run_error:
-        print(f"app failed: {run_error}", file=sys.stderr)
+        print("app failed" if args.corpus else f"app failed: {run_error}", file=sys.stderr)
     print(
         f"mode={mode} cases={results['n_cases']} docs={n_docs} commit={results['commit'][:9]} dirty={results['dirty']}"
     )
     for name, m in results["metrics"].items():
         value = "unknown" if m["value"] is None else f"{m['value']:.3f}"
         print(f"  {name:24} {value:>8}  target={m['target']}  pass={m['pass']}")
+        if name == "micro_f1":
+            for macro in ("macro_f1_documents", "macro_f1_classes", "macro_f1_fields"):
+                score = results["detail"][macro]
+                value = "unknown" if score is None else f"{score:.3f}"
+                context = ""
+                if macro == "macro_f1_classes":
+                    classes = ", ".join(results["detail"]["per_class_f1"]) or "none"
+                    context = f"  classes={results['detail']['macro_f1_class_count']} ({classes})"
+                print(f"  {macro:24} {value:>8}{context}")
     print(
         "  per class F1:", {k: None if v is None else round(v, 3) for k, v in results["detail"]["per_class_f1"].items()}
     )
     if holdout := results["holdout_51_60"]:
         print(f"  holdout 51-60 micro F1: {holdout['micro_f1']}")
-    print(f"written: {RESULTS.relative_to(ROOT)}")
+    print(f"written: {destination.relative_to(ROOT)}")
     return 0 if results["overall_pass"] else 1
 
 
