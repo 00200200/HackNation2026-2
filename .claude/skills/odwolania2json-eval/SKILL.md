@@ -29,8 +29,9 @@ uv run python -m evals.run --quick                       # przyklad_01-05, _24 +
 uv run python -m evals.run                               # all 60 cases + all negatives; before submitting
 uv run python -m evals.run --pred output/                # score an existing output tree (original file names)
 make eval-real                                          # local corpus, override with HN_REAL_CORPUS
-uv run python -m evals.run --corpus "$corpus" --detail-out "$corpus/detail-latest.json"
-uv run python -m evals.field_report --corpus "$corpus" --force-ocr --errors
+uv run python -m evals.run --corpus "$corpus" --split test
+uv run python -m evals.run --corpus "$corpus" --split dev --detail-out "$corpus/dev-detail.json"
+uv run python -m evals.field_report --corpus "$corpus" --split dev --force-ocr --errors
 uv run pytest -q tests/test_eval_metrics.py              # metric code only
 ```
 
@@ -49,7 +50,13 @@ Set `corpus` to the local corpus root. Each `cases/<case_id>/<name>.pdf` needs a
 `DIR/<case_id>/<name>.json` from a previous extraction. Corpus mode writes aggregates to
 `evals/results/corpus-latest.json` and leaves the training gate alone. Use `--detail-out` outside the repository
 for document-level counts. An empty corpus or a missed target gives exit code 1. Targets with no applicable
-documents, such as negative handling on an all-positive corpus, are skipped. The field report can print private document values to the terminal with `--errors`.
+documents, such as negative handling on an all-positive corpus, are skipped.
+
+An optional `SPLIT.json` at the corpus root gives two lists of case folder names, `dev` and `test`.
+Together they must cover each case exactly once. Both commands accept `--split dev|test|all` (default `all`).
+Only the selected split's gold and PDFs are scored. Inspect field errors on dev and score test by aggregates.
+For a run that includes designated test cases, the field report requires an external `--detail-out` for
+`--errors` and sends document diagnostics to that file.
 
 ## F1 definition (`evals/metrics.py`)
 

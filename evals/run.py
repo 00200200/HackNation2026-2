@@ -21,6 +21,7 @@ import subprocess
 import sys
 import tempfile
 import time
+from contextlib import contextmanager
 from dataclasses import asdict
 from datetime import UTC, datetime
 from pathlib import Path
@@ -57,26 +58,54 @@ def load_cases(data: Path, quick: bool) -> dict[str, dict[str, dict]]:
     return cases
 
 
-def load_corpus(root: Path) -> dict[str, dict[str, dict]]:
+def corpus_partition(root: Path, split: str) -> set[str] | None:
+    """Validate the whole-case split and return the case names to score."""
+    manifest = root / "SPLIT.json"
+    if not manifest.is_file():
+        if split == "all":
+            return None
+        raise ValueError("--split dev or test requires SPLIT.json in the corpus")
+    data = json.loads(manifest.read_text(encoding="utf-8"))
+    parts = {}
+    for label in ("dev", "test"):
+        names = data.get(label) if isinstance(data, dict) else None
+        if not isinstance(names, list) or not all(isinstance(name, str) for name in names):
+            raise ValueError("SPLIT.json must contain dev and test lists of case folder names")
+        parts[label] = set(names)
+        if len(parts[label]) != len(names):
+            raise ValueError("duplicate case in SPLIT.json")
+    names = parts["dev"] | parts["test"]
+    folders = {p.name for p in (root / "cases").iterdir() if p.is_dir()}
+    if parts["dev"] & parts["test"] or folders != names:
+        raise ValueError("SPLIT.json must assign every case folder to exactly one split")
+    return None if split == "all" else parts[split]
+
+
+def load_corpus(root: Path, split: str = "all") -> dict[str, dict[str, dict]]:
     """Pair every PDF with its reference by case and stem. An empty reference explicitly labels a negative."""
     data, gold = root / "cases", root / "gold"
     if not data.is_dir() or not gold.is_dir():
         raise ValueError("corpus must contain cases/ and gold/ directories")
     cases: dict[str, dict[str, dict]] = {}
-    references = {p.relative_to(gold) for p in gold.glob("*/*.json") if p.is_file()}
+    selected = corpus_partition(root, split)
+    references = {
+        p.relative_to(gold)
+        for p in gold.glob("*/*.json")
+        if p.is_file() and (selected is None or p.parent.name in selected)
+    }
     for pdf in sorted(data.glob("*/*.pdf", case_sensitive=False)):
-        if not pdf.is_file():
+        if not pdf.is_file() or (selected is not None and pdf.parent.name not in selected):
             continue
         relative = pdf.relative_to(data).with_suffix(".json")
         if relative not in references:
-            raise ValueError(f"missing or already matched reference: gold/{relative}")
+            raise ValueError("a selected PDF has a missing or already matched gold reference")
         reference = load_json(gold / relative)
         if reference is None:
-            raise ValueError(f"invalid reference: gold/{relative}")
+            raise ValueError("a selected PDF has an invalid gold reference")
         references.remove(relative)
         cases.setdefault(pdf.parent.name, {})[pdf.name] = reference
     if references:
-        raise ValueError(f"reference has no matching PDF: gold/{min(references)}")
+        raise ValueError("a selected gold reference has no matching PDF")
     return cases
 
 
@@ -164,29 +193,48 @@ def document_rows(docs: list[DocResult]) -> list[dict]:
     ]
 
 
+def external_detail_path(value: str) -> Path:
+    path = Path(value).resolve()
+    if any(p.is_dir() and p.samefile(ROOT) for p in (path, *path.parents)):
+        raise argparse.ArgumentTypeError("detail output must be outside the repository")
+    return path
+
+
+@contextmanager
+def private_output(path: Path):
+    path.parent.mkdir(parents=True, exist_ok=True)
+    with tempfile.TemporaryDirectory(dir=path.parent) as staging:
+        report = Path(staging) / "detail"
+        report.touch(mode=0o600)
+        with report.open("w", encoding="utf-8") as stream:
+            yield stream
+        report.replace(path)
+
+
 def main() -> int:
     parser = argparse.ArgumentParser(description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter)
     mode_args = parser.add_mutually_exclusive_group()
     mode_args.add_argument("--quick", action="store_true", help="dev subset: 6 cases + 3 negatives")
     mode_args.add_argument("--corpus", type=Path, help="corpus with separate cases/ and gold/ trees")
     parser.add_argument(
-        "--detail-out", type=Path, help="write corpus document rows to this file outside the repository"
+        "--split", choices=("dev", "test", "all"), help="case partition in corpus SPLIT.json (default all)"
+    )
+    parser.add_argument(
+        "--detail-out", type=external_detail_path, help="write corpus document rows to this file outside the repository"
     )
     parser.add_argument("--cmd", default=os.environ.get("ODW_CMD", DEFAULT_CMD))
     parser.add_argument("--pred", type=Path, help="score this output tree (original file names) instead of running")
     parser.add_argument("--data", type=Path, help="override the organizer training data directory")
     args = parser.parse_args()
 
-    if args.detail_out:
-        detail_path = args.detail_out.resolve()
-        if not args.corpus or any(p.is_dir() and p.samefile(ROOT) for p in (detail_path, *detail_path.parents)):
-            parser.error("--detail-out requires --corpus and a destination outside the repository")
+    if (args.detail_out or args.split) and not args.corpus:
+        parser.error("--detail-out and --split require --corpus")
     if args.corpus:
         if args.data:
             parser.error("--data and --corpus select different layouts and cannot be used together")
         mode, data = "corpus", args.corpus / "cases"
         try:
-            cases = load_corpus(args.corpus)
+            cases = load_corpus(args.corpus, args.split or "all")
         except (ValueError, OSError) as exc:
             parser.error(str(exc))
     else:
@@ -217,13 +265,12 @@ def main() -> int:
     results = build_results(docs, mode, seconds_per_doc, cases, run_error)
     destination = RESULTS
     if args.corpus:
+        results["split"] = args.split or "all"
         destination = RESULTS.with_name("corpus-latest.json")
         if args.detail_out:
-            detail_path.parent.mkdir(parents=True, exist_ok=True)
-            with tempfile.NamedTemporaryFile(mode="w", dir=detail_path.parent, encoding="utf-8", delete=False) as tmp:
+            with private_output(args.detail_out) as tmp:
                 json.dump({**results, "docs": document_rows(docs)}, tmp, ensure_ascii=False, indent=2)
                 tmp.write("\n")
-            Path(tmp.name).replace(detail_path)
     else:
         results["docs"] = document_rows(docs)
     payload = json.dumps(results, ensure_ascii=False, indent=2) + "\n"
@@ -238,8 +285,9 @@ def main() -> int:
 
     if run_error:
         print("app failed" if args.corpus else f"app failed: {run_error}", file=sys.stderr)
+    selection = f" split={results['split']}" if args.corpus else ""
     print(
-        f"mode={mode} cases={results['n_cases']} docs={n_docs} commit={results['commit'][:9]} dirty={results['dirty']}"
+        f"mode={mode}{selection} cases={results['n_cases']} docs={n_docs} commit={results['commit'][:9]} dirty={results['dirty']}"
     )
     for name, m in results["metrics"].items():
         value = "unknown" if m["value"] is None else f"{m['value']:.3f}"

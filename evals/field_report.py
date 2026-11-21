@@ -10,14 +10,17 @@ A wrong value costs one false positive and one false negative; null counts as a 
 
 import argparse
 import re
+import sys
 import time
 from collections import Counter, defaultdict
+from contextlib import nullcontext
 from pathlib import Path
+from typing import TextIO
 
 from munkres import linear_sum_assignment
 
 from evals.metrics import NEGATIVE, doc_class
-from evals.run import DATA, HOLDOUT, load_cases, load_corpus
+from evals.run import DATA, HOLDOUT, external_detail_path, load_cases, load_corpus, private_output
 from kio2json.pipeline import process_pdf
 
 _ABSENT = object()  # a field or list item that one side does not have
@@ -136,17 +139,35 @@ def main() -> None:
     source = parser.add_mutually_exclusive_group()
     source.add_argument("--holdout", action="store_true", help="only the holdout cases 51-60")
     source.add_argument("--corpus", type=Path, help="paired cases/ and gold/ directories")
+    parser.add_argument(
+        "--split", choices=("dev", "test", "all"), help="case partition in corpus SPLIT.json (default all)"
+    )
+    parser.add_argument(
+        "--detail-out", type=external_detail_path, help="write document diagnostics to this private file"
+    )
     parser.add_argument("--force-ocr", action="store_true", help="ignore the PDF text layer and OCR every page")
     parser.add_argument("--errors", action="store_true", help="list every field error")
     args = parser.parse_args()
 
+    if (args.detail_out or args.split) and not args.corpus:
+        parser.error("--detail-out and --split require --corpus")
+    split = args.split or "all"
+    includes_test = args.corpus and split != "dev" and (args.corpus / "SPLIT.json").is_file()
+    if includes_test and args.errors and not args.detail_out:
+        parser.error("--errors on test cases requires --detail-out outside the repository")
     data = args.corpus / "cases" if args.corpus else DATA
     try:
-        cases = load_corpus(args.corpus) if args.corpus else load_cases(data, quick=False)
+        cases = load_corpus(args.corpus, split) if args.corpus else load_cases(data, quick=False)
     except (ValueError, OSError) as exc:
         parser.error(str(exc))
     if args.holdout:
         cases = {case: documents for case, documents in cases.items() if case in HOLDOUT}
+    output = private_output(args.detail_out) if args.detail_out else nullcontext(None if includes_test else sys.stdout)
+    with output as diagnostics:
+        print_report(cases, data, force_ocr=args.force_ocr, errors=args.errors, diagnostics=diagnostics)
+
+
+def print_report(cases: dict, data: Path, *, force_ocr: bool, errors: bool, diagnostics: TextIO | None) -> None:
     confusion = Counter()
     by_class = defaultdict(list)
     normalized_by_class = defaultdict(list)
@@ -157,9 +178,10 @@ def main() -> None:
         for name, gold in documents.items():
             started = time.perf_counter()
             try:
-                _, predicted = process_pdf(data / case / name, force_ocr=args.force_ocr)
+                _, predicted = process_pdf(data / case / name, force_ocr=force_ocr)
             except Exception as error:  # noqa: BLE001 - a damaged PDF scores as an empty prediction
-                print(f"{case}/{name}: not processed ({type(error).__name__}: {error})")
+                if diagnostics is not None:
+                    print(f"{case}/{name}: not processed ({type(error).__name__}: {error})", file=diagnostics)
                 predicted = {}
             seconds.append(time.perf_counter() - started)
             gold_class, predicted_class = doc_class(gold), doc_class(predicted)
@@ -184,7 +206,7 @@ def main() -> None:
     if "unknown" in counts or any(predicted == "unknown" for _, predicted in confusion):
         classes.append("unknown")
     print(
-        f"cases={len(cases)}  documents={len(seconds)}  force_ocr={args.force_ocr}  "
+        f"cases={len(cases)}  documents={len(seconds)}  force_ocr={force_ocr}  "
         f"mean {sum(seconds) / len(seconds):.2f} s/doc, max {max(seconds):.2f} s"
     )
 
@@ -221,13 +243,14 @@ def main() -> None:
                 f"{status['wrong']:>7}{status['missing']:>9}{status['spurious']:>10}"
             )
 
-    if args.errors:
-        print("\nErrors")
+    if errors and diagnostics is not None:
+        print("\nErrors", file=diagnostics)
         for record in everything:
             if record["status"] != "ok":
                 print(
                     f"{record['document']} | {record['field']} | {record['status']}"
-                    f" | gold={record['gold']!r} | predicted={record['predicted']!r}"
+                    f" | gold={record['gold']!r} | predicted={record['predicted']!r}",
+                    file=diagnostics,
                 )
 
 

@@ -135,3 +135,56 @@ def test_scores_matching_predictions_for_single_class_corpus(corpus, repo, monke
     assert report["detail"]["per_class_f1"] == {"pelnomocnictwo": 1}
     assert report["detail"]["macro_f1_class_count"] == 1
     assert report["detail"]["macro_f1_classes"] == report["detail"]["micro_f1"] == 1
+
+
+def test_split_selects_whole_cases_and_skips_other_gold(corpus, repo, monkeypatch):
+    add_document(corpus, "alpha", "one", {"mocodawca": 1})
+    add_document(corpus, "alpha", "two", {})
+    add_document(corpus, "beta", "three", {"mocodawca": 2})
+    (corpus / "SPLIT.json").write_text(json.dumps({"dev": ["alpha"], "test": ["beta"]}))
+    assert len(run.load_corpus(corpus, "all")) == 2
+    (corpus / "gold/beta/three.json").write_text("invalid")
+    monkeypatch.setattr(
+        sys, "argv", ["eval", "--corpus", str(corpus), "--split", "dev", "--pred", str(corpus / "gold")]
+    )
+    assert run.main() == 0
+    report = json.loads((repo / "evals/results/corpus-latest.json").read_text())
+    assert (report["split"], report["n_cases"], report["n_docs"]) == ("dev", 1, 2)
+
+
+@pytest.mark.parametrize(
+    "manifest", [None, {"dev": ["one"], "test": ["one"]}, {"dev": [], "test": []}, {"dev": "one", "test": []}]
+)
+def test_explicit_split_needs_valid_partition(corpus, manifest):
+    add_document(corpus, "one", "doc", {})
+    if manifest is not None:
+        (corpus / "SPLIT.json").write_text(json.dumps(manifest))
+    with pytest.raises(ValueError):
+        run.load_corpus(corpus, "dev")
+
+
+@pytest.mark.parametrize("split", ["all", "test"])
+def test_field_report_protects_test_diagnostics(corpus, tmp_path, monkeypatch, capsys, split):
+    add_document(corpus, "secret-case", "secret-name", {"mocodawca": "secret-value"})
+    (corpus / "SPLIT.json").write_text(json.dumps({"dev": [], "test": ["secret-case"]}))
+
+    def damaged(*args, **kwargs):
+        raise ValueError("secret-error")
+
+    monkeypatch.setattr(field_report, "process_pdf", damaged)
+    argv = ["report", "--corpus", str(corpus), "--split", split]
+    monkeypatch.setattr(sys, "argv", argv)
+    field_report.main()
+    captured = capsys.readouterr()
+    assert "documents=1" in captured.out and "secret" not in captured.out + captured.err
+    monkeypatch.setattr(sys, "argv", argv + ["--errors"])
+    with pytest.raises(SystemExit) as error:
+        field_report.main()
+    assert error.value.code == 2
+    capsys.readouterr()
+    dest = tmp_path / "details.txt"
+    monkeypatch.setattr(sys, "argv", argv + ["--errors", "--detail-out", str(dest)])
+    field_report.main()
+    captured = capsys.readouterr()
+    assert "secret" not in captured.out + captured.err
+    assert "secret-value" in dest.read_text() and "secret-error" in dest.read_text()
