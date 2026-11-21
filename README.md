@@ -10,10 +10,18 @@ label patterns or an optional language model.
 
 ## Run
 
-You need Python 3.13+. Scanned PDFs also need the Tesseract binary with Polish data on `PATH`
-(`brew install tesseract tesseract-lang`, `apt install tesseract-ocr tesseract-ocr-pol`, or the
-UB Mannheim installer on Windows). Without Tesseract or its Polish data, PDFs that have a text
-layer with readable content still work. The CLI reports which scans failed and why.
+From the repository root, use 64-bit CPython 3.13 and a virtual environment. pip installs the
+Tesseract native libraries from PyPI. The local language-data wheel downloads the Polish and
+English fast models (8.88 MB combined) from a pinned revision on `raw.githubusercontent.com`
+and verifies both SHA-256 hashes. Once installed, the CLI and viewer process PDFs offline.
+[Platform wheels](https://pypi.org/project/tesserocr/2.13.0/#files)
+
+If the model host is unreachable, download both files on a connected machine and copy them into
+one directory. Before rerunning the install command below, set
+`export KIO_TESSDATA_SOURCE=/absolute/path/to/models` in a POSIX shell or
+`$env:KIO_TESSDATA_SOURCE = 'C:\models'` in PowerShell. Keep the original filenames.
+The installer verifies the same hashes for locally supplied files.
+[pol.traineddata](https://raw.githubusercontent.com/tesseract-ocr/tessdata_fast/87416418657359cb625c412a48b6e1d6d41c29bd/pol.traineddata) · [eng.traineddata](https://raw.githubusercontent.com/tesseract-ocr/tessdata_fast/87416418657359cb625c412a48b6e1d6d41c29bd/eng.traineddata)
 
 ```
 pip install -r requirements.txt
@@ -21,17 +29,33 @@ python -m kio2json                                   # reads ./input, writes ./o
 python -m kio2json --input some/input --output some/output
 ```
 
+The default OCR setting is `tesseract-dpi`. Set `KIO_OCR_ENGINE` to choose another mode for the CLI or viewer.
+
+| Setting | Pages requiring OCR |
+|---|---|
+| `tesseract-dpi` | Polish Tesseract with the source resolution set to the 300 dpi render, including e-mail crops. |
+| `tesseract` | Polish Tesseract with automatic source-resolution estimation. |
+| `rapidocr` | RapidOCR v6 on CPU. |
+| `hybrid` | Start with `tesseract-dpi`. Retry OCR pages with RapidOCR when the document is unreadable or fails to match a class. |
+
+Both RapidOCR modes require the optional CPU packages. Their wheels include the models and support an offline first run.
+Install them with `python -m pip install "rapidocr==3.10.0" "onnxruntime==1.32.0"`. With uv, use
+`uv run --group rapidocr python -m kio2json` after selecting the engine.
+For example, use `export KIO_OCR_ENGINE=rapidocr` in a POSIX shell or
+`$env:KIO_OCR_ENGINE = "rapidocr"` in PowerShell.
+
 Each PDF gets a JSON at the same relative path and file stem. Appeals, powers of attorney and
 bank-transfer confirmations get the organizer's structure. Any other document gets an empty
 file. A PDF that cannot be processed also gets an empty file, is reported on stderr, and makes
-the run exit with status 1 after processing the remaining PDFs. This includes required OCR that fails or times out.
+the run exit with status 1 after processing the remaining PDFs. A nonblank scan that yields fewer than two alphabetic words after page counters are removed
+reports `no readable text after OCR`. Blank pages may stand alone or appear beside a readable page.
 
 To open the Polish document viewer, run `python -m kio2json.gui`. It opens a browser on
 `127.0.0.1:8000`. Select PDFs and name the case, or enter a folder containing cases. Click
 **Analizuj dokumenty**, choose a document and compare its pages with the JSON. **Pobierz wyniki (.zip)**
 downloads one JSON per PDF under its case folder. Failed documents show the reason and get an
 empty file. The viewer keeps temporary copies for the current session. The default configuration
-works offline. The pipeline does not report which pages used OCR.
+works offline. Page provenance is used internally and the output follows the organizer’s JSON schema.
 
 | Start from the repository | Windows | Linux or macOS |
 |---|---|---|
@@ -42,17 +66,27 @@ works offline. The pipeline does not report which pages used OCR.
 
 ## How it works
 
-1. `kio2json/pdf_text.py` reads the first three pages with pdfplumber. Pages with no text or
-   only page numbers go through Polish Tesseract at 300 dpi.
+1. `kio2json/pdf_text.py` reads the first three pages with pdfplumber for extraction.
+   Pages with no usable text, including scans with a selectable page counter, go through OCR at 300 dpi.
+   If those pages require OCR and appear unreadable, the reader checks later pages for readable text
+   before reporting a document error. When Tesseract reads
+   a possible e-mail address with a missing `@`, an English single-word pass rereads that crop. The extractor accepts the separator
+   only when the rest of both readings agrees. Call `read_pages(path, word_boxes=boxes)` with
+   an empty list to collect raw words and their rectangles alongside the page strings. Coordinates
+   are PDF points from the top left, with one-based page numbers. Polish Tesseract has 60 seconds per
+   recognition call and each English verification crop has one second. RapidOCR runs in a reusable
+   child process. A 60-second page deadline kills a stalled worker so processing can continue.
 2. The CLI loads `config/classes/*.toml` once per batch. `kio2json/class_config.py` matches the
    page text against enabled definitions in ascending `priority`, then class ID order. The first
    match wins. The three organizer classes share the content classifier in `kio2json/classify.py`.
-   It reads headings in document order. A transfer needs two distinct accounts, a confirmation
+   It reads headings in document order. A transfer normally needs two distinct accounts, a confirmation
    heading or execution status, and a transaction amount or date. Rejected payments and payment
    requests get an empty file.
 3. `kio2json/engines.py` sends the joined page text to the selected extractor. The three jury
-   classes use `python` with a dotted path to the existing rule function. Each function retains
-   its field order and normalization. `labelled_fields` extracts values by pattern. `llm`
+   classes use `python` with a dotted path to the existing rule function. Native pages follow
+   the integration baseline. The reader records which pages needed OCR so account repair,
+   damaged e-mail handling and signature recovery can use the source of each field.
+   A scanned attachment does not enable masked-account routing on a native receipt. `labelled_fields` extracts values by pattern. `llm`
    generates a Pydantic AI output model from the same field definitions.
 
 ## Enable the fourth class
@@ -188,22 +222,59 @@ Read these as a regression check. The rules were written by looking at these sam
 documents, cases 51-60 included, so no case here is unseen and the 51-60 figure is no estimate
 of how the rules generalize. The hidden test set holds real cases, and this is not its score.
 
+A separate native-text differential test compares the class and serialized fields of 175 invented PDFs
+with a snapshot from integration base `3210643`. It includes 135 review cases and 40 additional
+documents. [Fixtures and regeneration command](tests/snapshots/README.md)
+
+Forced OCR on all 196 training PDFs (307 rendered pages) gave strict field F1 **0.900**
+with automatic source resolution and **0.884** with explicit 300 dpi. The comparison used the rules recorded in the measurement file. To run the
+current rules, select `KIO_OCR_ENGINE=tesseract-dpi` and run
+`uv run python -m evals.field_report --force-ocr --errors`. [OCR measurements](evals/results/ocr-engines.json)
+
+## OCR on real development documents
+
+All five runs used the same frozen extraction rules and 20 real development PDFs. Native text was
+used where available. Tesseract's explicit-DPI mode gained **0.0301** dev micro-F1 over automatic DPI.
+The hybrid improved on explicit DPI by **0.0133**, below the **0.0300** required to add RapidOCR to
+every installation. The shipped setting is `tesseract-dpi`. [Scores and measurement method](evals/results/ocr-engines.json)
+
+| Variant | Field micro-F1 | Macro-F1 | Routed correctly, appeal / power / transfer / other | Wall s / OCR page | CPU s / OCR page | Peak RSS, MiB | Installed MB |
+|---|---:|---:|---|---:|---:|---:|---:|
+| T0 | 0.3864 | 0.2794 | 7/7 / 2/3 / 0/4 / 6/6 | 3.07 | 2.32 | 493 | 221.27 |
+| T1 | 0.4164 | 0.2915 | 7/7 / 2/3 / 0/4 / 6/6 | 5.98 | 3.02 | 312 | 221.27 |
+| T1-PNG | 0.4164 | 0.2915 | 7/7 / 2/3 / 0/4 / 6/6 | 1.78 | 1.73 | 425 | 221.27 |
+| R | 0.4588 | 0.3693 | 7/7 / 2/3 / 2/4 / 6/6 | 14.27 | 15.19 | 1035 | 434.15 |
+| TR | 0.4297 | 0.3841 | 7/7 / 2/3 / 2/4 / 6/6 | 10.11 | 8.79 | 984 | 434.15 |
+
+T0 uses automatic source resolution. T1 sets 300 dpi. T1-PNG isolates lossless PNG ingestion.
+R runs RapidOCR throughout. TR retries an unrouted or unreadable T1 document with RapidOCR.
+Macro-F1 averages the three target classes. Timing includes the whole batch on a shared Apple
+M1, divided by its 34 distinct OCR pages. TR retried 9 documents (14 additional OCR pages).
+Peak RSS covers the process tree. Installed sizes are decimal MB excluding pip, bytecode and
+the interpreter. The six unrelated documents contribute routing outcomes. No private test cases
+were scored for this comparison.
+
+The default engine was measured again after the extraction rules began tracking page sources.
+The real-dev result is in [the corpus report](evals/results/corpus-latest.json). The
+`provenance_check` entry records the paired native-text and forced-OCR checks on the same
+rules. [OCR results](evals/results/ocr-engines.json)
+
 ## Known limits
 
 - The rules follow the two layout families in the training data. `input/case1` holds the
   organizer's one real, redacted, scanned appeal, which has a different layout. For that file
-  the baseline finds the class, filing date, place, BZP number and title. OCR puts text from the
-  contracting authority in the appellant block and leaves the challenged action empty. The
-  organizer supplies no reference JSON for this file.
-- Through OCR the rules lose fields. Tesseract misreads characters inside identifiers (`7` as
-  `/` in account numbers, `@` in e-mail addresses, `sp. z o.o.` as `sp. z 0.0.`) and drops the
-  dotted signature lines that the power-of-attorney rules use to find signers.
-  `evals.field_report --force-ocr` shows the affected fields.
-- A confirmation with a masked account, or with neither a transaction amount nor a date,
-  can be rejected. Unlabelled or conflicting account roles can produce null fields.
-- The party and signature rules need legible section boundaries. A missing grantor heading or
-  an ambiguous signature can leave a party or signer out. Attorney names retain the grammatical
-  case used in the document.
+  the extractor finds the class, filing date, place, procurement reference, BZP number and title.
+  The appellant name contains OCR noise. The contracting-authority list is empty and the challenged
+  action is missing. The organizer supplies no reference JSON for this file.
+- OCR can still lose accented letters, split a notice number or reorder columns. Scans with a
+  noisy but nonempty text layer follow the native-text path. A Polish account containing OCR
+  glyphs is repaired only if a unique candidate passes the IBAN mod-97 check. A fully printed
+  digit string is retained as read, including when the printed checksum is invalid. Ambiguous
+  signatures and e-mail addresses can remain missing.
+- On a scanned receipt, the single-account route needs a confirmation heading, a transaction amount and date,
+  and two explicitly labelled accounts. One must show a mask (asterisks, Xs or a dash) and the other a checksum-valid number.
+  The classifier passes the labelled account evidence to the extractor. A repeated number elsewhere in the text cannot fill a masked role. Unlabelled or conflicting roles can leave account fields empty.
+- OCR can recover a signer from a signature caption, a signature line in the grantor’s block, or a closing name with a representation title directly beneath the grant. Ambiguous roles can leave a signer out. Attorney names retain the grammatical case used in the document.
 - UNCONFIRMED: what "empty JSON" means for unrelated documents. We write an empty file, as the
   organizer README words it.
 - UNCONFIRMED: value types. `pesel` is a number in the organizer's annotated example and a string

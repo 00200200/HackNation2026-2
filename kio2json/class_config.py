@@ -12,6 +12,9 @@ from pydantic import BaseModel, BeforeValidator, ConfigDict, Field, ImportString
 
 from .model_profile import Profile, ProfileSettings
 
+from .classify import classify
+from .ocr_accounts import AccountEvidence
+
 DEFAULT_DIR = Path(__file__).resolve().parents[1] / "config" / "classes"
 
 
@@ -180,7 +183,9 @@ def model_route(pages: list[str]) -> str | None:
     return classify_llm(pages[0]) if pages and pages[0].strip() else None
 
 
-def route(pages: list[str], definitions: list[DocumentClass]) -> DocumentClass | None:
+def route(
+    pages: list[str], definitions: list[DocumentClass], *, ocr_accounts: AccountEvidence | None = None
+) -> DocumentClass | None:
     # Organizer classes share a classifier. Compute its result once for this PDF.
     labels = {}
     fallback = {}
@@ -193,7 +198,11 @@ def route(pages: list[str], definitions: list[DocumentClass]) -> DocumentClass |
             if definition.profile.routing == "fallback":
                 fallback[definition.id] = definition
             if classifier not in labels:
-                labels[classifier] = classifier(pages)
+                labels[classifier] = (
+                    classify(pages, ocr_accounts=ocr_accounts)
+                    if classifier is classify and ocr_accounts is not None
+                    else classifier(pages)
+                )
             if labels[classifier] == definition.id:
                 return definition
         elif routing.matches(pages):

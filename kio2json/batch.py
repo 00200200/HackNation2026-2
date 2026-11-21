@@ -8,6 +8,7 @@ from pathlib import Path
 
 from .class_config import DocumentClass
 from .endpoint_error import EndpointError
+from .pdf_text import NoReadableTextError
 from .pipeline import process_pdf
 
 
@@ -30,7 +31,8 @@ class Result:
 def read_document(path: Path, classes: list[DocumentClass]) -> Result:
     try:
         label, data = process_pdf(path, classes=classes)
+    except (EndpointError, NoReadableTextError) as error:
+        return Result(None, "", str(error))
     except Exception as error:  # noqa: BLE001 - PDF and OCR backends raise unrelated types.
-        detail = str(error) if isinstance(error, EndpointError) else f"{type(error).__name__}: {error}"
-        return Result(None, "", detail)
+        return Result(None, "", f"{type(error).__name__}: {error}")
     return Result(label, json.dumps(data, ensure_ascii=False, indent=2) + "\n" if data else "")

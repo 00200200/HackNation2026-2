@@ -1,0 +1,312 @@
+{
+  "rules_commit": "865b1ead2cd6b4484fc0c04766db8fc91b6b63e5",
+  "dataset": "20 real development PDFs in 13 cases selected by the external SPLIT.json dev list",
+  "documents": 20,
+  "class_counts": {
+    "odwolanie": 7,
+    "pelnomocnictwo": 3,
+    "przelew": 4,
+    "negatywny": 6
+  },
+  "routing_order": [
+    "odwolanie",
+    "pelnomocnictwo",
+    "przelew",
+    "negatywny"
+  ],
+  "machine": "Apple M1, 16 GiB, macOS arm64, CPU only",
+  "method": "Fresh processes, natural page routing. Corpus field micro-F1 via evals.metrics, macro is the unweighted mean of the three positive class scores. Times include startup, rendering, OCR, extraction and scoring. The denominator is 34 distinct pages requiring OCR, including for the hybrid. Process-tree CPU and peak summed RSS were sampled every 0.1 s. Shared host. Installed bytes from clean pip environments exclude interpreter, pip, caches and bytecode.",
+  "variants": {
+    "T0": {
+      "micro_f1": 0.38636363636363635,
+      "macro_three_classes": 0.27944776759799095,
+      "per_class_f1": {
+        "odwolanie": 0.4128113879003559,
+        "pelnomocnictwo": 0.425531914893617,
+        "przelew": 0.0
+      },
+      "routing": {
+        "odwolanie": {
+          "odwolanie": 7,
+          "pelnomocnictwo": 0,
+          "przelew": 0,
+          "negatywny": 0
+        },
+        "pelnomocnictwo": {
+          "odwolanie": 0,
+          "pelnomocnictwo": 2,
+          "przelew": 0,
+          "negatywny": 1
+        },
+        "przelew": {
+          "odwolanie": 0,
+          "pelnomocnictwo": 0,
+          "przelew": 0,
+          "negatywny": 4
+        },
+        "negatywny": {
+          "odwolanie": 0,
+          "pelnomocnictwo": 0,
+          "przelew": 0,
+          "negatywny": 6
+        }
+      },
+      "unique_ocr_pages": 34,
+      "ocr_passes_per_engine": {
+        "tesseract": 34
+      },
+      "documents_retried": 0,
+      "errors_by_type": {},
+      "wall_seconds": 104.48547691712156,
+      "cpu_seconds": 79.00014284800001,
+      "wall_seconds_per_ocr_page": 3.0731022622682813,
+      "cpu_seconds_per_ocr_page": 2.323533613176471,
+      "peak_rss_mib": 493.375,
+      "installed_bytes": 221274041
+    },
+    "T1": {
+      "micro_f1": 0.41643835616438357,
+      "macro_three_classes": 0.2915038355767839,
+      "per_class_f1": {
+        "odwolanie": 0.4489795918367347,
+        "pelnomocnictwo": 0.425531914893617,
+        "przelew": 0.0
+      },
+      "routing": {
+        "odwolanie": {
+          "odwolanie": 7,
+          "pelnomocnictwo": 0,
+          "przelew": 0,
+          "negatywny": 0
+        },
+        "pelnomocnictwo": {
+          "odwolanie": 0,
+          "pelnomocnictwo": 2,
+          "przelew": 0,
+          "negatywny": 1
+        },
+        "przelew": {
+          "odwolanie": 0,
+          "pelnomocnictwo": 0,
+          "przelew": 0,
+          "negatywny": 4
+        },
+        "negatywny": {
+          "odwolanie": 0,
+          "pelnomocnictwo": 0,
+          "przelew": 0,
+          "negatywny": 6
+        }
+      },
+      "unique_ocr_pages": 34,
+      "ocr_passes_per_engine": {
+        "tesseract-dpi": 34
+      },
+      "documents_retried": 0,
+      "errors_by_type": {},
+      "wall_seconds": 203.33360524987802,
+      "cpu_seconds": 102.583172608,
+      "wall_seconds_per_ocr_page": 5.980400154408177,
+      "cpu_seconds_per_ocr_page": 3.0171521355294115,
+      "peak_rss_mib": 312.078125,
+      "installed_bytes": 221274041
+    },
+    "T1-PNG": {
+      "micro_f1": 0.41643835616438357,
+      "macro_three_classes": 0.2915038355767839,
+      "per_class_f1": {
+        "odwolanie": 0.4489795918367347,
+        "pelnomocnictwo": 0.425531914893617,
+        "przelew": 0.0
+      },
+      "routing": {
+        "odwolanie": {
+          "odwolanie": 7,
+          "pelnomocnictwo": 0,
+          "przelew": 0,
+          "negatywny": 0
+        },
+        "pelnomocnictwo": {
+          "odwolanie": 0,
+          "pelnomocnictwo": 2,
+          "przelew": 0,
+          "negatywny": 1
+        },
+        "przelew": {
+          "odwolanie": 0,
+          "pelnomocnictwo": 0,
+          "przelew": 0,
+          "negatywny": 4
+        },
+        "negatywny": {
+          "odwolanie": 0,
+          "pelnomocnictwo": 0,
+          "przelew": 0,
+          "negatywny": 6
+        }
+      },
+      "unique_ocr_pages": 34,
+      "ocr_passes_per_engine": {
+        "tesseract-dpi": 34
+      },
+      "documents_retried": 0,
+      "errors_by_type": {},
+      "wall_seconds": 60.3704396658577,
+      "cpu_seconds": 58.877909504,
+      "wall_seconds_per_ocr_page": 1.7756011666428737,
+      "cpu_seconds_per_ocr_page": 1.7317032207058825,
+      "peak_rss_mib": 425.0,
+      "installed_bytes": 221274041
+    },
+    "R": {
+      "micro_f1": 0.4587628865979381,
+      "macro_three_classes": 0.3692951015531661,
+      "per_class_f1": {
+        "odwolanie": 0.4967741935483871,
+        "pelnomocnictwo": 0.3333333333333333,
+        "przelew": 0.2777777777777778
+      },
+      "routing": {
+        "odwolanie": {
+          "odwolanie": 7,
+          "pelnomocnictwo": 0,
+          "przelew": 0,
+          "negatywny": 0
+        },
+        "pelnomocnictwo": {
+          "odwolanie": 0,
+          "pelnomocnictwo": 2,
+          "przelew": 0,
+          "negatywny": 1
+        },
+        "przelew": {
+          "odwolanie": 0,
+          "pelnomocnictwo": 0,
+          "przelew": 2,
+          "negatywny": 2
+        },
+        "negatywny": {
+          "odwolanie": 0,
+          "pelnomocnictwo": 0,
+          "przelew": 0,
+          "negatywny": 6
+        }
+      },
+      "unique_ocr_pages": 34,
+      "ocr_passes_per_engine": {
+        "rapidocr": 34
+      },
+      "documents_retried": 0,
+      "errors_by_type": {},
+      "wall_seconds": 485.01167691731825,
+      "cpu_seconds": 516.458207648,
+      "wall_seconds_per_ocr_page": 14.265049321097596,
+      "cpu_seconds_per_ocr_page": 15.189947283764706,
+      "peak_rss_mib": 1034.6875,
+      "installed_bytes": 434149154
+    },
+    "TR": {
+      "micro_f1": 0.4297082228116711,
+      "macro_three_classes": 0.3840964281693765,
+      "per_class_f1": {
+        "odwolanie": 0.4489795918367347,
+        "pelnomocnictwo": 0.425531914893617,
+        "przelew": 0.2777777777777778
+      },
+      "routing": {
+        "odwolanie": {
+          "odwolanie": 7,
+          "pelnomocnictwo": 0,
+          "przelew": 0,
+          "negatywny": 0
+        },
+        "pelnomocnictwo": {
+          "odwolanie": 0,
+          "pelnomocnictwo": 2,
+          "przelew": 0,
+          "negatywny": 1
+        },
+        "przelew": {
+          "odwolanie": 0,
+          "pelnomocnictwo": 0,
+          "przelew": 2,
+          "negatywny": 2
+        },
+        "negatywny": {
+          "odwolanie": 0,
+          "pelnomocnictwo": 0,
+          "przelew": 0,
+          "negatywny": 6
+        }
+      },
+      "unique_ocr_pages": 34,
+      "ocr_passes_per_engine": {
+        "tesseract-dpi": 34,
+        "rapidocr": 14
+      },
+      "documents_retried": 9,
+      "errors_by_type": {},
+      "wall_seconds": 343.7192658749409,
+      "cpu_seconds": 298.834786816,
+      "wall_seconds_per_ocr_page": 10.109390172792379,
+      "cpu_seconds_per_ocr_page": 8.789258435764706,
+      "peak_rss_mib": 984.09375,
+      "installed_bytes": 434149154
+    }
+  },
+  "hybrid_minus_t1": 0.01326986664728752,
+  "threshold": 0.03,
+  "chosen": "T1",
+  "synthetic_forced": {
+    "T0": {
+      "documents": 196,
+      "exact_documents": 103,
+      "strict_field_f1": 0.9,
+      "method": "Freshly forced T0 transcripts scored through the frozen rules."
+    },
+    "T1": {
+      "documents": 196,
+      "exact_documents": 100,
+      "strict_field_f1": 0.884,
+      "method": "Fresh end-to-end forced recognition of all documents."
+    },
+    "TR": {
+      "documents": 196,
+      "exact_documents": 105,
+      "strict_field_f1": 0.901,
+      "method": "Fresh T1 transcripts and saved public-corpus RapidOCR v6 transcripts for the unrouted documents, scored through the same hybrid pipeline."
+    }
+  },
+  "provenance_check": {
+    "commit": "f0dfd0bcc8dd40ce36fbae08703859aa62cf2625",
+    "setting": "tesseract-dpi",
+    "native_differential": {
+      "base": "32106434f746628c7080191597f0766d4151d786",
+      "documents": 175,
+      "pages": 186,
+      "exact_documents": 175,
+      "differences_at_c222716": 24
+    },
+    "natural_real_dev": {
+      "documents": 20,
+      "cases": 13,
+      "field_micro_f1": 0.41643835616438357,
+      "class_macro_f1": 0.2915038355767839,
+      "source": "corpus-latest.json"
+    },
+    "synthetic_forced": {
+      "documents": 196,
+      "ocr_pages": 307,
+      "exact_documents": 100,
+      "field_records": 2420,
+      "correct": 2005,
+      "wrong": 111,
+      "missing": 200,
+      "spurious": 104,
+      "strict_precision": 0.9031531531531531,
+      "strict_recall": 0.8657167530224525,
+      "strict_field_f1": 0.8840388007054674,
+      "method": "Fresh full-pipeline recognition on each public PDF at 300 dpi, scored with evals.field_report."
+    }
+  }
+}

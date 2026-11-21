@@ -66,8 +66,8 @@ def test_footer_furniture_needs_ocr(stub, monkeypatch):
     doc = MagicMock()
     doc.__enter__.return_value.pages = [page]
     monkeypatch.setattr(pdf_text.pdfplumber, "open", lambda _: doc)
-    monkeypatch.setattr(pdf_text, "_ocr", lambda _: "odczyt")
-    assert pdf_text.read_pages("test.pdf") == ["odczyt"]
+    monkeypatch.setattr(pdf_text, "_ocr", lambda page, words: "odczyt dokumentu")
+    assert pdf_text.read_pages("test.pdf") == ["odczyt dokumentu"]
 
 
 def test_transfer_account_without_a_supported_role():
