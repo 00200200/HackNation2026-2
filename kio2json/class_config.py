@@ -123,11 +123,19 @@ class DocumentClass(Config):
     fields: dict[str, OutputField] = Field(min_length=1)
     _profile: Profile = PrivateAttr(default=Profile())
 
+    _rule_definition: Self | None = PrivateAttr(default=None)
+
+    @property
+    def rules_only(self) -> Self:
+        return self._rule_definition or self
+
     @property
     def profile(self) -> Profile:
         return self._profile
 
     def apply_profile(self, profile: Profile) -> None:
+        if profile.keyed:
+            self._rule_definition = self.model_copy()
         self._profile = profile
         if profile.mode in ("L", "V"):
             self.engines = ["llm"]
@@ -163,6 +171,19 @@ def load_classes(directory: Path | None = None) -> list[DocumentClass]:
         raise ValueError(f"{directory}: no class TOML files")
     classes = {}
     profile = ProfileSettings().profile() if directory.resolve() == DEFAULT_DIR else Profile()
+    if profile.keyed:
+        from pydantic import AnyHttpUrl, TypeAdapter, ValidationError
+
+        from .llm import Endpoint
+        from .pdf_text import DEFAULT_OCR_ENGINE, OCR_ENGINES
+
+        try:
+            endpoint = Endpoint()
+            TypeAdapter(AnyHttpUrl).validate_python(endpoint.base_url)
+        except ValidationError:
+            raise ValueError("Invalid model endpoint configuration") from None
+        if os.getenv("KIO_OCR_ENGINE", DEFAULT_OCR_ENGINE) not in OCR_ENGINES:
+            raise ValueError("Invalid OCR engine configuration")
     for path in files:
         try:
             definition = DocumentClass.model_validate(tomllib.loads(path.read_text(encoding="utf-8")))

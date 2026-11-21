@@ -45,8 +45,7 @@ For example, use `export KIO_OCR_ENGINE=rapidocr` in a POSIX shell or
 
 Each PDF gets a JSON at the same relative path and file stem. Appeals, powers of attorney and
 bank-transfer confirmations get the organizer's structure. Any other document gets an empty
-file. A PDF that cannot be processed also gets an empty file, is reported on stderr, and makes
-the run exit with status 1 after processing the remaining PDFs. A nonblank scan that yields fewer than two alphabetic words after page counters are removed
+file. In the default keyless profile, an unreadable PDF receives an empty file and a diagnostic on stderr. The CLI processes the remaining PDFs and exits with status 1. The keyed organizer profile uses the document recovery described below. A nonblank scan that yields fewer than two alphabetic words after page counters are removed
 reports `no readable text after OCR`. Blank pages may stand alone or appear beside a readable page.
 
 To open the Polish document viewer, run `python -m kio2json.gui`. It opens a browser on
@@ -195,8 +194,7 @@ A dash uses the application default.
 | `KIO_LLM_ROUTE_MAX_TOKENS` / `KIO_LLM_EXTRACT_MAX_TOKENS` | `24576` / `32768` | `32` / `1800` |
 | `KIO_LLM_TIMEOUT_SECONDS` | `480` | `180` |
 
-Transport retries are disabled. A failed document produces an empty
-file and an error on stderr. The CLI finishes the batch with exit status 1.
+Transport retries are disabled. In the keyed organizer profile, a model error, timeout, invalid answer or secondary OCR failure triggers the local rules for that PDF. If the rules also fail or the source cannot be read, the CLI writes an empty file and reports a diagnostic on stderr. It continues with the remaining PDFs. A missing input directory, invalid class configuration or output write failure still fails the batch.
 
 Each accepted value needs a citation in the displayed text. If a model flattens line breaks,
 the extractor looks for a unique span containing the same words and checks the original characters.
