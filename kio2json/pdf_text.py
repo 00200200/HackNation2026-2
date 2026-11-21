@@ -12,6 +12,7 @@ from typing import NamedTuple
 import pdfplumber
 from pdfplumber.utils import get_bbox_overlap, obj_to_bbox
 
+from .ocr_budget import RereadExpired, remaining_ms
 from .ocr_normalize import MAIL_TOKEN_RE, confirmed_email, normalize_ocr
 
 # The organizer README says the key information sits on the first three pages.
@@ -149,16 +150,24 @@ def _rapid_engine():
     )
 
 
-def _ocr(page, words: list[WordBox] | None, *, engine: str | None = None) -> str:
+def _ocr(page, words: list[WordBox] | None, *, engine: str | None = None, reread: bool = False) -> str:
     if engine is None:
         engine = os.environ.get("KIO_OCR_ENGINE", DEFAULT_OCR_ENGINE)
     if engine in TESSERACT_ENGINES:
-        return _tesseract(page, words, explicit_dpi=engine != "tesseract")
+        return _tesseract(page, words, explicit_dpi=engine != "tesseract", reread=reread)
     if engine != "rapidocr":
         raise ValueError(f"Unknown KIO_OCR_ENGINE={engine!r}, expected tesseract, tesseract-dpi, rapidocr or hybrid")
     from .rapid_worker import recognize
 
-    text, boxes = recognize(page.pdf.path, page.page_number, words is not None, OCR_TIMEOUT_SECONDS)
+    timeout = remaining_ms(1000 * OCR_TIMEOUT_SECONDS) / 1000 if reread else OCR_TIMEOUT_SECONDS
+    if not timeout:
+        raise RereadExpired
+    try:
+        text, boxes = recognize(page.pdf.path, page.page_number, words is not None, timeout)
+    except TimeoutError as error:
+        if reread and timeout < OCR_TIMEOUT_SECONDS:
+            raise RereadExpired from error
+        raise
     if words is not None:
         words.extend(WordBox(*box) for box in boxes)
     return text
@@ -186,17 +195,24 @@ def _rapidocr(page, words: list[WordBox] | None) -> str:
     return "\n".join(result.txts or ())
 
 
-def _tesseract(page, words: list[WordBox] | None, *, explicit_dpi: bool) -> str:
+def _tesseract(page, words: list[WordBox] | None, *, explicit_dpi: bool, reread: bool = False) -> str:
     """Recognize the page and verify suspect e-mail separators against their image crops."""
     from tesserocr import PSM, RIL, PyTessBaseAPI, iterate_level
 
+    if reread and not remaining_ms(1):
+        raise RereadExpired
     image = page.to_image(resolution=OCR_DPI)
     with ExitStack() as stack:
         api = stack.enter_context(PyTessBaseAPI(path=_language_dir(), lang="pol", psm=PSM.AUTO))
         api.SetImage(image.original)
         if explicit_dpi:
             api.SetSourceResolution(OCR_DPI)
-        if not api.Recognize(timeout=1000 * OCR_TIMEOUT_SECONDS):
+        timeout = remaining_ms(1000 * OCR_TIMEOUT_SECONDS) if reread else 1000 * OCR_TIMEOUT_SECONDS
+        if not timeout:
+            raise RereadExpired
+        if not api.Recognize(timeout=timeout):
+            if reread and not remaining_ms(1):
+                raise RereadExpired
             raise OCRRecognitionError("Polish OCR failed or timed out")
         text = api.GetUTF8Text()
         iterator = api.GetIterator() if text.strip() else None
@@ -225,7 +241,7 @@ def _tesseract(page, words: list[WordBox] | None, *, explicit_dpi: bool) -> str:
                 if start < 0:
                     continue
                 cursor = start + len(token)
-                if not MAIL_TOKEN_RE.fullmatch(token):
+                if not MAIL_TOKEN_RE.fullmatch(token) or not remaining_ms(1):
                     continue
                 if english is None:
                     english = stack.enter_context(PyTessBaseAPI(path=_language_dir(), lang="eng", psm=PSM.SINGLE_WORD))
@@ -239,7 +255,8 @@ def _tesseract(page, words: list[WordBox] | None, *, explicit_dpi: bool) -> str:
                 english.SetImage(image.original.crop(crop))
                 if explicit_dpi:
                     english.SetSourceResolution(OCR_DPI)
-                if english.Recognize(timeout=1000):
+                timeout = remaining_ms(1000)
+                if timeout and english.Recognize(timeout=timeout):
                     replacement = confirmed_email(token, english.GetUTF8Text().strip())
                     text = text[:start] + replacement + text[cursor:]
                     cursor = start + len(replacement)
@@ -255,6 +272,7 @@ def read_pages(
     engine: str | None = None,
     ocr_pages: list[int] | None = None,
     ocr_word_boxes: list[WordBox] | None = None,
+    reread: bool = False,
 ) -> list[str]:
     """Return the first pages and their optional boxes/OCR provenance. Check readability document-wide."""
     pages = []
@@ -263,6 +281,8 @@ def read_pages(
     readable = False
     word_count = 0
     recognize = _ocr if engine is None else partial(_ocr, engine=engine)
+    if reread:
+        recognize = partial(recognize, reread=True)
     with pdfplumber.open(pdf_path) as pdf:
         limit = len(pdf.pages[:max_pages])
         for index, page in enumerate(pdf.pages):

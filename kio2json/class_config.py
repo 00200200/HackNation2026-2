@@ -164,13 +164,21 @@ class DocumentClass(Config):
         return self
 
 
-def load_classes(directory: Path | None = None) -> list[DocumentClass]:
+def class_sources(directory: Path | None = None) -> dict[Path, bytes]:
     directory = directory or Path(os.getenv("KIO_CLASSES_DIR", DEFAULT_DIR))
     files = sorted(directory.glob("*.toml"))
     if not files:
         raise ValueError(f"{directory}: no class TOML files")
+    return {path: path.read_bytes() for path in files}
+
+
+def load_classes(directory: Path | None = None) -> list[DocumentClass]:
+    return parse_classes(class_sources(directory))
+
+
+def parse_classes(sources: dict[Path, bytes]) -> list[DocumentClass]:
     classes = {}
-    profile = ProfileSettings().profile() if directory.resolve() == DEFAULT_DIR else Profile()
+    profile = ProfileSettings().profile() if next(iter(sources)).parent.resolve() == DEFAULT_DIR else Profile()
     if profile.keyed:
         from pydantic import AnyHttpUrl, TypeAdapter, ValidationError
 
@@ -184,9 +192,9 @@ def load_classes(directory: Path | None = None) -> list[DocumentClass]:
             raise ValueError("Invalid model endpoint configuration") from None
         if os.getenv("KIO_OCR_ENGINE", DEFAULT_OCR_ENGINE) not in OCR_ENGINES:
             raise ValueError("Invalid OCR engine configuration")
-    for path in files:
+    for path, source in sources.items():
         try:
-            definition = DocumentClass.model_validate(tomllib.loads(path.read_text(encoding="utf-8")))
+            definition = DocumentClass.model_validate(tomllib.loads(source.decode("utf-8")))
             if definition.id in classes:
                 raise ValueError(f"duplicate class id {definition.id}")
             if (

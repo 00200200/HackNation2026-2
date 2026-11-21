@@ -23,7 +23,7 @@ from kio2json.class_config import DocumentClass
     ],
 )
 def test_cli_endpoint_failure_reports_only_path_type_and_status(
-    tmp_path, monkeypatch, capsys, caplog, failure, diagnostic
+    tmp_path, monkeypatch, capsys, caplog, failure, diagnostic, in_process_cli
 ):
     secret = "invented-endpoint-key"
     url = "https://operator:invented-password@offline.invalid/v1"
@@ -57,7 +57,7 @@ def test_cli_endpoint_failure_reports_only_path_type_and_status(
             "fields": {"ref": {"type": "string", "instruction": "Receipt reference", "pattern": r"Ref: (.+)"}},
         }
     )
-    monkeypatch.setattr(cli, "load_classes", lambda: [receipt])
+    monkeypatch.setattr(cli, "parse_classes", lambda _: [receipt])
     first = tmp_path / "first.pdf"
     first.touch()
     (tmp_path / "second.pdf").touch()

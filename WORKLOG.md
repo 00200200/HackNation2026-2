@@ -8,6 +8,8 @@ The integration branch combines real-layout appeal, grant and transfer rules wit
 OpenAI-compatible model engine. The default CLI and GUI run locally with the three endpoint
 variables unset. Keyed runs can use a second OCR reading and recover a failed document with local rules.
 
+The batch CLI uses up to four single-threaded Tesseract workers. The first OCR pass supplies layout word boxes, and optional OCR shares a 27-second per-document deadline.
+
 ## Last eval
 
 The full synthetic run matched 196/196 CLI outputs against the baseline by path, class and bytes,
@@ -88,3 +90,5 @@ These runs used local rules with the three endpoint variables unset. The two loc
 - 21.11.2026 · Codex · Fixed the execution-date regression reported on PR #23, added three native receipts with baseline outputs, and recognized three additional completed payment statuses. All 196 training files matched the baseline byte for byte at `ee6c36e`. The clean training run scored 1.000 micro F1 and the 30 organizer scans scored 0.5633 micro F1.
 
 - 21.11.2026 · Codex · Recovered officers, multiple appointments and register digits on scanned grants, and named signers from embedded certificates on real grants. All 10 organizer grants matched exactly in rules-only mode.
+
+- 21.11.2026 · Codex · Added process-based batch extraction, first-pass layout box reuse and a shared deadline for optional OCR on `perf/batch-runtime`.

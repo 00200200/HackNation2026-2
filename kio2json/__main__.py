@@ -6,23 +6,31 @@ and continues with empty output if recovery fails. Other document errors give ex
 """
 
 import argparse
+import os
 import sys
 from pathlib import Path
 
-from .batch import configure_logging, read_document
-from .class_config import load_classes
+from .batch import MAX_WORKERS, configure_logging, read_batch
+from .class_config import class_sources, parse_classes
 
 
 def main() -> int:
     parser = argparse.ArgumentParser(description=__doc__.splitlines()[0])
     parser.add_argument("--input", dest="input_dir", default="input", type=Path)
     parser.add_argument("--output", dest="output_dir", default="output", type=Path)
+    parser.add_argument(
+        "--workers",
+        type=int,
+        choices=range(1, MAX_WORKERS + 1),
+        help=f"PDF processes (default: available CPUs up to {MAX_WORKERS})",
+    )
     args = parser.parse_args()
 
     if not args.input_dir.is_dir():
         parser.error(f"input folder not found: {args.input_dir}")
     try:
-        classes = load_classes()
+        sources = class_sources()
+        classes = parse_classes(sources)
     except (OSError, ValueError) as error:
         print(f"Class configuration: {error}", file=sys.stderr)
         return 1
@@ -30,8 +38,8 @@ def main() -> int:
 
     pdfs = sorted(p for p in args.input_dir.rglob("*") if p.suffix.lower() == ".pdf")
     failed = 0
-    for pdf in pdfs:
-        result = read_document(pdf, classes)
+    workers = args.workers or min(MAX_WORKERS, os.process_cpu_count() or 1)
+    for pdf, result in zip(pdfs, read_batch(pdfs, sources, workers), strict=True):
         if result.error:
             print(f"{pdf}: not processed ({result.error})", file=sys.stderr)
             failed += 1

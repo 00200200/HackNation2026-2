@@ -57,7 +57,7 @@ def test_letterhead_date_and_officer_distinct_from_counsel():
 def test_two_columns_use_printed_rows_for_detached_labels(monkeypatch):
     from pathlib import Path
 
-    from kio2json import appeal_layout, pipeline
+    from kio2json import pipeline
     from kio2json.pdf_text import WordBox
 
     rows = [("Zamawiający:", "Fabryka", "Tęczy"), ("Odwołujący:", "Port", "Mgły")]
@@ -73,7 +73,6 @@ def test_two_columns_use_printed_rows_for_detached_labels(monkeypatch):
         return ["Zamawiający:\nOdwołujący:\nFabryka Tęczy\nPort Mgły\nODWOŁANIE"]
 
     monkeypatch.setattr(pipeline, "read_pages", read)
-    monkeypatch.setattr(appeal_layout, "read_pages", read)
     label, result = pipeline.process_pdf(Path("invented.pdf"))
     assert label == "appeal"
     assert [a["nazwa"] for a in result["Zamawiajacy"]] == ["Fabryka Tęczy"]

@@ -36,6 +36,11 @@ python -m kio2json                                   # reads ./input, writes ./o
 python -m kio2json --input some/input --output some/output
 ```
 
+The CLI processes PDFs in up to four worker processes, limited by the CPUs available to Python.
+Use `--workers 1` for a sequential
+run or `--workers 2` through `--workers 4` to select the pool size. Each worker uses one
+Tesseract thread. The CLI writes results in sorted input order.
+
 The default OCR setting is `tesseract-dpi`. Set `KIO_OCR_ENGINE` to choose another mode for the CLI or viewer.
 
 | Setting | Pages requiring OCR |
@@ -79,7 +84,9 @@ works offline. Page provenance is used internally and the output follows the org
    only when the rest of both readings agrees. Call `read_pages(path, word_boxes=boxes)` with
    an empty list to collect raw words and their rectangles alongside the page strings. Coordinates
    are PDF points from the top left, with one-based page numbers. Polish Tesseract has 60 seconds per
-   recognition call and each English verification crop has one second. RapidOCR runs in a reusable
+   primary page and each English verification crop has one second. Optional OCR calls also share a
+   27-second deadline measured from the start of each PDF. When it expires, extraction continues with the
+   available readings. Every page required for the first reading still gets its full recognition timeout. RapidOCR runs in a reusable
    child process. A 60-second page deadline kills a stalled worker so processing can continue.
 2. The CLI loads `config/classes/*.toml` once per batch. `kio2json/class_config.py` matches the
    page text against enabled definitions in ascending `priority`, then class ID order. The first
