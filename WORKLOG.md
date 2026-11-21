@@ -10,8 +10,7 @@ Shared state of the project. Rules: `CLAUDE.md` → Worklog.
   content-based classification with a rejection path; regex and line-layout extraction per class; pdfplumber text
   with wheel-packaged Tesseract for blank or page-number-only text layers. Installation fetches and verifies the
   language models or reads supplied copies from `KIO_TESSDATA_SOURCE`. The default is `tesseract-dpi`. RapidOCR and the document retry mode are opt-in. Both engines run offline
-  and return word boxes in PDF points on request. The reader records the source of each page. Native
-  content uses the baseline rules, and OCR signer, account and e-mail rules use page provenance. Branch `feat/ocr-engine`.
+  and return word boxes in PDF points on request. The reader records the source of each page. OCR signer, account and e-mail rules use page provenance. Native appeal documents use the same filing and party evidence as scanned appeals. Branch `feat/ocr-engine`.
 - The eval harness scores training cases and local paired PDF/JSON corpora. It reports micro F1 and macro F1 by
   document, represented class and field. Both layouts support per-field errors and OCR stress runs (`--force-ocr`).
   Private detail files must be outside all worktrees and Git metadata. Input or extraction failures stop evaluation
@@ -31,6 +30,17 @@ The full clean training run recorded in `evals/results/latest.json` scored `micr
 `classification_accuracy` 1.000, `negatives_empty` 1.000. Training data (synthetic). The rules were written with
 sight of these documents, cases 53-60 included, so this is a regression check and the 51-60 figure is not an
 unseen-case estimate for this baseline.
+
+The final appeal fixes at `d00a3e0` retained 0.6384 micro F1 and 0.7056 appeal F1 on 22 private dev PDFs. All 50 new differential inputs and all 196 training PDFs matched the integration base through the CLI. The held-out score below is from the preceding revision. [Final dev aggregate](evals/results/corpus-latest.json)
+
+On the same 22 private dev PDFs (14 cases), overall micro F1 fell from 0.6830 at `b0a640f` to 0.6384 at `d8a2a8f`. Appeal F1 fell from 0.7586 to 0.7056 and macro F1 by class from 0.3947 to 0.3770. Both runs routed all eight appeals and seven negatives correctly. On 17 private test PDFs (seven cases), the single final run scored 0.4070 micro F1, 0.4552 appeal F1 and 0.3073 macro F1 by class. [Test aggregate](https://github.com/00200200/HackNation2026-2/blob/fe98f74/evals/results/corpus-latest.json)
+
+Before merging the explicit-DPI OCR engine, whole-dev micro F1 rose from 0.3864 to 0.7237 and appeal field F1 rose from
+0.4128 to 0.8166. All seven dev appeals routed correctly in both runs. The single held-out run scored
+0.4186 micro F1 and 0.3123 macro F1 by class across 17 PDFs.
+
+Earlier OCR measurements at `c2bf060` follow. The merged forced-OCR field report scored 0.897 on 196 synthetic PDFs. Strict F1 on 17 real dev scans was
+0.331 with Tesseract and 0.419 with RapidOCR v6. Natural dev F1 on 20 PDFs was 0.3864 and 0.4588, respectively.
 
 On the frozen review fixes at `865b1ea`, the 20-document real dev comparison gave T0/T1/R/TR
 micro-F1 0.3864/0.4164/0.4588/0.4297. The default is `tesseract-dpi`. Full timings, macro-F1 and routing are in
@@ -54,7 +64,7 @@ Both splits missed the team’s micro F1 and classification targets. Compared wi
 
 | Item | Owner |
 |---|---|
-| Real-layout appeals: small reference set from real KIO appeals; coordinate-aware rules vs a grounded model call | — |
+| Appeal follow-up: recover damaged names and contacts, and signatures beyond the first three pages | — |
 | Measure accuracy and latency of the config-selected LLM on real layouts once the EU model endpoint is available | — |
 | Transparency output: source page, quoted text and rule per field | — |
 | Ask the UZP stand: F1 formula, stage II weights (README 50/50 vs PDF 50/30/20) | — |
@@ -92,6 +102,8 @@ Both splits missed the team’s micro F1 and classification targets. Compared wi
 - 21.11.2026 · Codex · merged the config-driven extraction baseline (`4b1cc42`) into the evaluation branch for the final training and corpus checks.
 - 21.11.2026 · Codex · added training checks for empty or mislabelled positive references. The negative output check now distinguishes a zero-byte prediction from an empty JSON object.
 - 21.11.2026 · Codex · Added the local PDF viewer and start scripts for #11 in `d1c9749`. Browser uploads and ZIP downloads matched the CLI for all three document classes, a scanned appeal and an unrelated PDF.
+- 21.11.2026 · Codex · Recovered appeal parties from detached labels and joint lists, scoped counsel to the appellant, and extracted procurement and first-charge facts from prose. Product `ee3c8ca`.
+
 - 21.11.2026 · Codex · Merged the GUI baseline through `ac78d2d` into the OCR branch. Added unreadable-scan diagnostics, signature ownership checks, labelled account evidence, a RapidOCR worker deadline, and a checksum-verified local model source.
 - 21.11.2026 · Codex · Integrated the corpus and macro-F1 harness from `3210643`. The OCR comparison uses the frozen extraction rules from `865b1ea`.
 - 21.11.2026 · Codex · Measured T0, T1, T1 with PNG input, R and TR on the dev cases. The hybrid gain was 0.0133, below the 0.0300 gate. Selected `tesseract-dpi` and kept RapidOCR optional.
@@ -99,6 +111,9 @@ Both splits missed the team’s micro F1 and classification targets. Compared wi
 
 - 21.11.2026 · Codex · Scoped the OCR rules on `feat/ocr-engine` to recognized text after the review of `c222716`. Added document-level checks for unreadable scans and regression tests for mixed PDFs.
 - 21.11.2026 · Codex · Added a native PDF snapshot from `3210643` to check the new page-provenance rules in `2a500e4`. All 175 cases match, including 24 that differed at `c222716`. The ordinary CLI still matches class, path and bytes on all 196 organizer PDFs.
-- 21.11.2026 · Codex · After `f1aa51b`, fixed spelled-out page counters and recognition of scanned bodies inside wide margins. The default-engine recheck is recorded in `evals/results/ocr-engines.json` under `provenance_check`, with the dev harness aggregate in `evals/results/corpus-latest.json`.
+- 21.11.2026 · Codex · After `f1aa51b`, fixed spelled-out page counters and recognition of scanned bodies inside wide margins. The default-engine recheck is recorded in `evals/results/ocr-engines.json` under `provenance_check`, with the dev harness aggregate in [the frozen OCR report](https://github.com/00200200/HackNation2026-2/blob/5c4eff29d5872d64845ec533a3df0af9ba174740/evals/results/corpus-latest.json).
 - 21.11.2026 · Codex · Repaired receipt role, date and identifier precedence and grant ownership. Added a 237-document native comparison against the integration base and recorded paired development scores and one held-out measurement on PR #20.
 - 21.11.2026 · Codex · Preserved execution dates and completed receipts with status fields or complaint notices. Compared 42 additional native documents with integration base `e051dfa` and preserved internal periods in printed transaction references.
+
+- 21.11.2026 · Codex · Merged the default explicit-DPI OCR engine at `b0a640f`. Before the appeal review fixes, dev micro F1 was 0.6944 and appeal F1 was 0.7811. Added regression coverage for filing evidence, party and counsel ownership, procurement labels and the first dated act.
+- 21.11.2026 · Codex · Merged OCR page provenance through `5c4eff2` into the appeal fixes. Verified 155 invented differential inputs and 175 native PDFs against integration base `3210643`, with each intentional correction recorded by input and field. All 196 training PDFs retained the same routing, paths and bytes, and all 873 tests passed.

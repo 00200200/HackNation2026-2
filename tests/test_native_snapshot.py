@@ -5,7 +5,8 @@ import json
 import pdfplumber
 import pytest
 from snapshots.generate_native import BASE, CASES, write_native_pdf
-from test_grant_transfer_differential import NATIVE_IMPROVEMENTS, expected_result
+from snapshots.grant_transfer_changes import expected_result
+from test_appeal_differential import expected_native_result
 
 from kio2json import pdf_text, pipeline
 
@@ -30,7 +31,5 @@ def test_native_pdf_matches_base(name, tmp_path, monkeypatch):
         assert [page.extract_text() for page in pdf.pages] == [page.rstrip("\n") for page in pages]
     result = pipeline.process_pdf(path)
     # Serialization also checks field order and distinguishes booleans from integer flags.
-    expected = SNAPSHOT["outputs"][name]
-    if name in NATIVE_IMPROVEMENTS:
-        expected = expected_result(name, expected)
+    expected = expected_result(name, expected_native_result(pages, SNAPSHOT["outputs"][name]))
     assert json.dumps(result, ensure_ascii=False) == json.dumps(expected, ensure_ascii=False)

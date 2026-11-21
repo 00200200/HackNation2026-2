@@ -2,9 +2,11 @@
 
 import re
 
+from rapidfuzz.distance import Levenshtein
 from stdnum import iban
 
 from . import bank_transfer, power_of_attorney
+from .appeal_charges import FILING
 from .ocr_accounts import AccountEvidence
 from .receipt_layout import booking_heading
 
@@ -65,14 +67,31 @@ def classify(pages: list[str], *, ocr_accounts: AccountEvidence | None = None) -
         return None
     head = "\n".join(pages[:2])
     transfer_heading = False
+    register_heading = False
     for index, page in enumerate(pages[:2]):
         for row in page.splitlines():
             line = row.strip()
             heading = re.sub(r"\s", "", line).upper()
             if UNRELATED_HEADING.match(line):
                 return None
-            if heading == "ODWOŁANIE":
-                return "appeal" if "odwołując" in head.casefold() else None
+            if re.match(r"^(?:rejestr|wykaz|spis|ewidencja)\b", line, re.IGNORECASE):
+                register_heading = True
+            if Levenshtein.distance(heading, "ODWOŁANIE", score_cutoff=1) <= 1:
+                party = re.search(r"odwo[łl]uj[ąa]c", head, re.IGNORECASE)
+                labelled_parties = re.search(r"(?im)^(?:wykonawca|odwo[łl]uj[ąa]cy)\s*[:(]", head) and re.search(
+                    r"(?im)^zamawiaj[ąa]cy\s*[:(]", head
+                )
+                # A grammatical word one edit away can be a register heading.
+                clear_heading = heading.translate(str.maketrans({"0": "O", "L": "Ł"})) == "ODWOŁANIE"
+                if clear_heading and (labelled_parties or FILING.search(head) or (heading == "ODWOŁANIE" and party)):
+                    return "appeal"
+                # With an ambiguous heading, require party fields and the filer's own declaration.
+                if (
+                    not register_heading
+                    and labelled_parties
+                    and re.search(r"(?im)^\s*(?:wnoszę|wnosimy|składam|składamy)\s+(?:niniejsze\s+)?odwołanie\b", head)
+                ):
+                    return "appeal"
             if re.fullmatch(r"PEŁNOMOCNICTWO(?:PROCESOWE|SZCZEGÓLNE)?(?:NR[.:]?[0-9][A-Z0-9./-]*)?", heading):
                 return "power_of_attorney"
             if CONFIRMATION_HEADING.match(line) or booking_heading(line, ocr=index == 0 and ocr_accounts is not None):

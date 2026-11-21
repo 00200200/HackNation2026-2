@@ -224,8 +224,7 @@ of how the rules generalize. The hidden test set holds real cases, and this is n
 
 A separate native-text differential test compares the class and serialized fields of 175 invented PDFs
 with a snapshot from integration base `3210643`. It includes 135 review cases and 40 additional
-documents. The grant and transfer suite replays 279 invented PDFs against integration base `e051dfa`. Each
-permitted field change records the original value, its replacement and a reason. [Fixtures and regeneration command](tests/snapshots/README.md)
+documents. Two suites compare 279 invented grant, receipt and routing PDFs and 205 appeal and routing inputs with integration base `e051dfa`. Each expected change records the original value, replacement and reason. [Fixtures and regeneration commands](tests/snapshots/README.md)
 
 Forced OCR on all 196 training PDFs (307 rendered pages) gave strict field F1 **0.900**
 with automatic source resolution and **0.884** with explicit 300 dpi. The comparison used the rules recorded in the measurement file. To run the
@@ -256,17 +255,18 @@ the interpreter. The six unrelated documents contribute routing outcomes. No pri
 were scored for this comparison.
 
 The default engine was measured again after the extraction rules began tracking page sources.
-The result for those frozen extraction rules is in [the corpus report](evals/results/corpus-latest.json). The
+The real-dev result is in [the OCR branch corpus report](https://github.com/00200200/HackNation2026-2/blob/5c4eff29d5872d64845ec533a3df0af9ba174740/evals/results/corpus-latest.json). The
 `provenance_check` entry records the paired native-text and forced-OCR checks on the same
 rules. [OCR results](evals/results/ocr-engines.json)
 
 ## Known limits
 
-- Appeal extraction follows the two layout families in the training data. `input/case1` holds the
-  organizer's one real, redacted, scanned appeal, which has a different layout. For that file
-  the extractor finds the class, filing date, place, procurement reference, BZP number and title.
-  The appellant name contains OCR noise. The contracting-authority list is empty and the challenged
-  action is missing. The organizer supplies no reference JSON for this file.
+- Appeal extraction reads the first three pages. A signature or dated notice later in the PDF can be missed.
+  The extractor uses printed word positions when a scan groups party labels into a separate column.
+  Explicit party labels and filing clauses can identify the parties. An unlabelled list, an ambiguous
+  column alignment or an inflected company name can still leave a party missing. A plain title can include
+  lowercase continuation rows before the next labelled field. A challenge date needs a link to the act
+  or its notification. Separate filing, invoice and statutory dates can appear on the same page.
 - Receipt routing uses evidence that a payment was executed, its amount or date, and the participating
   accounts. A booking table or bank letter needs both an amount and a date. The extractor binds payer
   and payee separately from fee and refund accounts. Explicit operation or execution dates and transaction IDs take

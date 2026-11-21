@@ -6,6 +6,7 @@ from functools import partial
 from pathlib import Path
 
 from . import appeal, bank_transfer, ocr_extract, power_of_attorney
+from .appeal_layout import restore_party_columns
 from .class_config import DocumentClass, load_classes, route
 from .classify import incomplete_booking_scan
 from .engines import extract
@@ -120,6 +121,8 @@ def process_pdf(
             continue
         readable = True
         if definition is not None:
+            if definition.id == "appeal":
+                pages = restore_party_columns(pdf_path, pages, force_ocr, engine=engine)
             ocr_python = None
             if ocr_pages:
                 if definition.extractor is bank_transfer.extract:
