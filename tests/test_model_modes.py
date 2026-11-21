@@ -212,3 +212,29 @@ def test_incomplete_gap_scope(keyed, monkeypatch, recognized, scanned, expected_
     label, _ = pipeline.process_pdf(Path("opaque.pdf"))
     assert label == "power_of_attorney"
     assert len(calls) == expected_calls
+
+
+def test_rules_first_keeps_verified_receipt_title_before_model_gap_fill(keyed, monkeypatch):
+    monkeypatch.setenv("KIO_LLM_MODE", "RL")
+    monkeypatch.setenv("KIO_LLM_DUAL_OCR", "false")
+    receipt = "Potwierdzenie przelewu\n" + "3" * 26 + "\n" + "4" * 26 + "\nKwota: 12,00"
+
+    def read(*args, ocr_pages, ocr_word_boxes, **kwargs):
+        ocr_pages.append(1)
+        ocr_word_boxes.append(pipeline.WordBox(1, "Tytuł", 10, 10, 30, 20))
+        return [receipt]
+
+    monkeypatch.setattr(pipeline, "read_pages", read)
+    monkeypatch.setattr(pipeline, "recover_account_crops", lambda path, pages, boxes: pages)
+    monkeypatch.setattr(pipeline, "reread_title", lambda path, boxes, title: "Druk katalogu")
+
+    def model(definition, text, model=None):
+        values = dict.fromkeys(definition.fields["przelew_bankowy"].fields)
+        values.update(tytul="Opis zastępczy", numer_transakcji="KAT-42")
+        return {"przelew_bankowy": values}
+
+    monkeypatch.setattr(llm, "extract_llm", model)
+    label, record = pipeline.process_pdf(Path("opaque.pdf"))
+    assert label == "bank_transfer"
+    assert record["przelew_bankowy"]["tytul"] == "Druk katalogu"
+    assert record["przelew_bankowy"]["numer_transakcji"] == "KAT-42"

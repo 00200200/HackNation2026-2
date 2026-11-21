@@ -118,6 +118,40 @@ def _read_receipt(
     return pages, definition, accounts
 
 
+def _grant_signers(pdf_path, record, pages, ocr_pages, engine):
+    add_certificate_signers(pdf_path, record, join_pages(pages))
+    if engine.startswith("tesseract") and len(pages) == 1 and 1 in ocr_pages:
+        recover_board_stamp(pdf_path, record, pages[0])
+
+
+def _document_rules(definition, pdf_path, pages, ocr_pages, boxes, engine, selected, accounts):
+    """Build the local candidate, including PDF evidence, before optional model gap filling."""
+    rules_first = definition.profile.rules_first
+    if definition.extractor is bank_transfer.extract and ocr_pages:
+        record = ocr_extract.extract_bank_transfer(pages, ocr_pages, accounts=accounts)
+        if boxes and 1 in ocr_pages and (definition.engines == ["python"] or definition.profile.mode == "RL"):
+            fields = record["przelew_bankowy"]
+            title = reread_title(pdf_path, boxes, fields["tytul"])
+            if title is not None:
+                fields["tytul"] = title
+        return record
+    if definition.extractor is appeal.extract and ocr_pages:
+        if rules_first:
+            words = [box for box in boxes if box.page == 1] if selected == "tesseract-dpi" else []
+            return ocr_extract.extract_scanned_appeal(pages, ocr_pages, pdf_path, words)
+        return ocr_extract.extract_appeal(pages, ocr_pages)
+    if definition.extractor is power_of_attorney.extract:
+        if ocr_pages:
+            grant_pages = verified_pages(pdf_path, pages, boxes) if rules_first else pages
+            record = ocr_extract.extract_power_of_attorney(grant_pages, ocr_pages)
+        else:
+            record = power_of_attorney.extract(join_pages(pages))
+        if definition.profile.mode == "RL":
+            _grant_signers(pdf_path, record, pages, ocr_pages, engine)
+        return record
+    return definition.extractor(join_pages(pages))
+
+
 def process_pdf(
     pdf_path: Path,
     force_ocr: bool = False,
@@ -192,7 +226,7 @@ def _process(
             and primary
             and damaged_text_layer(primary[0])
             and resembles_appeal_heading(primary[0])
-            and any(d.enabled and d.extractor is appeal.extract and not d.profile.keyed for d in definitions)
+            and any(d.enabled and d.extractor is appeal.extract and d.profile.rules_first for d in definitions)
         ):
             repaired_pages, repaired_boxes = [], []
             repaired = read_pages(
@@ -200,7 +234,7 @@ def _process(
             )
             if 1 in repaired_pages:
                 candidate, _ = _route_receipt(repaired, definitions, True)
-                if candidate is not None and candidate.extractor is appeal.extract and not candidate.profile.keyed:
+                if candidate is not None and candidate.extractor is appeal.extract and candidate.profile.rules_first:
                     primary = pages = repaired
                     definition, accounts, ocr_pages, boxes = candidate, None, repaired_pages, repaired_boxes
         rule_class = definition
@@ -220,9 +254,6 @@ def _process(
                 accounts = account_evidence(primary[0]) if 1 in ocr_pages else None
             definition = routed
         if definition is not None:
-            words = []
-            if selected == "tesseract-dpi" and definition.extractor is appeal.extract and not definition.profile.keyed:
-                words = [box for box in boxes if box.page == 1]
             check_native_roles = (
                 definition is rule_class
                 and not ocr_pages
@@ -233,40 +264,19 @@ def _process(
                 pages = restore_party_columns(
                     pdf_path, pages, force_ocr, engine=engine, boxes=boxes, ocr_pages=ocr_pages
                 )
-            ocr_python = None
-            if ocr_pages:
-                if definition.extractor is bank_transfer.extract:
-                    ocr_python = partial(ocr_extract.extract_bank_transfer, pages, ocr_pages, accounts=accounts)
-                elif definition.extractor is power_of_attorney.extract:
-                    grant_pages = verified_pages(pdf_path, pages, boxes) if not definition.profile.keyed else pages
-                    ocr_python = partial(ocr_extract.extract_power_of_attorney, grant_pages, ocr_pages)
-                elif definition.extractor is appeal.extract:
-                    if definition.profile.keyed:
-                        ocr_python = partial(ocr_extract.extract_appeal, pages, ocr_pages)
-                    else:
-                        ocr_python = partial(ocr_extract.extract_scanned_appeal, pages, ocr_pages, pdf_path, words)
+            python_rules = partial(
+                _document_rules, definition, pdf_path, pages, ocr_pages, boxes, engine, selected, accounts
+            )
             record = extract(
                 definition,
                 join_pages(pages),
-                ocr_python=ocr_python,
+                ocr_python=python_rules,
                 alternate=alternate if definition.profile.dual_ocr else None,
                 model_text=join_pages(primary) if pages is not primary else None,
                 check_native_roles=check_native_roles,
             )
-            if (
-                boxes
-                and 1 in ocr_pages
-                and definition.engines == ["python"]
-                and definition.extractor is bank_transfer.extract
-            ):
-                fields = record["przelew_bankowy"]
-                title = reread_title(pdf_path, boxes, fields["tytul"])
-                if title is not None:
-                    fields["tytul"] = title
             if definition.extractor is power_of_attorney.extract and not definition.profile.keyed:
-                add_certificate_signers(pdf_path, record, join_pages(pages))
-                if engine.startswith("tesseract") and len(pages) == 1 and 1 in ocr_pages:
-                    recover_board_stamp(pdf_path, record, pages[0])
+                _grant_signers(pdf_path, record, pages, ocr_pages, engine)
             return definition.id, record
         if not ocr_pages:
             break

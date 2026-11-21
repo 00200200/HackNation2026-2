@@ -19,6 +19,10 @@ class Profile(NamedTuple):
     keyed: bool = False
     gap_scope: GapScope = "all"
 
+    @property
+    def rules_first(self) -> bool:
+        return not self.keyed or self.mode == "RL"
+
 
 class ProfileSettings(BaseSettings):
     model_config = SettingsConfigDict(env_prefix="KIO_LLM_", env_file=".env", extra="ignore", hide_input_in_errors=True)
