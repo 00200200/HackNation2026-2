@@ -58,8 +58,9 @@ def test_only_ocr_repairs_an_uncertain_account(monkeypatch, printed, expected):
         assert bank_transfer.extract(text)["przelew_bankowy"]["na_rachunek"] == printed
 
 
-def test_pdf_columns_restore_labels_opposite_their_values(monkeypatch):
-    from kio2json import pipeline
+@pytest.mark.parametrize("mode", ["R", "L", "V"])
+def test_pdf_columns_restore_labels_opposite_their_values(monkeypatch, mode):
+    from kio2json import llm, pipeline
     from kio2json.pdf_text import WordBox
 
     rows = [
@@ -81,9 +82,27 @@ def test_pdf_columns_restore_labels_opposite_their_values(monkeypatch):
                         word_boxes.append(WordBox(1, cell, x, 20 * i, x + 80, 20 * i + 10))
         return ["\n".join(cell for column in zip(*rows) for cell in column if cell)]
 
+    if mode != "R":
+        for key, value in {
+            "BASE_URL": "http://localhost",
+            "MODEL": "fake",
+            "API_KEY": "fake",
+            "MODE": mode,
+            "ROUTING": "rules",
+        }.items():
+            monkeypatch.setenv("KIO_LLM_" + key, value)
+
+        def model(definition, text, **kwargs):
+            assert text == read(None)[0]  # cite the original reading, before cell restoration
+            return bank_transfer.extract("")
+
+        monkeypatch.setattr(llm, "extract_llm", model)
     monkeypatch.setattr(pipeline, "read_pages", read)
     kind, data = pipeline.process_pdf("invented.pdf")
     assert kind == "bank_transfer"
+    if mode != "R":
+        assert data == bank_transfer.extract("")
+        return
     assert data["przelew_bankowy"] == {
         "kwota": 24.60,
         "data_operacji": "2025-03-14",

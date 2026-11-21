@@ -10,9 +10,19 @@ from .appeal_layout import restore_party_columns
 from .class_config import DocumentClass, load_classes, route
 from .classify import incomplete_booking_scan
 from .engines import extract
+from .model_pages import AlternateOCR
 from .ocr_accounts import AccountEvidence, account_evidence, normalize_receipt
 from .pdf_text import DEFAULT_OCR_ENGINE, NoReadableTextError, OCRRecognitionError, join_pages, read_pages
 from .receipt_layout import append_receipt_fields, has_detached_labels, receipt_cell_fields
+
+
+def _is_receipt(definition: DocumentClass | None) -> bool:
+    if definition is None:
+        return False
+    # Model-only organizer profiles remove the Python extractor but still use the receipt layout.
+    return definition.extractor is bank_transfer.extract or (
+        definition.id == "bank_transfer" and definition.profile.mode in ("L", "V")
+    )
 
 
 def _route_receipt(
@@ -27,7 +37,7 @@ def _route_receipt(
                 raw = "".join(cells[label].split())
                 roles[role] = raw if raw.isdigit() else None
         evidence = replace(evidence, **roles, declared=evidence.declared | roles.keys())
-    return route(pages, definitions, ocr_accounts=evidence), evidence
+    return route(pages, definitions, ocr_accounts=evidence, rules_only=True), evidence
 
 
 def _compatible_reads(first: str, second: str) -> bool:
@@ -48,7 +58,7 @@ def _read_receipt(
     retry: bool,
 ) -> tuple[list[str], DocumentClass | None, AccountEvidence | None]:
     definition, accounts = _route_receipt(pages, definitions, scanned)
-    if not pages or (definition is not None and definition.extractor is not bank_transfer.extract):
+    if not pages or (definition is not None and not _is_receipt(definition)):
         return pages, definition, accounts
     original = pages
     fields = {}
@@ -68,7 +78,7 @@ def _read_receipt(
         pages = append_receipt_fields(pages, fields)
     if pages != original:
         candidate, evidence = _route_receipt(pages, definitions, scanned, fields)
-        if candidate is not None and candidate.extractor is bank_transfer.extract:
+        if _is_receipt(candidate):
             definition, accounts = candidate, evidence
         elif scanned and definition is not None:
             # Recognition already established a receipt. An ambiguous OCR account loses
@@ -81,11 +91,7 @@ def _read_receipt(
         if alternate:
             alternate = [normalize_receipt(alternate[0]), *pages[1:]]
             receipt, evidence = _route_receipt(alternate, definitions, True)
-            if (
-                receipt is not None
-                and receipt.extractor is bank_transfer.extract
-                and _compatible_reads(original[0], alternate[0])
-            ):
+            if _is_receipt(receipt) and _compatible_reads(original[0], alternate[0]):
                 definition, accounts, pages = receipt, evidence, alternate
     return pages, definition, accounts
 
@@ -101,9 +107,9 @@ def process_pdf(
     for engine in engines:
         ocr_pages = []
         try:
-            pages = read_pages(pdf_path, force_ocr=force_ocr, engine=engine, ocr_pages=ocr_pages)
+            primary = read_pages(pdf_path, force_ocr=force_ocr, engine=engine, ocr_pages=ocr_pages)
             pages, definition, accounts = _read_receipt(
-                pages,
+                primary,
                 pdf_path,
                 definitions,
                 scanned=1 in ocr_pages,
@@ -120,6 +126,18 @@ def process_pdf(
                 raise
             continue
         readable = True
+        alternate = None
+        if selected == "tesseract-dpi" and ocr_pages and any(d.enabled and d.profile.dual_ocr for d in definitions):
+            alternate = AlternateOCR(pdf_path, ocr_pages)
+        if any(
+            d.enabled and (d.profile.routing == "model" or (definition is None and d.profile.routing == "fallback"))
+            for d in definitions
+        ):
+            routed = route(primary, definitions, ocr_accounts=accounts, alternate=alternate)
+            if definition is not routed:
+                pages = primary
+                accounts = account_evidence(primary[0]) if 1 in ocr_pages else None
+            definition = routed
         if definition is not None:
             if definition.id == "appeal":
                 pages = restore_party_columns(pdf_path, pages, force_ocr, engine=engine)
@@ -131,7 +149,13 @@ def process_pdf(
                     ocr_python = partial(ocr_extract.extract_power_of_attorney, pages, ocr_pages)
                 elif definition.extractor is appeal.extract:
                     ocr_python = partial(ocr_extract.extract_appeal, pages, ocr_pages)
-            return definition.id, extract(definition, join_pages(pages), ocr_python=ocr_python)
+            return definition.id, extract(
+                definition,
+                join_pages(pages),
+                ocr_python=ocr_python,
+                alternate=alternate if definition.profile.dual_ocr else None,
+                model_text=join_pages(primary) if pages is not primary else None,
+            )
         if not ocr_pages:
             break
     return None, {}

@@ -81,6 +81,8 @@ def test_corpus_staging_aggregation_and_private_detail(corpus, repo, monkeypatch
     assert "docs" not in aggregate
     assert aggregate["n_cases"] == aggregate["n_docs"] == 2
     assert aggregate["detail"]["counts"] == {"tp": 0, "fp": 1, "fn": 1}
+    assert aggregate["detail"]["routing_by_class"]["pelnomocnictwo"] == {"correct": 0, "total": 1}
+    assert aggregate["detail"]["routing_by_class"]["negatywny"] == {"correct": 0, "total": 1}
     assert len(json.loads(detail.read_text())["docs"]) == 2
     assert (repo / "evals/results/latest.json").read_text() == "training"
     assert (repo / ".git/eval-latest.json").read_text() == "gate"

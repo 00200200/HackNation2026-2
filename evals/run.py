@@ -33,7 +33,16 @@ import pdfplumber
 import pypdfium2 as pdfium
 from pdfminer import settings as pdf_settings
 
-from evals.metrics import CLASSES, DocResult, flatten, load_reference, reject_json_constant, score_doc, summarise
+from evals.metrics import (
+    CLASSES,
+    NEGATIVE,
+    DocResult,
+    flatten,
+    load_reference,
+    reject_json_constant,
+    score_doc,
+    summarise,
+)
 
 ROOT = Path(__file__).resolve().parent.parent
 DATA = ROOT / "data" / "uzp" / "dane"
@@ -413,6 +422,12 @@ def evaluate(args: argparse.Namespace, parser: argparse.ArgumentParser) -> int:
     destination = RESULTS
     if args.corpus:
         results["split"] = args.split or "all"
+        routing = {}
+        for label in (*CLASSES, NEGATIVE):
+            selected = [d for d in docs if d.gold_class == label]
+            correct = sum(d.empty_output if label == NEGATIVE else d.pred_class == label for d in selected)
+            routing[label] = {"correct": correct, "total": len(selected)}
+        results["detail"]["routing_by_class"] = routing
         destination = RESULTS.with_name("corpus-latest.json")
         if args.detail_out:
             with private_output(args.detail_out) as tmp:

@@ -10,7 +10,7 @@ classifier = "kio2json.classify.classify"
 match_by = "data.nazwa"
 type = "list"
 nullable = false
-instruction = "Principals granting authority. A consortium may grant authority jointly."
+instruction = "One record per mocodawca granting authority, including each joint grantor. For none, return []."
 
 [fields.mocodawca.items]
 type = "object"
@@ -23,16 +23,16 @@ nullable = false
 instruction = "Identity of the person or legal entity granting authority."
 
 [fields.mocodawca.items.fields.data.fields]
-imie_nazwisko = { type = "string", instruction = "Full name for a natural person. Return null for a legal entity." }
-krs = { type = "string", normalizer = "krs", instruction = "KRS of the legal entity granting authority." }
-nazwa = { type = "string", instruction = "Full name of the principal." }
-nip = { type = "string", normalizer = "nip", instruction = "NIP of the principal." }
-typ = { type = "string", instruction = "Type of principal: osoba_prawna or osoba_fizyczna." }
+imie_nazwisko = { type = "string", instruction = "Given name and surname if the grantor is a natural person. For a legal entity or an unstated name, null." }
+krs = { type = "string", normalizer = "krs", instruction = "KRS of this legal entity, ten digits including leading zeros. If absent, null." }
+nazwa = { type = "string", instruction = "Full name of this grantor as stated. If absent, null." }
+nip = { type = "string", normalizer = "nip", instruction = "NIP of this grantor, ten digits. If absent, null." }
+typ = { grounding = "typ", type = "string", instruction = "Use osoba_prawna for a legal entity and osoba_fizyczna for a natural person. If unclear, null." }
 
 [fields.mocodawca.items.fields.podpisujacy]
 type = "list"
 nullable = false
-instruction = "People signing for this principal."
+instruction = "Only the people signing for this particular grantor. For none identified, return []."
 
 [fields.mocodawca.items.fields.podpisujacy.items]
 type = "object"
@@ -40,13 +40,13 @@ nullable = false
 instruction = "One signer for this principal."
 
 [fields.mocodawca.items.fields.podpisujacy.items.fields]
-imie_nazwisko = { type = "string", instruction = "Full name of the person signing on behalf of this principal." }
+imie_nazwisko = { type = "string", instruction = "Full name of the signer identified for this grantor. If absent, null." }
 
 [fields.pelnomocnicy]
 match_by = "imie_nazwisko"
 type = "list"
 nullable = false
-instruction = "People receiving authority."
+instruction = "One record per person receiving authority (pełnomocnik). For none identified, return []."
 
 [fields.pelnomocnicy.items]
 type = "object"
@@ -54,5 +54,5 @@ nullable = false
 instruction = "One recipient of the power of attorney."
 
 [fields.pelnomocnicy.items.fields]
-imie_nazwisko = { type = "string", instruction = "Attorney's first and last name in the nominative case." }
-pesel = { type = "string", normalizer = "pesel", instruction = "Attorney's PESEL, if stated." }
+imie_nazwisko = { type = "string", instruction = "Given name and surname of the recipient of authority, in the nominative case. If absent, null." }
+pesel = { type = "string", normalizer = "pesel", instruction = "Eleven-digit PESEL explicitly given for this recipient. Preserve leading zeros. If absent, null." }

@@ -26,6 +26,8 @@ Shared state of the project. Rules: `CLAUDE.md` → Worklog.
 
 ## Last eval
 
+- 21.11.2026 · Codex · Measured five extraction modes and three routing policies on 22 real dev PDFs. Selected model-first extraction with rules filling gaps (`LR`) and model routing after rule rejection. DeepSeek V4 Pro scored 0.7236 field micro-F1, Flash 0.6951, and keyless rules 0.4356. Both keyed runs routed 15/15 positives and kept 7/7 negatives empty. The Pro model-only audit traced 53 of 72 strict field errors to grounding. The aggregate record is `evals/results/llm-real-docs.json`.
+
 The full clean training run recorded in `evals/results/latest.json` scored `micro_f1` 1.000, cases 51-60 1.000,
 `classification_accuracy` 1.000, `negatives_empty` 1.000. Training data (synthetic). The rules were written with
 sight of these documents, cases 53-60 included, so this is a regression check and the 51-60 figure is not an
@@ -65,7 +67,7 @@ Both splits missed the team’s micro F1 and classification targets. Compared wi
 | Item | Owner |
 |---|---|
 | Appeal follow-up: recover damaged names and contacts, and signatures beyond the first three pages | — |
-| Measure accuracy and latency of the config-selected LLM on real layouts once the EU model endpoint is available | — |
+| Choose an EU endpoint and measure the keyed profile there before submission | — |
 | Transparency output: source page, quoted text and rule per field | — |
 | Ask the UZP stand: F1 formula, stage II weights (README 50/50 vs PDF 50/30/20) | — |
 
@@ -104,6 +106,7 @@ Both splits missed the team’s micro F1 and classification targets. Compared wi
 - 21.11.2026 · Codex · Added the local PDF viewer and start scripts for #11 in `d1c9749`. Browser uploads and ZIP downloads matched the CLI for all three document classes, a scanned appeal and an unrelated PDF.
 - 21.11.2026 · Codex · Recovered appeal parties from detached labels and joint lists, scoped counsel to the appellant, and extracted procurement and first-charge facts from prose. Product `ee3c8ca`.
 
+- 21.11.2026, local model evaluation checkpoint. The organizer registry supports five extraction modes and first-page model routing. The rules baseline scored 0.4444 micro-F1 on 22 dev PDFs, routed 11/15 positives and kept 7/7 negatives empty. The local model run and keyed default selection are pending.
 - 21.11.2026 · Codex · Merged the GUI baseline through `ac78d2d` into the OCR branch. Added unreadable-scan diagnostics, signature ownership checks, labelled account evidence, a RapidOCR worker deadline, and a checksum-verified local model source.
 - 21.11.2026 · Codex · Integrated the corpus and macro-F1 harness from `3210643`. The OCR comparison uses the frozen extraction rules from `865b1ea`.
 - 21.11.2026 · Codex · Measured T0, T1, T1 with PNG input, R and TR on the dev cases. The hybrid gain was 0.0133, below the 0.0300 gate. Selected `tesseract-dpi` and kept RapidOCR optional.
@@ -117,3 +120,5 @@ Both splits missed the team’s micro F1 and classification targets. Compared wi
 
 - 21.11.2026 · Codex · Merged the default explicit-DPI OCR engine at `b0a640f`. Before the appeal review fixes, dev micro F1 was 0.6944 and appeal F1 was 0.7811. Added regression coverage for filing evidence, party and counsel ownership, procurement labels and the first dated act.
 - 21.11.2026 · Codex · Merged OCR page provenance through `5c4eff2` into the appeal fixes. Verified 155 invented differential inputs and 175 native PDFs against integration base `3210643`, with each intentional correction recorded by input and field. All 196 training PDFs retained the same routing, paths and bytes, and all 873 tests passed.
+
+- 21.11.2026 · Merged the OCR integration at `e051dfa` and selected model-first extraction with rules filling gaps and model routing on rule rejection. On 22 dev PDFs, DeepSeek Flash with two OCR readings scored 0.6951 micro-F1 against 0.4356 for rules.

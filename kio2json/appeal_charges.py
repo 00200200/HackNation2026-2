@@ -31,7 +31,7 @@ ACTS = {
 }
 
 
-def sentences(text):
+def raw_sentences(text):
     """Split sentences and semicolon clauses, retaining dates, citations and legal abbreviations."""
     start = 0
     for stop in re.finditer(r"[;!?]|\.(?=\s|$)", text):
@@ -46,9 +46,13 @@ def sentences(text):
                 continue
             if re.search(r"\bsp$", before, re.IGNORECASE) and re.match(r"(?:z|j|k|p)\b", after, re.IGNORECASE):
                 continue
-        yield squash(text[start : stop.start()])
+        yield text[start : stop.start()]
         start = stop.end()
-    yield squash(text[start:])
+    yield text[start:]
+
+
+def sentences(text):
+    return map(squash, raw_sentences(text))
 
 
 def first_sentence(text):
