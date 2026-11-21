@@ -40,13 +40,13 @@
 
 \node[box=7.0cm, below=10mm of input] (text)
   {\textbf{1\quad Page text}\hfill\fname{pdf\_text.py}\\[2pt]
-   text layer of the first three pages (pdfplumber);\\
-   pages with no real text go through OCR\\ (Tesseract, Polish)};
+   Read native text or use Polish Tesseract on scans.
+   Keep page numbers, OCR provenance and word boxes for layout-sensitive fields.};
 
 \node[box=7.0cm, below=10mm of text] (classify)
-  {\textbf{2\quad Classification by content}\hfill\fname{classify.py}\\[2pt]
-   the document's own heading and evidence decide;\\
-   the file name is never read};
+  {\textbf{2\quad Classification by content}\\[2pt]
+   Try configured routes on headings and evidence.
+   With an endpoint, ask the model about the first page if the rules reject the document.};
 
 % ---------------------------------------------------------------- extractors
 \node[box=4.7cm, below=20mm of classify] (poa)
@@ -81,8 +81,8 @@
 
 % ---------------------------------------------------------------- right column: rejected and failed
 \node[fail=4.9cm, anchor=west] (failure) at ($(engines.east |- text)+(12mm,0)$)
-  {\textbf{A PDF that cannot be read}\\[2pt] damaged file, or OCR needed\\ and unavailable: empty file,\\
-   a line on \texttt{stderr}, exit status 1};
+  {\textbf{Document error}\\[2pt] With a model configured, retry the PDF with local rules after a processing error.
+   An unreadable PDF yields an empty file and a diagnostic.};
 
 \node[fail=4.9cm] (other) at (failure |- poa)
   {\textbf{Any other document}\\[2pt] judgment, notice, invoice,\\ payment request, \dots};
@@ -91,16 +91,16 @@
 
 % ---------------------------------------------------------------- left column: in progress
 \node[planned=5.2cm, anchor=east] (ocr) at ($(engines.west |- text)+(-12mm,0)$)
-  {\textbf{In review: OCR from pip}\\[2pt] an engine installed with the\\ requirements, so scans work\\
-   without a separate install (PR 12)};
+  {\textbf{Second reading for the model}\\[2pt]
+   RapidOCR rereads scanned pages. The model sees bounded text from both readings.};
 
 \node[box=5.2cm] (config) at (ocr |- classify)
-  {\textbf{Classes as configuration}\\[2pt] \fname{config/classes/*.toml}: router,\\ fields, types, engines;\\
-   a new class needs no code};
+  {\textbf{Class configuration}\\[2pt] \fname{config/classes/*.toml}\\
+   Routing cues, fields, types and extraction engines.};
 
 \node[planned=5.2cm] (llm) at (ocr |- poa)
-  {\textbf{Opt-in: model engine}\\[2pt] open-weight model over an EU API\\ for layouts the rules do not know;\\
-   every value needs a quote from\\ the page; off without an API key};
+  {\textbf{Model-first extraction}\\[2pt] Validate each model value against a quoted span from one reading.
+   Use the class rules to fill missing values or recover from a model error.};
 
 \node[box=4.9cm, draw=ink, fill=white] (gui) at (failure |- input)
   {\textbf{GUI and start scripts}\\[2pt] \fname{start.bat}, \fname{start.sh}, \fname{kio2json.gui}:\\
@@ -123,7 +123,7 @@
 \draw[failarrow] (text) -- (failure);
 \draw[failarrow] (classify.east) -| (other.north);
 \draw[failarrow] (other) -- (empty);
-\draw[failarrow] (failure.east) -- ++(7mm,0) |- (empty.east);
+\draw[failarrow] (failure.east) -- ++(7mm,0) |- node[pos=0.25, right, note] {unreadable} (empty.east);
 
 \draw[plannedarrow] (ocr) -- (text);
 \draw[arrow] (config) -- (classify);
@@ -134,13 +134,12 @@
 \node[font=\sffamily\bfseries\large, anchor=south west] (ttl) at ($(ocr.west |- input.north)+(0,9mm)$)
   {Odwołania2json: from a case folder of PDFs to one JSON per document};
 \node[note, anchor=north west] at ($(ttl.south west)+(0,-0.5mm)$)
-  {State of the integration branch \texttt{baseline/rule-based-extraction} on 21 November 2026.
-   The three organizer classes run on rules; the model engine is opt-in and not measured yet.};
+  {Default profile: local rules. Configure an endpoint, model and credential to enable model routing, extraction and a second OCR reading.};
 
 \node[note, anchor=north west] at ($(ocr.west |- eval.south)+(0,-6mm)$)
   {\tikz[baseline=-0.6ex]{\draw[draw=flow, fill=flowfill, rounded corners=1.5pt] (0,-0.12) rectangle (0.42,0.12);}\ \ implemented step\qquad
    \tikz[baseline=-0.6ex]{\draw[draw=ok, fill=okfill, rounded corners=1.5pt] (0,-0.12) rectangle (0.42,0.12);}\ \ files in and out\qquad
    \tikz[baseline=-0.6ex]{\draw[draw=warn, fill=warnfill, rounded corners=1.5pt] (0,-0.12) rectangle (0.42,0.12);}\ \ rejected or failed\qquad
-   \tikz[baseline=-0.6ex]{\draw[draw=plan, fill=planfill, dashed, rounded corners=1.5pt] (0,-0.12) rectangle (0.42,0.12);}\ \ not in the default path yet: in review, or opt-in};
+   \tikz[baseline=-0.6ex]{\draw[draw=plan, fill=planfill, dashed, rounded corners=1.5pt] (0,-0.12) rectangle (0.42,0.12);}\ \ enabled with a model endpoint};
 \end{tikzpicture}
 \end{document}

@@ -4,74 +4,34 @@ Shared state of the project. Rules: `CLAUDE.md` → Worklog.
 
 ## Now
 
-- Task brief, FAQ and details PDF in `docs/task/`; organizer repo copied into `data/uzp` (`make data` refreshes);
-  template example in `input/case1`.
-- App: `kio2json/`, default jury classes use rule-based extraction. CLI `python -m kio2json --input input --output output`;
-  content-based classification with a rejection path; regex and line-layout extraction per class; pdfplumber text
-  with wheel-packaged Tesseract for blank or page-number-only text layers. Installation fetches and verifies the
-  language models or reads supplied copies from `KIO_TESSDATA_SOURCE`. The default is `tesseract-dpi`. RapidOCR and the document retry mode are opt-in. Both engines run offline
-  and return word boxes in PDF points on request. The reader records the source of each page. OCR signer, account and e-mail rules use page provenance. Native appeal documents use the same filing and party evidence as scanned appeals. Branch `feat/ocr-engine`.
-- The eval harness scores training cases and local paired PDF/JSON corpora. It reports micro F1 and macro F1 by
-  document, represented class and field. Both layouts support per-field errors and OCR stress runs (`--force-ocr`).
-  Private detail files must be outside all worktrees and Git metadata. Input or extraction failures stop evaluation
-  before it writes results or the training gate. Malformed and missing predictions count as misses.
-- The CLI reads class definitions from `config/classes/`.
-  The jury classes select the baseline content classifier and their Python extractors by dotted path.
-  A disabled participation form demonstrates config-only routing and labelled fields. The optional
-  model engine checks each complete source value against its own verbatim quote and reports endpoint failures per PDF.
-- The Polish Shiny viewer and CLI share per-document parsing and diagnostics. The viewer compares PDF pages with their JSON and downloads a ZIP in case folders.
-- Research notes on OCR, schema extraction and Polish legal NLP: `docs/kio-extraction-research.md`.
-- Claude Code setup: skills `hacknation-judging`, `odwolania2json-eval`, `build`, `verify`, `humanizer`;
-  agents `judge`, `builder`, `reviewer`, `researcher`; pre-push hook in `.githooks/`.
+The integration branch combines real-layout appeal, grant and transfer rules with a configurable
+OpenAI-compatible model engine. The default CLI and GUI run locally with the three endpoint
+variables unset. Keyed runs can use a second OCR reading and recover a failed document with local rules.
 
 ## Last eval
 
-The selected Flash profile scored 0.6055 held-out field micro-F1 and 0.6626 macro-F1 at 6.43 s/PDF on 17 PDFs. Pro scored 0.7002 and 0.7101 at 64.28 s/PDF. Flash used document-level recovery on its authorized retry. The EU-hosted Flash deployment still needs measurement.
+The full synthetic run matched 196/196 CLI outputs against the baseline by path, class and bytes,
+including 16 empty negatives. The field report matched all 2,316 fields. Training micro F1 and the
+cases 51–60 regression score were both 1.000. [Full training run](evals/results/latest.json)
 
-- 21.11.2026 · Codex · Measured five extraction modes and three routing policies on 22 real dev PDFs. The submission uses the Flash profile with two OCR readings on scans, model-first extraction with rules filling gaps (`LR`) and model routing after rule rejection. DeepSeek V4 Pro scored 0.7236 field micro-F1, Flash 0.6951, and keyless rules 0.4356. Both keyed runs routed 15/15 positives and kept 7/7 negatives empty. The Pro model-only audit traced 53 of 72 strict field errors to grounding. The aggregate record is `evals/results/llm-real-docs.json`.
+These runs used local rules with the three endpoint variables unset. The two local datasets contain real documents and use whole-case splits. Corpus 1 dev has 22 PDFs from 14 cases. Corpus 2 dev has 39 PDFs from 14 cases. The held-out splits remain reserved until a model is selected. The organizer supplied a separate set of 30 labelled scans, ten per target class, in revision `0b360a9`.
 
-The full clean training run recorded in `evals/results/latest.json` scored `micro_f1` 1.000, cases 51-60 1.000,
-`classification_accuracy` 1.000, `negatives_empty` 1.000. Training data (synthetic). The rules were written with
-sight of these documents, cases 53-60 included, so this is a regression check and the 51-60 figure is not an
-unseen-case estimate for this baseline.
+| Dataset | PDFs | Micro F1 | Macro F1 by class | Appeal | Power of attorney | Transfer | Correct routes (appeal / power / transfer) | Empty negatives | Wall s/PDF |
+|---|---:|---:|---:|---:|---:|---:|---|---:|---:|
+| Local corpus 1, dev | 22 | 0.6973 | 0.6628 | 0.7056 | 0.7273 | 0.5556 | 8/8 / 3/3 / 2/4 | 7/7 | 6.69 |
+| Local corpus 2, dev | 39 | 0.5248 | 0.3619 | 0.6008 | 0.3333 | 0.1515 | 12/13 / 4/5 / 1/10 | 11/11 | 3.61 |
+| Organizer scans | 30 | 0.5633 | 0.4711 | 0.6123 | 0.6065 | 0.1944 | 9/10 / 10/10 / 2/10 | n/a | 5.69 |
 
-The final appeal fixes at `d00a3e0` retained 0.6384 micro F1 and 0.7056 appeal F1 on 22 private dev PDFs. All 50 new differential inputs and all 196 training PDFs matched the integration base through the CLI. The held-out score below is from the preceding revision. [Final dev aggregate](evals/results/corpus-latest.json)
-
-On the same 22 private dev PDFs (14 cases), overall micro F1 fell from 0.6830 at `b0a640f` to 0.6384 at `d8a2a8f`. Appeal F1 fell from 0.7586 to 0.7056 and macro F1 by class from 0.3947 to 0.3770. Both runs routed all eight appeals and seven negatives correctly. On 17 private test PDFs (seven cases), the single final run scored 0.4070 micro F1, 0.4552 appeal F1 and 0.3073 macro F1 by class. [Test aggregate](https://github.com/00200200/HackNation2026-2/blob/fe98f74/evals/results/corpus-latest.json)
-
-Before merging the explicit-DPI OCR engine, whole-dev micro F1 rose from 0.3864 to 0.7237 and appeal field F1 rose from
-0.4128 to 0.8166. All seven dev appeals routed correctly in both runs. The single held-out run scored
-0.4186 micro F1 and 0.3123 macro F1 by class across 17 PDFs.
-
-Earlier OCR measurements at `c2bf060` follow. The merged forced-OCR field report scored 0.897 on 196 synthetic PDFs. Strict F1 on 17 real dev scans was
-0.331 with Tesseract and 0.419 with RapidOCR v6. Natural dev F1 on 20 PDFs was 0.3864 and 0.4588, respectively.
-
-On the frozen review fixes at `865b1ea`, the 20-document real dev comparison gave T0/T1/R/TR
-micro-F1 0.3864/0.4164/0.4588/0.4297. The default is `tesseract-dpi`. Full timings, macro-F1 and routing are in
-`evals/results/ocr-engines.json`. Synthetic forced-OCR strict F1 was 0.900 for T0 and 0.884 for T1.
-
-21.11.2026, local real corpus. The all-corpus row comes from `00626a5`. The dev and test scores below
-were first measured at `79eef2a` after the baseline merge. The test aggregate is preserved in
-[the earlier corpus result](https://github.com/00200200/HackNation2026-2/blob/c2227166f4c311fe3c9d4098732927e2a0adfbc7/evals/results/corpus-latest.json).
-All three target classes entered each class average. Every PDF had an output and every negative was empty.
-
-| Split | Cases | PDFs | Micro F1 | Macro by document | Macro by class | Macro by field | Positive classification accuracy |
-|---|---:|---:|---:|---:|---:|---:|---:|
-| All | 20 | 37 | 0.4025 | 0.3327 | 0.3681 | 0.3978 | 0.7778 |
-| Dev | 13 | 20 | 0.4323 | 0.3427 | 0.3676 | 0.3910 | 0.7143 |
-| Test | 7 | 17 | 0.3481 | 0.2285 | 0.2445 | 0.3478 | 0.6154 |
-
-Both splits missed the team’s micro F1 and classification targets. Compared with the earlier split runs at
-`f93b908`, micro F1 fell from 0.4352 on dev and 0.3675 on test.
+[Rules-only aggregate measurements](evals/results/integration-rules.json)
 
 ## Next
 
 | Item | Owner |
 |---|---|
-| Appeal follow-up: recover damaged names and contacts, and signatures beyond the first three pages | — |
-| Choose an EU endpoint and measure the keyed profile there before submission | — |
-| Transparency output: source page, quoted text and rule per field | — |
-| Ask the UZP stand: F1 formula, stage II weights (README 50/50 vs PDF 50/30/20) | — |
+| Select a smaller open-weight model and verify it on the intended EU/EEA endpoint using dev | Open |
+| Score the held-out splits after selecting and freezing the final profile | Open |
+| Improve receipt routing and recover damaged party names on development inputs | Open |
+| Confirm the organizer’s F1 formula and Stage II weights with UZP | Open |
 
 ## Decisions
 
@@ -124,3 +84,4 @@ Both splits missed the team’s micro F1 and classification targets. Compared wi
 - 21.11.2026 · Codex · Merged OCR page provenance through `5c4eff2` into the appeal fixes. Verified 155 invented differential inputs and 175 native PDFs against integration base `3210643`, with each intentional correction recorded by input and field. All 196 training PDFs retained the same routing, paths and bytes, and all 873 tests passed.
 
 - 21.11.2026 · Merged the OCR integration at `e051dfa` and selected model-first extraction with rules filling gaps and model routing on rule rejection. On 22 dev PDFs, DeepSeek Flash with two OCR readings scored 0.6951 micro-F1 against 0.4356 for rules.
+- 21.11.2026 · Codex · Integrated PRs #20, #18 and #22, verified training byte parity and measured local rules on both dev corpora and the organizer scans at `d177cbc7`.
