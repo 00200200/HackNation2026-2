@@ -4,7 +4,7 @@ HackNation 2026 entry for the Public Procurement Office (UZP) challenge: read th
 appeal case, decide what each one is, and write the organizer's JSON for it. Task brief:
 `docs/task/BRIEF.md`. Project state and open work: `WORKLOG.md`.
 
-The jury configuration runs three rule-based extractors locally. Each class has a TOML file
+Without endpoint credentials the jury configuration runs three rule-based extractors locally. Each class has a TOML file
 that selects its routing rules, output fields and extraction engines. New classes can use
 label patterns or an optional language model.
 
@@ -38,9 +38,8 @@ The default OCR setting is `tesseract-dpi`. Set `KIO_OCR_ENGINE` to choose anoth
 | `rapidocr` | RapidOCR v6 on CPU. |
 | `hybrid` | Start with `tesseract-dpi`. Retry OCR pages with RapidOCR when the document is unreadable or fails to match a class. |
 
-Both RapidOCR modes require the optional CPU packages. Their wheels include the models and support an offline first run.
-Install them with `python -m pip install "rapidocr==3.10.0" "onnxruntime==1.32.0"`. With uv, use
-`uv run --group rapidocr python -m kio2json` after selecting the engine.
+The requirements include the CPU RapidOCR and ONNX Runtime wheels used by the keyed model profile.
+Their packaged models support an offline first run.
 For example, use `export KIO_OCR_ENGINE=rapidocr` in a POSIX shell or
 `$env:KIO_OCR_ENGINE = "rapidocr"` in PowerShell.
 
@@ -148,35 +147,62 @@ uv run pytest -q tests/test_class_config.py -k fourth
 
 ## Use a model endpoint
 
-Choose an OpenAI-compatible chat endpoint serving your open-weight model with structured
-tool output. Set these variables in the process environment or in an ignored `.env` in the
-working directory. Existing environment values take precedence.
+For submission, choose an EU/EEA provider and inference region that serve an open-weight chat model.
+Set all three variables in the process environment or in an ignored `.env` in the working directory.
+Environment values take precedence. The application has no built-in endpoint or credential.
 
-| Variable | Value |
+| Variable | What to supply |
 |---|---|
-| `KIO_LLM_BASE_URL` | API base URL, including the endpoint's version path, e.g. `http://localhost:8000/v1` |
-| `KIO_LLM_MODEL` | Model identifier advertised by that endpoint |
-| `KIO_LLM_API_KEY` | Endpoint credential |
+| `KIO_LLM_BASE_URL` | The provider’s OpenAI-compatible Chat Completions base URL, including its version path if required |
+| `KIO_LLM_MODEL` | The model ID from that provider’s catalogue |
+| `KIO_LLM_API_KEY` | Its API credential |
 
-Set `engines = ["llm"]` for model-only extraction. Remove the `extractor` entry when removing
-the Python engine. Use `engines = ["python", "llm"]` to keep values found by the rules and
-consult the model for null fields. A fallback preserves existing arrays, including empty ones.
-To fill missing fields within existing records, set `match_by` on the list to a unique scalar
-field, such as `data.nazwa` in `power_of_attorney.toml`. Ambiguous identities keep their original
-records. The built-in jury classes use only `python` and require no endpoint settings.
+Run `python -m kio2json --input input --output output` as usual. To compare profiles, set
+`KIO_LLM_MODE` to `R` (rules), `L` (model), `RL` (rules fill first), `LR` (model fills first) or
+`V` (model with format and checksum validation). With all three credentials present the bundled registry defaults to `LR` and `fallback`.
+Both hybrid modes fill missing fields and empty lists. Within an existing list, a unique configured identity connects the two engines’ records.
+`KIO_LLM_ROUTING` accepts `rules`, `fallback` (consult the model only after rule rejection) and
+`model` (ask on every first page). Custom class directories retain their explicit TOML engine chains.
 
-The model supplies a verbatim quote for each scalar. The engine checks that the page contains
-the quote and that the quote supports the value. Copied text must appear in the quote after
-normalization. Full references and email addresses keep their internal punctuation. For dates,
-amounts, accounts and registry IDs, the quote must cover the complete printed value, including
-any sign. Grouped amounts such as `9 876,54 PLN` and amounts with attached currency such as
-`EUR87,23` are supported. An incomplete value or an overlong account yields null, including for
-normally mandatory scalars. A correctly quoted value from the wrong party’s block can still pass.
+On scanned pages in the default Tesseract profile, the model receives the primary text and a
+second reading by RapidOCR. Rules continue to use their primary page text and OCR provenance.
+The 16,384-byte excerpt budget is shared between readings. Each citation is checked against a
+single displayed source. Set `KIO_LLM_DUAL_OCR=false` to measure one reading. Native pages
+do not trigger alternate OCR. Use a model context large enough for the excerpt, schema and up
+to 1,800 generated tokens. The class’s field definitions accompany the excerpt. Pydantic AI requests
+a JSON object, validates it against the cited schema and permits one correction within a
+180-second call deadline. `KIO_LLM_TIMEOUT_SECONDS` accepts 1–600 seconds. Endpoints
+with native JSON schema constraints can use `KIO_LLM_OUTPUT=schema`; the default is `json`.
+Transport retries are disabled. A failed document produces an empty
+file and an error on stderr. The CLI finishes the batch with exit status 1.
 
-Pydantic AI allows one structured-output correction within a 60-second run timeout. Transport
-retries are disabled. An endpoint failure is reported on stderr with the PDF path, failure type
-and HTTP status when available. The CLI continues the batch and exits with status 1.
-Offline model tests cover these rules. Accuracy and latency on a live model have yet to be measured.
+Each accepted value needs a citation in the displayed text. If a model flattens line breaks,
+the extractor looks for a unique span containing the same words and checks the original characters.
+Dates, amounts and IDs must cover complete tokens. Selected organizer fields can derive a canonical
+value from printed evidence, such as a TED reference in the alternate year/series format. A quote
+from the wrong party can still support a value. PDF table cells and party boundaries remain open
+work in [issue 10](https://github.com/00200200/HackNation2026-2/issues/10).
+
+### EU providers for the submission
+
+Both candidates offer OpenAI-compatible chat with structured JSON for the Apache-2.0
+Mistral Small 3.2 24B model. Prices below are euros per million input/output tokens, checked on
+21 November 2026. Hosted accuracy, latency and account approval time remain unmeasured.
+[Model card](https://huggingface.co/mistralai/Mistral-Small-3.2-24B-Instruct-2506)
+
+| Provider and region | Model ID | Price and access |
+|---|---|---|
+| Scaleway, Paris, France | `mistral-small-3.2-24b-instruct-2506` | €0.15 / €0.35 before tax, first 1M tokens free. Existing customers can generate an IAM API key immediately. New accounts need billing information. Standard quotas require card and identity verification. [Region](https://www.scaleway.com/en/docs/generative-apis/faq/) · [Structured output](https://www.scaleway.com/en/docs/generative-apis/how-to/use-structured-outputs/) · [Pricing](https://www.scaleway.com/en/pricing/model-as-a-service/) · [Onboarding](https://www.scaleway.com/en/generative-apis-signup/) |
+| Berget AI, Stockholm, Sweden | `mistralai/Mistral-Small-3.2-24B-Instruct-2506` | €0.30 / €0.30, €5 starting credit on the trial. Register in the console and select **API Keys → Create New Key**. The provider advertises setup in minutes. [Region and endpoint](https://docs.berget.ai/quickstart) · [Model capabilities](https://docs.berget.ai/models/capabilities) · [Pricing](https://berget.ai/en/serverless-inference) · [Key setup](https://docs.berget.ai/integrations/cline-vscode) |
+
+Scaleway also lists the measured Flash release as `deepseek-v4.1-flash-1017` at €0.60 input
+(€0.12 cached) and €1.80 output per million tokens. Its `qwen3.8-27b` is €0.60/€3.30 and
+`llama-3.3-70b-instruct` is €0.90/€0.90. Its API base URL is `https://api.scaleway.ai/v1`.
+Berget uses `https://api.berget.ai/v1` and lists a Qwen 3.8 27B preview with JSON schema support.
+Matching model releases can still differ in quantization and serving settings.
+[Scaleway prices](https://www.scaleway.com/en/pricing/model-as-a-service/) ·
+[Scaleway API](https://www.scaleway.com/en/docs/generative-apis/faq/) ·
+[Berget capabilities](https://docs.berget.ai/models/capabilities)
 
 ## Measure
 

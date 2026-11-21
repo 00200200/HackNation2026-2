@@ -55,7 +55,7 @@ Both splits missed the team’s micro F1 and classification targets. Compared wi
 | Item | Owner |
 |---|---|
 | Real-layout appeals: small reference set from real KIO appeals; coordinate-aware rules vs a grounded model call | — |
-| Measure accuracy and latency of the config-selected LLM on real layouts once the EU model endpoint is available | — |
+| Choose an EU endpoint and measure the keyed profile there before submission | — |
 | Transparency output: source page, quoted text and rule per field | — |
 | Ask the UZP stand: F1 formula, stage II weights (README 50/50 vs PDF 50/30/20) | — |
 
@@ -100,3 +100,4 @@ Both splits missed the team’s micro F1 and classification targets. Compared wi
 - 21.11.2026 · Codex · Scoped the OCR rules on `feat/ocr-engine` to recognized text after the review of `c222716`. Added document-level checks for unreadable scans and regression tests for mixed PDFs.
 - 21.11.2026 · Codex · Added a native PDF snapshot from `3210643` to check the new page-provenance rules in `2a500e4`. All 175 cases match, including 24 that differed at `c222716`. The ordinary CLI still matches class, path and bytes on all 196 organizer PDFs.
 - 21.11.2026 · Codex · After `f1aa51b`, fixed spelled-out page counters and recognition of scanned bodies inside wide margins. The default-engine recheck is recorded in `evals/results/ocr-engines.json` under `provenance_check`, with the dev harness aggregate in `evals/results/corpus-latest.json`.
+- 21.11.2026 · Merged the OCR integration at `e051dfa` and selected model-first extraction with rules filling gaps and model routing on rule rejection. On 22 dev PDFs, DeepSeek Flash with two OCR readings scored 0.6951 micro-F1 against 0.4356 for rules.

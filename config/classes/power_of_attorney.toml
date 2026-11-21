@@ -27,7 +27,7 @@ imie_nazwisko = { type = "string", instruction = "Given name and surname if the 
 krs = { type = "string", normalizer = "krs", instruction = "KRS of this legal entity, ten digits including leading zeros. If absent, null." }
 nazwa = { type = "string", instruction = "Full name of this grantor as stated. If absent, null." }
 nip = { type = "string", normalizer = "nip", instruction = "NIP of this grantor, ten digits. If absent, null." }
-typ = { type = "string", instruction = "Use osoba_prawna for a legal entity and osoba_fizyczna for a natural person. If unclear, null." }
+typ = { grounding = "typ", type = "string", instruction = "Use osoba_prawna for a legal entity and osoba_fizyczna for a natural person. If unclear, null." }
 
 [fields.mocodawca.items.fields.podpisujacy]
 type = "list"

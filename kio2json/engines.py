@@ -5,6 +5,7 @@ from collections.abc import Callable
 from functools import partial
 
 from .class_config import DocumentClass, OutputField
+from .model_pages import AlternateOCR
 from .output_schema import scalar_value
 
 
@@ -72,17 +73,28 @@ def fill(field: OutputField, primary, fallback, *, fill_empty: bool = False):
     return primary
 
 
-def bind_engine(name: str, definition: DocumentClass, model=None) -> Callable[[str], dict]:
+def bind_engine(
+    name: str, definition: DocumentClass, model=None, *, alternate: AlternateOCR | None = None
+) -> Callable[[str], dict]:
     if name == "python":
         return definition.extractor
     if name == "labelled_fields":
         return lambda text: {key: labelled(field, text) for key, field in definition.fields.items()}
     from .llm import extract_llm
 
+    if alternate:
+        return partial(extract_llm, definition, model=model, alternate_pages=alternate.read_all())
     return partial(extract_llm, definition, model=model)
 
 
-def extract(definition: DocumentClass, text: str, *, model=None, ocr_python: Callable[[], dict] | None = None) -> dict:
+def extract(
+    definition: DocumentClass,
+    text: str,
+    *,
+    model=None,
+    ocr_python: Callable[[], dict] | None = None,
+    alternate: AlternateOCR | None = None,
+) -> dict:
     values = None
     fill_empty = definition.profile.mode in ("RL", "LR")
     for engine in definition.engines:
@@ -93,7 +105,7 @@ def extract(definition: DocumentClass, text: str, *, model=None, ocr_python: Cal
         if engine == "python" and ocr_python is not None:
             candidate = ocr_python()
         else:
-            candidate = bind_engine(engine, definition, model)(text)
+            candidate = bind_engine(engine, definition, model, alternate=alternate)(text)
         if values is None:
             values = candidate
         else:

@@ -8,6 +8,8 @@ dependencies = [
     "pydantic-ai>=2.71.0",
     "python-stdnum>=2.2",
     "tesserocr==2.13.0",
+    "rapidocr==3.10.0",
+    "onnxruntime==1.32.0",
     "pypdfium2>=5.15.2",
     "pydantic>=2.14.4",
     "pydantic-settings>=2.16.3",
@@ -16,7 +18,8 @@ dependencies = [
 ]
 
 [dependency-groups]
-rapidocr = ["rapidocr==3.10.0", "onnxruntime==1.32.0"]
+# Preserve existing uv commands that request this group explicitly.
+rapidocr = []
 dev = [
     "munkres>=3.0.0",
     "pytest>=9.2.0",

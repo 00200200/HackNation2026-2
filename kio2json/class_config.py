@@ -4,15 +4,15 @@ import os
 import re
 import tomllib
 from collections.abc import Callable
-from functools import cached_property
+from functools import cached_property, partial
 from pathlib import Path
 from typing import Annotated, Literal, Self
 
 from pydantic import BaseModel, BeforeValidator, ConfigDict, Field, ImportString, PrivateAttr, model_validator
 
-from .model_profile import Profile, ProfileSettings
-
 from .classify import classify
+from .model_pages import AlternateOCR, model_readings
+from .model_profile import Profile, ProfileSettings
 from .ocr_accounts import AccountEvidence
 
 DEFAULT_DIR = Path(__file__).resolve().parents[1] / "config" / "classes"
@@ -85,6 +85,9 @@ class OutputField(Config):
     type: Literal["string", "integer", "number", "boolean", "object", "list"]
     instruction: Instruction
     nullable: bool = True
+    grounding: (
+        Literal["numer_bzp", "numer_ted", "czynnosc_powod_id", "czynnosc_opis", "przez-pelnomocnika", "typ"] | None
+    ) = None
     normalizer: Literal["iso_date", "money", "account_number", "krs", "nip", "regon", "pesel"] | None = None
     pattern: Pattern | None = None
     fields: dict[str, "OutputField"] | None = None
@@ -177,24 +180,36 @@ def load_classes(directory: Path | None = None) -> list[DocumentClass]:
     return sorted(classes.values(), key=lambda c: (c.priority, c.id))
 
 
-def model_route(pages: list[str]) -> str | None:
+def model_route(pages: list[str], alternate: AlternateOCR | None = None) -> str | None:
     from .llm import classify_llm
 
-    return classify_llm(pages[0]) if pages and pages[0].strip() else None
+    if not pages:
+        return None
+    first = pages[0]
+    if alternate:
+        first, _ = model_readings(first, [alternate.read(1)])
+    return classify_llm(first) if first.strip() else None
 
 
 def route(
-    pages: list[str], definitions: list[DocumentClass], *, ocr_accounts: AccountEvidence | None = None
+    pages: list[str],
+    definitions: list[DocumentClass],
+    *,
+    ocr_accounts: AccountEvidence | None = None,
+    alternate: AlternateOCR | None = None,
 ) -> DocumentClass | None:
     # Organizer classes share a classifier. Compute its result once for this PDF.
     labels = {}
     fallback = {}
+
+    model_classifier = partial(model_route, alternate=alternate) if alternate else model_route
+
     for definition in definitions:
         if not definition.enabled:
             continue
         routing = definition.routing
         if isinstance(routing, ClassifierRouting):
-            classifier = model_route if definition.profile.routing == "model" else routing.classifier
+            classifier = model_classifier if definition.profile.routing == "model" else routing.classifier
             if definition.profile.routing == "fallback":
                 fallback[definition.id] = definition
             if classifier not in labels:
@@ -207,4 +222,4 @@ def route(
                 return definition
         elif routing.matches(pages):
             return definition
-    return fallback.get(model_route(pages)) if fallback else None
+    return fallback.get(model_classifier(pages)) if fallback else None

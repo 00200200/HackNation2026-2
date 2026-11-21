@@ -636,12 +636,14 @@ source = { virtual = "." }
 dependencies = [
     { name = "babel" },
     { name = "kio-polish-ocr-data" },
+    { name = "onnxruntime" },
     { name = "pdfplumber" },
     { name = "pydantic" },
     { name = "pydantic-ai" },
     { name = "pydantic-settings" },
     { name = "pypdfium2" },
     { name = "python-stdnum" },
+    { name = "rapidocr" },
     { name = "shiny" },
     { name = "tesserocr" },
 ]
@@ -652,21 +654,19 @@ dev = [
     { name = "pytest" },
     { name = "ruff" },
 ]
-rapidocr = [
-    { name = "onnxruntime" },
-    { name = "rapidocr" },
-]
 
 [package.metadata]
 requires-dist = [
     { name = "babel", specifier = ">=2.18.0" },
     { name = "kio-polish-ocr-data", directory = "packaging/polish_ocr_data" },
+    { name = "onnxruntime", specifier = "==1.32.0" },
     { name = "pdfplumber", specifier = ">=0.11.11" },
     { name = "pydantic", specifier = ">=2.14.4" },
     { name = "pydantic-ai", specifier = ">=2.71.0" },
     { name = "pydantic-settings", specifier = ">=2.16.3" },
     { name = "pypdfium2", specifier = ">=5.15.2" },
     { name = "python-stdnum", specifier = ">=2.2" },
+    { name = "rapidocr", specifier = "==3.10.0" },
     { name = "shiny", specifier = ">=1.9.0" },
     { name = "tesserocr", specifier = "==2.13.0" },
 ]
@@ -677,10 +677,7 @@ dev = [
     { name = "pytest", specifier = ">=9.2.0" },
     { name = "ruff", specifier = ">=0.17.6" },
 ]
-rapidocr = [
-    { name = "onnxruntime", specifier = "==1.32.0" },
-    { name = "rapidocr", specifier = "==3.10.0" },
-]
+rapidocr = []
 
 [[package]]
 name = "htmltools"
