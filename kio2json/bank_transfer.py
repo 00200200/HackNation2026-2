@@ -106,6 +106,7 @@ def _title(text: str) -> str | None:
 def _field_text(text: str) -> str:
     # PDF table columns may share a physical line. An empty title before a new
     # label also has a boundary even when only one space survives extraction.
+    text = re.sub(r"\([^()]*\)", lambda match: squash(match[0]), text)
     text = re.sub(rf"[ \t]{{2,}}(?={GENERIC_LABEL})", "\n", text)
     lines = []
     for line in text.splitlines():

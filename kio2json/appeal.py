@@ -158,7 +158,12 @@ def _representative(text: str) -> dict | None:
     if not intro:
         return None
     after = text[intro.end() :]
-    attorney = ATTORNEY_RE.search(after[:300])
+    appointment = []
+    for line in after.splitlines():
+        if SECTION_LABEL.match(line.strip()):
+            break
+        appointment.append(line)
+    attorney = ATTORNEY_RE.search(" ".join(appointment))
     firm = re.search(r"adres do korespondencji:\s*(.+?),\s*(?:ul\.|al\.|pl\.|os\.)", after[:600], re.DOTALL)
     mail = EMAIL_RE.search(after[:800])
     return {
@@ -206,15 +211,25 @@ def _procurement(text: str) -> dict:
     ted = re.search(r"(?P<year>\d{4})/S\s*\d{3}-(?P<number>\d{6})", text) or re.search(
         r"(?<![\d/\-])(?P<number>\d{6})-(?P<year>\d{4})(?!\d)", text
     )
-    reference = re.search(
-        r"(?:nr|numer)\s+(?:referencyjny(?:\s+sprawy)?|postępowania|sprawy):?\s*(\S+)", text
-    ) or re.search(r"postępowani[ea]\s+(?:nr|numer)\s+(\S+)", text)
-    title = re.search(r"pn\.:?\s*„(.+?)”", text, re.DOTALL) or re.search(
-        r"dotyczy.*?„(.+?)”", text, re.DOTALL | re.IGNORECASE
-    )
+    ref_label = re.search(
+        r"(?:nr|numer)\s+(?:referencyjny(?:\s+sprawy)?|postępowania|sprawy)\b[:\s]+", text, re.IGNORECASE
+    ) or re.search(r"postępowani[ea]\s+(?:nr|numer)\b[:\s]+", text, re.IGNORECASE)
+    reference = None
+    if ref_label:
+        value = text[ref_label.end() :].lstrip()
+        if not SECTION_LABEL.match(value):
+            reference = re.match(r"(?=\S*\d)[\w./-]+", value)
+    title = re.search(r"pn\.:?\s*„([^”]+)”", text)
+    if not title and (subject := re.search(r"\bdotyczy\b[ \t]*:?", text, re.IGNORECASE)):
+        lines = []
+        for line in text[subject.end() :].splitlines():
+            if SECTION_LABEL.match(line.strip()):
+                break
+            lines.append(line)
+        title = re.search(r"„([^”]+)”", " ".join(lines))
     return {
         "numer_bzp": f"{bzp.group(1)}/BZP{bzp.group(2)}" if bzp else None,
-        "numer_postepowania": reference.group(1).rstrip(",.;)") if reference else None,
+        "numer_postepowania": reference[0].rstrip(".,") if reference else None,
         "numer_ted": f"{ted['number']}-{ted['year']}" if ted else None,
         "tytul": squash(title.group(1)) if title else None,
     }

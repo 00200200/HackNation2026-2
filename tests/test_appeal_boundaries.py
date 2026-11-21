@@ -31,3 +31,19 @@ def test_next_section_closes_party_and_attorney(section):
 def test_action_sentence(body, day):
     action = appeal.extract("Zarzut nr 1 – " + body)["OdwolanieKIO"]
     assert (action["czynnosc_powod_id"], action["czynnosc_dzien"]) == (1, day)
+
+
+def test_empty_procurement_subject_and_reference_end_at_other_fields():
+    data = appeal.extract("dotyczy:\nZałącznik: „Dowód nadania”\nnumer postępowania:\nAdres: Dolna")[
+        "ZamowieniePubliczne"
+    ]
+    assert data["numer_postepowania"] is data["tytul"] is None
+
+
+def test_attorney_name_in_correspondence_address_is_not_the_representative():
+    data = appeal.extract(
+        "Odwołujący: Wrzosik\nreprezentowany przez:\nadres do korespondencji: Kancelaria adw. Olga Letnia, ul. Dolna 5"
+    )
+    attorney = data["Odwolujacy"][0]["pelnomocnik"]
+    assert attorney["imie_nazwisko"] is None
+    assert attorney["nazwa"] == "Kancelaria adw. Olga Letnia"

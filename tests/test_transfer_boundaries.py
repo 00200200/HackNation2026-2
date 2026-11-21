@@ -79,3 +79,8 @@ def test_transfer_account_without_a_supported_role():
 
 def test_transfer_title_and_status_on_one_line():
     assert bank_transfer.extract("Tytuł: rata Status: wykonany")["przelew_bankowy"]["tytul"] == "rata"
+
+
+@pytest.mark.parametrize("space", ["  ", "\n"])
+def test_indented_fee_value_is_not_a_transaction_field(space):
+    assert bank_transfer.extract(f"Opłata bankowa ({space}kwota: 12,00 PLN)")["przelew_bankowy"]["kwota"] is None
