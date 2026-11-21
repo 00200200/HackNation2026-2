@@ -3,11 +3,16 @@
 import re
 from collections.abc import Collection
 from itertools import groupby
+from pathlib import Path
 
 from . import appeal, bank_transfer, ocr_signatures, power_of_attorney
+from .appeal_scan_action import apply_action
+from .appeal_scan_crops import verify_cover
+from .appeal_scan_parties import apply_parties
+from .appeal_scan_procurement import apply_procurement
 from .ocr_accounts import AccountEvidence, account_evidence
 from .ocr_normalize import MAIL_TOKEN_RE
-from .pdf_text import iter_page_lines, join_pages
+from .pdf_text import WordBox, iter_page_lines, join_pages
 
 
 def _lines(pages: list[str], ocr_pages: Collection[int]):
@@ -22,6 +27,16 @@ def extract_appeal(pages: list[str], ocr_pages: Collection[int]) -> dict:
         i for i, (ocr, line) in enumerate(_lines(pages, ocr_pages)) if ocr and MAIL_TOKEN_RE.fullmatch(line.strip())
     )
     return appeal.extract(join_pages(pages), ocr_mail_lines=mail_lines)
+
+
+def extract_scanned_appeal(pages: list[str], ocr_pages: Collection[int], pdf_path: Path, words: list[WordBox]) -> dict:
+    record = extract_appeal(pages, ocr_pages)
+    apply_action(record, pages, ocr_pages)
+    apply_parties(record, pages, ocr_pages, words)
+    apply_procurement(record, pages, ocr_pages)
+    if 1 in ocr_pages:
+        verify_cover(record, pages[0], words, pdf_path)
+    return record
 
 
 def _account_fields(text: str, ocr: bool, receipt: AccountEvidence | None = None) -> dict[str, str | None]:

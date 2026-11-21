@@ -282,7 +282,8 @@ rules. [OCR results](evals/results/ocr-engines.json)
 - A model can cite the wrong party’s valid source text. The integration measurements above cover the rules-only profile.
 
 - Appeal extraction reads the first three pages. A signature or dated notice later in the PDF can be missed.
-  The extractor uses printed word positions when a scan groups party labels into a separate column.
+  Scanned appeal covers use printed word positions to reconnect party labels with their address blocks.
+  The extractor checks ambiguous contact details and reference prefixes against cropped words.
   Explicit party labels and filing clauses can identify the parties. An unlabelled list, an ambiguous
   column alignment or an inflected company name can still leave a party missing. A plain title can include
   lowercase continuation rows before the next labelled field. A challenge date needs a link to the act

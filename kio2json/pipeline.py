@@ -14,7 +14,7 @@ from .classify import incomplete_booking_scan
 from .engines import extract
 from .model_pages import AlternateOCR
 from .ocr_accounts import AccountEvidence, account_evidence, normalize_receipt
-from .pdf_text import DEFAULT_OCR_ENGINE, NoReadableTextError, OCRRecognitionError, join_pages, read_pages
+from .pdf_text import DEFAULT_OCR_ENGINE, NoReadableTextError, OCRRecognitionError, WordBox, join_pages, read_pages
 from .receipt_layout import append_receipt_fields, has_detached_labels, receipt_cell_fields
 
 
@@ -104,10 +104,15 @@ def process_pdf(
     definitions = classes if classes is not None else load_classes()
 
     @cache
-    def read(engine: str) -> tuple[list[str], list[int]]:
+    def read(engine: str) -> tuple[list[str], list[int], list[WordBox]]:
         scanned = []
-        pages = read_pages(pdf_path, force_ocr=force_ocr, engine=engine, ocr_pages=scanned)
-        return pages, scanned
+        words = []
+        collect = os.getenv("KIO_OCR_ENGINE", DEFAULT_OCR_ENGINE) == "tesseract-dpi" and any(
+            d.enabled and d.extractor is appeal.extract and not d.profile.keyed for d in definitions
+        )
+        options = {"first_ocr_words": words} if collect else {}
+        pages = read_pages(pdf_path, force_ocr=force_ocr, engine=engine, ocr_pages=scanned, **options)
+        return pages, scanned, words
 
     try:
         return _process(pdf_path, definitions, read, force_ocr)
@@ -131,7 +136,7 @@ def process_pdf(
 def _process(
     pdf_path: Path,
     definitions: list[DocumentClass],
-    read: Callable[[str], tuple[list[str], list[int]]],
+    read: Callable[[str], tuple[list[str], list[int], list[WordBox]]],
     force_ocr: bool,
 ) -> tuple[str | None, dict]:
     selected = os.getenv("KIO_OCR_ENGINE", DEFAULT_OCR_ENGINE)
@@ -139,7 +144,7 @@ def _process(
     readable = False
     for engine in engines:
         try:
-            primary, ocr_pages = read(engine)
+            primary, ocr_pages, words = read(engine)
             pages, definition, accounts = _read_receipt(
                 primary,
                 pdf_path,
@@ -172,7 +177,7 @@ def _process(
             definition = routed
         if definition is not None:
             if definition.id == "appeal":
-                pages = restore_party_columns(pdf_path, pages, force_ocr, engine=engine)
+                pages = restore_party_columns(pdf_path, pages, force_ocr, engine=engine, first_words=words)
             ocr_python = None
             if ocr_pages:
                 if definition.extractor is bank_transfer.extract:
@@ -180,7 +185,10 @@ def _process(
                 elif definition.extractor is power_of_attorney.extract:
                     ocr_python = partial(ocr_extract.extract_power_of_attorney, pages, ocr_pages)
                 elif definition.extractor is appeal.extract:
-                    ocr_python = partial(ocr_extract.extract_appeal, pages, ocr_pages)
+                    if definition.profile.keyed:
+                        ocr_python = partial(ocr_extract.extract_appeal, pages, ocr_pages)
+                    else:
+                        ocr_python = partial(ocr_extract.extract_scanned_appeal, pages, ocr_pages, pdf_path, words)
             return definition.id, extract(
                 definition,
                 join_pages(pages),

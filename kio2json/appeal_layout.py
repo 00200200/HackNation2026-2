@@ -41,10 +41,19 @@ def restore_labels(page: str, words: list[WordBox]) -> str:
     )
 
 
-def restore_party_columns(path: Path, pages: list[str], force_ocr: bool, *, engine: str | None = None) -> list[str]:
+def restore_party_columns(
+    path: Path,
+    pages: list[str],
+    force_ocr: bool,
+    *,
+    engine: str | None = None,
+    first_words: list[WordBox] | None = None,
+) -> list[str]:
     detached = [i for i, page in enumerate(pages) if DETACHED_ROLES.search(page)]
     if not detached:
         return pages
+    if detached == [0] and first_words:
+        return [restore_labels(pages[0], first_words), *pages[1:]]
     boxes = []
     read_pages(path, max_pages=max(detached) + 1, force_ocr=force_ocr, word_boxes=boxes, engine=engine)
     return [

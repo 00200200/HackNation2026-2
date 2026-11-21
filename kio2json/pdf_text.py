@@ -252,6 +252,7 @@ def read_pages(
     force_ocr: bool = False,
     *,
     word_boxes: list[WordBox] | None = None,
+    first_ocr_words: list[WordBox] | None = None,
     engine: str | None = None,
     ocr_pages: list[int] | None = None,
 ) -> list[str]:
@@ -274,7 +275,13 @@ def read_pages(
                 used_ocr = True
                 if include and ocr_pages is not None:
                     ocr_pages.append(page.page_number)
-                text = normalize_ocr(recognize(page, words if include else None))
+                first_words = [] if index == 0 and include and first_ocr_words is not None else None
+                boxes = first_words if first_words is not None else words if include else None
+                text = normalize_ocr(recognize(page, boxes))
+                if first_words is not None:
+                    first_ocr_words.extend(first_words)
+                    if words is not None:
+                        words.extend(first_words)
             elif include and words is not None:
                 words.extend(
                     WordBox(page.page_number, w["text"], w["x0"], w["top"], w["x1"], w["bottom"])
