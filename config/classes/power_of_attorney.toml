@@ -1,4 +1,5 @@
 id = "power_of_attorney"
+span_instructions = "Mocodawca udziela umocowania. Osoby podpisujące w jego imieniu należą do podpisujących, a osoby umocowane do pełnomocników. Dla typu mocodawcy zacytuj określenie osoby albo formy prawnej. Nie myl danych kancelarii z danymi mocodawcy."
 priority = 20
 engines = ["python"]
 extractor = "kio2json.power_of_attorney.extract"

@@ -7,16 +7,29 @@ and continues with empty output if recovery fails. Other document errors give ex
 
 import argparse
 import sys
+from concurrent.futures import ProcessPoolExecutor
+from multiprocessing import get_context
 from pathlib import Path
 
-from .batch import configure_logging, read_document
+from .batch import configure_logging, read_document, read_in_worker
 from .class_config import load_classes
+
+
+def document_results(pdfs, classes, jobs):
+    if jobs == 1 or len(pdfs) < 2:
+        for pdf in pdfs:
+            yield read_document(pdf, classes)
+    else:
+        # Isolate native PDF renderers and reuse each worker across its documents.
+        with ProcessPoolExecutor(max_workers=min(jobs, len(pdfs)), mp_context=get_context("spawn")) as pool:
+            yield from pool.map(read_in_worker, pdfs)
 
 
 def main() -> int:
     parser = argparse.ArgumentParser(description=__doc__.splitlines()[0])
     parser.add_argument("--input", dest="input_dir", default="input", type=Path)
     parser.add_argument("--output", dest="output_dir", default="output", type=Path)
+    parser.add_argument("--jobs", type=int, choices=range(1, 9), default=1, help="Concurrent PDF workers (default 1)")
     args = parser.parse_args()
 
     if not args.input_dir.is_dir():
@@ -30,8 +43,7 @@ def main() -> int:
 
     pdfs = sorted(p for p in args.input_dir.rglob("*") if p.suffix.lower() == ".pdf")
     failed = 0
-    for pdf in pdfs:
-        result = read_document(pdf, classes)
+    for pdf, result in zip(pdfs, document_results(pdfs, classes, args.jobs), strict=True):
         if result.error:
             print(f"{pdf}: not processed ({result.error})", file=sys.stderr)
             failed += 1

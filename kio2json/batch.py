@@ -4,9 +4,10 @@ import json
 import logging
 import os
 from dataclasses import dataclass
+from functools import cache
 from pathlib import Path
 
-from .class_config import DocumentClass
+from .class_config import DocumentClass, load_classes
 from .endpoint_error import EndpointError
 from .pdf_text import NoReadableTextError
 from .pipeline import process_pdf
@@ -40,3 +41,15 @@ def read_document(path: Path, classes: list[DocumentClass]) -> Result:
     return Result(
         label, json.dumps(data, ensure_ascii=False, indent=2) + "\n" if data else "", used_recovery=bool(recoveries)
     )
+
+
+@cache
+def _worker_classes() -> list[DocumentClass]:
+    classes = load_classes()
+    configure_logging(classes)
+    return classes
+
+
+def read_in_worker(path: Path) -> Result:
+    """Load the registry inside each process; its dynamic schema types cannot be pickled."""
+    return read_document(path, _worker_classes())

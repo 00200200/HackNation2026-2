@@ -114,6 +114,7 @@ class OutputField(Config):
 
 
 class DocumentClass(Config):
+    span_instructions: str = ""
     id: str = Field(pattern=r"^[a-z][a-z0-9_]*$")
     enabled: bool = True
     priority: int = 100
@@ -156,6 +157,12 @@ class DocumentClass(Config):
         from .output_schema import record_model
 
         return record_model(self.fields, self.id, cited=True, allow_abstention=True)
+
+    @cached_property
+    def span_model(self):
+        from .output_schema import record_model
+
+        return record_model(self.fields, self.id, allow_abstention=True, spans=True)
 
     @model_validator(mode="after")
     def python_extractor(self) -> Self:

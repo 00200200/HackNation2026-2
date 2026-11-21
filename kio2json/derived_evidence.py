@@ -79,13 +79,12 @@ def _reason(key: str, quote: str, text: str, visible_end: int | None):
     return None
 
 
-def derived_value(key: str, field: OutputField, proposed, quote: str, text: str, *, visible_end: int | None = None):
-    """Return the proposed typed value only when the quoted source maps to it unambiguously."""
+def derive_from_quote(key: str, quote: str, text: str, *, visible_end: int | None = None):
+    """Return the unique organizer value established by this source span."""
     if key not in DERIVED_KEYS or not quote.strip() or quote not in text:
         return None
-    value = scalar_value(field, proposed)
     if key in REASON_KEYS:
-        return value if value == _reason(key, quote, text, visible_end) else None
+        return _reason(key, quote, text, visible_end)
     candidates = set()
     if key in NOTICE:
         for match in NOTICE[key].finditer(text):
@@ -98,4 +97,9 @@ def derived_value(key: str, field: OutputField, proposed, quote: str, text: str,
         for candidate, pattern in ROLE[key]:
             if any(quote_covers(quote, text, *match.span(1), visible_end) for match in pattern.finditer(text)):
                 candidates.add(candidate)
-    return value if candidates == {value} else None
+    return candidates.pop() if len(candidates) == 1 else None
+
+
+def derived_value(key: str, field: OutputField, proposed, quote: str, text: str, *, visible_end: int | None = None):
+    value = scalar_value(field, proposed)
+    return value if value == derive_from_quote(key, quote, text, visible_end=visible_end) else None

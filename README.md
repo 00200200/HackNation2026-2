@@ -108,7 +108,7 @@ uv run pytest -q tests/test_class_config.py -k fourth
 
 ## Add a class
 
-The three organizer class definitions supply the field descriptions, types and grounding rules for the recommended Flash profile. For a new class in a custom directory, its own TOML selects the routing cues and engine order.
+The three organizer class definitions supply the field descriptions, types and grounding rules for the model profiles. For a new class in a custom directory, its own TOML selects the routing cues and engine order.
 
 1. Create one TOML file in your class directory and choose a unique English `id`. This example
    adds a receipt with one reference field.
@@ -148,7 +148,22 @@ The three organizer class definitions supply the field descriptions, types and g
 
 ## Use a model endpoint
 
-**For submission,** serve the open-weight Flash release through an EU/EEA provider and EU/EEA inference region. Use model-first extraction with rules filling gaps (`KIO_LLM_MODE=LR`), model routing after rules reject a document (`KIO_LLM_ROUTING=fallback`) and a second OCR reading on scanned pages (`KIO_LLM_DUAL_OCR=true`). These are the bundled keyed defaults. Use the Flash column below to reproduce the measured generation settings on compatible servers. Pro is a measured alternative.
+The primary small-model candidate is Mistral’s open-weight `ministral-3b-2512` (3,849,090,048 total parameters). Both the language and vision weights count toward the 8B ceiling. The regional API supports native JSON Schema. Its documented processing geography includes EU and EFTA countries, so the jury deployment needs a narrower location commitment. [Provider comparison and sources](docs/small-model-providers.md)
+
+With the Mistral credential already exported in the shell, run:
+
+```sh
+export KIO_LLM_BASE_URL=https://api.eu.mistral.ai/v1
+export KIO_LLM_MODEL=ministral-3b-2512
+export KIO_LLM_API_KEY="$MISTRAL_API_KEY"
+export KIO_LLM_OUTPUT=spans KIO_LLM_MODE=LR KIO_LLM_ROUTING=fallback
+export KIO_LLM_DUAL_OCR=false KIO_LLM_TOKEN_PARAMETER=max_tokens
+export KIO_LLM_INLINE_SYSTEM_PROMPTS=false KIO_LLM_TIMEOUT_SECONDS=120
+python -m kio2json --input input --output output --jobs 3
+```
+
+In `spans` mode the model copies one short passage per scalar into a class-specific native schema. The application locates the passage in up to 8,192 UTF-8 bytes of page text, checks token boundaries and derives dates, amounts, identifiers and organizer codes locally. Each class can supply a short `span_instructions` string in its TOML. The example uses local Tesseract for scans. The model receives text; its vision encoder is included in the published parameter count. The CLI accepts 1–8 document workers and defaults to one.
+
 Set all three variables in the process environment or in an ignored `.env` in the working directory.
 Environment values take precedence. The application has no built-in endpoint or credential.
 
@@ -184,7 +199,7 @@ messages at the beginning of the conversation. `KIO_LLM_THINKING_TYPE=enabled` s
 `thinking.type=enabled` and preserves the returned `reasoning_content` on a validation retry.
 These optional settings apply to whichever model ID and base URL you supply.
 
-The development measurements used the following explicit settings in addition to endpoint credentials.
+The earlier large-model development measurements used the following explicit settings in addition to endpoint credentials.
 A dash uses the application default.
 
 | Setting | DeepSeek Pro | DeepSeek Flash |
@@ -205,30 +220,13 @@ value from printed evidence, such as a TED reference in the alternate year/serie
 from the wrong party can still support a value. PDF table cells and party boundaries remain open
 work in [issue 10](https://github.com/00200200/HackNation2026-2/issues/10).
 
-### EU providers for the submission
+### European small-model providers
 
-Both candidates offer OpenAI-compatible chat with structured JSON for the Apache-2.0
-Mistral Small 3.2 24B model. Prices below are euros per million input/output tokens, checked on
-21 November 2026. Hosted accuracy, latency and account approval time remain unmeasured.
-[Model card](https://huggingface.co/mistralai/Mistral-Small-3.2-24B-Instruct-2506)
+The provider comparison records the total parameter counts, hosted features, model licences, regions, privacy terms, prices and free-access conditions checked on 21 November 2026. [Small-model provider research](docs/small-model-providers.md)
 
-| Provider and region | Model ID | Price and access |
-|---|---|---|
-| Scaleway, Paris, France | `mistral-small-3.2-24b-instruct-2506` | €0.15 / €0.35 before tax, first 1M tokens free. Existing customers can generate an IAM API key immediately. New accounts need billing information. Standard quotas require card and identity verification. [Region](https://www.scaleway.com/en/docs/generative-apis/faq/) · [Structured output](https://www.scaleway.com/en/docs/generative-apis/how-to/use-structured-outputs/) · [Pricing](https://www.scaleway.com/en/pricing/model-as-a-service/) · [Onboarding](https://www.scaleway.com/en/generative-apis-signup/) |
-| Berget AI, Stockholm, Sweden | `mistralai/Mistral-Small-3.2-24B-Instruct-2506` | €0.30 / €0.30, €5 starting credit on the trial. Register in the console and select **API Keys → Create New Key**. The provider advertises setup in minutes. [Region and endpoint](https://docs.berget.ai/quickstart) · [Model capabilities](https://docs.berget.ai/models/capabilities) · [Pricing](https://berget.ai/en/serverless-inference) · [Key setup](https://docs.berget.ai/integrations/cline-vscode) |
+### Earlier large-model measurements on real KIO documents
 
-Scaleway also lists the measured Flash release as `deepseek-v4.1-flash-1017` at €0.60 input
-(€0.12 cached) and €1.80 output per million tokens. Its `qwen3.8-27b` is €0.60/€3.30 and
-`llama-3.3-70b-instruct` is €0.90/€0.90. Its API base URL is `https://api.scaleway.ai/v1`.
-Berget uses `https://api.berget.ai/v1` and lists a Qwen 3.8 27B preview with JSON schema support.
-Matching model releases can still differ in quantization and serving settings.
-[Scaleway prices](https://www.scaleway.com/en/pricing/model-as-a-service/) ·
-[Scaleway API](https://www.scaleway.com/en/docs/generative-apis/faq/) ·
-[Berget capabilities](https://docs.berget.ai/models/capabilities)
-
-### Measurements on real KIO documents
-
-On the private dev split (22 PDFs in 14 cases), the recommended Flash profile scored **0.6951 field micro-F1**, the Pro comparison scored **0.7236**, and keyless rules scored **0.4356**. The keyed profile asks the model to classify a first page only when the rules reject it. This recovered all five positive documents the rule router missed, and all seven unrelated PDFs still produced empty files. The EU-hosted submission endpoint still needs its own evaluation. [Aggregate results](evals/results/llm-real-docs.json)
+On the private dev split (22 PDFs in 14 cases), the Flash profile scored **0.6951 field micro-F1**, the Pro comparison scored **0.7236**, and keyless rules scored **0.4356**. The keyed profile asks the model to classify a first page only when the rules reject it. This recovered all five positive documents the rule router missed, and all seven unrelated PDFs still produced empty files. The EU-hosted submission endpoint still needs its own evaluation. [Aggregate results](evals/results/llm-real-docs.json)
 
 The table uses model routing after rule rejection for all modes, including `R`, where rules extract every field. Macro F1 gives equal weight to the three classes. Both models classified 15/15 positives correctly and returned empty files for 7/7 negatives with this router.
 
@@ -240,7 +238,7 @@ The table uses model routing after rule rejection for all modes, including `R`, 
 | LR | 0.6951 | 0.6302 | 0.7225 / 0.7097 / 0.4583 | 0.7236 | 0.7090 | 0.7277 / 0.7742 / 0.6250 |
 | V | 0.6870 | 0.5997 | 0.7277 / 0.6129 / 0.4583 | 0.7114 | 0.6767 | 0.7277 / 0.6774 / 0.6250 |
 
-With Pro and `LR`, rule-only routing scored 0.6783 micro-F1 and found 10/15 positives. Asking Pro about every first page produced the same score and routes as fallback and required 22 classification calls instead of 12. The selected Flash configuration took 14.12 serial stage seconds per PDF, compared with 69.91 for Pro. These timings sum the measured OCR, routing and extraction durations and divide by 22. The comparison reuses identical calls across modes. An independent uncached Flash run scored 0.6802 micro-F1 and 0.6262 macro-F1 with the same 15/15 positive routes and 7/7 empty negatives. It took 29.18 wall seconds/PDF. Of its recorded stage times, 164.75 seconds went to the primary reading and 414.57 to secondary OCR across the batch.
+With Pro and `LR`, rule-only routing scored 0.6783 micro-F1 and found 10/15 positives. Asking Pro about every first page produced the same score and routes as fallback and required 22 classification calls instead of 12. The Flash configuration took 14.12 serial stage seconds per PDF, compared with 69.91 for Pro. These timings sum the measured OCR, routing and extraction durations and divide by 22. The comparison reuses identical calls across modes. An independent uncached Flash run scored 0.6802 micro-F1 and 0.6262 macro-F1 with the same 15/15 positive routes and 7/7 empty negatives. It took 29.18 wall seconds/PDF. Of its recorded stage times, 164.75 seconds went to the primary reading and 414.57 to secondary OCR across the batch.
 
 
 In a separate uncached test on two invented native-text PDFs, one worker took 2.56 s/PDF with Flash and 15.09 s/PDF with Pro. Two simultaneous document workers took 1.15 and 12.55 s/PDF respectively. Each PDF needed one route followed by one extraction. The class decision selects the extraction schema, so these calls run in sequence within each PDF. The fixture had no OCR cost.
@@ -254,7 +252,7 @@ In a strict audit that paired repeated records within their parent, Pro `L` had 
 
 | Model | Micro F1 | Macro F1 | Appeal | POA | Transfer | Positive routes | Empty negatives | Wall s/PDF |
 |---|---:|---:|---:|---:|---:|---:|---:|---:|
-| Flash (selected) | 0.6055 | 0.6626 | 0.5627 | 0.6250 | 0.8000 | 13/13 | 4/4 | 6.43 |
+| Flash | 0.6055 | 0.6626 | 0.5627 | 0.6250 | 0.8000 | 13/13 | 4/4 | 6.43 |
 | Pro | 0.7002 | 0.7101 | 0.6919 | 0.6383 | 0.8000 | 13/13 | 4/4 | 64.28 |
 
 The first Flash batch exited before scoring and the evaluator discarded its diagnostics. The authorized second attempt added document-level rule recovery. A diagnostic counter on that run observed an extraction response exceeding its token limit. Flash used rule recovery on 1 of the 17 PDFs. Prompts, generation limits, class definitions and routing were frozen throughout. Pro completed its first attempt before the recovery change.

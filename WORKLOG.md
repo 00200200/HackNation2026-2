@@ -4,6 +4,8 @@ Shared state of the project. Rules: `CLAUDE.md` → Worklog.
 
 ## Now
 
+- Small-model development uses the Mistral regional API and the pinned `ministral-3b-2512` release. The span profile asks for one source passage per scalar and normalizes it locally, with optional bounded PDF workers. The 8B-labelled model is an above-cap comparison. See [the model and hosting evidence](docs/small-model-providers.md).
+
 - Task brief, FAQ and details PDF in `docs/task/`; organizer repo copied into `data/uzp` (`make data` refreshes);
   template example in `input/case1`.
 - App: `kio2json/`, default jury classes use rule-based extraction. CLI `python -m kio2json --input input --output output`;
@@ -78,6 +80,8 @@ Both splits missed the team’s micro F1 and classification targets. Compared wi
   `/orchestrator`, not to Claude subagents.
 
 ## Log
+
+- 21.11.2026 · Codex · Added native span output for small models, local source validation and a bounded parallel CLI. Verified the native schema on the quantized local model and both regional API releases.
 
 - 21.11.2026 · Claude · brief, eval harness, judge/eval skills, pre-push hook · f6db304
 - 21.11.2026 · Claude · stricter F1 normalisation (types, formats), invented test fixture, organizer data copied into the repo (UZP e8b7a67)
