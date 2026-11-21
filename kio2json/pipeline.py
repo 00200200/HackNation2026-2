@@ -11,6 +11,7 @@ from . import appeal, bank_transfer, ocr_extract, power_of_attorney
 from .appeal_layout import restore_party_columns
 from .class_config import DocumentClass, load_classes, route
 from .classify import incomplete_booking_scan, resembles_appeal_heading
+from .disputed_lines import verified_lines
 from .engines import extract
 from .grant_certificates import add_certificate_signers
 from .model_pages import AlternateOCR
@@ -82,6 +83,7 @@ def _read_receipt(
     fields = {}
     if scanned and (definition is not None or incomplete_booking_scan(pages[0])):
         if boxes:
+            pages = verified_lines(pdf_path, pages, [b for b in boxes if b.page == 1], "receipt")
             pages = recover_account_crops(pdf_path, pages, boxes)
         pages = [normalize_receipt(pages[0]), *pages[1:]]
     if has_detached_labels(pages, ocr=scanned):
@@ -139,11 +141,14 @@ def _document_rules(definition, pdf_path, pages, ocr_pages, boxes, engine, selec
     if definition.extractor is appeal.extract and ocr_pages:
         if rules_first:
             words = [box for box in boxes if box.page == 1] if selected == "tesseract-dpi" else []
+            pages = verified_lines(pdf_path, pages, boxes, "appeal")
             return ocr_extract.extract_scanned_appeal(pages, ocr_pages, pdf_path, words)
         return ocr_extract.extract_appeal(pages, ocr_pages)
     if definition.extractor is power_of_attorney.extract:
         if ocr_pages:
             grant_pages = verified_pages(pdf_path, pages, boxes) if rules_first else pages
+            if rules_first:
+                grant_pages = verified_lines(pdf_path, grant_pages, boxes, "grant")
             record = ocr_extract.extract_power_of_attorney(grant_pages, ocr_pages)
         else:
             record = power_of_attorney.extract(join_pages(pages))

@@ -381,6 +381,8 @@ rules. [OCR results](evals/results/ocr-engines.json)
 
 ## Known limits
 
+- The local disputed-line experiment can be enabled with `KIO_OCR_DISPUTED_LINES=1`. It rereads damaged identifiers and printed signature captions using their original word boxes. A checksum or an independent complete reading must support a correction. The jury profile leaves this experiment off. The separate development corpus showed no field gain.
+
 - On two-column receipts a payment amount can sit beside a different label. The reader checks the amount's column and currency. A damaged account, reference or remittance title can still be unreadable after the receipt is identified.
 
 - A receipt that shows only acceptance for future execution can remain unclassified. On damaged scans, a booking date and debit can establish a completed payment even when the account roles are unreadable. The affected account fields stay null.

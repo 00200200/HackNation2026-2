@@ -1,6 +1,8 @@
 """Keep RapidOCR warm across pages and terminate native inference on its wall-clock deadline."""
 
 import atexit
+import base64
+import io
 import json
 import os
 import subprocess
@@ -30,6 +32,21 @@ atexit.register(close)
 
 
 def recognize(path: Path, page: int, word_boxes: bool | Literal["lines"], timeout: float) -> tuple[str, list]:
+    return _exchange([str(path.resolve()), page, word_boxes], timeout)
+
+
+def recognize_crop(crop) -> str:
+    """Submit the same deskewed pixels used by Tesseract under the document deadline."""
+    from .ocr_budget import CROP_TIMEOUT_MS, require_remaining_ms
+
+    with io.BytesIO() as buffer:
+        crop.save(buffer, format="PNG")
+        request = {"crop": base64.b64encode(buffer.getvalue()).decode("ascii")}
+    text, _ = _exchange(request, require_remaining_ms(CROP_TIMEOUT_MS) / 1000)
+    return text
+
+
+def _exchange(request, timeout: float) -> tuple[str, list]:
     global _process
     deadline = monotonic() + timeout
     expired = TimeoutError(f"RapidOCR timed out after {timeout:g} seconds")
@@ -51,7 +68,6 @@ def recognize(path: Path, page: int, word_boxes: bool | Literal["lines"], timeou
         timer = Timer(max(0, deadline - monotonic()), _process.kill)
         timer.start()
         try:
-            request = [str(path.resolve()), page, word_boxes]
             _process.stdin.write(json.dumps(request) + "\n")
             _process.stdin.flush()
             line = _process.stdout.readline()
@@ -84,14 +100,22 @@ def _serve() -> None:
         os.dup2(sys.stderr.fileno(), sys.stdout.fileno())
         import pdfplumber
 
-        from .pdf_text import _rapidocr
+        from .pdf_text import _rapid_engine, _rapidocr
 
         for request in sys.stdin:
-            path, page, want_boxes = json.loads(request)
-            boxes = [] if want_boxes else None
+            payload = json.loads(request)
             try:
-                with pdfplumber.open(path, pages=[page]) as pdf:
-                    text = _rapidocr(pdf.pages[0], boxes, lines=want_boxes == "lines")
+                boxes = None
+                if isinstance(payload, dict):
+                    engine = _rapid_engine()
+                    crop = engine.load_img(base64.b64decode(payload["crop"]))
+                    read = engine.recognize_txt([crop])
+                    text = " ".join(read.txts or ())
+                else:
+                    path, page, want_boxes = payload
+                    boxes = [] if want_boxes else None
+                    with pdfplumber.open(path, pages=[page]) as pdf:
+                        text = _rapidocr(pdf.pages[0], boxes, lines=want_boxes == "lines")
                 result = [text, boxes or [], None]
             except Exception as error:  # noqa: BLE001 -- relay PDF and native model errors to the caller.
                 result = [None, [], str(error) or type(error).__name__]

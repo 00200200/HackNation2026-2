@@ -14,14 +14,18 @@ from .pdf_text import OCR_DPI, WordBox, _language_dir
 LABEL = re.compile(r"\bKRS\s*:?\s*(\d{10})(?!\d)", re.IGNORECASE)
 
 
+def read_crop(crop, reader, *, dpi: int | None = None) -> str:
+    reader.SetImage(crop)
+    if dpi is not None:
+        reader.SetSourceResolution(dpi)
+    timeout = remaining_ms(CROP_TIMEOUT_MS)
+    return reader.GetUTF8Text().strip() if timeout and reader.Recognize(timeout=timeout) else ""
+
+
 def _agreement(crop, readers, original: str) -> str:
     values = []
     for reader in readers:
-        reader.SetImage(crop)
-        timeout = remaining_ms(CROP_TIMEOUT_MS)
-        if not timeout or not reader.Recognize(timeout=timeout):
-            return original
-        result = re.fullmatch(r"(\d{10})[,.;:]?", reader.GetUTF8Text().strip())
+        result = re.fullmatch(r"(\d{10})[,.;:]?", read_crop(crop, reader))
         if not result:
             return original
         values.append(result[1])

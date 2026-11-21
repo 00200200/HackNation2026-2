@@ -20,11 +20,11 @@ _LABEL = re.compile(
 _END = re.compile(r"^(?:typ\b|data\b|dokument\b|s.gnature\b|rachun\w*|nazwa\b)", re.IGNORECASE)
 
 
-def _rows(boxes: list[WordBox]) -> list[list[WordBox]]:
+def _rows(boxes: list[WordBox], *, page: int = 1) -> list[list[WordBox]]:
     """Tesseract returns words in reading order even on tilted pages."""
     rows = []
     for word in boxes:
-        if word.page != 1 or not word.text.strip():
+        if word.page != page or not word.text.strip():
             continue
         if rows:
             prev = rows[-1][-1]
@@ -99,7 +99,7 @@ def _slope(rows: list[list[WordBox]]) -> float:
 
 
 def _line_image(image, row: list[WordBox], slope: float) -> Image.Image:
-    left, right = row[0].x0, row[-1].x1
+    left, right = min(w.x0 for w in row), max(w.x1 for w in row)
     center = (left + right) / 2
     leveled = [slope * ((w.x0 + w.x1) / 2 - center) for w in row]
     top = min(w.y0 - delta for w, delta in zip(row, leveled)) - 2.5
