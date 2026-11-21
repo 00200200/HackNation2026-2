@@ -1,0 +1,166 @@
+<!doctype html>
+<html lang="pl"><head><meta charset="utf-8">
+<title>doc2json · pitch HackNation 2026</title>
+<meta name="viewport" content="width=1920">
+<link rel="stylesheet" href="project/deck.css">
+<style>
+@font-face { font-family:'Geist'; src:url(../../frontend/public/fonts/geist-latin.woff2) format('woff2'); font-weight:100 900; unicode-range:U+0000-00FF,U+0131,U+0152-0153,U+02BB-02BC,U+02C6,U+02DA,U+02DC,U+2000-206F,U+2074,U+20AC,U+2122,U+2191,U+2193,U+2212,U+2215,U+FEFF,U+FFFD; }
+@font-face { font-family:'Geist'; src:url(../../frontend/public/fonts/geist-latin-ext.woff2) format('woff2'); font-weight:100 900; unicode-range:U+0100-02AF,U+0304,U+0308,U+0329,U+1E00-1E9F,U+1EF2-1EFF,U+2020,U+20A0-20AB,U+20AD-20C0,U+2113,U+2C60-2C7F,U+A720-A7FF; }
+@font-face { font-family:'Geist Mono'; src:url(../../frontend/public/fonts/geist-mono-latin.woff2) format('woff2'); font-weight:100 900; unicode-range:U+0000-00FF,U+0131,U+0152-0153,U+02BB-02BC,U+02C6,U+02DA,U+02DC,U+2000-206F,U+2074,U+20AC,U+2122,U+2191,U+2193,U+2212,U+2215,U+FEFF,U+FFFD; }
+@font-face { font-family:'Geist Mono'; src:url(../../frontend/public/fonts/geist-mono-latin-ext.woff2) format('woff2'); font-weight:100 900; unicode-range:U+0100-02AF,U+0304,U+0308,U+0329,U+1E00-1E9F,U+1EF2-1EFF,U+2020,U+20A0-20AB,U+20AD-20C0,U+2113,U+2C60-2C7F,U+A720-A7FF; }
+@page { size: 1920px 1080px; margin: 0; }
+* { margin:0 }
+html, body { background:#1a1a1a; }
+body > section { width:1920px; height:1080px; overflow:hidden; box-sizing:border-box; position:relative; isolation:isolate; margin:0 auto 24px; break-after:page; }
+aside { display:none !important }
+h1 { font-size:96px } h2 { font-size:64px } h3 { font-size:44px }
+@media print { html, body { background:none; } body > section { margin:0; } .in, .fade { animation:none !important; } }
+</style>
+</head><body>
+<section id="cover" data-transition="fade">
+<div class="glow"></div>
+<div class="hdr"><p>Zadanie UZP: Odwołania2json</p><p class="r">HackNation 2026</p></div>
+<div class="in" style="--i:0; display:flex; align-items:center; gap:28px;">
+<svg aria-label="Logo doc2json: klamry {} z dwiema liniami tekstu" width="96" height="96" viewBox="0 0 64 64" style="width:96px; height:96px;"><rect x="0.5" y="0.5" width="63" height="63" rx="15" fill="#0a0a0a" stroke="#4a4a4a" stroke-width="1"/><g fill="none" stroke="#fff" stroke-width="4.5" stroke-linecap="round" stroke-linejoin="round"><path d="M24 15c-4.5 0-5.5 2-5.5 6v6c0 3-1.5 5-4.5 5 3 0 4.5 2 4.5 5v6c0 4 1 6 5.5 6"/><path d="M40 15c4.5 0 5.5 2 5.5 6v6c0 3 1.5 5 4.5 5-3 0-4.5 2-4.5 5v6c0 4-1 6-5.5 6"/><path d="M28 27h8M28 37h5"/></g></svg>
+<p style="font-size:40px; font-weight:500; letter-spacing:-0.8px; line-height:1.2;">Sprawa odwoławcza KIO: z PDF-ów do JSON-a.</p>
+</div>
+<div class="crop" style="top:400px; height:680px;">
+<p class="stack in" style="--i:1; color:#ffffff;">doc2json</p>
+<p class="stack in" style="--i:2; color:#262626;">doc2json</p>
+<p class="stack in" style="--i:3; color:#141414;">doc2json</p>
+</div>
+<aside>Dzień dobry. Jesteśmy doc2json. Bierzemy PDF-y ze sprawy odwoławczej KIO i oddajemy JSON w schemacie UZP, osobny dla każdego dokumentu.</aside>
+</section>
+
+<section id="problem" data-transition="fade">
+<div class="glow"></div>
+<div class="hdr"><p>Zadanie UZP: Odwołania2json</p><p class="r">HackNation 2026</p></div>
+<h2 class="in" style="--i:0; width:980px; font-size:72px; letter-spacing:-2.5px;">Jedna sprawa KIO.<br><span style="color:#8f8f8f">Kilka PDF-ów, każdy inny, część to skany.</span></h2>
+<div class="note in" style="--i:2; left:1268px; top:180px; width:500px;">
+<p style="font-size:32px; line-height:1.3; letter-spacing:-0.4px;">„Dla człowieka zrozumienie takiej dokumentacji jest stosunkowo proste. Dla systemów informatycznych stanowi jednak duże wyzwanie.”</p></div>
+<div class="tape" style="left:1440px; top:164px;"></div>
+<div class="crop" style="top:770px; height:310px;">
+<p class="giant in" style="--i:3;">Problem</p>
+</div>
+<aside>Sprawa odwoławcza przed KIO to kilka powiązanych dokumentów: odwołanie, pełnomocnictwo, potwierdzenie przelewu i inne. Mają różną budowę, część to skany, a dane jednej sprawy są rozrzucone po kilku plikach. UZP pisze wprost: człowiek to przeczyta bez trudu, system informatyczny już nie. Źródło: opis wyzwania Odwołania2json, sekcja 1 „Wprowadzenie”.</aside>
+</section>
+
+<section id="solution" class="light" data-transition="fade">
+<div class="hdr"><p>Zadanie UZP: Odwołania2json</p><p class="r">HackNation 2026</p></div>
+<h2 class="in" style="--i:0;">Każdy PDF dostaje swój JSON.</h2>
+<div class="in" style="--i:1; display:flex; align-items:center; flex:1;">
+<div style="width:330px; display:flex; flex-direction:column; gap:16px;">
+<div class="node"><p class="a">dokument_01.pdf</p></div>
+<div class="node"><p class="a">dokument_02.pdf</p></div>
+<div class="node"><p class="a">dokument_03.pdf</p></div>
+<div class="node"><p class="a">dokument_04.pdf</p></div>
+</div>
+<div style="width:90px; display:flex; flex-direction:column; gap:16px;"><div class="wire"><div></div></div><div class="wire"><div></div></div><div class="wire"><div></div></div><div class="wire"><div></div></div></div>
+<div class="hub" style="width:420px; height:368px;">
+<svg aria-label="Logo doc2json" width="72" height="72" viewBox="0 0 64 64" style="width:72px; height:72px;"><rect x="0.5" y="0.5" width="63" height="63" rx="15" fill="#000" stroke="#4a4a4a" stroke-width="1"/><g fill="none" stroke="#fff" stroke-width="4.5" stroke-linecap="round" stroke-linejoin="round"><path d="M24 15c-4.5 0-5.5 2-5.5 6v6c0 3-1.5 5-4.5 5 3 0 4.5 2 4.5 5v6c0 4 1 6 5.5 6"/><path d="M40 15c4.5 0 5.5 2 5.5 6v6c0 3 1.5 5 4.5 5-3 0-4.5 2-4.5 5v6c0 4-1 6-5.5 6"/><path d="M28 27h8M28 37h5"/></g></svg>
+<p class="t">doc2json</p>
+<p class="s">klasa z treści<br>pola ze schematu UZP</p>
+</div>
+<div style="width:90px; display:flex; flex-direction:column; gap:16px;"><div class="wire"><div></div></div><div class="wire"><div></div></div><div class="wire"><div></div></div><div class="wire"><div></div></div></div>
+<div style="flex:1; display:flex; flex-direction:column; gap:16px;">
+<div class="node"><p class="a">odwołanie</p></div>
+<div class="node"><p class="a">przelew</p></div>
+<div class="node"><p class="a">pełnomocnictwo</p></div>
+<div class="node empty"><p class="a">pusty plik</p></div>
+</div>
+</div>
+<div class="ftr"><div class="brand"><svg aria-label="Logo doc2json" width="40" height="40" viewBox="0 0 64 64" style="width:40px; height:40px;"><rect width="64" height="64" rx="15" fill="#000"/><g fill="none" stroke="#fff" stroke-width="4.5" stroke-linecap="round" stroke-linejoin="round"><path d="M24 15c-4.5 0-5.5 2-5.5 6v6c0 3-1.5 5-4.5 5 3 0 4.5 2 4.5 5v6c0 4 1 6 5.5 6"/><path d="M40 15c4.5 0 5.5 2 5.5 6v6c0 3 1.5 5 4.5 5-3 0-4.5 2-4.5 5v6c0 4-1 6-5.5 6"/><path d="M28 27h8M28 37h5"/></g></svg><p>doc2json</p></div><p class="pg">03 / 09</p></div>
+<aside>Jury wrzuca PDF-y sprawy do folderu input. Nazwy plików są dowolne, więc klasę rozpoznajemy z treści. Wyciągamy pola ze schematu UZP i zapisujemy JSON o tej samej nazwie co PDF. Dokument spoza trzech klas dostaje pusty plik. Czego nie ma w dokumencie, zostaje null. Kontrakt wejścia i wyjścia: README UZP, sekcja 3.</aside>
+</section>
+
+<section id="fields" class="light" data-transition="fade">
+<div class="hdr"><p>Zadanie UZP: Odwołania2json</p><p class="r">HackNation 2026</p></div>
+<h2 class="in" style="--i:0;">Trzy klasy dokumentów.</h2>
+<div class="row" style="flex:1; align-items:center; gap:24px;">
+<div class="card in" style="--i:1; padding:48px; gap:20px;"><h3 style="font-size:44px;">Odwołanie</h3><p class="desc">Strony, pełnomocnik, powód odwołania, numery postępowania.</p></div>
+<div class="card in" style="--i:2; padding:48px; gap:20px;"><h3 style="font-size:44px;">Pełnomocnictwo</h3><p class="desc">Mocodawca, osoby podpisujące, pełnomocnicy.</p></div>
+<div class="card in" style="--i:3; padding:48px; gap:20px;"><h3 style="font-size:44px;">Przelew</h3><p class="desc">Data, kwota, rachunki, tytuł.</p></div>
+</div>
+<div class="ftr"><div class="brand"><svg aria-label="Logo doc2json" width="40" height="40" viewBox="0 0 64 64" style="width:40px; height:40px;"><rect width="64" height="64" rx="15" fill="#000"/><g fill="none" stroke="#fff" stroke-width="4.5" stroke-linecap="round" stroke-linejoin="round"><path d="M24 15c-4.5 0-5.5 2-5.5 6v6c0 3-1.5 5-4.5 5 3 0 4.5 2 4.5 5v6c0 4 1 6 5.5 6"/><path d="M40 15c4.5 0 5.5 2 5.5 6v6c0 3 1.5 5 4.5 5-3 0-4.5 2-4.5 5v6c0 4-1 6-5.5 6"/><path d="M28 27h8M28 37h5"/></g></svg><p>doc2json</p></div><p class="pg">04 / 09</p></div>
+<aside>Pola pochodzą ze schematów UZP w oczekiwane-json. Odwołanie: data i miejscowość, Odwołujący z pełnomocnikiem, Zamawiający, powód ze słownika 1 do 12 liczony z pierwszego zarzutu, numery BZP, TED i postępowania, tytuł. Pełnomocnictwo: mocodawca z KRS i NIP, osoby podpisujące, pełnomocnicy z PESEL. Przelew: data operacji, kwota, rachunki, numer transakcji, tytuł.</aside>
+</section>
+
+<section id="quality" data-transition="fade">
+<div class="glow"></div>
+<div class="hdr"><p>Zadanie UZP: Odwołania2json</p><p class="r">HackNation 2026</p></div>
+<h2 class="in" style="--i:0;">Liczymy F1 tak jak jury.</h2>
+<div style="flex:1; display:flex; align-items:center;">
+<div class="row" style="gap:96px; width:100%;">
+<div class="metric in" style="--i:1;"><p class="val" style="font-size:200px; letter-spacing:-8px;">[ __ ]</p><p class="lbl">F1, wszystkie dokumenty</p></div>
+<div class="metric in" style="--i:2;"><p class="val" style="font-size:200px; letter-spacing:-8px;">[ __ ]</p><p class="lbl">F1, holdout 51-60</p></div>
+</div>
+</div>
+<div class="ftr"><div class="brand"><svg aria-label="Logo doc2json" width="40" height="40" viewBox="0 0 64 64" style="width:40px; height:40px;"><rect x="0.5" y="0.5" width="63" height="63" rx="15" fill="#0a0a0a" stroke="#4a4a4a" stroke-width="1"/><g fill="none" stroke="#fff" stroke-width="4.5" stroke-linecap="round" stroke-linejoin="round"><path d="M24 15c-4.5 0-5.5 2-5.5 6v6c0 3-1.5 5-4.5 5 3 0 4.5 2 4.5 5v6c0 4 1 6 5.5 6"/><path d="M40 15c4.5 0 5.5 2 5.5 6v6c0 3 1.5 5 4.5 5-3 0-4.5 2-4.5 5v6c0 4-1 6-5.5 6"/><path d="M28 27h8M28 37h5"/></g></svg><p>doc2json</p></div><p class="src">Dane treningowe UZP (syntetyczne) · [commit __]</p><p class="pg">05 / 09</p></div>
+<aside>F1 na poziomie pól: każdy JSON rozkładamy na pary ścieżka i wartość i porównujemy z wzorcem. Null zgodny ze wzorcem to trafienie, wymyślona wartość to błąd, negatyw musi zostać pustym plikiem. Sprawy 51-60 to holdout, do którego nie zaglądamy przy pisaniu promptów. Wyniki z evals/results/latest.json, dane syntetyczne. Wynik na zbiorze testowym zna tylko jury. [Wpisać liczby i commit.]</aside>
+</section>
+
+<section id="flexibility" data-transition="fade">
+<div class="glow"></div>
+<div class="hdr"><p>Zadanie UZP: Odwołania2json</p><p class="r">HackNation 2026</p></div>
+<h2 class="in" style="--i:0; width:1300px;">Nowa klasa to nowy plik. Bez zmian w kodzie.</h2>
+<div style="flex:1; display:flex; align-items:center; justify-content:center;">
+<div class="window in" style="--i:1; width:900px;">
+<div class="titlebar"><div class="dot"></div><div class="dot"></div><div class="dot"></div><p class="t">klasy/nowa_klasa</p></div>
+<div class="code">
+<p>klasa: <span class="c">nowa_klasa</span></p>
+<p>schemat: <span class="c">schemat.json</span></p>
+<p>wskazowki_klasyfikacji: <span class="c">...</span></p>
+<p>instrukcje_ekstrakcji: <span class="c">...</span></p>
+</div>
+</div>
+</div>
+<div class="ftr"><div class="brand"><svg aria-label="Logo doc2json" width="40" height="40" viewBox="0 0 64 64" style="width:40px; height:40px;"><rect x="0.5" y="0.5" width="63" height="63" rx="15" fill="#0a0a0a" stroke="#4a4a4a" stroke-width="1"/><g fill="none" stroke="#fff" stroke-width="4.5" stroke-linecap="round" stroke-linejoin="round"><path d="M24 15c-4.5 0-5.5 2-5.5 6v6c0 3-1.5 5-4.5 5 3 0 4.5 2 4.5 5v6c0 4 1 6 5.5 6"/><path d="M40 15c4.5 0 5.5 2 5.5 6v6c0 3 1.5 5 4.5 5-3 0-4.5 2-4.5 5v6c0 4-1 6-5.5 6"/><path d="M28 27h8M28 37h5"/></g></svg><p>doc2json</p></div><p class="src">Plan · model open-weight, API w UE/EOG, CLI i GUI</p><p class="pg">06 / 09</p></div>
+<aside>Klasa dokumentu to plik konfiguracji: schemat, wskazówki do klasyfikacji i instrukcje dla pól. Na finale chcemy dodać czwartą klasę na żywo. Moduły: OCR dla skanów, klasyfikator po treści, ekstraktor, walidacja ze schematem. Model open-weight przez API u dostawcy w UE/EOG, [model: __], [dostawca: __]. CLI dla jury, GUI z podglądem PDF obok JSON-a. [Przykład pliku jest poglądowy, format do ustalenia. Zdjąć „Plan”, gdy zadziała.]</aside>
+</section>
+
+<section id="demo" class="light" data-transition="fade">
+<div class="hdr"><p>Zadanie UZP: Odwołania2json</p><p class="r">HackNation 2026</p></div>
+<h2 class="in" style="--i:0;">doc2json.pl</h2>
+<div class="window in" style="--i:1; margin-top:40px;">
+<div class="titlebar"><div class="dot"></div><div class="dot"></div><div class="dot"></div><p class="t">doc2json.pl</p></div>
+<img src="assets/demo-app.png" alt="Strona doc2json.pl: pole do upuszczenia PDF-ów sprawy obok przykładowego JSON-a odwołania" style="width:1662px; height:620px; object-fit:cover; display:block;">
+</div>
+<div class="ftr"><div class="brand"><svg aria-label="Logo doc2json" width="40" height="40" viewBox="0 0 64 64" style="width:40px; height:40px;"><rect width="64" height="64" rx="15" fill="#000"/><g fill="none" stroke="#fff" stroke-width="4.5" stroke-linecap="round" stroke-linejoin="round"><path d="M24 15c-4.5 0-5.5 2-5.5 6v6c0 3-1.5 5-4.5 5 3 0 4.5 2 4.5 5v6c0 4 1 6 5.5 6"/><path d="M40 15c4.5 0 5.5 2 5.5 6v6c0 3 1.5 5 4.5 5-3 0-4.5 2-4.5 5v6c0 4-1 6-5.5 6"/><path d="M28 27h8M28 37h5"/></g></svg><p>doc2json</p></div><p class="src">Po prawej przykład z fikcyjnymi danymi</p><p class="pg">07 / 09</p></div>
+<aside>Pokaz na żywo: wgrywamy sprawę z kilku PDF-ów, w tym jeden spoza klas, i pokazujemy JSON obok dokumentu oraz pusty plik dla negatywu. Potem to samo z CLI: [komenda CLI: __]. Zrzut strony doc2json.pl z 21.11.2026; JSON po prawej to przykład z fikcyjnymi danymi.</aside>
+</section>
+
+<section id="criteria" data-transition="fade">
+<div class="glow"></div>
+<div class="hdr"><p>Zadanie UZP: Odwołania2json</p><p class="r">HackNation 2026</p></div>
+<h2 class="in" style="--i:0;">Pod kryteria jury.</h2>
+<div style="flex:1; display:flex; align-items:center;">
+<div class="row" style="gap:64px; width:100%;">
+<div class="metric in" style="--i:1;"><p class="val" style="font-size:160px; letter-spacing:-6px;">50%</p><p class="lbl">Jakość ekstrakcji (F1)</p></div>
+<div class="metric in" style="--i:2;"><p class="val" style="font-size:160px; letter-spacing:-6px;">30%</p><p class="lbl">Elastyczność</p></div>
+<div class="metric in" style="--i:3;"><p class="val" style="font-size:160px; letter-spacing:-6px;">20%</p><p class="lbl">Architektura</p></div>
+</div>
+</div>
+<div class="ftr"><div class="brand"><svg aria-label="Logo doc2json" width="40" height="40" viewBox="0 0 64 64" style="width:40px; height:40px;"><rect x="0.5" y="0.5" width="63" height="63" rx="15" fill="#0a0a0a" stroke="#4a4a4a" stroke-width="1"/><g fill="none" stroke="#fff" stroke-width="4.5" stroke-linecap="round" stroke-linejoin="round"><path d="M24 15c-4.5 0-5.5 2-5.5 6v6c0 3-1.5 5-4.5 5 3 0 4.5 2 4.5 5v6c0 4 1 6 5.5 6"/><path d="M40 15c4.5 0 5.5 2 5.5 6v6c0 3 1.5 5 4.5 5-3 0-4.5 2-4.5 5v6c0 4-1 6-5.5 6"/><path d="M28 27h8M28 37h5"/></g></svg><p>doc2json</p></div><p class="src">Wagi z opisu wyzwania UZP, sekcja 8</p><p class="pg">08 / 09</p></div>
+<aside>F1: odtwarzamy ocenę jury na danych treningowych przy każdej zmianie, holdout 51-60 wyłapuje przeuczenie. Elastyczność: nowe klasy z konfiguracji, mały model open-weight, GUI obok CLI. README organizatora daje elastyczności 50 procent, w tym punkty za mniejszy model. Architektura: osobne moduły, testy, README z instrukcją CLI.</aside>
+</section>
+
+<section id="closing">
+<div class="glow"></div>
+<div class="hdr"><p>Zadanie UZP: Odwołania2json</p><p class="r">HackNation 2026</p></div>
+<div style="flex:1; display:flex; align-items:center; gap:96px;">
+<div style="flex:1; display:flex; flex-direction:column; gap:40px;">
+<h1 class="in" style="--i:0; font-size:144px; letter-spacing:-6px; line-height:0.95;">Od dokumentów<br>do danych.</h1>
+<p class="lead in" style="--i:1; font-size:40px;">Dziękujemy.</p>
+</div>
+<div class="in" style="--i:2; width:380px; flex:none; display:flex; flex-direction:column; align-items:center; gap:20px;">
+<div style="width:380px; height:380px; background:#ffffff; border-radius:20px; padding:40px; box-sizing:border-box; display:flex;">
+<svg aria-label="Kod QR do https://doc2json.pl" width="300" height="300" viewBox="0 0 25 25" style="width:300px; height:300px;"><path fill="#000" d="M0 0h7v1h-7zM10 0h1v1h-1zM14 0h1v1h-1zM16 0h1v1h-1zM18 0h7v1h-7zM0 1h1v1h-1zM6 1h1v1h-1zM8 1h1v1h-1zM10 1h1v1h-1zM12 1h1v1h-1zM14 1h1v1h-1zM18 1h1v1h-1zM24 1h1v1h-1zM0 2h1v1h-1zM2 2h3v1h-3zM6 2h1v1h-1zM8 2h6v1h-6zM15 2h1v1h-1zM18 2h1v1h-1zM20 2h3v1h-3zM24 2h1v1h-1zM0 3h1v1h-1zM2 3h3v1h-3zM6 3h1v1h-1zM9 3h1v1h-1zM11 3h4v1h-4zM18 3h1v1h-1zM20 3h3v1h-3zM24 3h1v1h-1zM0 4h1v1h-1zM2 4h3v1h-3zM6 4h1v1h-1zM9 4h1v1h-1zM12 4h4v1h-4zM18 4h1v1h-1zM20 4h3v1h-3zM24 4h1v1h-1zM0 5h1v1h-1zM6 5h1v1h-1zM9 5h1v1h-1zM11 5h1v1h-1zM13 5h2v1h-2zM16 5h1v1h-1zM18 5h1v1h-1zM24 5h1v1h-1zM0 6h7v1h-7zM8 6h1v1h-1zM10 6h1v1h-1zM12 6h1v1h-1zM14 6h1v1h-1zM16 6h1v1h-1zM18 6h7v1h-7zM9 7h2v1h-2zM14 7h3v1h-3zM1 8h3v1h-3zM5 8h2v1h-2zM11 8h1v1h-1zM13 8h1v1h-1zM15 8h2v1h-2zM22 8h2v1h-2zM1 9h1v1h-1zM3 9h1v1h-1zM9 9h1v1h-1zM11 9h1v1h-1zM16 9h1v1h-1zM19 9h1v1h-1zM23 9h1v1h-1zM3 10h2v1h-2zM6 10h4v1h-4zM11 10h2v1h-2zM14 10h1v1h-1zM16 10h1v1h-1zM18 10h1v1h-1zM20 10h1v1h-1zM0 11h4v1h-4zM8 11h1v1h-1zM10 11h4v1h-4zM15 11h1v1h-1zM17 11h2v1h-2zM21 11h2v1h-2zM1 12h1v1h-1zM3 12h1v1h-1zM5 12h2v1h-2zM8 12h1v1h-1zM10 12h3v1h-3zM17 12h2v1h-2zM20 12h1v1h-1zM22 12h3v1h-3zM4 13h2v1h-2zM8 13h1v1h-1zM14 13h7v1h-7zM24 13h1v1h-1zM1 14h3v1h-3zM6 14h1v1h-1zM8 14h2v1h-2zM12 14h2v1h-2zM20 14h1v1h-1zM22 14h2v1h-2zM0 15h1v1h-1zM2 15h1v1h-1zM4 15h2v1h-2zM8 15h2v1h-2zM11 15h3v1h-3zM17 15h1v1h-1zM19 15h2v1h-2zM24 15h1v1h-1zM3 16h1v1h-1zM6 16h3v1h-3zM10 16h2v1h-2zM13 16h2v1h-2zM16 16h9v1h-9zM8 17h1v1h-1zM10 17h1v1h-1zM12 17h5v1h-5zM20 17h1v1h-1zM22 17h1v1h-1zM24 17h1v1h-1zM0 18h7v1h-7zM9 18h1v1h-1zM12 18h3v1h-3zM16 18h1v1h-1zM18 18h1v1h-1zM20 18h1v1h-1zM22 18h3v1h-3zM0 19h1v1h-1zM6 19h1v1h-1zM8 19h1v1h-1zM11 19h1v1h-1zM13 19h4v1h-4zM20 19h1v1h-1zM24 19h1v1h-1zM0 20h1v1h-1zM2 20h3v1h-3zM6 20h1v1h-1zM12 20h2v1h-2zM16 20h6v1h-6zM0 21h1v1h-1zM2 21h3v1h-3zM6 21h1v1h-1zM8 21h3v1h-3zM13 21h4v1h-4zM18 21h1v1h-1zM20 21h5v1h-5zM0 22h1v1h-1zM2 22h3v1h-3zM6 22h1v1h-1zM8 22h1v1h-1zM10 22h2v1h-2zM14 22h1v1h-1zM16 22h1v1h-1zM18 22h1v1h-1zM20 22h1v1h-1zM22 22h2v1h-2zM0 23h1v1h-1zM6 23h1v1h-1zM8 23h2v1h-2zM12 23h3v1h-3zM20 23h1v1h-1zM22 23h1v1h-1zM0 24h7v1h-7zM10 24h1v1h-1zM13 24h2v1h-2zM19 24h6v1h-6z"/></svg>
+</div>
+<p class="mono">doc2json.pl</p>
+</div>
+</div>
+<div class="ftr"><div class="brand"><svg aria-label="Logo doc2json" width="40" height="40" viewBox="0 0 64 64" style="width:40px; height:40px;"><rect x="0.5" y="0.5" width="63" height="63" rx="15" fill="#0a0a0a" stroke="#4a4a4a" stroke-width="1"/><g fill="none" stroke="#fff" stroke-width="4.5" stroke-linecap="round" stroke-linejoin="round"><path d="M24 15c-4.5 0-5.5 2-5.5 6v6c0 3-1.5 5-4.5 5 3 0 4.5 2 4.5 5v6c0 4 1 6 5.5 6"/><path d="M40 15c4.5 0 5.5 2 5.5 6v6c0 3 1.5 5 4.5 5-3 0-4.5 2-4.5 5v6c0 4-1 6-5.5 6"/><path d="M28 27h8M28 37h5"/></g></svg><p>doc2json</p></div><p class="src">Michał Furgała · Ryszard Kacperski · Łukasz Lenkiewicz · Dominik Galus</p><p class="pg">09 / 09</p></div>
+<aside>Dziękujemy. Demo na doc2json.pl, kod na github.com/00200200/HackNation2026-2. Zespół: Michał Furgała, Ryszard Kacperski, Łukasz Lenkiewicz, Dominik Galus. [Sprawdzić, czy repo jest publiczne.]</aside>
+</section>
+
+</body></html>
