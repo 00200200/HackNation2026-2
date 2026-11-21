@@ -288,6 +288,8 @@ rules. [OCR results](evals/results/ocr-engines.json)
   column alignment or an inflected company name can still leave a party missing. A plain title can include
   lowercase continuation rows before the next labelled field. A challenge date needs a link to the act
   or its notification. Separate filing, invoice and statutory dates can appear on the same page.
+  A searchable scan with a damaged text layer can be reread when its cover resembles an appeal.
+  The retry checks the class from the page image. Poorly recognized names and signatures outside the opening pages remain common sources of error.
 - Receipt routing uses evidence that a payment was executed, its amount or date, and the participating
   accounts. A booking table or bank letter needs both an amount and a date. The extractor binds payer
   and payee separately from fee and refund accounts. Explicit operation or execution dates and transaction IDs take

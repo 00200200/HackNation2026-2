@@ -10,7 +10,7 @@ from . import appeal
 from .common import EMAIL_RE, PERSON, registry_ids, squash
 from .ocr_normalize import normalize_ocr
 from .pdf_text import WordBox
-from .personal_names import compatible_names
+from .personal_names import compatible_names, nominative
 from .receipt_layout import _word_rows
 
 # Polish letters have a one-to-one mapping here, so folded match offsets index the original.
@@ -239,7 +239,10 @@ def _representative(block: list[str], scan_pages: list[str]) -> dict | None:
                 break
     if not first:
         return None
-    first = _signature_name(first, scan_pages)
+    signed = _signature_name(first, scan_pages)
+    if signed == first and _APPOINT.search(_fold(appointment[0])) and "przez" in _fold(appointment[0]):
+        signed = nominative(first, "acc") or signed
+    first = signed
     firm = None
     for i, line in enumerate(appointment):
         if _fold(line).endswith("z kancelarii:"):

@@ -114,6 +114,21 @@ def _needs_ocr(page, text: str) -> bool:
     return False
 
 
+def damaged_text_layer(text: str) -> bool:
+    # Digits repeatedly substituted inside distinct words are characteristic of a bad OCR layer.
+    return len(set(re.findall(r"\b[^\W\d_]{2,}\d[^\W\d_]+\b", text.casefold()))) >= 3
+
+
+def _page_sized_image(page) -> bool:
+    visible = get_bbox_overlap(page.bbox, page.cropbox)
+    if visible:
+        for image in page.images:
+            region = get_bbox_overlap(visible, obj_to_bbox(image))
+            if region and all(region[i + 2] - region[i] >= 0.75 * (visible[i + 2] - visible[i]) for i in (0, 1)):
+                return True
+    return False
+
+
 class WordBox(NamedTuple):
     """Printed word in PDF points. Page numbers start at 1 and y increases downwards."""
 
@@ -253,6 +268,7 @@ def read_pages(
     *,
     word_boxes: list[WordBox] | None = None,
     first_ocr_words: list[WordBox] | None = None,
+    repair_image_text: bool = False,
     engine: str | None = None,
     ocr_pages: list[int] | None = None,
     ocr_word_boxes: list[WordBox] | None = None,
@@ -271,7 +287,9 @@ def read_pages(
             if not include and (not used_ocr or readable):
                 break
             text = "" if force_ocr else page.extract_text() or ""
-            scanned = _needs_ocr(page, text)
+            scanned = _needs_ocr(page, text) or (
+                repair_image_text and damaged_text_layer(text) and _page_sized_image(page)
+            )
             if scanned:
                 used_ocr = True
                 if include and ocr_pages is not None:

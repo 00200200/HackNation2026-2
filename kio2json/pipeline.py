@@ -10,13 +10,21 @@ from pathlib import Path
 from . import appeal, bank_transfer, ocr_extract, power_of_attorney
 from .appeal_layout import restore_party_columns
 from .class_config import DocumentClass, load_classes, route
-from .classify import incomplete_booking_scan
+from .classify import incomplete_booking_scan, resembles_appeal_heading
 from .engines import extract
 from .grant_certificates import add_certificate_signers
 from .model_pages import AlternateOCR
 from .ocr_accounts import AccountEvidence, account_evidence, normalize_receipt
 from .ocr_grant_register import verified_pages
-from .pdf_text import DEFAULT_OCR_ENGINE, NoReadableTextError, OCRRecognitionError, WordBox, join_pages, read_pages
+from .pdf_text import (
+    DEFAULT_OCR_ENGINE,
+    NoReadableTextError,
+    OCRRecognitionError,
+    WordBox,
+    damaged_text_layer,
+    join_pages,
+    read_pages,
+)
 from .receipt_layout import append_receipt_fields, has_detached_labels, receipt_cell_fields
 
 
@@ -161,6 +169,24 @@ def _process(
                 raise
             continue
         readable = True
+        if (
+            definition is None
+            and 1 not in ocr_pages
+            and engine == "tesseract-dpi"
+            and primary
+            and damaged_text_layer(primary[0])
+            and resembles_appeal_heading(primary[0])
+            and any(d.enabled and d.extractor is appeal.extract and not d.profile.keyed for d in definitions)
+        ):
+            repaired_pages, repaired_boxes = [], []
+            repaired = read_pages(
+                pdf_path, engine=engine, repair_image_text=True, ocr_pages=repaired_pages, ocr_word_boxes=repaired_boxes
+            )
+            if 1 in repaired_pages:
+                candidate, _ = _route_receipt(repaired, definitions, True)
+                if candidate is not None and candidate.extractor is appeal.extract and not candidate.profile.keyed:
+                    primary = pages = repaired
+                    definition, accounts, ocr_pages, boxes = candidate, None, repaired_pages, repaired_boxes
         alternate = None
         if selected == "tesseract-dpi" and ocr_pages and any(d.enabled and d.profile.dual_ocr for d in definitions):
             alternate = AlternateOCR(pdf_path, ocr_pages)

@@ -90,3 +90,5 @@ These runs used local rules with the three endpoint variables unset. The two loc
 - 21.11.2026: the appeal-scan branch recovers first-act dates, role and counsel blocks, and procurement fields using OCR provenance and first-page word boxes. All ten public appeal references matched exactly in development.
 - 21.11.2026 · Codex · Recovered officers, multiple appointments and register digits on scanned grants, and named signers from embedded certificates on real grants. All 10 organizer grants matched exactly in rules-only mode.
 - 21.11.2026 · Codex · Merged main at `5297660` into the appeal scan branch and combined cover-page OCR evidence with scanned grant and certificate extraction.
+
+- 21.11.2026 · Codex · Recovered joint purchasing lists across page breaks, identified appellant counsel and employers, reread damaged searchable appeals and linked first charges to notification evidence. Measured the changes on both real development sets and the organizer scans.
