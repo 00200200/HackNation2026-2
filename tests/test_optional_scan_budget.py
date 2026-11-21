@@ -11,6 +11,7 @@ from kio2json.pdf_text import WordBox
 
 @pytest.fixture
 def clock(monkeypatch):
+    monkeypatch.setattr(ocr_budget, "REREAD_DEADLINE_SECONDS", 27)
     now = [0.0]
     monkeypatch.setattr(ocr_budget, "monotonic", lambda: now[0])
     return now
@@ -108,3 +109,36 @@ def test_expired_cover_check_skips_render_and_board_stamp_caps_rapidocr(monkeypa
         appeal_scan_crops.verify_cover({}, "", [WordBox(1, "A", 0, 0, 1, 1)], path)
     recognize.assert_called_once_with(path, 1, "lines", timeout=0.125)
     unavailable.assert_not_called()
+
+
+def test_full_rapidocr_watchdog_preserves_primary_and_caches_missing_alternate(monkeypatch, tmp_path):
+    from kio2json.model_pages import AlternateOCR
+
+    recognize = Mock(side_effect=TimeoutError)
+    monkeypatch.setattr(rapid_worker, "recognize", recognize)
+    path = tmp_path / "scan.pdf"
+    page = SimpleNamespace(pdf=SimpleNamespace(path=path), page_number=1)
+    with ocr_budget.document_budget():
+        alternate = AlternateOCR(path, [1])
+        assert alternate.read(1) == alternate.read(1) == ""
+        recognize.assert_called_once()
+        with pytest.raises(ocr_budget.RereadExpired):
+            pdf_text._ocr(page, None, engine="rapidocr", reread=True)
+        with pytest.raises(TimeoutError):
+            pdf_text._ocr(page, None, engine="rapidocr")
+
+
+def test_optional_tesseract_page_watchdog_preserves_primary_before_document_expires(monkeypatch, clock):
+    reader = Mock()
+    monkeypatch.setattr(tesserocr, "PyTessBaseAPI", lambda **kwargs: nullcontext(reader))
+    monkeypatch.setattr(pdf_text, "_language_dir", lambda: "")
+    monkeypatch.setattr(pdf_text, "REREAD_PAGE_TIMEOUT_SECONDS", 1)
+    monkeypatch.setattr(pdf_text, "monotonic", lambda: clock[0])
+
+    def expire(*, timeout):
+        clock[0] += timeout / 1000
+        return False
+
+    reader.Recognize.side_effect = expire
+    with ocr_budget.document_budget(), pytest.raises(ocr_budget.RereadExpired):
+        pdf_text._tesseract(Mock(), None, explicit_dpi=True, reread=True)
