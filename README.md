@@ -26,6 +26,20 @@ bank-transfer confirmations get the organizer's structure. Any other document ge
 file. A PDF that cannot be processed also gets an empty file, is reported on stderr, and makes
 the run exit with status 1 after processing the remaining PDFs. This includes required OCR that fails or times out.
 
+To open the Polish document viewer, run `python -m kio2json.gui`. It opens a browser on
+`127.0.0.1:8000`. Select PDFs and name the case, or enter a folder containing cases. Click
+**Analizuj dokumenty**, choose a document and compare its pages with the JSON. **Pobierz wyniki (.zip)**
+downloads one JSON per PDF under its case folder. Failed documents show the reason and get an
+empty file. The viewer keeps temporary copies for the current session. The default configuration
+works offline. The pipeline does not report which pages used OCR.
+
+| Start from the repository | Windows | Linux or macOS |
+|---|---|---|
+| Run the CLI on `input/` and write to `output/` | `.\start.bat` | `./start.sh` |
+| Open the viewer | `.\start.bat gui` | `./start.sh gui` |
+
+[Transfer confirmation in the viewer](docs/gui/transfer.png) · [Appeal in the viewer](docs/gui/appeal.png)
+
 ## How it works
 
 1. `kio2json/pdf_text.py` reads the first three pages with pdfplumber. Pages with no text or

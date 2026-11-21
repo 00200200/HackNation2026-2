@@ -12,6 +12,7 @@ Shared state of the project. Rules: `CLAUDE.md` → Worklog.
   The jury classes select the baseline content classifier and their Python extractors by dotted path.
   A disabled participation form demonstrates config-only routing and labelled fields. The optional
   model engine checks each complete source value against its own verbatim quote and reports endpoint failures per PDF.
+- On `feat/gui`, the Polish Shiny viewer compares PDF pages with the CLI's JSON and downloads a ZIP in case folders.
 - Research notes on OCR, schema extraction and Polish legal NLP: `docs/kio-extraction-research.md`.
 - Claude Code setup: skills `hacknation-judging`, `odwolania2json-eval`, `build`, `verify`, `humanizer`;
   agents `judge`, `builder`, `reviewer`, `researcher`; pre-push hook in `.githooks/`.
@@ -32,7 +33,6 @@ unseen-case estimate for this baseline.
 | Real-layout appeals: small reference set from real KIO appeals; coordinate-aware rules vs a grounded model call | — |
 | Measure accuracy and latency of the config-selected LLM on real layouts once the EU model endpoint is available | — |
 | Transparency output: source page, quoted text and rule per field | — |
-| GUI: upload, run, source and JSON side by side | — |
 | Ask the UZP stand: F1 formula, stage II weights (README 50/50 vs PDF 50/30/20) | — |
 
 ## Decisions
@@ -43,7 +43,7 @@ unseen-case estimate for this baseline.
 - 21.11.2026: use the date and act stated together in the first charge. When its heading lacks a date, use
   the introductory sentence describing the dated act. In cases 01–39 that sentence supplies the reference reason.
 - 21.11.2026: unrelated documents get an empty file (UNCONFIRMED with UZP; `evals.metrics` also accepts `{}`).
-- 21.11.2026: file, module and identifier names are English; Polish only in the organizer's JSON keys and file stems.
+- 21.11.2026: file, module and identifier names are English; the jury GUI, organizer's JSON keys and original file stems use Polish.
 - 21.11.2026: delegated work and reviews (pre-commit review, pre-push judge) go to Codex workers through
   `/orchestrator`, not to Claude subagents.
 
@@ -57,3 +57,4 @@ unseen-case estimate for this baseline.
 - 21.11.2026 · Codex · Bound transfer values, appeal facts, grantors and signers to their document sections. Added invented regression cases, replaced the organizer identifier in the normalization test and checked 40 fresh adversarial inputs. Transfer and appeal changes in `aaa8057` and `a10b5ad`.
 - 21.11.2026 · Codex · Merged baseline `90d9701` and restored its routing through TOML. All 196 CLI outputs matched that baseline byte for byte, including 16 empty files. The field report found zero errors across 2,316 fields. Added regression tests for model evidence, endpoint diagnostics, alternative evidence captures, signed grouped amounts and malformed NIPs.
 - 21.11.2026 · Codex · Fixed the remaining PR #8 grounding findings from review of `002fbcb`. The model and fallback now check complete numeric runs, account and registry IDs, email addresses and references. Babel validates grouped money with attached currency. Added generated checks for clipped values and nine grouping styles.
+- 21.11.2026 · Codex · Added the local PDF viewer and start scripts for #11 in `d1c9749`. Browser uploads and ZIP downloads matched the CLI for all three document classes, a scanned appeal and an unrelated PDF.
