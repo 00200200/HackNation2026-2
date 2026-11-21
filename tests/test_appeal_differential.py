@@ -546,6 +546,7 @@ def differences(base, current, path=""):
 
 def test_differential_inventory():
     assert INPUTS.keys() == BASELINE.keys()
+    assert all(not key.startswith(("r39-", "simple-")) for key, *_ in INTENDED_CHANGES)
     assert all(key in INPUTS and reason.strip() for key, _, _, _, reason in INTENDED_CHANGES)
 
 

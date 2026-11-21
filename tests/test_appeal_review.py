@@ -251,3 +251,18 @@ def test_counsel_firm_keeps_legal_period_and_drops_address_separator():
         "adres do korespondencji: Kancelaria Śluza sp. z o.o.,\nul. Wodna 8\nZamawiający: Scena"
     )
     assert extract(text)["Odwolujacy"][0]["pelnomocnik"]["nazwa"] == "Kancelaria Śluza sp. z o.o."
+
+
+def test_contact_word_and_number_in_a_labelled_legal_name():
+    doc = "Odwołujący: Kontakt 24 sp. z o.o.\nZamawiający: Muzeum Lin"
+    assert extract(doc)["Odwolujacy"][0]["nazwa"] == "Kontakt 24 sp. z o.o."
+
+
+def test_register_with_filing_quoted_on_a_separate_row():
+    doc = "SPIS KORESPONDENCJI\nODWOŁANIA\nOdwołujący: Kosz\nZamawiający: Kula\nTreść wpisu:\nWnoszę odwołanie."
+    assert classify([doc]) is None
+
+
+def test_wrapped_plain_title_stops_at_the_following_field():
+    doc = "Nazwa postępowania: Budowa mostu\nnad rzeką\nNumer postępowania: MR/61"
+    assert extract(doc)["ZamowieniePubliczne"]["tytul"] == "Budowa mostu nad rzeką"

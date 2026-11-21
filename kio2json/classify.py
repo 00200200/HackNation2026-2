@@ -29,11 +29,14 @@ def classify(pages: list[str], *, ocr_accounts: AccountEvidence | None = None) -
         return None
     head = "\n".join(pages[:2])
     transfer_heading = False
+    register_heading = False
     for line in head.splitlines():
         line = line.strip()
         heading = re.sub(r"\s", "", line).upper()
         if UNRELATED_HEADING.match(line):
             return None
+        if re.match(r"^(?:rejestr|wykaz|spis|ewidencja)\b", line, re.IGNORECASE):
+            register_heading = True
         if Levenshtein.distance(heading, "ODWOŁANIE", score_cutoff=1) <= 1:
             party = re.search(r"odwo[łl]uj[ąa]c", head, re.IGNORECASE)
             labelled_parties = re.search(r"(?im)^(?:wykonawca|odwo[łl]uj[ąa]cy)\s*[:(]", head) and re.search(
@@ -41,7 +44,14 @@ def classify(pages: list[str], *, ocr_accounts: AccountEvidence | None = None) -
             )
             # A grammatical word one edit away can be a register heading.
             clear_heading = heading.translate(str.maketrans({"0": "O", "L": "Ł"})) == "ODWOŁANIE"
-            if (heading == "ODWOŁANIE" and party) or (clear_heading and labelled_parties) or FILING.search(head):
+            if clear_heading and (labelled_parties or FILING.search(head) or (heading == "ODWOŁANIE" and party)):
+                return "appeal"
+            # With an ambiguous heading, require party fields and the filer's own declaration.
+            if (
+                not register_heading
+                and labelled_parties
+                and re.search(r"(?im)^\s*(?:wnoszę|wnosimy|składam|składamy)\s+(?:niniejsze\s+)?odwołanie\b", head)
+            ):
                 return "appeal"
         if heading in {"PEŁNOMOCNICTWO", "PEŁNOMOCNICTWOPROCESOWE", "PEŁNOMOCNICTWOSZCZEGÓLNE"}:
             return "power_of_attorney"

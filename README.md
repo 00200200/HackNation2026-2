@@ -224,7 +224,7 @@ of how the rules generalize. The hidden test set holds real cases, and this is n
 
 A separate native-text differential test compares the class and serialized fields of 175 invented PDFs
 with a snapshot from integration base `3210643`. It includes 135 review cases and 40 additional
-documents. A second suite checks 155 invented appeal and routing inputs against the same base.
+documents. A second suite checks 205 invented appeal and routing inputs against integration base `e051dfa`.
 Both suites use the same field-by-field table for intended appeal corrections. [Fixtures and regeneration command](tests/snapshots/README.md)
 
 Forced OCR on all 196 training PDFs (307 rendered pages) gave strict field F1 **0.900**
@@ -265,9 +265,9 @@ rules. [OCR results](evals/results/ocr-engines.json)
 - Appeal extraction reads the first three pages. A signature or dated notice later in the PDF can be missed.
   The extractor uses printed word positions when a scan groups party labels into a separate column.
   Explicit party labels and filing clauses can identify the parties. An unlabelled list, an ambiguous
-  column alignment or an inflected company name can still leave a party missing. A plain title uses
-  the labelled row. A challenge date needs a link to the act or its notification. Separate filing,
-  invoice and statutory dates can appear on the same page.
+  column alignment or an inflected company name can still leave a party missing. A plain title can include
+  lowercase continuation rows before the next labelled field. A challenge date needs a link to the act
+  or its notification. Separate filing, invoice and statutory dates can appear on the same page.
 - OCR can still lose accented letters, split a notice number or reorder columns. Scans with a
   noisy but nonempty text layer follow the native-text path. A Polish account containing OCR
   glyphs is repaired only if a unique candidate passes the IBAN mod-97 check. A fully printed

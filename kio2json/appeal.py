@@ -36,7 +36,9 @@ REASON_RULES = [
     (2, r"wyb[oó]r\w*\s+(?:naj\w+\s+)?ofert|najkorzystniejsz"),
 ]
 
-SECTION_RE = re.compile(r"^(Zamawiaj[ąa]cy|Odwo[łl]uj[ąa]cy|Wykonawca)\s*[:(](.*)$", re.IGNORECASE)
+APPELLANT_LABEL = r"Odwo[łl]uj[ąa]cy"
+EXPLICIT_APPELLANT = re.compile(rf"(?im)^[ \t]*{APPELLANT_LABEL}[ \t]*[:(]")
+SECTION_RE = re.compile(rf"^(Zamawiaj[ąa]cy|{APPELLANT_LABEL}|Wykonawca)\s*[:(]", re.IGNORECASE)
 ADDRESS_RE = re.compile(r"^(?:ul\.|al\.|pl\.|os\.|\d{2}\s*[-–—]\s*\d{3}\b)|^[^,]{2,40},\s*(?:ul\.|al\.)", re.IGNORECASE)
 ID_LINE_RE = re.compile(r"\b(?:KRS|NIP|REGON)\b")
 _PLACE = rf"[{UPPER}][{LOWER}]+(?:[ \-][{UPPER}][{LOWER}]+){{0,2}}"
@@ -74,7 +76,8 @@ def _ends_party(line: str) -> bool:
 
 
 CONTACT = re.compile(
-    r"^(?:tel(?:efon)?[./ :]|fax|faks|e-?mail|www[.,]|https?://|kontakt\b|osoba do kontaktu)|@", re.IGNORECASE
+    r"^(?:(?:tel(?:efon)?|fax|faks|e-?mail|kontakt|osoba do kontaktu)\s*(?::|\.?\s*[+(]?\d[\d ().-]{5,}\b)|www[.,]|https?://)|@",
+    re.IGNORECASE,
 )
 MEMBER = re.compile(r"^(\d+)[.)]\s*(.*)")
 MEMBER_ROLE = re.compile(r"\((?:lider|członek|partner)\b[^)]*\)", re.IGNORECASE)
@@ -82,7 +85,15 @@ LEAD_FOR = re.compile(r"^prowadząc\w*\s+postępowanie.*(?:na rzecz|w imieniu)",
 CONSORTIUM = re.compile(r"\b(?:wspólnie|konsorcjum)\b", re.IGNORECASE)
 
 
-def _parties(lines: list[str], ocr_mail_lines: frozenset[int] = frozenset()) -> dict[str, list[dict]]:
+def _party_role(label: str, explicit_appellant: bool) -> str | None:
+    if label.casefold().startswith("zamawiaj"):
+        return "Zamawiający"
+    if explicit_appellant and label.casefold() == "wykonawca":
+        return None
+    return "Odwołujący"
+
+
+def _parties(lines: list[str], ocr_mail_lines: frozenset[int], explicit_appellant: bool) -> dict[str, list[dict]]:
     """Keep one name per labelled party or numbered member, through intervening contact lines."""
     parties = {"Zamawiający": [], "Odwołujący": []}
     role = None
@@ -118,7 +129,7 @@ def _parties(lines: list[str], ocr_mail_lines: frozenset[int] = frozenset()) -> 
     for index, line in enumerate(map(str.strip, lines)):
         if label := SECTION_RE.match(line):
             finish_name()
-            role = "Zamawiający" if label[1].casefold().startswith("zamawiaj") else "Odwołujący"
+            role = _party_role(label[1], explicit_appellant)
             sublabel, entity = "", None
             wrapped_label = ":" not in line
             line = line.partition(":")[2].strip()
@@ -163,7 +174,7 @@ def _parties(lines: list[str], ocr_mail_lines: frozenset[int] = frozenset()) -> 
                     entity[key] = entity[key] or value
         elif index in ocr_mail_lines and entity and not name_lines and any(entity[k] for k in ("krs", "nip", "regon")):
             continue
-        elif CONSORTIUM.search(line) and line.endswith((":", "：")):
+        elif label or (CONSORTIUM.search(line) and line.endswith((":", "："))):
             name_lines.append(line)
         elif PARTIES_END_RE.match(line) or _ends_party(line) or CHARGE.search(line) or PLACE_DATE_RE.match(line):
             finish_name()
@@ -234,13 +245,13 @@ def _employer(after: str) -> str | None:
     return None
 
 
-def _representative(header: str, text: str, appellant_name: str) -> dict | None:
+def _representative(header: str, text: str, appellant_name: str, explicit_appellant: bool) -> dict | None:
     """Look for a mandate belonging to the appellant or the signature on the appeal."""
     lines = []
     appellant = False
     for line in map(str.strip, header.splitlines()):
         if label := SECTION_RE.match(line):
-            appellant = not label[1].casefold().startswith("zamawiaj")
+            appellant = _party_role(label[1], explicit_appellant) == "Odwołujący"
         elif COUNSEL_LABEL.match(line):
             appellant = True
         elif not (CONTACT.search(line) or APPOINTMENT.match(line) or EMPLOYER_LABEL.match(line)) and _ends_party(line):
@@ -366,8 +377,19 @@ def _procurement(text: str) -> dict:
         label = re.search(r"(?im)\b(?:nazwa postępowania|postępowaniu na):[ \t]*", text)
         if label:
             rows = text[label.end() :].splitlines()
-            # An empty label may put its value on the next printed row.
-            value = next((row.strip() for row in rows[:2] if row.strip()), "")
+            if rows and not rows[0].strip():
+                rows = rows[1:]
+            value = rows[0].strip() if rows else ""
+            # Accept lowercase continuations inside a form field bounded by its next label.
+            continuation = []
+            for row in rows[1:]:
+                row = row.strip()
+                if SECTION_LABEL.match(row):
+                    value = " ".join([value, *continuation])
+                    break
+                if not row or not row[0].islower() or _ends_party(row) or CONTACT.search(row):
+                    break
+                continuation.append(row)
             value = re.split(r"[ \t]{2,}(?=[^\W\d_][\w ()./-]{0,80}:)", value, maxsplit=1)[0]
             if value and not SECTION_LABEL.match(value):
                 title = re.match(r"(.+?)(?=\s*\((?:nr|numer)\b|,\s*(?:nr|numer|znak)\b|$)", value, re.IGNORECASE)
@@ -395,7 +417,8 @@ def _appellant_registry(text: str, leader: dict) -> None:
 
 def extract(text: str, *, ocr_mail_lines: frozenset[int] = frozenset()) -> dict:
     header = text.split("Działając w imieniu", 1)[0]
-    parties = _parties(header.splitlines(), ocr_mail_lines)
+    explicit_appellant = bool(EXPLICIT_APPELLANT.search(header))
+    parties = _parties(header.splitlines(), ocr_mail_lines, explicit_appellant)
     _prose_parties(text, parties)
     place_date = PLACE_DATE_RE.search(header)
     filing_date = re.search(rf"(?im)^data (?:złożenia|wniesienia)(?: odwołania)?:[ \t]*({DATE})", header)
@@ -403,7 +426,7 @@ def extract(text: str, *, ocr_mail_lines: frozenset[int] = frozenset()) -> dict:
 
     appellants = parties["Odwołujący"]
     leader = next((a for a in appellants if "lider" in a["sublabel"].lower()), appellants[0] if appellants else None)
-    representative = _representative(header, text, leader["nazwa"]) if leader else None
+    representative = _representative(header, text, leader["nazwa"], explicit_appellant) if leader else None
     if leader:
         _appellant_registry(text, leader)
     authorities = parties["Zamawiający"]

@@ -1,5 +1,5 @@
 {
-  "commit": "32106434f746628c7080191597f0766d4151d786",
+  "commit": "e051dfa11cde0139fdd75e3f104bbe74ffb0f6ca",
   "records": {
     "r11-R1a": {
       "class": null,
@@ -3923,6 +3923,1937 @@
             "nip": null,
             "regon": null,
             "prowadzacy_postepowanie": 0
+          }
+        ],
+        "ZamowieniePubliczne": {
+          "numer_bzp": null,
+          "numer_postepowania": null,
+          "numer_ted": null,
+          "tytul": null
+        }
+      }
+    },
+    "r39-contact": {
+      "class": "appeal",
+      "output": {
+        "OdwolanieKIO": {
+          "data": null,
+          "czynnosc_dzien": null,
+          "czynnosc_powod_id": null,
+          "czynnosc_opis": null,
+          "miejscowosc": null
+        },
+        "Odwolujacy": [
+          {
+            "krs": null,
+            "nazwa": "Kontakt sp. z o.o.",
+            "nip": null,
+            "regon": null,
+            "przez-pelnomocnika": 0,
+            "pelnomocnik": {
+              "imie_nazwisko": null,
+              "nazwa": null,
+              "mail": null
+            }
+          }
+        ],
+        "Zamawiajacy": [
+          {
+            "krs": null,
+            "nazwa": "Muzeum Rzek",
+            "nip": null,
+            "regon": null,
+            "prowadzacy_postepowanie": null
+          }
+        ],
+        "ZamowieniePubliczne": {
+          "numer_bzp": null,
+          "numer_postepowania": null,
+          "numer_ted": null,
+          "tytul": null
+        }
+      }
+    },
+    "r39-contact-wrapped": {
+      "class": "appeal",
+      "output": {
+        "OdwolanieKIO": {
+          "data": null,
+          "czynnosc_dzien": null,
+          "czynnosc_powod_id": null,
+          "czynnosc_opis": null,
+          "miejscowosc": null
+        },
+        "Odwolujacy": [
+          {
+            "krs": null,
+            "nazwa": "Faks i Papier S.A.",
+            "nip": null,
+            "regon": null,
+            "przez-pelnomocnika": 0,
+            "pelnomocnik": {
+              "imie_nazwisko": null,
+              "nazwa": null,
+              "mail": null
+            }
+          }
+        ],
+        "Zamawiajacy": [
+          {
+            "krs": null,
+            "nazwa": "Muzeum Rzek",
+            "nip": null,
+            "regon": null,
+            "prowadzacy_postepowanie": null
+          }
+        ],
+        "ZamowieniePubliczne": {
+          "numer_bzp": null,
+          "numer_postepowania": null,
+          "numer_ted": null,
+          "tytul": null
+        }
+      }
+    },
+    "r39-contact-authority": {
+      "class": "appeal",
+      "output": {
+        "OdwolanieKIO": {
+          "data": null,
+          "czynnosc_dzien": null,
+          "czynnosc_powod_id": null,
+          "czynnosc_opis": null,
+          "miejscowosc": null
+        },
+        "Odwolujacy": [
+          {
+            "krs": null,
+            "nazwa": "Most Żurawi",
+            "nip": null,
+            "regon": null,
+            "przez-pelnomocnika": 0,
+            "pelnomocnik": {
+              "imie_nazwisko": null,
+              "nazwa": null,
+              "mail": null
+            }
+          }
+        ],
+        "Zamawiajacy": [
+          {
+            "krs": null,
+            "nazwa": "Telefon i Kabel",
+            "nip": null,
+            "regon": null,
+            "prowadzacy_postepowanie": null
+          }
+        ],
+        "ZamowieniePubliczne": {
+          "numer_bzp": null,
+          "numer_postepowania": null,
+          "numer_ted": null,
+          "tytul": null
+        }
+      }
+    },
+    "r39-bidder": {
+      "class": "appeal",
+      "output": {
+        "OdwolanieKIO": {
+          "data": null,
+          "czynnosc_dzien": null,
+          "czynnosc_powod_id": null,
+          "czynnosc_opis": null,
+          "miejscowosc": null
+        },
+        "Odwolujacy": [
+          {
+            "krs": null,
+            "nazwa": "Warsztat Kresek",
+            "nip": null,
+            "regon": null,
+            "przez-pelnomocnika": 0,
+            "pelnomocnik": {
+              "imie_nazwisko": null,
+              "nazwa": null,
+              "mail": null
+            }
+          }
+        ],
+        "Zamawiajacy": [
+          {
+            "krs": null,
+            "nazwa": "Muzeum Atramentu",
+            "nip": null,
+            "regon": null,
+            "prowadzacy_postepowanie": null
+          }
+        ],
+        "ZamowieniePubliczne": {
+          "numer_bzp": null,
+          "numer_postepowania": null,
+          "numer_ted": null,
+          "tytul": null
+        }
+      }
+    },
+    "r39-bidder-mandate": {
+      "class": "appeal",
+      "output": {
+        "OdwolanieKIO": {
+          "data": null,
+          "czynnosc_dzien": null,
+          "czynnosc_powod_id": null,
+          "czynnosc_opis": null,
+          "miejscowosc": null
+        },
+        "Odwolujacy": [
+          {
+            "krs": null,
+            "nazwa": "Most Żurawi",
+            "nip": null,
+            "regon": null,
+            "przez-pelnomocnika": 0,
+            "pelnomocnik": {
+              "imie_nazwisko": null,
+              "nazwa": null,
+              "mail": null
+            }
+          }
+        ],
+        "Zamawiajacy": [
+          {
+            "krs": null,
+            "nazwa": "Muzeum Rzek",
+            "nip": null,
+            "regon": null,
+            "prowadzacy_postepowanie": null
+          }
+        ],
+        "ZamowieniePubliczne": {
+          "numer_bzp": null,
+          "numer_postepowania": null,
+          "numer_ted": null,
+          "tytul": null
+        }
+      }
+    },
+    "r39-bidder-inline": {
+      "class": "appeal",
+      "output": {
+        "OdwolanieKIO": {
+          "data": null,
+          "czynnosc_dzien": null,
+          "czynnosc_powod_id": null,
+          "czynnosc_opis": null,
+          "miejscowosc": null
+        },
+        "Odwolujacy": [
+          {
+            "krs": null,
+            "nazwa": "Błękitny Ołówek",
+            "nip": null,
+            "regon": null,
+            "przez-pelnomocnika": 0,
+            "pelnomocnik": {
+              "imie_nazwisko": null,
+              "nazwa": null,
+              "mail": null
+            }
+          }
+        ],
+        "Zamawiajacy": [
+          {
+            "krs": null,
+            "nazwa": "Muzeum Rzek",
+            "nip": null,
+            "regon": null,
+            "prowadzacy_postepowanie": null
+          }
+        ],
+        "ZamowieniePubliczne": {
+          "numer_bzp": null,
+          "numer_postepowania": null,
+          "numer_ted": null,
+          "tytul": null
+        }
+      }
+    },
+    "r39-date-before": {
+      "class": "appeal",
+      "output": {
+        "OdwolanieKIO": {
+          "data": null,
+          "czynnosc_dzien": "2035-05-03",
+          "czynnosc_powod_id": 1,
+          "czynnosc_opis": "Decyzja o odrzuceniu oferty",
+          "miejscowosc": null
+        },
+        "Odwolujacy": [
+          {
+            "krs": null,
+            "nazwa": "Most Żurawi",
+            "nip": null,
+            "regon": null,
+            "przez-pelnomocnika": 0,
+            "pelnomocnik": {
+              "imie_nazwisko": null,
+              "nazwa": null,
+              "mail": null
+            }
+          }
+        ],
+        "Zamawiajacy": [
+          {
+            "krs": null,
+            "nazwa": "Muzeum Rzek",
+            "nip": null,
+            "regon": null,
+            "prowadzacy_postepowanie": null
+          }
+        ],
+        "ZamowieniePubliczne": {
+          "numer_bzp": null,
+          "numer_postepowania": null,
+          "numer_ted": null,
+          "tytul": null
+        }
+      }
+    },
+    "r39-date-before-numeric": {
+      "class": "appeal",
+      "output": {
+        "OdwolanieKIO": {
+          "data": null,
+          "czynnosc_dzien": "2035-08-23",
+          "czynnosc_powod_id": 2,
+          "czynnosc_opis": "Ogłoszenie wyboru oferty",
+          "miejscowosc": null
+        },
+        "Odwolujacy": [
+          {
+            "krs": null,
+            "nazwa": "Most Żurawi",
+            "nip": null,
+            "regon": null,
+            "przez-pelnomocnika": 0,
+            "pelnomocnik": {
+              "imie_nazwisko": null,
+              "nazwa": null,
+              "mail": null
+            }
+          }
+        ],
+        "Zamawiajacy": [
+          {
+            "krs": null,
+            "nazwa": "Muzeum Rzek",
+            "nip": null,
+            "regon": null,
+            "prowadzacy_postepowanie": null
+          }
+        ],
+        "ZamowieniePubliczne": {
+          "numer_bzp": null,
+          "numer_postepowania": null,
+          "numer_ted": null,
+          "tytul": null
+        }
+      }
+    },
+    "r39-date-before-exclusion": {
+      "class": "appeal",
+      "output": {
+        "OdwolanieKIO": {
+          "data": null,
+          "czynnosc_dzien": "2035-03-18",
+          "czynnosc_powod_id": 3,
+          "czynnosc_opis": "Decyzja o wykluczeniu wykonawcy",
+          "miejscowosc": null
+        },
+        "Odwolujacy": [
+          {
+            "krs": null,
+            "nazwa": "Most Żurawi",
+            "nip": null,
+            "regon": null,
+            "przez-pelnomocnika": 0,
+            "pelnomocnik": {
+              "imie_nazwisko": null,
+              "nazwa": null,
+              "mail": null
+            }
+          }
+        ],
+        "Zamawiajacy": [
+          {
+            "krs": null,
+            "nazwa": "Muzeum Rzek",
+            "nip": null,
+            "regon": null,
+            "prowadzacy_postepowanie": null
+          }
+        ],
+        "ZamowieniePubliczne": {
+          "numer_bzp": null,
+          "numer_postepowania": null,
+          "numer_ted": null,
+          "tytul": null
+        }
+      }
+    },
+    "r39-date-after": {
+      "class": "appeal",
+      "output": {
+        "OdwolanieKIO": {
+          "data": null,
+          "czynnosc_dzien": "2035-06-14",
+          "czynnosc_powod_id": 3,
+          "czynnosc_opis": "Decyzja o wykluczeniu wykonawcy",
+          "miejscowosc": null
+        },
+        "Odwolujacy": [
+          {
+            "krs": null,
+            "nazwa": "Most Żurawi",
+            "nip": null,
+            "regon": null,
+            "przez-pelnomocnika": 0,
+            "pelnomocnik": {
+              "imie_nazwisko": null,
+              "nazwa": null,
+              "mail": null
+            }
+          }
+        ],
+        "Zamawiajacy": [
+          {
+            "krs": null,
+            "nazwa": "Muzeum Rzek",
+            "nip": null,
+            "regon": null,
+            "prowadzacy_postepowanie": null
+          }
+        ],
+        "ZamowieniePubliczne": {
+          "numer_bzp": null,
+          "numer_postepowania": null,
+          "numer_ted": null,
+          "tytul": null
+        }
+      }
+    },
+    "r39-date-after-rejection": {
+      "class": "appeal",
+      "output": {
+        "OdwolanieKIO": {
+          "data": null,
+          "czynnosc_dzien": "2035-05-12",
+          "czynnosc_powod_id": 1,
+          "czynnosc_opis": "Decyzja o odrzuceniu oferty",
+          "miejscowosc": null
+        },
+        "Odwolujacy": [
+          {
+            "krs": null,
+            "nazwa": "Most Żurawi",
+            "nip": null,
+            "regon": null,
+            "przez-pelnomocnika": 0,
+            "pelnomocnik": {
+              "imie_nazwisko": null,
+              "nazwa": null,
+              "mail": null
+            }
+          }
+        ],
+        "Zamawiajacy": [
+          {
+            "krs": null,
+            "nazwa": "Muzeum Rzek",
+            "nip": null,
+            "regon": null,
+            "prowadzacy_postepowanie": null
+          }
+        ],
+        "ZamowieniePubliczne": {
+          "numer_bzp": null,
+          "numer_postepowania": null,
+          "numer_ted": null,
+          "tytul": null
+        }
+      }
+    },
+    "r39-date-after-selection": {
+      "class": "appeal",
+      "output": {
+        "OdwolanieKIO": {
+          "data": null,
+          "czynnosc_dzien": "2035-07-18",
+          "czynnosc_powod_id": 2,
+          "czynnosc_opis": "Ogłoszenie wyboru oferty",
+          "miejscowosc": null
+        },
+        "Odwolujacy": [
+          {
+            "krs": null,
+            "nazwa": "Most Żurawi",
+            "nip": null,
+            "regon": null,
+            "przez-pelnomocnika": 0,
+            "pelnomocnik": {
+              "imie_nazwisko": null,
+              "nazwa": null,
+              "mail": null
+            }
+          }
+        ],
+        "Zamawiajacy": [
+          {
+            "krs": null,
+            "nazwa": "Muzeum Rzek",
+            "nip": null,
+            "regon": null,
+            "prowadzacy_postepowanie": null
+          }
+        ],
+        "ZamowieniePubliczne": {
+          "numer_bzp": null,
+          "numer_postepowania": null,
+          "numer_ted": null,
+          "tytul": null
+        }
+      }
+    },
+    "r39-register": {
+      "class": null,
+      "output": {}
+    },
+    "r39-register-labelled": {
+      "class": null,
+      "output": {}
+    },
+    "r39-register-quoted": {
+      "class": null,
+      "output": {}
+    },
+    "simple-01": {
+      "class": "appeal",
+      "output": {
+        "OdwolanieKIO": {
+          "data": null,
+          "czynnosc_dzien": null,
+          "czynnosc_powod_id": null,
+          "czynnosc_opis": null,
+          "miejscowosc": null
+        },
+        "Odwolujacy": [
+          {
+            "krs": null,
+            "nazwa": "Most Żurawi",
+            "nip": null,
+            "regon": null,
+            "przez-pelnomocnika": 0,
+            "pelnomocnik": {
+              "imie_nazwisko": null,
+              "nazwa": null,
+              "mail": null
+            }
+          }
+        ],
+        "Zamawiajacy": [],
+        "ZamowieniePubliczne": {
+          "numer_bzp": null,
+          "numer_postepowania": null,
+          "numer_ted": null,
+          "tytul": null
+        }
+      }
+    },
+    "simple-02": {
+      "class": "appeal",
+      "output": {
+        "OdwolanieKIO": {
+          "data": null,
+          "czynnosc_dzien": null,
+          "czynnosc_powod_id": null,
+          "czynnosc_opis": null,
+          "miejscowosc": null
+        },
+        "Odwolujacy": [
+          {
+            "krs": null,
+            "nazwa": "Most Żurawi",
+            "nip": null,
+            "regon": null,
+            "przez-pelnomocnika": 0,
+            "pelnomocnik": {
+              "imie_nazwisko": null,
+              "nazwa": null,
+              "mail": null
+            }
+          }
+        ],
+        "Zamawiajacy": [
+          {
+            "krs": null,
+            "nazwa": "Muzeum Rzek",
+            "nip": null,
+            "regon": null,
+            "prowadzacy_postepowanie": null
+          }
+        ],
+        "ZamowieniePubliczne": {
+          "numer_bzp": null,
+          "numer_postepowania": null,
+          "numer_ted": null,
+          "tytul": null
+        }
+      }
+    },
+    "simple-03": {
+      "class": "appeal",
+      "output": {
+        "OdwolanieKIO": {
+          "data": null,
+          "czynnosc_dzien": null,
+          "czynnosc_powod_id": null,
+          "czynnosc_opis": null,
+          "miejscowosc": null
+        },
+        "Odwolujacy": [
+          {
+            "krs": null,
+            "nazwa": "Most Żurawi",
+            "nip": null,
+            "regon": null,
+            "przez-pelnomocnika": 0,
+            "pelnomocnik": {
+              "imie_nazwisko": null,
+              "nazwa": null,
+              "mail": null
+            }
+          }
+        ],
+        "Zamawiajacy": [
+          {
+            "krs": null,
+            "nazwa": "Muzeum Rzek",
+            "nip": null,
+            "regon": null,
+            "prowadzacy_postepowanie": null
+          }
+        ],
+        "ZamowieniePubliczne": {
+          "numer_bzp": null,
+          "numer_postepowania": null,
+          "numer_ted": null,
+          "tytul": null
+        }
+      }
+    },
+    "simple-04": {
+      "class": "appeal",
+      "output": {
+        "OdwolanieKIO": {
+          "data": null,
+          "czynnosc_dzien": null,
+          "czynnosc_powod_id": null,
+          "czynnosc_opis": null,
+          "miejscowosc": null
+        },
+        "Odwolujacy": [
+          {
+            "krs": null,
+            "nazwa": "Most Żurawi",
+            "nip": null,
+            "regon": null,
+            "przez-pelnomocnika": 0,
+            "pelnomocnik": {
+              "imie_nazwisko": null,
+              "nazwa": null,
+              "mail": null
+            }
+          }
+        ],
+        "Zamawiajacy": [
+          {
+            "krs": null,
+            "nazwa": "Muzeum Węzłów",
+            "nip": null,
+            "regon": null,
+            "prowadzacy_postepowanie": null
+          }
+        ],
+        "ZamowieniePubliczne": {
+          "numer_bzp": null,
+          "numer_postepowania": null,
+          "numer_ted": null,
+          "tytul": null
+        }
+      }
+    },
+    "simple-05": {
+      "class": "appeal",
+      "output": {
+        "OdwolanieKIO": {
+          "data": null,
+          "czynnosc_dzien": null,
+          "czynnosc_powod_id": null,
+          "czynnosc_opis": null,
+          "miejscowosc": null
+        },
+        "Odwolujacy": [
+          {
+            "krs": null,
+            "nazwa": "Fabryka Kulek",
+            "nip": null,
+            "regon": null,
+            "przez-pelnomocnika": 0,
+            "pelnomocnik": {
+              "imie_nazwisko": null,
+              "nazwa": null,
+              "mail": null
+            }
+          }
+        ],
+        "Zamawiajacy": [
+          {
+            "krs": null,
+            "nazwa": "Muzeum Rzek",
+            "nip": null,
+            "regon": null,
+            "prowadzacy_postepowanie": null
+          }
+        ],
+        "ZamowieniePubliczne": {
+          "numer_bzp": null,
+          "numer_postepowania": null,
+          "numer_ted": null,
+          "tytul": null
+        }
+      }
+    },
+    "simple-06": {
+      "class": "appeal",
+      "output": {
+        "OdwolanieKIO": {
+          "data": null,
+          "czynnosc_dzien": null,
+          "czynnosc_powod_id": null,
+          "czynnosc_opis": null,
+          "miejscowosc": null
+        },
+        "Odwolujacy": [
+          {
+            "krs": null,
+            "nazwa": "Rysik",
+            "nip": null,
+            "regon": null,
+            "przez-pelnomocnika": 0,
+            "pelnomocnik": {
+              "imie_nazwisko": null,
+              "nazwa": null,
+              "mail": null
+            }
+          }
+        ],
+        "Zamawiajacy": [
+          {
+            "krs": null,
+            "nazwa": "Teatr Szyn",
+            "nip": null,
+            "regon": null,
+            "prowadzacy_postepowanie": null
+          }
+        ],
+        "ZamowieniePubliczne": {
+          "numer_bzp": null,
+          "numer_postepowania": null,
+          "numer_ted": null,
+          "tytul": null
+        }
+      }
+    },
+    "simple-07": {
+      "class": "appeal",
+      "output": {
+        "OdwolanieKIO": {
+          "data": null,
+          "czynnosc_dzien": null,
+          "czynnosc_powod_id": null,
+          "czynnosc_opis": null,
+          "miejscowosc": null
+        },
+        "Odwolujacy": [
+          {
+            "krs": null,
+            "nazwa": "Złoty Pręt",
+            "nip": null,
+            "regon": null,
+            "przez-pelnomocnika": 0,
+            "pelnomocnik": {
+              "imie_nazwisko": null,
+              "nazwa": null,
+              "mail": null
+            }
+          }
+        ],
+        "Zamawiajacy": [
+          {
+            "krs": null,
+            "nazwa": "Muzeum Rzek",
+            "nip": null,
+            "regon": null,
+            "prowadzacy_postepowanie": null
+          }
+        ],
+        "ZamowieniePubliczne": {
+          "numer_bzp": null,
+          "numer_postepowania": null,
+          "numer_ted": null,
+          "tytul": null
+        }
+      }
+    },
+    "simple-08": {
+      "class": "appeal",
+      "output": {
+        "OdwolanieKIO": {
+          "data": null,
+          "czynnosc_dzien": null,
+          "czynnosc_powod_id": null,
+          "czynnosc_opis": null,
+          "miejscowosc": null
+        },
+        "Odwolujacy": [
+          {
+            "krs": null,
+            "nazwa": "Most Żurawi",
+            "nip": null,
+            "regon": null,
+            "przez-pelnomocnika": 0,
+            "pelnomocnik": {
+              "imie_nazwisko": null,
+              "nazwa": null,
+              "mail": null
+            }
+          }
+        ],
+        "Zamawiajacy": [
+          {
+            "krs": null,
+            "nazwa": "Muzeum Rzek",
+            "nip": null,
+            "regon": null,
+            "prowadzacy_postepowanie": null
+          }
+        ],
+        "ZamowieniePubliczne": {
+          "numer_bzp": null,
+          "numer_postepowania": null,
+          "numer_ted": null,
+          "tytul": null
+        }
+      }
+    },
+    "simple-09": {
+      "class": "appeal",
+      "output": {
+        "OdwolanieKIO": {
+          "data": null,
+          "czynnosc_dzien": null,
+          "czynnosc_powod_id": null,
+          "czynnosc_opis": null,
+          "miejscowosc": null
+        },
+        "Odwolujacy": [
+          {
+            "krs": null,
+            "nazwa": "Most Żurawi",
+            "nip": null,
+            "regon": null,
+            "przez-pelnomocnika": 0,
+            "pelnomocnik": {
+              "imie_nazwisko": null,
+              "nazwa": null,
+              "mail": null
+            }
+          }
+        ],
+        "Zamawiajacy": [
+          {
+            "krs": null,
+            "nazwa": "Muzeum Rzek",
+            "nip": null,
+            "regon": null,
+            "prowadzacy_postepowanie": null
+          }
+        ],
+        "ZamowieniePubliczne": {
+          "numer_bzp": null,
+          "numer_postepowania": null,
+          "numer_ted": null,
+          "tytul": null
+        }
+      }
+    },
+    "simple-10": {
+      "class": "appeal",
+      "output": {
+        "OdwolanieKIO": {
+          "data": null,
+          "czynnosc_dzien": null,
+          "czynnosc_powod_id": null,
+          "czynnosc_opis": null,
+          "miejscowosc": null
+        },
+        "Odwolujacy": [
+          {
+            "krs": null,
+            "nazwa": "Most Żurawi",
+            "nip": "9990001122",
+            "regon": null,
+            "przez-pelnomocnika": 0,
+            "pelnomocnik": {
+              "imie_nazwisko": null,
+              "nazwa": null,
+              "mail": null
+            }
+          }
+        ],
+        "Zamawiajacy": [
+          {
+            "krs": null,
+            "nazwa": "Muzeum Rzek",
+            "nip": null,
+            "regon": null,
+            "prowadzacy_postepowanie": null
+          }
+        ],
+        "ZamowieniePubliczne": {
+          "numer_bzp": null,
+          "numer_postepowania": null,
+          "numer_ted": null,
+          "tytul": null
+        }
+      }
+    },
+    "simple-11": {
+      "class": "appeal",
+      "output": {
+        "OdwolanieKIO": {
+          "data": null,
+          "czynnosc_dzien": null,
+          "czynnosc_powod_id": null,
+          "czynnosc_opis": null,
+          "miejscowosc": null
+        },
+        "Odwolujacy": [
+          {
+            "krs": null,
+            "nazwa": "Most Żurawi",
+            "nip": null,
+            "regon": null,
+            "przez-pelnomocnika": 0,
+            "pelnomocnik": {
+              "imie_nazwisko": null,
+              "nazwa": null,
+              "mail": null
+            }
+          }
+        ],
+        "Zamawiajacy": [
+          {
+            "krs": null,
+            "nazwa": "Muzeum Rzek",
+            "nip": null,
+            "regon": "123456785",
+            "prowadzacy_postepowanie": null
+          }
+        ],
+        "ZamowieniePubliczne": {
+          "numer_bzp": null,
+          "numer_postepowania": null,
+          "numer_ted": null,
+          "tytul": null
+        }
+      }
+    },
+    "simple-12": {
+      "class": "appeal",
+      "output": {
+        "OdwolanieKIO": {
+          "data": null,
+          "czynnosc_dzien": null,
+          "czynnosc_powod_id": null,
+          "czynnosc_opis": null,
+          "miejscowosc": null
+        },
+        "Odwolujacy": [
+          {
+            "krs": "0000123456",
+            "nazwa": "Most Żurawi",
+            "nip": null,
+            "regon": null,
+            "przez-pelnomocnika": 0,
+            "pelnomocnik": {
+              "imie_nazwisko": null,
+              "nazwa": null,
+              "mail": null
+            }
+          }
+        ],
+        "Zamawiajacy": [
+          {
+            "krs": null,
+            "nazwa": "Muzeum Rzek",
+            "nip": null,
+            "regon": null,
+            "prowadzacy_postepowanie": null
+          }
+        ],
+        "ZamowieniePubliczne": {
+          "numer_bzp": null,
+          "numer_postepowania": null,
+          "numer_ted": null,
+          "tytul": null
+        }
+      }
+    },
+    "simple-13": {
+      "class": "appeal",
+      "output": {
+        "OdwolanieKIO": {
+          "data": null,
+          "czynnosc_dzien": null,
+          "czynnosc_powod_id": null,
+          "czynnosc_opis": null,
+          "miejscowosc": null
+        },
+        "Odwolujacy": [
+          {
+            "krs": null,
+            "nazwa": "Most Żurawi",
+            "nip": null,
+            "regon": null,
+            "przez-pelnomocnika": 1,
+            "pelnomocnik": {
+              "imie_nazwisko": "Iga Wstęga",
+              "nazwa": null,
+              "mail": null
+            }
+          }
+        ],
+        "Zamawiajacy": [
+          {
+            "krs": null,
+            "nazwa": "Muzeum Rzek",
+            "nip": null,
+            "regon": null,
+            "prowadzacy_postepowanie": null
+          }
+        ],
+        "ZamowieniePubliczne": {
+          "numer_bzp": null,
+          "numer_postepowania": null,
+          "numer_ted": null,
+          "tytul": null
+        }
+      }
+    },
+    "simple-14": {
+      "class": "appeal",
+      "output": {
+        "OdwolanieKIO": {
+          "data": null,
+          "czynnosc_dzien": null,
+          "czynnosc_powod_id": null,
+          "czynnosc_opis": null,
+          "miejscowosc": null
+        },
+        "Odwolujacy": [
+          {
+            "krs": null,
+            "nazwa": "Most Żurawi",
+            "nip": null,
+            "regon": null,
+            "przez-pelnomocnika": 0,
+            "pelnomocnik": {
+              "imie_nazwisko": null,
+              "nazwa": null,
+              "mail": null
+            }
+          }
+        ],
+        "Zamawiajacy": [
+          {
+            "krs": null,
+            "nazwa": "Muzeum Rzek",
+            "nip": null,
+            "regon": null,
+            "prowadzacy_postepowanie": null
+          }
+        ],
+        "ZamowieniePubliczne": {
+          "numer_bzp": null,
+          "numer_postepowania": null,
+          "numer_ted": null,
+          "tytul": null
+        }
+      }
+    },
+    "simple-15": {
+      "class": "appeal",
+      "output": {
+        "OdwolanieKIO": {
+          "data": null,
+          "czynnosc_dzien": null,
+          "czynnosc_powod_id": null,
+          "czynnosc_opis": null,
+          "miejscowosc": null
+        },
+        "Odwolujacy": [
+          {
+            "krs": null,
+            "nazwa": "Most Żurawi",
+            "nip": null,
+            "regon": null,
+            "przez-pelnomocnika": 0,
+            "pelnomocnik": {
+              "imie_nazwisko": null,
+              "nazwa": null,
+              "mail": null
+            }
+          }
+        ],
+        "Zamawiajacy": [
+          {
+            "krs": null,
+            "nazwa": "Muzeum Rzek",
+            "nip": null,
+            "regon": null,
+            "prowadzacy_postepowanie": null
+          }
+        ],
+        "ZamowieniePubliczne": {
+          "numer_bzp": null,
+          "numer_postepowania": "MR/45/1",
+          "numer_ted": null,
+          "tytul": null
+        }
+      }
+    },
+    "simple-16": {
+      "class": "appeal",
+      "output": {
+        "OdwolanieKIO": {
+          "data": null,
+          "czynnosc_dzien": null,
+          "czynnosc_powod_id": null,
+          "czynnosc_opis": null,
+          "miejscowosc": null
+        },
+        "Odwolujacy": [
+          {
+            "krs": null,
+            "nazwa": "Most Żurawi",
+            "nip": null,
+            "regon": null,
+            "przez-pelnomocnika": 0,
+            "pelnomocnik": {
+              "imie_nazwisko": null,
+              "nazwa": null,
+              "mail": null
+            }
+          }
+        ],
+        "Zamawiajacy": [
+          {
+            "krs": null,
+            "nazwa": "Muzeum Rzek",
+            "nip": null,
+            "regon": null,
+            "prowadzacy_postepowanie": null
+          }
+        ],
+        "ZamowieniePubliczne": {
+          "numer_bzp": null,
+          "numer_postepowania": "MG/29",
+          "numer_ted": null,
+          "tytul": null
+        }
+      }
+    },
+    "simple-17": {
+      "class": "appeal",
+      "output": {
+        "OdwolanieKIO": {
+          "data": null,
+          "czynnosc_dzien": null,
+          "czynnosc_powod_id": null,
+          "czynnosc_opis": null,
+          "miejscowosc": null
+        },
+        "Odwolujacy": [
+          {
+            "krs": null,
+            "nazwa": "Most Żurawi",
+            "nip": null,
+            "regon": null,
+            "przez-pelnomocnika": 0,
+            "pelnomocnik": {
+              "imie_nazwisko": null,
+              "nazwa": null,
+              "mail": null
+            }
+          }
+        ],
+        "Zamawiajacy": [
+          {
+            "krs": null,
+            "nazwa": "Muzeum Rzek",
+            "nip": null,
+            "regon": null,
+            "prowadzacy_postepowanie": null
+          }
+        ],
+        "ZamowieniePubliczne": {
+          "numer_bzp": null,
+          "numer_postepowania": "KW.12.7",
+          "numer_ted": null,
+          "tytul": null
+        }
+      }
+    },
+    "simple-18": {
+      "class": "appeal",
+      "output": {
+        "OdwolanieKIO": {
+          "data": null,
+          "czynnosc_dzien": null,
+          "czynnosc_powod_id": null,
+          "czynnosc_opis": null,
+          "miejscowosc": null
+        },
+        "Odwolujacy": [
+          {
+            "krs": null,
+            "nazwa": "Most Żurawi",
+            "nip": null,
+            "regon": null,
+            "przez-pelnomocnika": 0,
+            "pelnomocnik": {
+              "imie_nazwisko": null,
+              "nazwa": null,
+              "mail": null
+            }
+          }
+        ],
+        "Zamawiajacy": [
+          {
+            "krs": null,
+            "nazwa": "Muzeum Rzek",
+            "nip": null,
+            "regon": null,
+            "prowadzacy_postepowanie": null
+          }
+        ],
+        "ZamowieniePubliczne": {
+          "numer_bzp": null,
+          "numer_postepowania": "ZP-8",
+          "numer_ted": null,
+          "tytul": null
+        }
+      }
+    },
+    "simple-19": {
+      "class": "appeal",
+      "output": {
+        "OdwolanieKIO": {
+          "data": "2036-03-09",
+          "czynnosc_dzien": null,
+          "czynnosc_powod_id": null,
+          "czynnosc_opis": null,
+          "miejscowosc": "Rysowo"
+        },
+        "Odwolujacy": [
+          {
+            "krs": null,
+            "nazwa": "Most Żurawi",
+            "nip": null,
+            "regon": null,
+            "przez-pelnomocnika": 0,
+            "pelnomocnik": {
+              "imie_nazwisko": null,
+              "nazwa": null,
+              "mail": null
+            }
+          }
+        ],
+        "Zamawiajacy": [
+          {
+            "krs": null,
+            "nazwa": "Muzeum Rzek",
+            "nip": null,
+            "regon": null,
+            "prowadzacy_postepowanie": null
+          }
+        ],
+        "ZamowieniePubliczne": {
+          "numer_bzp": null,
+          "numer_postepowania": null,
+          "numer_ted": null,
+          "tytul": null
+        }
+      }
+    },
+    "simple-20": {
+      "class": "appeal",
+      "output": {
+        "OdwolanieKIO": {
+          "data": "2036-04-11",
+          "czynnosc_dzien": null,
+          "czynnosc_powod_id": null,
+          "czynnosc_opis": null,
+          "miejscowosc": "Brzegowo"
+        },
+        "Odwolujacy": [
+          {
+            "krs": null,
+            "nazwa": "Most Żurawi",
+            "nip": null,
+            "regon": null,
+            "przez-pelnomocnika": 0,
+            "pelnomocnik": {
+              "imie_nazwisko": null,
+              "nazwa": null,
+              "mail": null
+            }
+          }
+        ],
+        "Zamawiajacy": [
+          {
+            "krs": null,
+            "nazwa": "Muzeum Rzek",
+            "nip": null,
+            "regon": null,
+            "prowadzacy_postepowanie": null
+          }
+        ],
+        "ZamowieniePubliczne": {
+          "numer_bzp": null,
+          "numer_postepowania": null,
+          "numer_ted": null,
+          "tytul": null
+        }
+      }
+    },
+    "simple-21": {
+      "class": "appeal",
+      "output": {
+        "OdwolanieKIO": {
+          "data": null,
+          "czynnosc_dzien": null,
+          "czynnosc_powod_id": null,
+          "czynnosc_opis": null,
+          "miejscowosc": null
+        },
+        "Odwolujacy": [
+          {
+            "krs": null,
+            "nazwa": "Most Żurawi",
+            "nip": null,
+            "regon": null,
+            "przez-pelnomocnika": 0,
+            "pelnomocnik": {
+              "imie_nazwisko": null,
+              "nazwa": null,
+              "mail": null
+            }
+          }
+        ],
+        "Zamawiajacy": [
+          {
+            "krs": null,
+            "nazwa": "Muzeum Rzek",
+            "nip": null,
+            "regon": null,
+            "prowadzacy_postepowanie": null
+          }
+        ],
+        "ZamowieniePubliczne": {
+          "numer_bzp": null,
+          "numer_postepowania": null,
+          "numer_ted": null,
+          "tytul": "Piec do szkła"
+        }
+      }
+    },
+    "simple-22": {
+      "class": "appeal",
+      "output": {
+        "OdwolanieKIO": {
+          "data": null,
+          "czynnosc_dzien": null,
+          "czynnosc_powod_id": null,
+          "czynnosc_opis": null,
+          "miejscowosc": null
+        },
+        "Odwolujacy": [
+          {
+            "krs": null,
+            "nazwa": "Most Żurawi",
+            "nip": null,
+            "regon": null,
+            "przez-pelnomocnika": 0,
+            "pelnomocnik": {
+              "imie_nazwisko": null,
+              "nazwa": null,
+              "mail": null
+            }
+          }
+        ],
+        "Zamawiajacy": [
+          {
+            "krs": null,
+            "nazwa": "Muzeum Rzek",
+            "nip": null,
+            "regon": null,
+            "prowadzacy_postepowanie": null
+          }
+        ],
+        "ZamowieniePubliczne": {
+          "numer_bzp": "2036/BZP00001234/01",
+          "numer_postepowania": null,
+          "numer_ted": null,
+          "tytul": null
+        }
+      }
+    },
+    "simple-23": {
+      "class": "appeal",
+      "output": {
+        "OdwolanieKIO": {
+          "data": null,
+          "czynnosc_dzien": null,
+          "czynnosc_powod_id": null,
+          "czynnosc_opis": null,
+          "miejscowosc": null
+        },
+        "Odwolujacy": [
+          {
+            "krs": null,
+            "nazwa": "Most Żurawi",
+            "nip": null,
+            "regon": null,
+            "przez-pelnomocnika": 0,
+            "pelnomocnik": {
+              "imie_nazwisko": null,
+              "nazwa": null,
+              "mail": null
+            }
+          }
+        ],
+        "Zamawiajacy": [
+          {
+            "krs": null,
+            "nazwa": "Muzeum Rzek",
+            "nip": null,
+            "regon": null,
+            "prowadzacy_postepowanie": null
+          }
+        ],
+        "ZamowieniePubliczne": {
+          "numer_bzp": null,
+          "numer_postepowania": null,
+          "numer_ted": "123456-2036",
+          "tytul": null
+        }
+      }
+    },
+    "simple-24": {
+      "class": "appeal",
+      "output": {
+        "OdwolanieKIO": {
+          "data": null,
+          "czynnosc_dzien": null,
+          "czynnosc_powod_id": 1,
+          "czynnosc_opis": "Decyzja o odrzuceniu oferty",
+          "miejscowosc": null
+        },
+        "Odwolujacy": [
+          {
+            "krs": null,
+            "nazwa": "Most Żurawi",
+            "nip": null,
+            "regon": null,
+            "przez-pelnomocnika": 0,
+            "pelnomocnik": {
+              "imie_nazwisko": null,
+              "nazwa": null,
+              "mail": null
+            }
+          }
+        ],
+        "Zamawiajacy": [
+          {
+            "krs": null,
+            "nazwa": "Muzeum Rzek",
+            "nip": null,
+            "regon": null,
+            "prowadzacy_postepowanie": null
+          }
+        ],
+        "ZamowieniePubliczne": {
+          "numer_bzp": null,
+          "numer_postepowania": null,
+          "numer_ted": null,
+          "tytul": null
+        }
+      }
+    },
+    "simple-25": {
+      "class": "appeal",
+      "output": {
+        "OdwolanieKIO": {
+          "data": null,
+          "czynnosc_dzien": null,
+          "czynnosc_powod_id": 3,
+          "czynnosc_opis": "Decyzja o wykluczeniu wykonawcy",
+          "miejscowosc": null
+        },
+        "Odwolujacy": [
+          {
+            "krs": null,
+            "nazwa": "Most Żurawi",
+            "nip": null,
+            "regon": null,
+            "przez-pelnomocnika": 0,
+            "pelnomocnik": {
+              "imie_nazwisko": null,
+              "nazwa": null,
+              "mail": null
+            }
+          }
+        ],
+        "Zamawiajacy": [
+          {
+            "krs": null,
+            "nazwa": "Muzeum Rzek",
+            "nip": null,
+            "regon": null,
+            "prowadzacy_postepowanie": null
+          }
+        ],
+        "ZamowieniePubliczne": {
+          "numer_bzp": null,
+          "numer_postepowania": null,
+          "numer_ted": null,
+          "tytul": null
+        }
+      }
+    },
+    "simple-26": {
+      "class": "appeal",
+      "output": {
+        "OdwolanieKIO": {
+          "data": null,
+          "czynnosc_dzien": "2036-03-03",
+          "czynnosc_powod_id": 9,
+          "czynnosc_opis": "Decyzja o unieważnieniu postępowania",
+          "miejscowosc": null
+        },
+        "Odwolujacy": [
+          {
+            "krs": null,
+            "nazwa": "Most Żurawi",
+            "nip": null,
+            "regon": null,
+            "przez-pelnomocnika": 0,
+            "pelnomocnik": {
+              "imie_nazwisko": null,
+              "nazwa": null,
+              "mail": null
+            }
+          }
+        ],
+        "Zamawiajacy": [
+          {
+            "krs": null,
+            "nazwa": "Muzeum Rzek",
+            "nip": null,
+            "regon": null,
+            "prowadzacy_postepowanie": null
+          }
+        ],
+        "ZamowieniePubliczne": {
+          "numer_bzp": null,
+          "numer_postepowania": null,
+          "numer_ted": null,
+          "tytul": null
+        }
+      }
+    },
+    "simple-27": {
+      "class": "appeal",
+      "output": {
+        "OdwolanieKIO": {
+          "data": null,
+          "czynnosc_dzien": "2036-07-04",
+          "czynnosc_powod_id": 2,
+          "czynnosc_opis": "Ogłoszenie wyboru oferty",
+          "miejscowosc": null
+        },
+        "Odwolujacy": [
+          {
+            "krs": null,
+            "nazwa": "Most Żurawi",
+            "nip": null,
+            "regon": null,
+            "przez-pelnomocnika": 0,
+            "pelnomocnik": {
+              "imie_nazwisko": null,
+              "nazwa": null,
+              "mail": null
+            }
+          }
+        ],
+        "Zamawiajacy": [
+          {
+            "krs": null,
+            "nazwa": "Muzeum Rzek",
+            "nip": null,
+            "regon": null,
+            "prowadzacy_postepowanie": null
+          }
+        ],
+        "ZamowieniePubliczne": {
+          "numer_bzp": null,
+          "numer_postepowania": null,
+          "numer_ted": null,
+          "tytul": null
+        }
+      }
+    },
+    "simple-28": {
+      "class": "appeal",
+      "output": {
+        "OdwolanieKIO": {
+          "data": null,
+          "czynnosc_dzien": null,
+          "czynnosc_powod_id": 11,
+          "czynnosc_opis": "Opis przedmiotu zamówienia (OPZ)",
+          "miejscowosc": null
+        },
+        "Odwolujacy": [
+          {
+            "krs": null,
+            "nazwa": "Most Żurawi",
+            "nip": null,
+            "regon": null,
+            "przez-pelnomocnika": 0,
+            "pelnomocnik": {
+              "imie_nazwisko": null,
+              "nazwa": null,
+              "mail": null
+            }
+          }
+        ],
+        "Zamawiajacy": [
+          {
+            "krs": null,
+            "nazwa": "Muzeum Rzek",
+            "nip": null,
+            "regon": null,
+            "prowadzacy_postepowanie": null
+          }
+        ],
+        "ZamowieniePubliczne": {
+          "numer_bzp": null,
+          "numer_postepowania": null,
+          "numer_ted": null,
+          "tytul": null
+        }
+      }
+    },
+    "simple-29": {
+      "class": "appeal",
+      "output": {
+        "OdwolanieKIO": {
+          "data": null,
+          "czynnosc_dzien": null,
+          "czynnosc_powod_id": null,
+          "czynnosc_opis": null,
+          "miejscowosc": null
+        },
+        "Odwolujacy": [
+          {
+            "krs": null,
+            "nazwa": "Most Żurawi",
+            "nip": null,
+            "regon": null,
+            "przez-pelnomocnika": 0,
+            "pelnomocnik": {
+              "imie_nazwisko": null,
+              "nazwa": null,
+              "mail": null
+            }
+          }
+        ],
+        "Zamawiajacy": [
+          {
+            "krs": null,
+            "nazwa": "Muzeum Rzek",
+            "nip": null,
+            "regon": null,
+            "prowadzacy_postepowanie": null
+          }
+        ],
+        "ZamowieniePubliczne": {
+          "numer_bzp": null,
+          "numer_postepowania": "AM/41",
+          "numer_ted": null,
+          "tytul": null
+        }
+      }
+    },
+    "simple-30": {
+      "class": "appeal",
+      "output": {
+        "OdwolanieKIO": {
+          "data": null,
+          "czynnosc_dzien": null,
+          "czynnosc_powod_id": null,
+          "czynnosc_opis": null,
+          "miejscowosc": null
+        },
+        "Odwolujacy": [
+          {
+            "krs": null,
+            "nazwa": "Most Żurawi",
+            "nip": "9990001122",
+            "regon": null,
+            "przez-pelnomocnika": 0,
+            "pelnomocnik": {
+              "imie_nazwisko": null,
+              "nazwa": null,
+              "mail": null
+            }
+          }
+        ],
+        "Zamawiajacy": [
+          {
+            "krs": null,
+            "nazwa": "Muzeum Rzek",
+            "nip": null,
+            "regon": null,
+            "prowadzacy_postepowanie": null
+          }
+        ],
+        "ZamowieniePubliczne": {
+          "numer_bzp": null,
+          "numer_postepowania": "MK/91",
+          "numer_ted": null,
+          "tytul": null
+        }
+      }
+    },
+    "r39-value-name": {
+      "class": "appeal",
+      "output": {
+        "OdwolanieKIO": {
+          "data": null,
+          "czynnosc_dzien": null,
+          "czynnosc_powod_id": null,
+          "czynnosc_opis": null,
+          "miejscowosc": null
+        },
+        "Odwolujacy": [
+          {
+            "krs": null,
+            "nazwa": "Wartość S.A.",
+            "nip": null,
+            "regon": null,
+            "przez-pelnomocnika": 0,
+            "pelnomocnik": {
+              "imie_nazwisko": null,
+              "nazwa": null,
+              "mail": null
+            }
+          }
+        ],
+        "Zamawiajacy": [
+          {
+            "krs": null,
+            "nazwa": "Oset",
+            "nip": null,
+            "regon": null,
+            "prowadzacy_postepowanie": null
+          }
+        ],
+        "ZamowieniePubliczne": {
+          "numer_bzp": null,
+          "numer_postepowania": null,
+          "numer_ted": null,
+          "tytul": null
+        }
+      }
+    },
+    "r39-fee-name": {
+      "class": "appeal",
+      "output": {
+        "OdwolanieKIO": {
+          "data": null,
+          "czynnosc_dzien": null,
+          "czynnosc_powod_id": null,
+          "czynnosc_opis": null,
+          "miejscowosc": null
+        },
+        "Odwolujacy": [
+          {
+            "krs": null,
+            "nazwa": "Wpis sp. z o.o.",
+            "nip": null,
+            "regon": null,
+            "przez-pelnomocnika": 0,
+            "pelnomocnik": {
+              "imie_nazwisko": null,
+              "nazwa": null,
+              "mail": null
+            }
+          }
+        ],
+        "Zamawiajacy": [
+          {
+            "krs": null,
+            "nazwa": "Oset",
+            "nip": null,
+            "regon": null,
+            "prowadzacy_postepowanie": null
+          }
+        ],
+        "ZamowieniePubliczne": {
+          "numer_bzp": null,
+          "numer_postepowania": null,
+          "numer_ted": null,
+          "tytul": null
+        }
+      }
+    },
+    "r39-direct-after": {
+      "class": "appeal",
+      "output": {
+        "OdwolanieKIO": {
+          "data": null,
+          "czynnosc_dzien": "2037-04-12",
+          "czynnosc_powod_id": 1,
+          "czynnosc_opis": "Decyzja o odrzuceniu oferty",
+          "miejscowosc": null
+        },
+        "Odwolujacy": [
+          {
+            "krs": null,
+            "nazwa": "Most Żurawi",
+            "nip": null,
+            "regon": null,
+            "przez-pelnomocnika": 0,
+            "pelnomocnik": {
+              "imie_nazwisko": null,
+              "nazwa": null,
+              "mail": null
+            }
+          }
+        ],
+        "Zamawiajacy": [
+          {
+            "krs": null,
+            "nazwa": "Muzeum Rzek",
+            "nip": null,
+            "regon": null,
+            "prowadzacy_postepowanie": null
+          }
+        ],
+        "ZamowieniePubliczne": {
+          "numer_bzp": null,
+          "numer_postepowania": null,
+          "numer_ted": null,
+          "tytul": null
+        }
+      }
+    },
+    "r39-direct-before": {
+      "class": "appeal",
+      "output": {
+        "OdwolanieKIO": {
+          "data": null,
+          "czynnosc_dzien": "2037-04-12",
+          "czynnosc_powod_id": 1,
+          "czynnosc_opis": "Decyzja o odrzuceniu oferty",
+          "miejscowosc": null
+        },
+        "Odwolujacy": [
+          {
+            "krs": null,
+            "nazwa": "Most Żurawi",
+            "nip": null,
+            "regon": null,
+            "przez-pelnomocnika": 0,
+            "pelnomocnik": {
+              "imie_nazwisko": null,
+              "nazwa": null,
+              "mail": null
+            }
+          }
+        ],
+        "Zamawiajacy": [
+          {
+            "krs": null,
+            "nazwa": "Muzeum Rzek",
+            "nip": null,
+            "regon": null,
+            "prowadzacy_postepowanie": null
+          }
+        ],
+        "ZamowieniePubliczne": {
+          "numer_bzp": null,
+          "numer_postepowania": null,
+          "numer_ted": null,
+          "tytul": null
+        }
+      }
+    },
+    "r39-performed": {
+      "class": "appeal",
+      "output": {
+        "OdwolanieKIO": {
+          "data": null,
+          "czynnosc_dzien": "2035-05-03",
+          "czynnosc_powod_id": 1,
+          "czynnosc_opis": "Decyzja o odrzuceniu oferty",
+          "miejscowosc": null
+        },
+        "Odwolujacy": [
+          {
+            "krs": null,
+            "nazwa": "Most Żurawi",
+            "nip": null,
+            "regon": null,
+            "przez-pelnomocnika": 0,
+            "pelnomocnik": {
+              "imie_nazwisko": null,
+              "nazwa": null,
+              "mail": null
+            }
+          }
+        ],
+        "Zamawiajacy": [
+          {
+            "krs": null,
+            "nazwa": "Muzeum Rzek",
+            "nip": null,
+            "regon": null,
+            "prowadzacy_postepowanie": null
           }
         ],
         "ZamowieniePubliczne": {

@@ -64,7 +64,7 @@ def _act_in(passage):
 
 
 def act_date(text, reason):
-    # Only the notification or publication of this act starts its appeal deadline.
+    # Require a local link to the act, its notification or its publication.
     cue = ACTS[reason]
     date = rf"(?P<day>{DATE})"
     clause = r"(?:(?![;!?]|\.(?:\s+[A-ZĄĆĘŁŃÓŚŹŻ])|\b(?:termin|ustawy|odwołanie wniesiono)\b).)"
@@ -76,8 +76,12 @@ def act_date(text, reason):
     )
     named_entity = r"(?-i:[A-ZĄĆĘŁŃÓŚŹŻ])[\w-]*(?:\s+(?:(?-i:[A-ZĄĆĘŁŃÓŚŹŻ])[\w.-]*|sp\.|z|o\.o\.))*"
     citation = r"na podstawie art\.\s*\d+[a-z]?(?:\s+(?:ust|pkt|lit)\.?\s*[\da-z]+)*"
+    performed = r"(?:dokonan|wykonan|podjęt|ogłoszon)\w*"
+    when = r"(?:w dniu|dnia)\s+"
     patterns = [
         rf"(?:{cue}){clause}{{0,100}}?(?:powiadom\w*|poinform\w*|przekazan\w*|opublikowan\w*|zamieszczon\w*){clause}{{0,60}}?{date}",
+        rf"(?:{cue}),?\s+(?:{performed}\s+)?(?:{when})?{date}",
+        rf"\b(?:{performed}\s+(?:{when})?|{when}){date}(?:\s+(?:r\.|roku))?\s+(?:{cue})",
         rf"(?:{cue})\s+(?:z\s+|w\s+)?(?:dnia|dniu)\s+{date}",
         rf"(?:{cue})\s+z\s+{date}",
         # The intervening text may identify the offer or cite its legal basis.
