@@ -40,6 +40,20 @@ bank-transfer confirmations get the organizer's structure. Any other document ge
 file. A PDF that cannot be processed also gets an empty file, is reported on stderr, and makes
 the run exit with status 1 after processing the remaining PDFs. This includes required OCR that fails or times out.
 
+To open the Polish document viewer, run `python -m kio2json.gui`. It opens a browser on
+`127.0.0.1:8000`. Select PDFs and name the case, or enter a folder containing cases. Click
+**Analizuj dokumenty**, choose a document and compare its pages with the JSON. **Pobierz wyniki (.zip)**
+downloads one JSON per PDF under its case folder. Failed documents show the reason and get an
+empty file. The viewer keeps temporary copies for the current session. The default configuration
+works offline. The pipeline does not report which pages used OCR.
+
+| Start from the repository | Windows | Linux or macOS |
+|---|---|---|
+| Run the CLI on `input/` and write to `output/` | `.\start.bat` | `./start.sh` |
+| Open the viewer | `.\start.bat gui` | `./start.sh gui` |
+
+[Transfer confirmation in the viewer](docs/gui/transfer.png) · [Appeal in the viewer](docs/gui/appeal.png)
+
 ## How it works
 
 1. `kio2json/pdf_text.py` reads the first three pages with pdfplumber. Pages with no text or
@@ -155,9 +169,27 @@ uv run python -m evals.run --quick            # dev subset, before a push
 uv run python -m evals.run                    # all 60 training cases and the negatives
 uv run python -m evals.field_report --errors  # which fields fail, with list items paired inside their parent
 uv run python -m evals.field_report --force-ocr --errors   # ignore the text layer: what OCR costs
+make eval-real HN_REAL_SPLIT=dev              # /Users/domin/hn2-real-eval, or set HN_REAL_CORPUS
+uv run python -m evals.run --corpus "$corpus" --split test
+uv run python -m evals.run --corpus "$corpus" --split dev --detail-out "$corpus/dev-detail.json"
+uv run python -m evals.field_report --corpus "$corpus" --split dev --force-ocr --errors
 ```
 
-The native-text results use the team's F1 definition in `evals/metrics.py`. The organizers have not published theirs.
+Set `corpus` to a directory containing `cases/<case_id>/<name>.pdf` and `gold/<case_id>/<name>.json`.
+An empty gold file marks an unrelated document. Corpus runs write aggregates to
+`evals/results/corpus-latest.json`. Set `HN_REAL_SPLIT` to `dev`, `test`, or `all` (default) for `make eval-real`.
+The optional `--detail-out` file must be outside every checkout of this repository and its Git metadata.
+Both commands check the selected directories, PDFs and references before reporting scores, including with
+`--pred`. Invalid inputs or an extractor failure exit with status 2 and preserve the previous results and gate.
+Test-split diagnostics omit local paths. Missing or malformed predictions count as missed reference fields.
+Training mode checks selected files against the organizer inventory committed in `data/uzp/dane`. Each known
+positive reference needs fields for its expected class. The negative-output target requires zero-byte predictions.
+For a case-level split, put `{"dev": [...], "test": [...]}` in `SPLIT.json` at the corpus root. Each list
+contains case folder names. The default `--split all` scores the whole corpus, including corpora without a split.
+Inspect field errors on dev. Use aggregate scores to evaluate test.
+
+`evals.run` reports pooled micro F1 and macro F1 by document, class and field path.
+The working definitions are in `evals/metrics.py`. The organizer's formula is UNCONFIRMED.
 
 ## Results on the training data (synthetic)
 

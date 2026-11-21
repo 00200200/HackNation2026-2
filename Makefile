@@ -1,4 +1,4 @@
-.PHONY: help install data requirements test lint format check eval eval-quick
+.PHONY: help install data requirements test lint format check eval eval-quick eval-real
 
 help: ## List targets
 	@grep -E '^[a-z-]+:.*## ' $(MAKEFILE_LIST) | awk -F ':.*## ' '{printf "  %-12s %s\n", $$1, $$2}'
@@ -37,3 +37,10 @@ eval-quick: ## F1 eval on the dev subset (before a push)
 
 eval: ## F1 eval on all training cases (before submitting)
 	uv run python -m evals.run
+
+HN_REAL_CORPUS ?= /Users/domin/hn2-real-eval
+HN_REAL_SPLIT ?= all
+export HN_REAL_CORPUS HN_REAL_SPLIT
+
+eval-real: ## F1 eval on the local real corpus
+	@uv run python -m evals.run --corpus "$$HN_REAL_CORPUS" --split "$$HN_REAL_SPLIT"
