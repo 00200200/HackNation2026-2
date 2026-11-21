@@ -1,0 +1,35 @@
+body { margin: 0; color: #152f39; background: #f4f6f5; font-family: system-ui, sans-serif; }
+body > .container-fluid { padding: 0; }
+header { background: #163943; color: white; border-bottom: 4px solid #54b89b; padding: 1rem 2rem; display: flex; align-items: baseline; gap: 1.2rem; }
+h1 { font-size: 1.45rem; font-weight: 700; margin: 0; }
+header span { color: #cae0dd; }
+h2 { font-size: 1.4rem; margin-bottom: 1.1rem; }
+h3 { font-size: 1rem; margin: 0; }
+.workspace { display: grid; grid-template-columns: 285px minmax(0, 1fr); }
+aside { padding: 1.6rem 1.25rem; background: white; border-right: 1px solid #cbd7d5; min-height: calc(100vh - 65px); }
+aside p, .notice, #target { font-size: .9rem; color: #405a60; }
+aside .btn { width: 100%; }
+aside .input-group .btn { width: auto; }
+.btn-primary { --bs-btn-bg: #166353; --bs-btn-border-color: #166353; --bs-btn-hover-bg: #104d40; }
+.notice { margin: .8rem 0; overflow-wrap: anywhere; }
+main { padding: 1.6rem; min-width: 0; }
+.empty { max-width: 36rem; margin: 12vh auto; }
+.comparison { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 1rem; }
+.viewer { min-width: 0; background: white; border: 1px solid #cbd7d5; border-radius: 6px; overflow: hidden; }
+.panel-head { min-height: 3.5rem; padding: .65rem .9rem; border-bottom: 1px solid #cbd7d5; display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: .4rem; }
+.panel-head .shiny-input-container { margin: 0; display: flex; align-items: center; gap: .5rem; width: auto; }
+.panel-head label { margin: 0; }
+#target { overflow-wrap: anywhere; }
+#preview, #result_text { height: calc(100vh - 235px); min-height: 15rem; overflow: auto; }
+#preview { background: #e4eae8; padding: .7rem; }
+#preview img { width: 100%; height: auto; box-shadow: 0 1px 4px #9caba7; }
+#result_text { margin: 0; border: none; border-radius: 0; padding: 1rem; white-space: pre-wrap; overflow-wrap: anywhere; font-size: .85rem; color: #183d40; background: white; }
+@media (max-width: 900px) { .workspace { grid-template-columns: 1fr; } aside { min-height: 0; } }
+@media (max-width: 630px) { .comparison { grid-template-columns: 1fr; } main { padding: .8rem; } header { flex-wrap: wrap; } }
+.method { margin-top: 1rem; }
+/* Shiny's filename summary is English. The adjacent status uses the user's language. */
+.form-group:has(#files) { margin-bottom: 0; }
+.input-group:has(#files) input[type=text] { display: none; }
+#upload_summary { margin: .3rem 0 1rem; font-size: .9rem; overflow-wrap: anywhere; }
+#files_progress:not(.active):not(:has(.progress-bar-danger)) { display: none; }
+#files_progress.active .progress-bar:not(.progress-bar-danger) { font-size: 0; }
