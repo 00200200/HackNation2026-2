@@ -4,13 +4,15 @@ import itertools
 import re
 from collections.abc import Collection
 
-from stdnum.pl import nip
+from rapidfuzz.distance import Levenshtein
+from stdnum.pl import nip, regon
 
 from . import appeal
 from .common import EMAIL_RE, PERSON, registry_ids, squash
 from .ocr_normalize import normalize_ocr
 from .pdf_text import WordBox
 from .personal_names import compatible_names, nominative
+from .power_of_attorney import COMPANY_RE
 from .receipt_layout import _word_rows
 
 # Polish letters have a one-to-one mapping here, so folded match offsets index the original.
@@ -263,6 +265,24 @@ def _representative(block: list[str], scan_pages: list[str]) -> dict | None:
     return {"imie_nazwisko": first, "nazwa": firm, "mail": _mail(appointment, first, scan_pages)}
 
 
+def _declared_appellant(printed: str, pages: list[str]) -> str:
+    """Recover a damaged cover name from the company's explicit definition in the body."""
+    candidates = set()
+    for page in pages:
+        for row in re.finditer(r"(?m)^[^\n]+", page):
+            line = row[0].strip()
+            company = COMPANY_RE.match(line)
+            if not company:
+                continue
+            clause = squash(line[company.end() :] + " " + page[row.end() : row.end() + 160])
+            if not re.match(r'^z siedzibą [^();]{1,100}\(dalej [^()]{0,60}?[„"]odwołujący[”"]', clause, re.IGNORECASE):
+                continue
+            name = company[1]
+            if Levenshtein.distance(_fold(name), _fold(printed).rstrip(), score_cutoff=4) <= min(4, len(name) // 10):
+                candidates.add(name)
+    return candidates.pop() if len(candidates) == 1 else printed
+
+
 def _registry_footer(party: dict, pages: list[str]) -> None:
     """Link register footers to the appellant only via a matching letterhead or printed identifier."""
     core = re.split(r"\b(?:sp\.|spolka|s\.a\.)", _fold(party["nazwa"]), maxsplit=1)[0].strip().split()
@@ -281,6 +301,14 @@ def _registry_footer(party: dict, pages: list[str]) -> None:
         if initial["nip"] and nip.is_valid(initial["nip"]):
             party["nip"] = party["nip"] or initial["nip"]
 
+    def corporate_name(name: str) -> str:
+        normal = (
+            _fold(name)
+            .replace("spolka akcyjna", "s.a.")
+            .replace("spolka z ograniczona odpowiedzialnoscia", "sp. z o.o.")
+        )
+        return "".join(normal.split())
+
     candidates = {k: set() for k in ("nip", "regon", "krs")}
     for page in pages:
         lines = page.splitlines()
@@ -294,6 +322,30 @@ def _registry_footer(party: dict, pages: list[str]) -> None:
                     break
                 section.append(next_line)
             ids = registry_ids(" ".join(section).upper())
+            previous = lines[i - 1].strip() if i else ""
+            company = COMPANY_RE.match(previous)
+            if (
+                company
+                and corporate_name(company[1]) == corporate_name(party["nazwa"])
+                and re.match(
+                    r"^[^\w]{0,6}(?:$|ul\.|al\.|z siedzibą\b|dawniej\b)", previous[company.end() :], re.IGNORECASE
+                )
+            ):
+                # Read only the consecutive register fields of this company's line.
+                # KRS has no checksum, so a named footer alone cannot verify its digits.
+                register = re.match(
+                    r"(?:[^,;:]{1,60}\bWG (?=KRS))?(?:(?:KRS[ :]+\d{10}|KZ[ :]+[\d .,]+PLN|"
+                    r"NIP[ :]+(?:PL ?)?\d(?:[ -]?\d){9}|REGON[ :]+(?:\d{14}|\d{9}))(?!\d)[,; ]*)+",
+                    line,
+                    re.IGNORECASE,
+                )
+                if register:
+                    direct = registry_ids(register[0].upper())
+                    if any(party[key] and value and party[key] != value for key, value in direct.items()):
+                        continue
+                    for key, validator in (("nip", nip), ("regon", regon)):
+                        if not party[key] and direct[key] and validator.is_valid(direct[key]):
+                            candidates[key].add(direct[key])
             if any(party[k] and party[k] == ids[k] for k in ids) and not any(
                 party[k] and ids[k] and party[k] != ids[k] for k in ids
             ):
@@ -403,6 +455,7 @@ def apply_parties(
             if role:
                 block.append(line)
         scan_pages = [page for i, page in enumerate(pages, 1) if i in ocr_pages]
+        current["nazwa"] = _declared_appellant(current["nazwa"], scan_pages)
         _registry_footer(current, scan_pages)
         _signed_mandate(current, scan_pages)
         # Some unnumbered consortium lists mark the leader on its address row.

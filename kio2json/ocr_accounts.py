@@ -197,6 +197,13 @@ def normalize_receipt(text: str) -> str:
     text = re.sub(r"(?im)^((?:typ|rodzaj) transakcji) ", r"\1: ", text)
     # A reference value can share a line with the next date column.
     text = re.sub(r"(?im)^(\d+)[ \t]+(?=data księgowania\b)", r"\1\n", text)
+    # In a faxed two-column confirmation, a payee address can precede the
+    # reference heading while its value occupies the following row.
+    text = re.sub(
+        r"(?im)\bnumer referencyjny transakcji:[ \t]*\n(?=[A-Z0-9/-]*\d[A-Z0-9/-]*[ \t]*$)",
+        "\nNumer transakcji: ",
+        text,
+    )
     block = completed_value_block(text)
     if block:
         day, amount = block
