@@ -31,6 +31,8 @@ The full clean training run recorded in `evals/results/latest.json` scored `micr
 sight of these documents, cases 53-60 included, so this is a regression check and the 51-60 figure is not an
 unseen-case estimate for this baseline.
 
+The final appeal fixes at `d00a3e0` retained 0.6384 micro F1 and 0.7056 appeal F1 on 22 private dev PDFs. All 50 new differential inputs and all 196 training PDFs matched the integration base through the CLI. The held-out score below is from the preceding revision. [Final dev aggregate](evals/results/corpus-latest.json)
+
 On the same 22 private dev PDFs (14 cases), overall micro F1 fell from 0.6830 at `b0a640f` to 0.6384 at `d8a2a8f`. Appeal F1 fell from 0.7586 to 0.7056 and macro F1 by class from 0.3947 to 0.3770. Both runs routed all eight appeals and seven negatives correctly. On 17 private test PDFs (seven cases), the single final run scored 0.4070 micro F1, 0.4552 appeal F1 and 0.3073 macro F1 by class. [Test aggregate](https://github.com/00200200/HackNation2026-2/blob/fe98f74/evals/results/corpus-latest.json)
 
 Before merging the explicit-DPI OCR engine, whole-dev micro F1 rose from 0.3864 to 0.7237 and appeal field F1 rose from
