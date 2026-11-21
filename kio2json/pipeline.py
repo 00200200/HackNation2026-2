@@ -301,6 +301,7 @@ def _process(
                 ocr_python=python_rules,
                 alternate=alternate if definition.profile.dual_ocr else None,
                 model_text=join_pages(primary) if pages is not primary else None,
+                first_page=primary[0] if primary else None,
                 check_core_fields=check_core_fields,
             )
             if definition.extractor is power_of_attorney.extract and not definition.profile.keyed:

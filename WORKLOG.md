@@ -80,6 +80,8 @@ Two and four grant JSONs matched exactly. The ten organizer grants remained exac
 
 ## Log
 
+- 2026-11-22 · Grounded candidate selection for disputed, populated first-page transfer fields, singleton appeal party names and procurement titles in the rules-first schema profile (`feat/doubtful-values`).
+
 - 21.11.2026 · Codex · Added native span output for small models, local source validation and a bounded parallel CLI. Verified the native schema on the quantized local model and both regional API releases.
 
 - 21.11.2026 · Claude · brief, eval harness, judge/eval skills, pre-push hook · f6db304
