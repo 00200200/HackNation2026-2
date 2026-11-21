@@ -54,15 +54,13 @@ For example, use `export KIO_OCR_ENGINE=rapidocr` in a POSIX shell or
 `$env:KIO_OCR_ENGINE = "rapidocr"` in PowerShell.
 
 Each PDF gets a JSON at the same relative path and file stem. Appeals, powers of attorney and
-bank-transfer confirmations get the organizer's structure. Any other document gets an empty
-file. In the default keyless profile, an unreadable PDF receives an empty file and a diagnostic on stderr. The CLI processes the remaining PDFs and exits with status 1. The keyed organizer profile uses the document recovery described below. A nonblank scan that yields fewer than two alphabetic words after page counters are removed
+bank-transfer confirmations get the organizer's structure. Unrelated documents get `{}`. Transfer accounts preserve the printed country code, if present, and omit whitespace. In the default keyless profile, an unreadable PDF receives `{}` and a diagnostic on stderr. The CLI processes the remaining PDFs and exits with status 1. The keyed organizer profile uses the document recovery described below. A nonblank scan that yields fewer than two alphabetic words after page counters are removed
 reports `no readable text after OCR`. Blank pages may stand alone or appear beside a readable page.
 
 To open the Polish document viewer, run `python -m kio2json.gui`. It opens a browser on
 `127.0.0.1:8000`. Select PDFs and name the case, or enter a folder containing cases. Click
 **Analizuj dokumenty**, choose a document and compare its pages with the JSON. **Pobierz wyniki (.zip)**
-downloads one JSON per PDF under its case folder. Failed documents show the reason and get an
-empty file. The viewer keeps temporary copies for the current session. The default configuration
+downloads one JSON per PDF under its case folder. Failed documents show the reason and get `{}` in the ZIP. The viewer keeps temporary copies for the current session. The default configuration
 works offline. Page provenance is used internally and the output follows the organizer’s JSON schema.
 
 | Start from the repository | Windows | Linux or macOS |
@@ -95,7 +93,7 @@ works offline. Page provenance is used internally and the output follows the org
    match wins. The three organizer classes share the content classifier in `kio2json/classify.py`.
    It reads headings in document order. A transfer normally needs two distinct accounts, a confirmation
    heading or execution status, and a transaction amount or date. Rejected payments and payment
-   requests get an empty file.
+   requests get `{}`.
 3. The rule extractors recover party blocks and receipt fields from columns. Each page keeps its source,
    so a scanned attachment cannot enable OCR repairs on a native receipt. Configuring an endpoint enables
    first-page model routing after the rules reject a document. The model extracts from the original reading
@@ -116,7 +114,7 @@ cp -R config/classes /tmp/kio-classes
 KIO_CLASSES_DIR=/tmp/kio-classes python -m kio2json --input input --output output
 ```
 
-With the default directory, that form gets an empty file. The end-to-end test writes an invented
+With the default directory, that form gets `{}`. The end-to-end test writes an invented
 PDF, runs the CLI in both configurations and checks the output, including its ISO date.
 
 ```sh
@@ -203,13 +201,14 @@ For compatible servers, `KIO_LLM_OUTPUT=schema` requests native JSON schema supp
 `json`. `KIO_LLM_TIMEOUT_SECONDS` sets the request deadline (1–600 seconds, default 180). The engine
 allows one structured-output correction. On a model or secondary OCR error, the keyed organizer
 profile retries the document with local rules, reports recovery, and continues the batch. An unreadable
-document yields an empty file. Custom class directories use the engine chains in their own TOML files.
+document yields `{}`. Custom class directories use the engine chains in their own TOML files.
 
 ## Measure
 
 ```
 uv run python -m evals.run --quick            # dev subset, before a push
-uv run python -m evals.run                    # all 60 synthetic training cases and the negatives
+uv run python -m evals.run                    # use the original references for all 60 cases and the negatives
+uv run python -m evals.run --correct-training-accounts  # restore prefixes printed in the training PDFs
 uv run python -m evals.run --organizer-scans  # 30 separately labelled scans
 uv run python -m evals.field_report --errors  # which fields fail, with list items paired inside their parent
 uv run python -m evals.field_report --force-ocr --errors   # ignore the text layer: what OCR costs
@@ -227,7 +226,7 @@ Both commands check the selected directories, PDFs and references before reporti
 `--pred`. Invalid inputs or an extractor failure exit with status 2 and preserve the previous results and gate.
 Test-split diagnostics omit local paths. Missing or malformed predictions count as missed reference fields.
 Training mode checks selected files against the organizer inventory committed in `data/uzp/dane`. Each known
-positive reference needs fields for its expected class. The negative-output target requires zero-byte predictions.
+positive reference needs fields for its expected class. The negative-output target requires an empty JSON object. A zero-byte prediction fails. Account fields are compared after removing whitespace, with every printed letter and leading zero retained.
 For a case-level split, put `{"dev": [...], "test": [...]}` in `SPLIT.json` at the corpus root. Each list
 contains case folder names. The default `--split all` scores the whole corpus, including corpora without a split.
 Inspect field errors on dev. Use aggregate scores to evaluate test. The organizer scan mode validates the committed PDF/reference pairs in `data/uzp/dane/skany` and writes `evals/results/organizer-scans.json`. The synthetic training and scan scores have separate result files.
@@ -278,7 +277,7 @@ On corpus 1 the model raised transfer F1 by 0.1407. On corpus 2 dev it raised tr
 
 Exact counts compare the complete JSON, including list order. A/P/T denotes appeals, powers and transfers. Each private set includes 11 unrelated PDFs. Earlier appeal measurements are available separately. [Real appeal round](evals/results/appeal-real-development.json)
 
-Micro F1 pools field matches across documents. Macro F1 averages the three class scores. The combined measurement file includes correct routes for every class and both profiles. The negatives column counts zero-byte outputs. Timing includes OCR and extraction on a shared host. [Earlier appeal development measurements](evals/results/appeal-scan-development.json) · [Earlier grant development measurements](evals/results/poa-development.json) · [Organizer scan report](evals/results/organizer-scans.json)
+Micro F1 pools field matches across documents. Macro F1 averages the three class scores. The combined measurement file includes correct routes for every class and both profiles. This historical measurement counted zero-byte outputs as negatives. Timing includes OCR and extraction on a shared host. [Earlier appeal development measurements](evals/results/appeal-scan-development.json) · [Earlier grant development measurements](evals/results/poa-development.json) · [Organizer scan report](evals/results/organizer-scans.json)
 
 The earlier model-engine experiment compared two profiles on the 17-document corpus 1 holdout. [Model results](evals/results/llm-real-docs.json)
 
@@ -415,8 +414,6 @@ rules. [OCR results](evals/results/ocr-engines.json)
   signer, a local RapidOCR pass can read a board title and a name in the same stamp column after
   the mandate. It shares the optional full-page OCR budget. A damaged or handwritten signature can still leave the signer missing.
   PDF signer names are extracted from embedded CMS certificates without validating trust or revocation.
-- UNCONFIRMED: what "empty JSON" means for unrelated documents. We write an empty file, as the
-  organizer README words it.
+- UZP confirmed that an unrelated document gets `{}`. Its JSON uses the input PDF’s stem. [Organizer clarification](https://github.com/00200200/HackNation2026-2/issues/57)
 - UNCONFIRMED: value types. `pesel` is a number in the organizer's annotated example and a string
-  in the reference JSONs; we write a string. The annotated transfer example has a 24-digit
-  account, while the rules expect the standard 26 digits.
+  in the reference JSONs. We write a string.

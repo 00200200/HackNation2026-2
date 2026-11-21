@@ -32,7 +32,7 @@ def configure_logging(classes: list[DocumentClass]) -> None:
 @dataclass(frozen=True)
 class Result:
     label: str | None
-    text: str
+    text: str = "{}\n"
     error: str | None = None
     used_recovery: bool = False
 
@@ -41,12 +41,12 @@ def read_document(path: Path, classes: list[DocumentClass], *, batch_deadline: f
     recoveries = []
     try:
         label, data = process_pdf(path, classes=classes, on_recovery=recoveries.append, batch_deadline=batch_deadline)
-        text = json.dumps(data, ensure_ascii=False, indent=2) + "\n" if data else ""
+        text = json.dumps(data, ensure_ascii=False, indent=2) + "\n"
         return Result(label, text, used_recovery=bool(recoveries))
     except (EndpointError, NoReadableTextError) as error:
-        return Result(None, "", str(error))
+        return Result(None, error=str(error))
     except Exception as error:  # noqa: BLE001 - PDF and OCR backends raise unrelated types.
-        return Result(None, "", f"{type(error).__name__}: {error}")
+        return Result(None, error=f"{type(error).__name__}: {error}")
 
 
 _worker_classes: list[DocumentClass]
@@ -63,7 +63,7 @@ def _read_in_worker(path: Path, deadline: float) -> tuple[Result, str]:
         try:
             result = read_document(path, _worker_classes, batch_deadline=deadline)
         except SystemExit as error:
-            result = Result(None, "", f"PDF worker requested exit ({error.code})")
+            result = Result(None, error=f"PDF worker requested exit ({error.code})")
     return result, diagnostics.getvalue()
 
 
@@ -100,7 +100,7 @@ def read_batch(pdfs: list[Path], sources: dict[Path, bytes], workers: int) -> It
                 try:
                     ready[index] = future.result()
                 except BrokenProcessPool:
-                    ready[index] = (Result(None, "", "PDF worker exited unexpectedly"), "")
+                    ready[index] = (Result(None, error="PDF worker exited unexpectedly"), "")
                     pool.shutdown()
                     pool = None
                 submit_next(pool)

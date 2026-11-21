@@ -1,3 +1,4 @@
+import os
 import subprocess
 import sys
 from pathlib import Path
@@ -30,5 +31,5 @@ def test_parallel_cli_preserves_outputs_and_failure_status(tmp_path, monkeypatch
         assert run.returncode == 1, run.stderr
         results.append({p.relative_to(target): p.read_bytes() for p in target.rglob("*.json")})
     assert results[0] == results[1]
-    assert results[0][Path("b/document.json")] == b""
+    assert results[0][Path("b/document.json")] == b"{}" + os.linesep.encode()
     assert Path("a/document.json") in results[0]

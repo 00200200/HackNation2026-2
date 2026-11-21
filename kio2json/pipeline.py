@@ -8,6 +8,7 @@ from functools import cache, partial
 from pathlib import Path
 
 from . import appeal, bank_transfer, ocr_extract, power_of_attorney
+from .accounts import normalize_account
 from .appeal_layout import restore_party_columns
 from .class_config import DocumentClass, load_classes, route
 from .classify import incomplete_booking_scan, resembles_appeal_heading
@@ -43,19 +44,10 @@ def _route_receipt(
     if evidence is not None and cells:
         # A source cell keeps its owner even if the linear transcript interleaves the columns.
         roles = {}
-        prefixed = set(evidence.prefixed_roles)
         for label, role in (("Rachunek nadawcy", "sender"), ("Rachunek odbiorcy", "recipient")):
             if label in cells:
-                raw = "".join(cells[label].split())
-                digits = raw.removeprefix("PL")
-                roles[role] = digits if digits.isdigit() else None
-                if raw.startswith("PL"):
-                    prefixed.add(role)
-                else:
-                    prefixed.discard(role)
-        evidence = replace(
-            evidence, **roles, declared=evidence.declared | roles.keys(), prefixed_roles=frozenset(prefixed)
-        )
+                roles[role] = normalize_account(cells[label])
+        evidence = replace(evidence, **roles, declared=evidence.declared | roles.keys())
     return route(pages, definitions, ocr_accounts=evidence, rules_only=True), evidence
 
 
@@ -190,13 +182,13 @@ def _process_with_recovery(
         if not any(d.enabled and d.profile.keyed for d in definitions):
             raise
     result = None, {}
-    message = "Could not read document. Returning empty output."
+    message = "Could not read document. Returning {}."
     if read.cache_info().currsize:
         try:
             result = _process(pdf_path, [d.rules_only for d in definitions if d.profile.keyed], read)
             message = "Used rules after document processing failed."
-        except Exception:  # noqa: BLE001 - a failed per-document rule retry must yield an empty output
-            message = "Document processing and rule recovery failed. Returning empty output."
+        except Exception:  # noqa: BLE001 - a failed per-document rule retry must yield an empty object
+            message = "Document processing and rule recovery failed. Returning {}."
     print(f"{str(pdf_path)!r}: {message}", file=sys.stderr)
     if on_recovery:
         on_recovery(message)

@@ -32,7 +32,7 @@ Which split applies is UNCONFIRMED; build for both. F1 formula: UNCONFIRMED (see
 - `input/` and `output/` folders in the app root. `input/<case>/<file>.pdf` → `output/<case>/<file>.json`, same file
   name, same tree, one JSON per PDF.
 - Classification by **content**, not file name. Three classes: appeal, power of attorney, transfer confirmation.
-  Anything else → **empty `.json` file**.
+  Anything else → a JSON file containing `{}`.
 - JSON per class exactly as `data/uzp/oczekiwane-json/` (keys, nesting, types, formats from the `//` comments).
 - `null` where the document does not state a value; never invent data (FAQ 6).
 - Text PDFs **and** scans (OCR) both work (FAQ 7).

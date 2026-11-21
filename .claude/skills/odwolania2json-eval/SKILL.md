@@ -59,7 +59,7 @@ On test splits, corpus I/O failures report an error count and type on the consol
 Invalid inputs, an empty selection and extractor failures exit 2 before writing results or the training gate.
 Both commands validate selected PDF pages and their text layers and read every reference as UTF-8 JSON, even when scoring saved predictions.
 A zero-byte corpus reference labels a negative. The three named organizer references must each contain fields for the expected class. A bad prediction misses all gold leaves and counts as incomplete.
-For a negative prediction to meet the team target, its file must contain zero bytes. A missed target gives exit code 1. Targets with no applicable documents, such as negative handling on an all-positive corpus, are skipped.
+For a negative prediction to meet the team target, its file must contain `{}` (the JSON writer appends a newline). A missed target gives exit code 1. Targets with no applicable documents, such as negative handling on an all-positive corpus, are skipped.
 
 An optional `SPLIT.json` at the corpus root gives two lists of case folder names, `dev` and `test`.
 Together they must cover each case exactly once. Both commands accept `--split dev|test|all` (default `all`).
@@ -74,7 +74,7 @@ this section when they answer. Working definition:
 
 - Each JSON is flattened to `(path, value)` leaf pairs; list indices become `[]`, so lists compare as multisets.
 - Values are normalised: whitespace and case; numbers by value (`10000.00 == 10000`); identifier fields (`krs`,
-  `nip`, `regon`, `pesel`, `na_rachunek`, `z_rachunku`) as digits only, string or number. Types (`"3" != 3`) and
+  `nip`, `regon`, `pesel`) as digits only, string or number. Account strings keep country codes and ignore whitespace. Types (`"3" != 3`) and
   format rules from the schema comments (ISO dates, `YYYY/BZP########`, TED `NNNNNN-YYYY`, `czynnosc_opis` exactly
   as in the dictionary) are **not** normalised away: the product must emit them.
 - `null` leaves count: null where gold is null is a hit; an invented value is a FP and a FN. Never fill a field the
@@ -94,8 +94,8 @@ this section when they answer. Working definition:
 | Results key | Meaning | Target |
 |---|---|---|
 | `micro_f1` | pooled field-level F1, all documents incl. negatives | ≥ `ODW_F1_TARGET` (0.90 default; **team target**, the jury has no threshold, only a ranking) |
-| `outputs_complete` | every input PDF has a valid JSON (or an empty file) in the right place | 1.00 |
-| `negatives_empty` | negatives returned as an empty file | 1.00 |
+| `outputs_complete` | every input PDF has a valid JSON object in the right place | 1.00 |
+| `negatives_empty` | negatives returned as `{}` | 1.00 |
 | `classification_accuracy` | positive documents given the right class | 1.00 |
 | `seconds_per_doc` | wall time of the whole run / documents (16 GB, i7, no GPU at the jury) | reported |
 

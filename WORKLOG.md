@@ -73,7 +73,7 @@ Two and four grant JSONs matched exactly. The ten organizer grants remained exac
   an OCR or model change has to beat this baseline in the eval. The baseline's rules have seen cases 51-60; a fresh case split is needed to measure generalization for work that builds on these rules.
 - 21.11.2026: use the date and act stated together in the first charge. When its heading lacks a date, use
   the introductory sentence describing the dated act. In cases 01–39 that sentence supplies the reference reason.
-- 21.11.2026: unrelated documents get an empty file (UNCONFIRMED with UZP; the team checks for a zero-byte output).
+- 21.11.2026 · UZP confirmed that unrelated PDFs produce `{}` and transfer account numbers keep their printed country code with all whitespace removed. The CLI and GUI use the same empty object for a failed PDF and report the failure separately. [Empty output](https://github.com/00200200/HackNation2026-2/issues/57) · [Account numbers](https://github.com/00200200/HackNation2026-2/issues/58)
 - 21.11.2026: file, module and identifier names are English; the jury GUI, organizer's JSON keys and original file stems use Polish.
 - 21.11.2026: delegated work and reviews (pre-commit review, pre-push judge) go to Codex workers through
   `/orchestrator`, not to Claude subagents.
@@ -178,3 +178,4 @@ These runs used local rules with the three endpoint variables unset. The two loc
 | Wire the doc2json.pl upload to the extraction (serve the GUI backend behind `/api/` or point the page at it) | Open |
 
 - 21.11.2026 · Codex · Round 3 traced 130 field errors on 78 real development PDFs. Recovered identifiers from matching party records, checked damaged company names against declarations and read debit amounts across bank columns. The single-field Ministral whitespace trial lost one correct title in 12 calls and was dropped.
+- 22.11.2026 · Codex · Implemented UZP’s empty-object and printed-account conventions on `fix/p0-conventions`. The training scorer can restore missing country codes from each transfer PDF with `--correct-training-accounts`.

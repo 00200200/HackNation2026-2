@@ -6,9 +6,11 @@ The organizer has not published how F1 is computed (UNCONFIRMED). Working defini
 - `null` leaves count as pairs: predicting null where gold has null is a hit, a value where gold has null is a
   false positive plus a false negative. `micro_f1_non_null` reports the variant that ignores gold-null fields.
 - Values are normalised before comparison: whitespace and case; numbers by value (`200 == 200.0`); identifier
-  fields (KRS, NIP, REGON, PESEL, account numbers) as digits only. Types and formats are not normalised away:
+  fields (KRS, NIP, REGON, PESEL) as digits only. Account numbers retain every printed character except whitespace.
+  Types and formats are not normalised away:
   `"3" != 3`, `2026-03-21 != 20260321`, `123456-2026 != 1234562026`.
-- A negative document has an empty gold file: every predicted pair is a false positive.
+- A zero-byte gold file labels a negative. Its expected prediction is `{}` with an optional trailing
+  line ending. Every predicted pair on a negative is a false positive.
 - A missing or unreadable prediction scores as all gold pairs missed.
 - Micro F1 pools counts across documents. Macro document F1 averages documents with any gold or predicted leaf.
 - Macro class F1 averages pooled F1 for each of the three target classes with reference or predicted fields.
@@ -36,22 +38,24 @@ def reject_json_constant(token: str):
     raise ValueError("invalid JSON number")
 
 
-def read_object(path: Path) -> tuple[dict, bool]:
-    """Return the JSON object and whether the file was literally empty."""
+def read_object(path: Path, *, reference: bool = False) -> tuple[dict, bool]:
+    """Return the parsed object and whether the text matches the negative output convention."""
     if not stat.S_ISREG(path.stat().st_mode):
         raise ValueError("expected a regular JSON file")
     try:
-        text = path.read_text(encoding="utf-8")
-        data = json.loads(text, parse_constant=reject_json_constant) if text else {}
+        text = path.read_text(encoding="utf-8", newline="")
+        if reference and text == "":
+            return {}, False
+        data = json.loads(text, parse_constant=reject_json_constant)
     except (ValueError, RecursionError) as exc:
         raise ValueError("a selected reference is not valid UTF-8 JSON") from exc
     if not isinstance(data, dict):
         raise ValueError("a selected reference must be a JSON object")  # noqa: TRY004 - invalid file contents
-    return data, not text
+    return data, text in ("{}", "{}\n", "{}\r\n")
 
 
 def load_reference(path: Path) -> dict:
-    data, _ = read_object(path)
+    data, _ = read_object(path, reference=True)
     return data
 
 
@@ -76,7 +80,8 @@ def doc_class(data: dict | None) -> str | None:
 
 # Identifier fields: compared as digits only, whatever the type (the schema example has PESEL as a number,
 # the gold files as a string) and however the document spaces or dashes them.
-IDENTIFIER_KEYS = {"krs", "nip", "regon", "pesel", "na_rachunek", "z_rachunku"}
+IDENTIFIER_KEYS = {"krs", "nip", "regon", "pesel"}
+ACCOUNT_KEYS = {"na_rachunek", "z_rachunku"}
 
 
 def normalise(value: object, key: str = "") -> str:
@@ -84,6 +89,8 @@ def normalise(value: object, key: str = "") -> str:
     are kept as written; only whitespace and case are ignored, plus spacing inside identifier fields."""
     if value is None:
         return "null"
+    if key in ACCOUNT_KEYS and isinstance(value, str):
+        return "account:" + "".join(value.split())
     if key in IDENTIFIER_KEYS and isinstance(value, int | str) and re.fullmatch(r"[\d\s-]+", str(value).strip()):
         return "id:" + re.sub(r"[\s-]", "", str(value))
     if isinstance(value, bool):

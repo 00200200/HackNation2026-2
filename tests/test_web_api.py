@@ -17,7 +17,9 @@ def client(monkeypatch):
     async def fake_read(content, deadline):
         if content.startswith(b"%PDF-1.7 transfer"):
             return Result("bank_transfer", '{"przelew_bankowy": {"kwota": 123.45}}')
-        return Result(None, "")
+        if content.startswith(b"%PDF-1.7 broken"):
+            return Result(None, error="unreadable PDF")
+        return Result(None, "{}\n")
 
     monkeypatch.setattr(web_api, "_read", fake_read)
     return TestClient(web_api.app)
@@ -32,9 +34,10 @@ def test_extract_keeps_upload_order_and_duplicate_names(client):
         ("files", ("dokument.pdf", b"%PDF-1.7 transfer", "application/pdf")),
         ("files", ("dokument.pdf", b"%PDF-1.7 other", "application/pdf")),
         ("files", ("notatka.pdf", b"not a pdf", "application/pdf")),
+        ("files", ("broken.pdf", b"%PDF-1.7 broken", "application/pdf")),
     ]
     results = client.post("/api/extract", files=files).json()["results"]
-    assert [r["index"] for r in results] == [0, 1, 2]
+    assert [r["index"] for r in results] == [0, 1, 2, 3]
     assert results[0] == {
         "index": 0,
         "file": "dokument.pdf",
@@ -43,7 +46,8 @@ def test_extract_keeps_upload_order_and_duplicate_names(client):
         "error": None,
     }
     assert results[1]["class"] is None and results[1]["data"] == {} and results[1]["error"] is None
-    assert results[2]["data"] is None and results[2]["error"]
+    assert results[2]["data"] == {} and results[2]["error"]
+    assert results[3]["data"] == {} and results[3]["error"] == "unreadable PDF"
 
 
 def test_extract_requires_files(client):
@@ -128,7 +132,8 @@ def test_worker_deadlines_reap_process_clean_files_and_restore_service(monkeypat
             assert (await client.get("/api/health")).json()["status"] == "busy"
             response = await pending
             if short_limit == "DOC_TIMEOUT_S":
-                assert response.json()["results"][0]["error"]
+                item = response.json()["results"][0]
+                assert item["data"] == {} and item["error"]
             else:
                 assert response.status_code == 408
             assert processes[0].poll() is not None and not paths[0].exists()
