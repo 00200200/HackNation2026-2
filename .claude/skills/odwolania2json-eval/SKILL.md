@@ -41,9 +41,13 @@ copies each case to `input/<case>/dokument_NN.pdf` in shuffled order, so the app
 reads `output/<case>/dokument_NN.json`. `ODW_TIMEOUT_S` bounds the run (default 3600 s). Exit code 1 when a
 required metric fails or is unknown.
 
-Each training run writes `evals/results/latest.json` (commit it: it is the "own quality test results" deliverable) and
+A completed training run writes `evals/results/latest.json` (commit it: it is the "own quality test results" deliverable) and
 `.git/eval-latest.json`, which the pre-push hook reads. Results carry per-document TP/FP/FN, so look at the worst
 documents and fields before changing prompts.
+
+Training mode checks the selected cases and filenames against the committed organizer inventory in `data/uzp/dane`,
+including mixed-case negatives and the three fixed quick-mode negatives. An override with `--data` uses the same layout.
+Commit a reviewed organizer data refresh before evaluating the new inventory.
 
 Set `corpus` to the local corpus root. Each `cases/<case_id>/<name>.pdf` needs a matching
 `gold/<case_id>/<name>.json`, including an empty file for each unrelated PDF. Use `--pred DIR` to read
@@ -52,7 +56,10 @@ Set `corpus` to the local corpus root. Each `cases/<case_id>/<name>.pdf` needs a
 Set `HN_REAL_SPLIT` to `dev`, `test`, or `all` (default) for `make eval-real`.
 The optional `--detail-out` file must be outside every checkout of this repository and its Git metadata.
 On test splits, corpus I/O failures report an error count and type on the console.
-An empty corpus or a missed target gives exit code 1. Targets with no applicable documents, such as negative handling on an all-positive corpus, are skipped.
+Invalid inputs, an empty selection and extractor failures exit 2 before writing results or the training gate.
+Both commands validate selected PDF pages and their text layers and read every reference as UTF-8 JSON, even when scoring saved predictions.
+A zero-byte reference labels a negative. A bad prediction misses all gold leaves and counts as incomplete.
+A missed target gives exit code 1. Targets with no applicable documents, such as negative handling on an all-positive corpus, are skipped.
 
 An optional `SPLIT.json` at the corpus root gives two lists of case folder names, `dev` and `test`.
 Together they must cover each case exactly once. Both commands accept `--split dev|test|all` (default `all`).

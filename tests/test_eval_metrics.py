@@ -3,7 +3,7 @@ from pathlib import Path
 
 import pytest
 
-from evals.metrics import NEGATIVE, compare, doc_class, flatten, load_json, normalise, score_doc, summarise
+from evals.metrics import NEGATIVE, compare, doc_class, flatten, load_prediction, normalise, score_doc, summarise
 from evals.run import DATA, GOLD_FOR, load_cases
 
 GOLD = {
@@ -60,7 +60,7 @@ def test_lists_are_order_insensitive():
 def test_negative_document_must_be_empty(tmp_path: Path):
     empty = tmp_path / "neg.json"
     empty.write_text("")
-    assert load_json(empty) == {}
+    assert load_prediction(empty) == {}
     assert doc_class({}) == NEGATIVE
     ok = score_doc("negatywne", "x.pdf", empty, {})
     assert (ok.counts.tp, ok.counts.fp, ok.counts.fn) == (0, 0, 0)
@@ -144,3 +144,10 @@ def test_invalid_utf8_prediction_is_incomplete_and_misses_reference(tmp_path):
     summary = summarise([doc])
     assert summary["outputs_complete"] == 0
     assert summary["counts"] == {"tp": 0, "fp": 0, "fn": 2}
+
+
+def test_large_integer_prediction_scores_a_mismatch(tmp_path):
+    prediction = tmp_path / "number.json"
+    prediction.write_text(json.dumps({"amount": 10**399 + 1}))
+    result = score_doc("invented", "doc.pdf", prediction, {"amount": 10**399})
+    assert (result.counts.tp, result.counts.fp, result.counts.fn) == (0, 1, 1)

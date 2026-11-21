@@ -19,6 +19,7 @@ The organizer has not published how F1 is computed (UNCONFIRMED). Working defini
 
 import json
 import re
+import stat
 from collections import Counter, defaultdict
 from dataclasses import dataclass, field
 from pathlib import Path
@@ -31,18 +32,30 @@ CLASSES = {
 NEGATIVE = "negatywny"
 
 
-def load_json(path: Path) -> dict | None:
-    """Empty file -> {}; missing or invalid file -> None."""
-    if not path.is_file():
-        return None
+def reject_json_constant(token: str):
+    raise ValueError("invalid JSON number")
+
+
+def load_reference(path: Path) -> dict:
+    """An empty file labels a negative. All other references must be UTF-8 JSON objects."""
+    if not stat.S_ISREG(path.stat().st_mode):
+        raise ValueError("expected a regular JSON file")
     try:
-        text = path.read_text(encoding="utf-8").strip()
-        if not text:
-            return {}
-        data = json.loads(text)
-    except (UnicodeDecodeError, json.JSONDecodeError):
+        text = path.read_text(encoding="utf-8")
+        data = json.loads(text, parse_constant=reject_json_constant) if text else {}
+    except (ValueError, RecursionError) as exc:
+        raise ValueError("a selected reference is not valid UTF-8 JSON") from exc
+    if not isinstance(data, dict):
+        raise ValueError("a selected reference must be a JSON object")  # noqa: TRY004 - invalid file contents
+    return data
+
+
+def load_prediction(path: Path) -> dict | None:
+    """An unreadable or malformed prediction is incomplete and misses the reference leaves."""
+    try:
+        return load_reference(path)
+    except (OSError, ValueError):
         return None
-    return data if isinstance(data, dict) else None
 
 
 def doc_class(data: dict | None) -> str | None:
@@ -70,8 +83,10 @@ def normalise(value: object, key: str = "") -> str:
         return "id:" + re.sub(r"[\s-]", "", str(value))
     if isinstance(value, bool):
         return f"bool:{value}".lower()
-    if isinstance(value, int | float):
-        return "num:" + f"{float(value):.2f}".rstrip("0").rstrip(".")
+    if isinstance(value, int):
+        return f"num:{value}"
+    if isinstance(value, float):
+        return "num:" + f"{value:.2f}".rstrip("0").rstrip(".")
     return re.sub(r"\s+", " ", str(value)).strip().casefold()
 
 
@@ -136,7 +151,7 @@ class DocResult:
 
 
 def score_doc(case: str, file: str, pred_path: Path, gold: dict) -> DocResult:
-    pred = load_json(pred_path)
+    pred = load_prediction(pred_path)
     errors = [] if pred is not None else ["missing or invalid JSON"]
     by_field = {}
     return DocResult(

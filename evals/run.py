@@ -12,21 +12,27 @@ Command: `--cmd` or `ODW_CMD`, with `{input}` and `{output}` placeholders.
 
 import argparse
 import json
+import logging
 import os
 import random
 import re
 import shlex
 import shutil
+import stat
 import subprocess
 import sys
 import tempfile
 import time
+from collections import defaultdict
 from contextlib import contextmanager
 from dataclasses import asdict
 from datetime import UTC, datetime
 from pathlib import Path
 
-from evals.metrics import DocResult, load_json, score_doc, summarise
+import pdfplumber
+from pdfminer import settings as pdf_settings
+
+from evals.metrics import DocResult, load_reference, reject_json_constant, score_doc, summarise
 
 ROOT = Path(__file__).resolve().parent.parent
 DATA = ROOT / "data" / "uzp" / "dane"
@@ -35,6 +41,7 @@ DEFAULT_CMD = "uv run python -m kio2json --input {input} --output {output}"
 GOLD_FOR = {"odwolanie.pdf": "odwolanie.json", "pelnomocnictwo.pdf": "pelnomocnictwo.json"}
 GOLD_FOR["potwierdzenie_przelewu.pdf"] = "przelew.json"
 QUICK = {"przyklad_01", "przyklad_02", "przyklad_03", "przyklad_04", "przyklad_05", "przyklad_24", "negatywne"}
+FULL = {f"przyklad_{n:02d}" for n in range(1, 61)} | {"negatywne"}
 HOLDOUT = {f"przyklad_{n}" for n in range(51, 61)}
 NON_PRODUCT_RE = re.compile(
     r"^(docs/|data/|\.claude/|\.githooks/|\.github/|evals/results/)|^(\.gitignore|LICENSE.*)$|\.md$"
@@ -43,29 +50,111 @@ TIMEOUT_S = int(os.environ.get("ODW_TIMEOUT_S", "3600"))
 F1_TARGET = float(os.environ.get("ODW_F1_TARGET", "0.90"))  # team target, not an organizer threshold
 
 
-def load_cases(data: Path, quick: bool) -> dict[str, dict[str, dict]]:
-    """{case: {pdf name: gold dict}}; negatives have an empty gold dict."""
-    cases: dict[str, dict[str, dict]] = {}
-    for case_dir in sorted(p for p in data.iterdir() if p.is_dir()):
-        if quick and case_dir.name not in QUICK:
-            continue
-        pdfs = sorted(case_dir.glob("*.pdf"))
-        if quick and case_dir.name == "negatywne":
+def check_pdf(path: Path) -> None:
+    # Precomputed predictions and custom commands must score the same readable inputs.
+    with path.open("rb") as stream:
+        previous_strict = pdf_settings.STRICT
+        try:
+            with pdfplumber.open(stream) as pdf:
+                if not pdf.pages:
+                    raise ValueError("empty page tree")
+                # pdfminer otherwise recovers damaged compressed streams as empty content.
+                pdf_settings.STRICT = True
+                for page in pdf.pages:
+                    page.extract_text()
+                    page.close()
+        except OSError:
+            raise
+        except Exception as exc:  # PDF parsers raise several unrelated errors for damaged input.
+            raise ValueError("a selected PDF could not be decoded") from exc
+        finally:
+            pdf_settings.STRICT = previous_strict
+
+
+def case_names(directory: Path) -> set[str]:
+    return {p.name for p in directory.iterdir() if stat.S_ISDIR(p.stat().st_mode)}
+
+
+def files_with_suffixes(directory: Path, *suffixes: str) -> set[str]:
+    names = set()
+    for path in directory.iterdir():
+        if path.suffix.lower() in suffixes:
+            if not stat.S_ISREG(path.stat().st_mode):
+                raise ValueError("a selected document or reference is not a regular file")
+            names.add(path.name)
+    return names
+
+
+def training_inventory() -> dict[str, set[str]]:
+    # Organizer negatives have no JSON. The pinned tree identifies them even if a local PDF is lost.
+    try:
+        raw = subprocess.check_output(
+            ["git", "ls-tree", "-rz", "--name-only", "HEAD:data/uzp/dane"],
+            cwd=ROOT,
+            stderr=subprocess.PIPE,
+            timeout=10,
+            env={k: v for k, v in os.environ.items() if not k.startswith("GIT_")},
+        )
+    except subprocess.SubprocessError as exc:
+        raise ValueError("cannot read the committed organizer training inventory") from exc
+    inventory = defaultdict(set)
+    for entry in raw.split(b"\0"):
+        path = Path(os.fsdecode(entry))
+        if len(path.parts) == 2 and path.suffix.lower() in {".pdf", ".json"}:
+            inventory[path.parent.name].add(path.name)
+    return inventory
+
+
+def load_cases(data: Path, quick: bool, *, holdout: bool = False) -> dict[str, dict[str, dict]]:
+    selected = HOLDOUT if holdout else QUICK if quick else FULL
+    inventory = training_inventory()
+    if not (quick or holdout) and case_names(data) != FULL:
+        raise ValueError("full training requires cases 01–60 and the negatives directory")
+    cases = {}
+    for case in sorted(selected):
+        folder = data / case
+        expected = inventory[case]
+        found = files_with_suffixes(folder, ".pdf", ".json")
+        pdfs = sorted(name for name in expected if name.lower().endswith(".pdf"))
+        if case == "negatywne" and quick:
             pdfs = pdfs[:3]
-        cases[case_dir.name] = {
-            pdf.name: (load_json(case_dir / GOLD_FOR[pdf.name]) or {}) if pdf.name in GOLD_FOR else {} for pdf in pdfs
-        }
+            if len(pdfs) != 3:
+                raise ValueError("quick training requires the first three organizer negatives")
+            selected_stems = {Path(name).stem for name in pdfs}
+            found = {name for name in found if Path(name).stem in selected_stems}
+            expected = {name for name in expected if Path(name).stem in selected_stems}
+        if found != expected or not pdfs:
+            raise ValueError(f"training files differ from the committed organizer inventory in {case}")
+        if case != "negatywne" and not GOLD_FOR.keys() <= set(pdfs):
+            raise ValueError(f"missing required organizer PDF in {case}")
+        refs = {name for name in found if name.lower().endswith(".json")}
+        pairs = {name: GOLD_FOR.get(name, Path(name).with_suffix(".json").name) for name in pdfs}
+        if not refs <= set(pairs.values()):
+            raise ValueError(f"an organizer reference has no corresponding PDF in {case}")
+        docs = {}
+        for name in pdfs:
+            check_pdf(folder / name)
+            ref = pairs[name]
+            docs[name] = load_reference(folder / ref) if name in GOLD_FOR or ref in refs else {}
+        cases[case] = docs
     return cases
 
 
-def corpus_partition(root: Path, split: str) -> set[str] | None:
+def corpus_partition(root: Path, split: str, folders: set[str]) -> set[str]:
     """Validate the whole-case split and return the case names to score."""
     manifest = root / "SPLIT.json"
-    if not manifest.is_file():
-        if split == "all":
-            return None
-        raise ValueError("--split dev or test requires SPLIT.json in the corpus")
-    data = json.loads(manifest.read_text(encoding="utf-8"))
+    try:
+        mode = manifest.stat().st_mode
+    except FileNotFoundError:
+        if split == "all" and not manifest.is_symlink():
+            return folders
+        raise ValueError("--split dev or test requires a readable SPLIT.json in the corpus") from None
+    if not stat.S_ISREG(mode):
+        raise ValueError("SPLIT.json must be a regular file")
+    try:
+        data = json.loads(manifest.read_text(encoding="utf-8"), parse_constant=reject_json_constant)
+    except (ValueError, RecursionError) as exc:
+        raise ValueError("SPLIT.json must contain a JSON object with dev and test lists") from exc
     parts = {}
     for label in ("dev", "test"):
         names = data.get(label) if isinstance(data, dict) else None
@@ -75,37 +164,32 @@ def corpus_partition(root: Path, split: str) -> set[str] | None:
         if len(parts[label]) != len(names):
             raise ValueError("duplicate case in SPLIT.json")
     names = parts["dev"] | parts["test"]
-    folders = {p.name for p in (root / "cases").iterdir() if p.is_dir()}
     if parts["dev"] & parts["test"] or folders != names:
         raise ValueError("SPLIT.json must assign every case folder to exactly one split")
-    return None if split == "all" else parts[split]
+    return folders if split == "all" else parts[split]
 
 
 def load_corpus(root: Path, split: str = "all") -> dict[str, dict[str, dict]]:
     """Pair every PDF with its reference by case and stem. An empty reference explicitly labels a negative."""
     data, gold = root / "cases", root / "gold"
-    if not data.is_dir() or not gold.is_dir():
-        raise ValueError("corpus must contain cases/ and gold/ directories")
-    cases: dict[str, dict[str, dict]] = {}
-    selected = corpus_partition(root, split)
-    references = {
-        p.relative_to(gold)
-        for p in gold.glob("*/*.json")
-        if p.is_file() and (selected is None or p.parent.name in selected)
-    }
-    for pdf in sorted(data.glob("*/*.pdf", case_sensitive=False)):
-        if not pdf.is_file() or (selected is not None and pdf.parent.name not in selected):
-            continue
-        relative = pdf.relative_to(data).with_suffix(".json")
-        if relative not in references:
-            raise ValueError("a selected PDF has a missing or already matched gold reference")
-        reference = load_json(gold / relative)
-        if reference is None:
-            raise ValueError("a selected PDF has an invalid gold reference")
-        references.remove(relative)
-        cases.setdefault(pdf.parent.name, {})[pdf.name] = reference
-    if references:
-        raise ValueError("a selected gold reference has no matching PDF")
+    folders = case_names(data)
+    selected = corpus_partition(root, split, folders)
+    if split == "all" and case_names(gold) != folders:
+        raise ValueError("case folders differ between the PDF and reference trees")
+    if not selected:
+        raise ValueError("the selected corpus split contains no cases")
+    cases = {}
+    for case in sorted(selected):
+        pdfs = files_with_suffixes(data / case, ".pdf")
+        references = files_with_suffixes(gold / case, ".json")
+        pairs = {name: Path(name).with_suffix(".json").name for name in pdfs}
+        if not pairs or len(pairs) != len(references) or set(pairs.values()) != references:
+            raise ValueError("each selected case needs PDFs paired one-to-one with gold references")
+        docs = {}
+        for name in sorted(pairs):
+            check_pdf(data / case / name)
+            docs[name] = load_reference(gold / case / pairs[name])
+        cases[case] = docs
     return cases
 
 
@@ -148,7 +232,7 @@ def metric(value: float | None, target: float | None, higher_is_better: bool = T
     return {"value": value, "target": target, "pass": passed}
 
 
-def build_results(docs: list[DocResult], mode: str, seconds_per_doc: float | None, cases: dict, run_error: str | None):
+def build_results(docs: list[DocResult], mode: str, seconds_per_doc: float | None, cases: dict):
     summary = summarise(docs)
     holdout = summarise([d for d in docs if d.case in HOLDOUT]) if mode == "full" else None
     metrics = {
@@ -160,6 +244,7 @@ def build_results(docs: list[DocResult], mode: str, seconds_per_doc: float | Non
     }
     commit, dirty = git_state()
     n_cases = len(cases) if mode == "corpus" else sum(1 for c in cases if c != "negatywne")
+    coverage_ok = mode == "full" and cases.keys() == FULL
     required = [m for m in metrics.values() if mode != "corpus" or m["value"] is not None]
     return {
         "commit": commit,
@@ -168,9 +253,9 @@ def build_results(docs: list[DocResult], mode: str, seconds_per_doc: float | Non
         "timestamp": datetime.now(UTC).isoformat(timespec="seconds"),
         "n_cases": n_cases,
         "n_docs": len(docs),
-        "coverage_ok": mode == "full" and n_cases >= 60 and "negatywne" in cases,
-        "overall_pass": bool(docs) and run_error is None and all(m["pass"] is True for m in required),
-        "run_error": "app failed" if mode == "corpus" and run_error else run_error,
+        "coverage_ok": coverage_ok,
+        "overall_pass": bool(docs) and (mode != "full" or coverage_ok) and all(m["pass"] is True for m in required),
+        "run_error": None,
         "metrics": metrics,
         "detail": summary,
         "holdout_51_60": holdout,
@@ -223,13 +308,24 @@ def external_detail_path(value: str) -> Path:
 
 
 @contextmanager
-def corpus_io_errors(parser: argparse.ArgumentParser, corpus: Path | None):
+def input_errors(parser: argparse.ArgumentParser, corpus: Path | None):
+    # PDF libraries can log document metadata while decoding a page. CLI diagnostics are emitted below.
+    previous_level = logging.root.manager.disable
+    if corpus is not None:
+        logging.disable(logging.CRITICAL)
     try:
         yield
     except OSError as exc:
         if corpus is None:
-            raise
+            parser.error(str(exc))
         parser.exit(2, f"corpus I/O errors=1 ({type(exc).__name__})\n")
+    except UnicodeError:
+        parser.error("input is not valid UTF-8")
+    except ValueError as exc:
+        parser.error(str(exc))
+    finally:
+        if corpus is not None:
+            logging.disable(previous_level)
 
 
 @contextmanager
@@ -259,7 +355,7 @@ def main() -> int:
     parser.add_argument("--data", type=Path, help="override the organizer training data directory")
     args = parser.parse_args()
 
-    with corpus_io_errors(parser, args.corpus):
+    with input_errors(parser, args.corpus):
         return evaluate(args, parser)
 
 
@@ -270,10 +366,7 @@ def evaluate(args: argparse.Namespace, parser: argparse.ArgumentParser) -> int:
         if args.data:
             parser.error("--data and --corpus select different layouts and cannot be used together")
         mode, data = "corpus", args.corpus / "cases"
-        try:
-            cases = load_corpus(args.corpus, args.split or "all")
-        except ValueError as exc:
-            parser.error(str(exc))
+        cases = load_corpus(args.corpus, args.split or "all")
     else:
         mode, data = ("quick" if args.quick else "full"), args.data or DATA
         if not data.is_dir():
@@ -284,7 +377,7 @@ def evaluate(args: argparse.Namespace, parser: argparse.ArgumentParser) -> int:
 
     with tempfile.TemporaryDirectory(prefix="odw-eval-") as tmp:
         if args.pred:
-            out_dir, run_error, elapsed = args.pred, None, None
+            out_dir, elapsed = args.pred, None
             names = {(c, n): Path(n).stem for c, docs in cases.items() for n in docs}
         else:
             in_dir, out_dir = Path(tmp) / "input", Path(tmp) / "output"
@@ -292,6 +385,8 @@ def evaluate(args: argparse.Namespace, parser: argparse.ArgumentParser) -> int:
             names = stage(cases, data, in_dir)
             out_dir.mkdir()
             elapsed, run_error = run_app(args.cmd, in_dir, out_dir)
+            if run_error:
+                parser.exit(2, "app failed\n" if args.corpus else f"app failed: {run_error}\n")
         docs = [
             score_doc(case, name, out_dir / case / f"{names[(case, name)]}.json", gold)
             for case, items in cases.items()
@@ -299,7 +394,7 @@ def evaluate(args: argparse.Namespace, parser: argparse.ArgumentParser) -> int:
         ]
 
     seconds_per_doc = None if elapsed is None or not n_docs else elapsed / n_docs
-    results = build_results(docs, mode, seconds_per_doc, cases, run_error)
+    results = build_results(docs, mode, seconds_per_doc, cases)
     destination = RESULTS
     if args.corpus:
         results["split"] = args.split or "all"
@@ -320,8 +415,6 @@ def evaluate(args: argparse.Namespace, parser: argparse.ArgumentParser) -> int:
         if git_dir.strip():
             (ROOT / git_dir.strip() / "eval-latest.json").write_text(payload, encoding="utf-8")
 
-    if run_error:
-        print("app failed" if args.corpus else f"app failed: {run_error}", file=sys.stderr)
     selection = f" split={results['split']}" if args.corpus else ""
     print(
         f"mode={mode}{selection} cases={results['n_cases']} docs={n_docs} commit={results['commit'][:9]} dirty={results['dirty']}"

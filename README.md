@@ -53,7 +53,10 @@ Set `corpus` to a directory containing `cases/<case_id>/<name>.pdf` and `gold/<c
 An empty gold file marks an unrelated document. Corpus runs write aggregates to
 `evals/results/corpus-latest.json`. Set `HN_REAL_SPLIT` to `dev`, `test`, or `all` (default) for `make eval-real`.
 The optional `--detail-out` file must be outside every checkout of this repository and its Git metadata.
-On test splits, corpus I/O failures report an error count and type on the console.
+Both commands check the selected directories, PDFs and references before reporting scores, including with
+`--pred`. Invalid inputs or an extractor failure exit with status 2 and preserve the previous results and gate.
+Test-split diagnostics omit local paths. Missing or malformed predictions count as missed reference fields.
+Training mode checks selected files against the organizer inventory committed in `data/uzp/dane`.
 For a case-level split, put `{"dev": [...], "test": [...]}` in `SPLIT.json` at the corpus root. Each list
 contains case folder names. The default `--split all` scores the whole corpus, including corpora without a split.
 Inspect field errors on dev. Use aggregate scores to evaluate test.

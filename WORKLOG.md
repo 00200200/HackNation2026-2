@@ -8,7 +8,8 @@ Shared state of the project. Rules: `CLAUDE.md` → Worklog.
   template example in `input/case1`.
 - The eval harness scores training cases and local paired PDF/JSON corpora. It reports micro F1 and macro F1 by
   document, represented class and field. Both layouts support per-field errors and OCR stress runs (`--force-ocr`).
-  Private detail files must be outside all worktrees and Git metadata. Corpus I/O errors report counts and types.
+  Private detail files must be outside all worktrees and Git metadata. Input or extraction failures stop evaluation
+  before it writes results or the training gate. Malformed and missing predictions count as misses.
 - App: `kio2json/`, a rule-based baseline with no language model. CLI `python -m kio2json --input input --output output`;
   classification by heading and transaction evidence; field and role boundaries in each extractor; pdfplumber text
   with Tesseract (`pol`) for blank or page-number-only text layers. Required OCR failures identify the PDF on stderr. Branch `baseline/rule-based-extraction`.
@@ -23,8 +24,9 @@ Shared state of the project. Rules: `CLAUDE.md` → Worklog.
 sight of these documents, cases 53-60 included, so this is a regression check and the 51-60 figure is not an
 unseen-case estimate for this baseline.
 
-21.11.2026, local real corpus. The all-corpus row is the earlier run in `00626a5`. Dev and test ran at
-`79eef2a` after merging the updated extraction baseline (`90d9701`).
+21.11.2026, local real corpus. The all-corpus row comes from `00626a5`. The dev and test scores below
+were first measured at `79eef2a` after the baseline merge. The latest test run records its commit in
+`evals/results/corpus-latest.json`.
 All three target classes entered each class average. Every PDF had an output and every negative was empty.
 
 | Split | Cases | PDFs | Micro F1 | Macro by document | Macro by class | Macro by field | Positive classification accuracy |
@@ -70,3 +72,4 @@ Both splits missed the team’s micro F1 and classification targets. Compared wi
 - 21.11.2026 · Codex · added corpus scoring and macro F1, then measured the whole-case dev and test splits at `f93b908`.
 - 21.11.2026 · Codex · Bound transfer values, appeal facts, grantors and signers to their document sections. Added invented regression cases, replaced the organizer identifier in the normalization test and checked 40 fresh adversarial inputs. Transfer and appeal changes in `aaa8057` and `a10b5ad`.
 - 21.11.2026 · Codex · fixed private report destinations, corpus I/O diagnostics and invalid UTF-8 scoring in `be82db0`. Re-ran full training and both real-corpus splits.
+- 21.11.2026 · Codex · fixed training reference validation and selected-file enumeration after the second review of PR #9. Added regression tests for quick, full, corpus, saved predictions and field reports.

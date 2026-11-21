@@ -43,8 +43,4 @@ HN_REAL_SPLIT ?= all
 export HN_REAL_CORPUS HN_REAL_SPLIT
 
 eval-real: ## F1 eval on the local real corpus
-	@if [ -d "$$HN_REAL_CORPUS" ]; then \
-		uv run python -m evals.run --corpus "$$HN_REAL_CORPUS" --split "$$HN_REAL_SPLIT"; \
-	else \
-		echo "No real corpus directory at $$HN_REAL_CORPUS. Set HN_REAL_CORPUS to its location."; \
-	fi
+	@uv run python -m evals.run --corpus "$$HN_REAL_CORPUS" --split "$$HN_REAL_SPLIT"

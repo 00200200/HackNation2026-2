@@ -20,7 +20,7 @@ from typing import TextIO
 from munkres import linear_sum_assignment
 
 from evals.metrics import NEGATIVE, doc_class
-from evals.run import DATA, HOLDOUT, corpus_io_errors, external_detail_path, load_cases, load_corpus, private_output
+from evals.run import DATA, external_detail_path, input_errors, load_cases, load_corpus, private_output
 from kio2json.pipeline import process_pdf
 
 _ABSENT = object()  # a field or list item that one side does not have
@@ -149,7 +149,7 @@ def main() -> None:
     parser.add_argument("--errors", action="store_true", help="list every field error")
     args = parser.parse_args()
 
-    with corpus_io_errors(parser, args.corpus):
+    with input_errors(parser, args.corpus):
         if (args.detail_out or args.split) and not args.corpus:
             parser.error("--detail-out and --split require --corpus")
         split = args.split or "all"
@@ -157,16 +157,7 @@ def main() -> None:
         if includes_test and args.errors and not args.detail_out:
             parser.error("--errors on test cases requires --detail-out outside the repository")
         data = args.corpus / "cases" if args.corpus else DATA
-        try:
-            cases = load_corpus(args.corpus, split) if args.corpus else load_cases(data, quick=False)
-        except ValueError as exc:
-            parser.error(str(exc))
-        except OSError as exc:
-            if args.corpus:
-                raise
-            parser.error(str(exc))
-        if args.holdout:
-            cases = {case: documents for case, documents in cases.items() if case in HOLDOUT}
+        cases = load_corpus(args.corpus, split) if args.corpus else load_cases(data, quick=False, holdout=args.holdout)
         output = (
             private_output(args.detail_out) if args.detail_out else nullcontext(None if includes_test else sys.stdout)
         )
@@ -175,7 +166,6 @@ def main() -> None:
 
 
 def print_report(cases: dict, data: Path, *, force_ocr: bool, errors: bool, diagnostics: TextIO | None) -> None:
-    processing_errors = Counter()
     confusion = Counter()
     by_class = defaultdict(list)
     normalized_by_class = defaultdict(list)
@@ -187,12 +177,10 @@ def print_report(cases: dict, data: Path, *, force_ocr: bool, errors: bool, diag
             started = time.perf_counter()
             try:
                 _, predicted = process_pdf(data / case / name, force_ocr=force_ocr)
-            except Exception as error:  # noqa: BLE001 - a damaged PDF scores as an empty prediction
-                if diagnostics is not sys.stdout:
-                    processing_errors[type(error).__name__] += 1
-                if diagnostics is not None:
-                    print(f"{case}/{name}: not processed ({type(error).__name__}: {error})", file=diagnostics)
-                predicted = {}
+            except OSError:
+                raise
+            except Exception as exc:  # Extraction and OCR errors invalidate the report.
+                raise ValueError(f"document processing errors=1 ({type(exc).__name__})") from exc
             seconds.append(time.perf_counter() - started)
             gold_class, predicted_class = doc_class(gold), doc_class(predicted)
             confusion[(gold_class, predicted_class)] += 1
@@ -209,8 +197,6 @@ def print_report(cases: dict, data: Path, *, force_ocr: bool, errors: bool, diag
             exact[gold_class] += all(r["status"] == "ok" for r in records)
             counts[gold_class] += 1
 
-    for error_type, count in sorted(processing_errors.items()):
-        print(f"document processing errors={count} ({error_type})", file=sys.stderr)
     if not seconds:
         print(f"cases={len(cases)}  documents=0")
         return
