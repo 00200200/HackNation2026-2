@@ -10,7 +10,7 @@ from . import appeal
 from .common import EMAIL_RE, PERSON, registry_ids, squash
 from .ocr_normalize import normalize_ocr
 from .pdf_text import WordBox
-from .power_of_attorney import _compatible_names
+from .personal_names import compatible_names
 from .receipt_layout import _word_rows
 
 # Polish letters have a one-to-one mapping here, so folded match offsets index the original.
@@ -175,13 +175,13 @@ def _signature_name(appointed: str, pages: list[str]) -> str:
             ):
                 continue
             candidate = _lawyer(line) or (line.strip() if re.fullmatch(PERSON, line.strip()) else None)
-            if candidate and candidate != appointed and _compatible_names(appointed, candidate):
+            if candidate and candidate != appointed and compatible_names(appointed, candidate):
                 candidates.add(candidate)
         # Professional rosters also print names in the nominative above each title.
         for line, title in itertools.pairwise(lines):
             if not re.fullmatch(r"radca prawny|adwokat", _fold(title.strip())):
                 continue
-            if re.fullmatch(PERSON, line.strip()) and _compatible_names(appointed, line.strip()):
+            if re.fullmatch(PERSON, line.strip()) and compatible_names(appointed, line.strip()):
                 candidates.add(line.strip())
     if len(candidates) == 1:
         return candidates.pop()

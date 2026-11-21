@@ -14,22 +14,22 @@ The full synthetic run matched 196/196 CLI outputs against the baseline by path,
 including 16 empty negatives. The field report matched all 2,316 fields. Training micro F1 and the
 cases 51–60 regression score were both 1.000. [Full training run](evals/results/latest.json)
 
-The local rules were evaluated on all 39 PDFs from 21 cases in corpus 1 and the 39 development PDFs from 14 cases in corpus 2. The project reserves corpus 2 test for the merged system. The organizer supplied 30 labelled development scans, ten per class, at revision `0b360a9`. All ten appeal predictions matched their complete reference objects (225 fields). The scan harness stages PDFs under neutral filenames. The earlier model-engine experiment evaluated two profiles on the 17-document corpus 1 holdout. [Historical model results](evals/results/llm-real-docs.json) · [Organizer scan inventory](https://github.com/Urzad-Zamowien-Publicznych/hacknation-2026/tree/0b360a9da4b482a6a280696df6714404e0953505/dane/skany)
+These runs used local rules with the three endpoint variables unset. The two local datasets contain real documents and use whole-case splits. Corpus 1 contributes all 39 development PDFs, including its previously evaluated split. Corpus 2 contributes 39 development PDFs from 14 cases. Its 60 test PDFs are reserved for the merged system. The organizer supplied a separate set of 30 labelled scans, ten per target class, in revision `0b360a9`.
 
 | Dataset | PDFs | Micro F1 | Macro F1 by class | Appeal | Power of attorney | Transfer | Correct routes (appeal / power / transfer) | Empty negatives | Wall s/PDF |
 |---|---:|---:|---:|---:|---:|---:|---|---:|---:|
-| Local corpus 1, all | 39 | 0.6675 | 0.5862 | 0.7046 | 0.5926 | 0.4615 | 12/13 / 6/6 / 4/9 | 11/11 | 3.63 |
-| Local corpus 2, dev | 39 | 0.7035 | 0.4332 | 0.8148 | 0.3333 | 0.1515 | 13/13 / 4/5 / 1/10 | 11/11 | 3.31 |
-| Organizer scans | 30 | 0.8242 | 0.6003 | 1.0000 | 0.6065 | 0.1944 | 10/10 / 10/10 / 2/10 | n/a | 5.49 |
+| Local corpus 1, all | 39 | 0.6307 | 0.6607 | 0.6016 | 0.9189 | 0.4615 | 12/13 / 6/6 / 4/9 | 11/11 | 7.39 |
+| Local corpus 2, dev | 39 | 0.6045 | 0.5662 | 0.6008 | 0.9462 | 0.1515 | 12/13 / 5/5 / 1/10 | 11/11 | 6.33 |
+| Organizer scans | 30 | 0.6852 | 0.6023 | 0.6123 | 1.0000 | 0.1944 | 9/10 / 10/10 / 2/10 | n/a | 10.05 |
 
-[Real dev aggregates](evals/results/appeal-scan-development.json) · [Organizer scan aggregate](evals/results/organizer-scans.json)
+[Appeal development measurements](evals/results/appeal-scan-development.json) · [Grant development measurements](evals/results/poa-development.json) · [Organizer scan aggregate](evals/results/organizer-scans.json)
 
 ## Next
 
 | Item | Owner |
 |---|---|
 | Evaluate the planned Mistral API model (at most 8B parameters) on dev | Open |
-| Score the held-out splits after selecting and freezing the final profile | Open |
+| Score corpus 2 test once after selecting and freezing the merged profile | Open |
 | Improve receipt routing and recover damaged party names on development inputs | Open |
 | Confirm the organizer’s F1 formula and Stage II weights with UZP | Open |
 
@@ -88,3 +88,5 @@ The local rules were evaluated on all 39 PDFs from 21 cases in corpus 1 and the 
 - 21.11.2026 · Codex · Fixed the execution-date regression reported on PR #23, added three native receipts with baseline outputs, and recognized three additional completed payment statuses. All 196 training files matched the baseline byte for byte at `ee6c36e`. The clean training run scored 1.000 micro F1 and the 30 organizer scans scored 0.5633 micro F1.
 
 - 21.11.2026: the appeal-scan branch recovers first-act dates, role and counsel blocks, and procurement fields using OCR provenance and first-page word boxes. All ten public appeal references matched exactly in development.
+- 21.11.2026 · Codex · Recovered officers, multiple appointments and register digits on scanned grants, and named signers from embedded certificates on real grants. All 10 organizer grants matched exactly in rules-only mode.
+- 21.11.2026 · Codex · Merged main at `5297660` into the appeal scan branch and combined cover-page OCR evidence with scanned grant and certificate extraction.

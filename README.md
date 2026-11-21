@@ -235,15 +235,15 @@ current rules, select `KIO_OCR_ENGINE=tesseract-dpi` and run
 
 ## Rules on real documents and organizer scans
 
-The local rules were evaluated on all 39 PDFs from 21 cases in corpus 1 and the 39 development PDFs from 14 cases in corpus 2. The project reserves corpus 2 test for the merged system. The organizer supplied 30 labelled development scans, ten per class, at revision `0b360a9`. All ten appeal predictions matched their complete reference objects (225 fields). The scan harness stages PDFs under neutral filenames. The earlier model-engine experiment evaluated two profiles on the 17-document corpus 1 holdout. [Historical model results](evals/results/llm-real-docs.json) · [Organizer scan inventory](https://github.com/Urzad-Zamowien-Publicznych/hacknation-2026/tree/0b360a9da4b482a6a280696df6714404e0953505/dane/skany)
+These runs used local rules with the three endpoint variables unset. The two local datasets contain real documents and use whole-case splits. Corpus 1 contributes all 39 development PDFs, including its previously evaluated split. Corpus 2 contributes 39 development PDFs from 14 cases. Its 60 test PDFs are reserved for the merged system. The organizer supplied a separate set of 30 labelled scans, ten per target class. The scan command stages the committed PDF/reference pairs as one batch with neutral filenames. [Organizer scan set at the measured revision](https://github.com/Urzad-Zamowien-Publicznych/hacknation-2026/tree/0b360a9da4b482a6a280696df6714404e0953505/dane/skany)
 
 | Dataset | PDFs | Micro F1 | Macro F1 by class | Appeal | Power of attorney | Transfer | Correct routes (appeal / power / transfer) | Empty negatives | Wall s/PDF |
 |---|---:|---:|---:|---:|---:|---:|---|---:|---:|
-| Local corpus 1, all | 39 | 0.6675 | 0.5862 | 0.7046 | 0.5926 | 0.4615 | 12/13 / 6/6 / 4/9 | 11/11 | 3.63 |
-| Local corpus 2, dev | 39 | 0.7035 | 0.4332 | 0.8148 | 0.3333 | 0.1515 | 13/13 / 4/5 / 1/10 | 11/11 | 3.31 |
-| Organizer scans | 30 | 0.8242 | 0.6003 | 1.0000 | 0.6065 | 0.1944 | 10/10 / 10/10 / 2/10 | n/a | 5.49 |
+| Local corpus 1, all | 39 | 0.6307 | 0.6607 | 0.6016 | 0.9189 | 0.4615 | 12/13 / 6/6 / 4/9 | 11/11 | 7.39 |
+| Local corpus 2, dev | 39 | 0.6045 | 0.5662 | 0.6008 | 0.9462 | 0.1515 | 12/13 / 5/5 / 1/10 | 11/11 | 6.33 |
+| Organizer scans | 30 | 0.6852 | 0.6023 | 0.6123 | 1.0000 | 0.1944 | 9/10 / 10/10 / 2/10 | n/a | 10.05 |
 
-Micro F1 pools field matches across documents. Macro F1 averages the three class scores. The routing columns count correctly classified documents in each target class. The negatives column counts zero-byte outputs. Timing includes OCR and extraction on a shared host. [Real development reports](evals/results/appeal-scan-development.json) · [Organizer scan report](evals/results/organizer-scans.json)
+Micro F1 pools field matches across documents. Macro F1 averages the three class scores. The routing columns count correctly classified documents in each target class. The negatives column counts zero-byte outputs. Timing includes OCR and extraction on a shared host. [Appeal development measurements](evals/results/appeal-scan-development.json) · [Grant development measurements](evals/results/poa-development.json) · [Organizer scan report](evals/results/organizer-scans.json)
 
 The organizer allows 45 minutes for its 150-PDF batch, an average budget of 18 seconds per PDF.
 The reported times cover these local datasets. OCR runs locally. Under the updated rules, a remote
@@ -301,10 +301,11 @@ rules. [OCR results](evals/results/ocr-engines.json)
   passes the Polish IBAN checksum, and the confirmation supplies the amount and date. The masked number
   is null. OCR also supports fully masked fields. Digit repairs apply only to OCR text and require a
   single checksum-valid candidate. A number printed in a native text layer keeps its printed digits.
-- Grant extraction handles numbered or bulleted declarations and current appointments in notarial deeds.
-  A signer's name needs an identifiable owner and evidence of signing. The organizer requests nominative forms for attorney and individual grantor names. A labelled nominative can resolve
-  an inflected appointee when the identity is unambiguous. Unreadable signatures and ambiguous identities
-  can leave fields empty.
+- Grant extraction reads numbered and coordinated appointments, officers in representation clauses,
+  and digital approval signatures. Where a name is inflected, rules use a compatible printed form
+  or a unique case- and gender-compatible personal-name reading from Morfeusz2. Ambiguous readings
+  retain the printed spelling. A damaged or handwritten signature can still leave the signer missing.
+  PDF signer names are extracted from embedded CMS certificates without validating trust or revocation.
 - UNCONFIRMED: what "empty JSON" means for unrelated documents. We write an empty file, as the
   organizer README words it.
 - UNCONFIRMED: value types. `pesel` is a number in the organizer's annotated example and a string

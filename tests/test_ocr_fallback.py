@@ -19,7 +19,7 @@ def test_hybrid_retries_only_unrouted_ocr_documents(monkeypatch, primary, scanne
     monkeypatch.setenv("KIO_OCR_ENGINE", "hybrid")
     engines = []
 
-    def read(path, *, force_ocr, engine=None, ocr_pages=None):
+    def read(path, *, force_ocr, engine=None, ocr_pages=None, **kwargs):
         engines.append(engine)
         if scanned and ocr_pages is not None:
             ocr_pages.append(1)
