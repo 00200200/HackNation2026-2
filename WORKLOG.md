@@ -31,9 +31,9 @@ The full clean training run recorded in `evals/results/latest.json` scored `micr
 sight of these documents, cases 53-60 included, so this is a regression check and the 51-60 figure is not an
 unseen-case estimate for this baseline.
 
-On the appeal-layout branch, whole-dev micro F1 rose from 0.3864 to 0.7237 and appeal field F1 rose from
+Before merging the explicit-DPI OCR engine, whole-dev micro F1 rose from 0.3864 to 0.7237 and appeal field F1 rose from
 0.4128 to 0.8166. All seven dev appeals routed correctly in both runs. The single held-out run scored
-0.4186 micro F1 and 0.3123 macro F1 by class across 17 PDFs. Its aggregate is in `evals/results/corpus-latest.json`.
+0.4186 micro F1 and 0.3123 macro F1 by class across 17 PDFs.
 
 Earlier OCR measurements at `c2bf060` follow. The merged forced-OCR field report scored 0.897 on 196 synthetic PDFs. Strict F1 on 17 real dev scans was
 0.331 with Tesseract and 0.419 with RapidOCR v6. Natural dev F1 on 20 PDFs was 0.3864 and 0.4588, respectively.
@@ -102,3 +102,4 @@ Both splits missed the team’s micro F1 and classification targets. Compared wi
 - 21.11.2026 · Codex · Merged the GUI baseline through `ac78d2d` into the OCR branch. Added unreadable-scan diagnostics, signature ownership checks, labelled account evidence, a RapidOCR worker deadline, and a checksum-verified local model source.
 - 21.11.2026 · Codex · Integrated the corpus and macro-F1 harness from `3210643`. The OCR comparison uses the frozen extraction rules from `865b1ea`.
 - 21.11.2026 · Codex · Measured T0, T1, T1 with PNG input, R and TR on the dev cases. The hybrid gain was 0.0133, below the 0.0300 gate. Selected `tesseract-dpi` and kept RapidOCR optional.
+- 21.11.2026 · Codex · Merged the default explicit-DPI OCR engine at `b0a640f`. Before the appeal review fixes, dev micro F1 was 0.6944 and appeal F1 was 0.7811. Added regression coverage for filing evidence, party and counsel ownership, procurement labels and the first dated act.

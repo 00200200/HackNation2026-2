@@ -250,8 +250,10 @@ were scored for this comparison.
 
 - Appeal extraction reads the first three pages. A signature or dated notice later in the PDF can be missed.
   The extractor uses printed word positions when a scan groups party labels into a separate column.
-  Ambiguous alignments, damaged names and legal inflections can prevent an exact match.
-  A reference to a statute or the filing date alone supplies no date for the challenged act.
+  Explicit party labels and filing clauses can identify the parties. An unlabelled list, an ambiguous
+  column alignment or an inflected company name can still leave a party missing. A plain title uses
+  the labelled row. A challenge date needs a link to the act or its notification. Separate filing,
+  invoice and statutory dates can appear on the same page.
 - OCR can still lose accented letters, split a notice number or reorder columns. Scans with a
   noisy but nonempty text layer follow the native-text path. A Polish account containing OCR
   glyphs is repaired only if a unique candidate passes the IBAN mod-97 check. A fully printed

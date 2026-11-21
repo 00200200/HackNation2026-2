@@ -4,6 +4,7 @@ import re
 
 from rapidfuzz.distance import Levenshtein
 
+from .appeal_charges import FILING
 from .bank_transfer import AccountEvidence, account_evidence, transaction_values
 
 UNRELATED_HEADING = re.compile(
@@ -42,7 +43,9 @@ def classify_with_evidence(pages: list[str]) -> tuple[str | None, AccountEvidenc
             labelled_parties = re.search(r"(?im)^(?:wykonawca|odwo[łl]uj[ąa]cy)\s*[:(]", head) and re.search(
                 r"(?im)^zamawiaj[ąa]cy\s*[:(]", head
             )
-            if (heading == "ODWOŁANIE" and party) or labelled_parties:
+            # A grammatical word one edit away can be a register heading.
+            clear_heading = heading.translate(str.maketrans({"0": "O", "L": "Ł"})) == "ODWOŁANIE"
+            if (heading == "ODWOŁANIE" and party) or (clear_heading and labelled_parties) or FILING.search(head):
                 return "appeal", None
         if heading in {"PEŁNOMOCNICTWO", "PEŁNOMOCNICTWOPROCESOWE", "PEŁNOMOCNICTWOSZCZEGÓLNE"}:
             return "power_of_attorney", None

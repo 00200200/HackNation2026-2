@@ -2,8 +2,8 @@
 
 import re
 
-from .appeal_charges import ACTS, prose_action
-from .common import ATTORNEY_RE, DATE, EMAIL_RE, LOWER, PERSON, UPPER, find_date, registry_ids, squash, to_iso
+from .appeal_charges import ACTS, CHARGE, FILING, act_date, first_sentence, prose_action, sentences
+from .common import ATTORNEY_RE, DATE, EMAIL_RE, LOWER, PERSON, UPPER, registry_ids, squash, to_iso
 
 # Canonical descriptions from data/uzp/oczekiwane-json/czynnosc_powod_id_dict.md.
 REASONS = {
@@ -73,29 +73,13 @@ def _ends_party(line: str) -> bool:
     )
 
 
-def _first_sentence(text: str) -> str:
-    """Stop at sentence punctuation, keeping dots inside citations, dates and company names."""
-    for stop in re.finditer(r"[;!?]|\.(?=\s|$)", text):
-        if stop[0] == ".":
-            before = text[: stop.start()]
-            after = text[stop.end() :].lstrip()
-            if re.search(r"\b(?:art|ust|pkt|lit|poz|nr|im|ul|św|al|Dz|sygn)$", before, re.IGNORECASE):
-                continue
-            if after and after[0].islower() and re.search(r"\b(?:sp|o|j|k|p|a|r)$", before, re.IGNORECASE):
-                continue
-            if re.search(r"\bsp$", before, re.IGNORECASE) and re.match(r"(?:z|j|k|p)\b", after, re.IGNORECASE):
-                continue
-        return text[: stop.start()]
-    return text
-
-
 CONTACT = re.compile(
     r"^(?:tel(?:efon)?[./ :]|fax|faks|e-?mail|www[.,]|https?://|kontakt\b|osoba do kontaktu)|@", re.IGNORECASE
 )
 MEMBER = re.compile(r"^(\d+)[.)]\s*(.*)")
 MEMBER_ROLE = re.compile(r"\((?:lider|członek|partner)\b[^)]*\)", re.IGNORECASE)
 LEAD_FOR = re.compile(r"^prowadząc\w*\s+postępowanie.*(?:na rzecz|w imieniu)", re.IGNORECASE)
-CONSORTIUM = re.compile(r"(?:wspólnie|konsorcjum).*[:：]$", re.IGNORECASE)
+CONSORTIUM = re.compile(r"\b(?:wspólnie|konsorcjum)\b", re.IGNORECASE)
 
 
 def _parties(lines: list[str]) -> dict[str, list[dict]]:
@@ -115,8 +99,10 @@ def _parties(lines: list[str]) -> dict[str, list[dict]]:
         markers = MEMBER_ROLE.findall(name)
         name = MEMBER_ROLE.sub("", name)
         name = re.split(r",?\s+(?:ul\.|al\.|os\.|pl\.)\s+", name, maxsplit=1, flags=re.IGNORECASE)[0]
-        if role == "Odwołujący" or "oddział" not in name.casefold():
-            name = re.split(r"\s+z siedzibą\b", name, maxsplit=1, flags=re.IGNORECASE)[0]
+        # A registered seat may be inserted before a separately delimited branch designation.
+        name = re.sub(
+            r",?\s+z siedzibą\b.*?(?=[,–—-]\s*(?:oddział|filia|delegatura)\b|$)", "", name, flags=re.IGNORECASE
+        )
         name = name.rstrip(" ,;")
         if name:
             entity = {
@@ -136,9 +122,6 @@ def _parties(lines: list[str]) -> dict[str, list[dict]]:
             sublabel, entity = "", None
             wrapped_label = ":" not in line
             line = line.partition(":")[2].strip()
-            if re.search(r"wspólnie|konsorcjum", line, re.IGNORECASE) and not MEMBER_ROLE.search(line):
-                wrapped_label = not line.endswith(":")
-                continue
             if not line:
                 continue
         if not role or not line:
@@ -152,6 +135,13 @@ def _parties(lines: list[str]) -> dict[str, list[dict]]:
                 entity["sublabel"] += " prowadzący"
             continue
         if member := MEMBER.match(line):
+            # The numbered row supplies the evidence that the preceding text introduces a list.
+            if (
+                not sublabel
+                and CONSORTIUM.search(" ".join(name_lines))
+                and not MEMBER_ROLE.search(" ".join(name_lines))
+            ):
+                name_lines.clear()
             finish_name()
             sublabel, entity = member[1], None
             line = member[2]
@@ -171,11 +161,11 @@ def _parties(lines: list[str]) -> dict[str, list[dict]]:
             if entity and ID_LINE_RE.search(line):
                 for key, value in registry_ids(line).items():
                     entity[key] = entity[key] or value
-        elif PARTIES_END_RE.match(line) or _ends_party(line) or PLACE_DATE_RE.match(line):
+        elif CONSORTIUM.search(line) and line.endswith((":", "：")):
+            name_lines.append(line)
+        elif PARTIES_END_RE.match(line) or _ends_party(line) or CHARGE.search(line) or PLACE_DATE_RE.match(line):
             finish_name()
             role = None
-        elif CONSORTIUM.search(line):
-            name_lines.clear()
         elif entity is None:
             name_lines.append(line)
     finish_name()
@@ -186,7 +176,63 @@ COUNSEL_LABEL = re.compile(r"^pełnomocnik\s+odwołującego\s*:", re.IGNORECASE)
 APPOINTMENT = re.compile(r"reprezentowan\w*\s+prze[zż]\s*:?", re.IGNORECASE)
 
 
-def _representative(header: str, text: str) -> dict | None:
+EMPLOYER_LABEL = re.compile(
+    r"^(?:pracodawca|kancelaria|(?:z |nazwa )kancelarii|adres do korespondencji)\s*:[ \t]*(.*)", re.IGNORECASE
+)
+FIRM_NAME = re.compile(r"^(?:kancelaria|biuro prawne)\b", re.IGNORECASE)
+
+
+def _prose_parties(text: str, parties: dict) -> None:
+    """Fill missing roles only from a clause that actually files the appeal."""
+    for clause in sentences(squash(text)):
+        filing = FILING.search(clause)
+        if not filing:
+            continue
+        roles = {
+            "Odwołujący": r"\bw imieniu\s+(?:spółki\s+)?",
+            "Zamawiający": r"\b(?:wobec czynności zamawiającego|postępowani\w* prowadzon\w* przez)\s+",
+        }
+        for role, cue in roles.items():
+            if parties[role]:
+                continue
+            match = re.search(cue, clause, re.IGNORECASE)
+            if not match:
+                continue
+            name = re.split(
+                r"[,;:]|\s+(?:wobec|wnosz\w*|wnosi|składa\w*|jako|z siedzibą|w postępowaniu)\b",
+                clause[match.end() :],
+                maxsplit=1,
+                flags=re.IGNORECASE,
+            )[0].strip()
+            if name and name[0].isupper():
+                parties[role].append({"nazwa": name, "sublabel": "", "nip": None, "krs": None, "regon": None})
+
+
+def _employer(after: str) -> str | None:
+    details = after.splitlines()
+    for i, line in enumerate(details):
+        field = EMPLOYER_LABEL.match(line)
+        value = field[1].strip() if field else line.strip()
+        if field:
+            for following in details[i + 1 :]:
+                if SECTION_LABEL.match(following) or CONTACT.search(following) or ID_LINE_RE.search(following):
+                    break
+                if ADDRESS_RE.match(following) and not re.search(r",\s*(?:ul\.|al\.)", following, re.IGNORECASE):
+                    break
+                if re.search(r"(?:^|\s)(?:ul\.|al\.|pl\.|os\.)", value, re.IGNORECASE):
+                    break
+                value = squash(value + " " + following)
+        candidate = re.split(
+            r",?\s+(?:ul\.|al\.|pl\.|os\.|z siedzibą)(?:\s|$)", value, maxsplit=1, flags=re.IGNORECASE
+        )[0]
+        if not candidate or SECTION_LABEL.match(candidate) or ADDRESS_RE.match(candidate) or CONTACT.search(candidate):
+            continue
+        if FIRM_NAME.match(candidate) or (field and (candidate != value or not field[0].lower().startswith("adres"))):
+            return candidate
+    return None
+
+
+def _representative(header: str, text: str, appellant_name: str) -> dict | None:
     """Look for a mandate belonging to the appellant or the signature on the appeal."""
     lines = []
     appellant = False
@@ -195,7 +241,7 @@ def _representative(header: str, text: str) -> dict | None:
             appellant = not label[1].casefold().startswith("zamawiaj")
         elif COUNSEL_LABEL.match(line):
             appellant = True
-        elif not (CONTACT.search(line) or APPOINTMENT.match(line)) and _ends_party(line):
+        elif not (CONTACT.search(line) or APPOINTMENT.match(line) or EMPLOYER_LABEL.match(line)) and _ends_party(line):
             appellant = False
         if appellant:
             lines.append(line)
@@ -208,18 +254,20 @@ def _representative(header: str, text: str) -> dict | None:
     else:
         after = ""
     signature = re.search(
-        rf"(?im)^\s*pełnomocnik(?: odwołującego)?\s*\n(?:[^\n]*\d[^\n]*\n)?(?-i:({PERSON}))[ \t]*$", text
+        rf"(?im)^[ \t]*pełnomocnik(?: odwołującego)?[ \t]*\n(?:[^\n]*\d[^\n]*\n)?(?-i:({PERSON}))[ \t]*$", text
     )
-    mandate = re.search(
-        r"na podstawie (?:udzielonego mi|załączonego) pełnomocnictwa,?\s+(?:wnoszę|składam)\s+odwołanie",
-        squash(text),
-        re.IGNORECASE,
+    principal = rf"(?:odwołującego|{re.escape(appellant_name)})(?!\w)"
+    mandate = any(
+        FILING.search(clause)
+        and re.search(rf"\b(?:w imieniu (?:spółki )?|jako pełnomocnik ){principal}", clause, re.IGNORECASE)
+        and re.search(r"\b(?:pełnomocnictw\w*|pełnomocnik|radca prawny|adwokat)\b", clause, re.IGNORECASE)
+        for clause in sentences(squash(text))
     )
     if not (intro or after or signature or mandate):
         return None
     appointment = []
     for line in after.splitlines():
-        if SECTION_LABEL.match(line) and not re.search(r"z kancelarii:\s*$", line, re.IGNORECASE):
+        if EMPLOYER_LABEL.match(line) or SECTION_LABEL.match(line):
             break
         appointment.append(line)
     if re.search(r"\b(?:prezes\w*|człon\w* zarządu|prokurent\w*)\b", " ".join(appointment[:2]), re.IGNORECASE):
@@ -228,17 +276,17 @@ def _representative(header: str, text: str) -> dict | None:
     attorney = ATTORNEY_RE.search(appointment_text)
     if attorney is None and intro:
         attorney = re.match(rf"({PERSON})(?=[,\s(]|$)", appointment_text)
-    firm = re.search(
-        r"(?:adres do korespondencji|z kancelarii):\s*(.+?)(?=,?\s+(?:ul\.|al\.|pl\.|os\.|z siedzibą)|\nadres)",
-        after[:600],
-        re.IGNORECASE | re.DOTALL,
-    )
-    if not firm:
-        firm = re.search(r"(?m)^((?:[A-ZĄĆĘŁŃÓŚŹŻ -]+\n)?[Kk]ancelaria[^\n]*)", after)
+    firm = _employer(after)
+    if not firm and signature:
+        # A signed appeal may carry the law firm's name in its letterhead.
+        letterhead = re.split(r"(?im)^\s*(?:odwołanie|odwołujący|zamawiający)\b", text, maxsplit=1)[0]
+        firms = [line.strip() for line in letterhead.splitlines() if FIRM_NAME.match(line.strip())]
+        if len(firms) == 1:
+            firm = firms[0]
     mail = EMAIL_RE.search(after)
     return {
         "imie_nazwisko": squash(attorney[1]) if attorney else signature[1] if signature else None,
-        "nazwa": squash(firm[1]) if firm else None,
+        "nazwa": squash(firm) if firm else None,
         "mail": mail.group() if mail else None,
     }
 
@@ -252,19 +300,18 @@ def _challenged_action(text: str) -> tuple[str | None, int | None]:
     """Use a dated first charge, otherwise its introductory account of the challenged act."""
     flat = squash(text)
     charge = FIRST_ALLEGATION_RE.search(flat)
-    opening = _first_sentence(charge.group(1)) if charge else ""
+    opening = first_sentence(charge.group(1)) if charge else ""
     reason = _reason(opening)
-    dated_act = re.split(
-        r",?\s+(?:o czym|odwołanie|pismo (?:wniesiono|nadano))\b", opening, maxsplit=1, flags=re.IGNORECASE
-    )[0]
-    day = find_date(STATUTE_DATE_RE.sub("", dated_act))
+    day = act_date(STATUTE_DATE_RE.sub("", opening), reason) if reason else None
     if reason and day:
         return day, reason
 
     introduction = ALLEGATIONS_START_RE.split(flat, maxsplit=1)[0]
     for action in reversed(list(ACTION_RE.finditer(introduction))):
-        sentence = _first_sentence(introduction[action.start() :])
-        action_reason = _reason(sentence)
+        sentence = first_sentence(introduction[action.start() :])
+        action_reason = _reason(
+            re.split(r",\s*(?:a|ale|lecz|natomiast|po czym|mimo że)\b", sentence, maxsplit=1, flags=re.IGNORECASE)[0]
+        )
         if action_reason:
             explicit = opening.lstrip(" :–—-")
             for charge_reason, pattern in ACTS.items():
@@ -273,10 +320,10 @@ def _challenged_action(text: str) -> tuple[str | None, int | None]:
             return to_iso(action.group(1)), action_reason
     item = FIRST_ITEM_RE.search(introduction)
     if item:
-        item_opening = _first_sentence(item.group(1))
+        item_opening = first_sentence(item.group(1))
         item_reason = _reason(item_opening)
         if item_reason:
-            return find_date(item_opening), item_reason
+            return act_date(item_opening, item_reason), item_reason
     if charge or reason:
         return None, reason
     return prose_action(text)
@@ -287,16 +334,18 @@ def _procurement(text: str) -> dict:
     ted = re.search(r"(?P<year>\d{4})/S\s*\d{3}-(?P<number>\d{6})", text) or re.search(
         r"(?<![\d/\-])(?P<number>\d{6})[ \t]*[-–—][ \t]*(?P<year>\d{4})(?!\d)", text
     )
-    ref_label = re.search(
-        r"(?:(?:nr|numer)\s+(?:referencyjny(?:\s+sprawy)?|postępowania|sprawy|zamówienia)|znak(?: sprawy)?)\b[:\s]+",
-        text,
-        re.IGNORECASE,
-    ) or re.search(r"postępowani[uea]\s+(?:nr|numer)\b[:\s]+", text, re.IGNORECASE)
     reference = None
-    if ref_label:
-        value = text[ref_label.end() :].lstrip()
-        if not SECTION_LABEL.match(value):
-            reference = re.match(r"(?=\S*\d)[\w./-]+", value)
+    for label in (
+        r"(?:nr|numer)\s+(?:referencyjny(?:\s+sprawy)?|postępowania|zamówienia)|postępowani[uea]\s+(?:nr|numer)",
+        r"(?:nr|numer)\s+sprawy|znak(?: sprawy)?",
+    ):
+        for match in re.finditer(rf"\b(?:{label})\b[:\s]+", text, re.IGNORECASE):
+            value = re.match(r"(?=[\w./-]*\d)[\w./-]+", text[match.end() :])
+            if value:
+                reference = value[0].rstrip(".,")
+                break
+        if reference:
+            break
     title = re.search(r"pn\.:?\s*„([^”]+)”", text)
     if not title and (subject := re.search(r"\bdotyczy\b[ \t]*:?", text, re.IGNORECASE)):
         lines = []
@@ -312,14 +361,17 @@ def _procurement(text: str) -> dict:
             re.IGNORECASE | re.DOTALL,
         )
     if not title:
-        title = re.search(
-            r"(?:nazwa postępowania:\s*|postępowaniu na:\s*)(.{1,700}?)(?=\s*\((?:nr|numer) sprawy|,\s*ogłoszon)",
-            text,
-            re.IGNORECASE | re.DOTALL,
-        )
+        label = re.search(r"(?im)\b(?:nazwa postępowania|postępowaniu na):[ \t]*", text)
+        if label:
+            rows = text[label.end() :].splitlines()
+            # An empty label may put its value on the next printed row.
+            value = next((row.strip() for row in rows[:2] if row.strip()), "")
+            value = re.split(r"[ \t]{2,}(?=[^\W\d_][\w ()./-]{0,80}:)", value, maxsplit=1)[0]
+            if value and not SECTION_LABEL.match(value):
+                title = re.match(r"(.+?)(?=\s*\((?:nr|numer)\b|,\s*(?:nr|numer|znak)\b|$)", value, re.IGNORECASE)
     return {
         "numer_bzp": f"{bzp.group(1)}/BZP{bzp.group(2)}" if bzp else None,
-        "numer_postepowania": reference[0].rstrip(".,") if reference else None,
+        "numer_postepowania": reference,
         "numer_ted": f"{ted['number']}-{ted['year']}" if ted else None,
         "tytul": squash(title.group(1)) if title else None,
     }
@@ -342,18 +394,20 @@ def _appellant_registry(text: str, leader: dict) -> None:
 def extract(text: str) -> dict:
     header = text.split("Działając w imieniu", 1)[0]
     parties = _parties(header.splitlines())
+    _prose_parties(text, parties)
     place_date = PLACE_DATE_RE.search(header)
+    filing_date = re.search(rf"(?im)^data (?:złożenia|wniesienia)(?: odwołania)?:[ \t]*({DATE})", header)
     action_date, reason = _challenged_action(text)
-    representative = _representative(header, text)
 
     appellants = parties["Odwołujący"]
     leader = next((a for a in appellants if "lider" in a["sublabel"].lower()), appellants[0] if appellants else None)
+    representative = _representative(header, text, leader["nazwa"]) if leader else None
     if leader:
         _appellant_registry(text, leader)
     authorities = parties["Zamawiający"]
     return {
         "OdwolanieKIO": {
-            "data": to_iso(place_date.group(2)) if place_date else None,
+            "data": to_iso(place_date[2]) if place_date else to_iso(filing_date[1]) if filing_date else None,
             "czynnosc_dzien": action_date,
             "czynnosc_powod_id": reason,
             "czynnosc_opis": REASONS.get(reason),
