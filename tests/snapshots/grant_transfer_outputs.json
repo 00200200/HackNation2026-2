@@ -1,0 +1,1605 @@
+{
+  "base": "e051dfa11cde0139fdd75e3f104bbe74ffb0f6ca",
+  "outputs": {
+    "task32/T1": [
+      "bank_transfer",
+      {
+        "przelew_bankowy": {
+          "data_operacji": "2026-06-09",
+          "kwota": null,
+          "na_rachunek": "97298300000000000000836412",
+          "numer_transakcji": "QJ684291",
+          "tytul": "Dostawa magnesów",
+          "z_rachunku": "46137900000000000000471362"
+        }
+      }
+    ],
+    "task32/T2": [
+      null,
+      {}
+    ],
+    "task32/T3": [
+      "bank_transfer",
+      {
+        "przelew_bankowy": {
+          "data_operacji": "2026-06-09",
+          "kwota": 782.14,
+          "na_rachunek": "97298300000000000000836412",
+          "numer_transakcji": "QJ684291",
+          "tytul": "Dostawa magnesów",
+          "z_rachunku": "46137900000000000000471362"
+        }
+      }
+    ],
+    "task32/T4": [
+      "bank_transfer",
+      {
+        "przelew_bankowy": {
+          "data_operacji": "2026-06-09",
+          "kwota": 782.14,
+          "na_rachunek": "97298300000000000000836412",
+          "numer_transakcji": "QJ684291",
+          "tytul": "Dostawa magnesów",
+          "z_rachunku": "46137900000000000000471362"
+        }
+      }
+    ],
+    "task32/T5": [
+      null,
+      {}
+    ],
+    "task32/T6": [
+      null,
+      {}
+    ],
+    "task32/P1": [
+      "power_of_attorney",
+      {
+        "mocodawca": [
+          {
+            "data": {
+              "imie_nazwisko": null,
+              "krs": null,
+              "nazwa": "Bursztynowy Splot sp. z o.o.",
+              "nip": null,
+              "typ": "osoba_prawna"
+            },
+            "podpisujacy": []
+          }
+        ],
+        "pelnomocnicy": []
+      }
+    ],
+    "task32/P2": [
+      "power_of_attorney",
+      {
+        "mocodawca": [
+          {
+            "data": {
+              "imie_nazwisko": null,
+              "krs": "0000871593",
+              "nazwa": "Jasny Puch S.A.",
+              "nip": null,
+              "typ": "osoba_prawna"
+            },
+            "podpisujacy": []
+          }
+        ],
+        "pelnomocnicy": [
+          {
+            "imie_nazwisko": "Adama Rybnego",
+            "pesel": null
+          }
+        ]
+      }
+    ],
+    "task32/P3": [
+      "power_of_attorney",
+      {
+        "mocodawca": [
+          {
+            "data": {
+              "imie_nazwisko": null,
+              "krs": null,
+              "nazwa": "Bursztynowy Splot sp. z o.o.",
+              "nip": null,
+              "typ": "osoba_prawna"
+            },
+            "podpisujacy": []
+          }
+        ],
+        "pelnomocnicy": [
+          {
+            "imie_nazwisko": "Iwonie Rytmicznej",
+            "pesel": null
+          }
+        ]
+      }
+    ],
+    "task32/P4": [
+      null,
+      {}
+    ],
+    "task32/C3": [
+      "bank_transfer",
+      {
+        "przelew_bankowy": {
+          "data_operacji": "2026-06-09",
+          "kwota": 782.14,
+          "na_rachunek": null,
+          "numer_transakcji": "QJ684291",
+          "tytul": "Dostawa magnesów",
+          "z_rachunku": null
+        }
+      }
+    ],
+    "task32/CD": [
+      "bank_transfer",
+      {
+        "przelew_bankowy": {
+          "data_operacji": "2026-06-09",
+          "kwota": 782.14,
+          "na_rachunek": "97298300000000000000836412",
+          "numer_transakcji": "QJ684291",
+          "tytul": "Dostawa magnesów",
+          "z_rachunku": "46137900000000000000471362"
+        }
+      }
+    ],
+    "task32/CM": [
+      "bank_transfer",
+      {
+        "przelew_bankowy": {
+          "data_operacji": "2026-06-09",
+          "kwota": 1782.14,
+          "na_rachunek": "97298300000000000000836412",
+          "numer_transakcji": "QJ684291",
+          "tytul": "Dostawa magnesów",
+          "z_rachunku": "46137900000000000000471362"
+        }
+      }
+    ],
+    "task32/C1": [
+      "bank_transfer",
+      {
+        "przelew_bankowy": {
+          "data_operacji": "2026-06-09",
+          "kwota": 782.14,
+          "na_rachunek": "97298300000000000000836412",
+          "numer_transakcji": "QJ684291",
+          "tytul": "Dostawa magnesów",
+          "z_rachunku": "46137900000000000000471362"
+        }
+      }
+    ],
+    "task32/C2": [
+      "bank_transfer",
+      {
+        "przelew_bankowy": {
+          "data_operacji": "2026-06-09",
+          "kwota": 782.14,
+          "na_rachunek": "97298300000000000000836412",
+          "numer_transakcji": "QJ684291",
+          "tytul": "Dostawa magnesów",
+          "z_rachunku": "46137900000000000000471362"
+        }
+      }
+    ],
+    "task32/CB": [
+      "bank_transfer",
+      {
+        "przelew_bankowy": {
+          "data_operacji": "2026-06-09",
+          "kwota": 782.14,
+          "na_rachunek": "97298300000000000000836412",
+          "numer_transakcji": "QJ684291",
+          "tytul": "Dostawa magnesów",
+          "z_rachunku": "46137900000000000000471362"
+        }
+      }
+    ],
+    "task32/CREF": [
+      "bank_transfer",
+      {
+        "przelew_bankowy": {
+          "data_operacji": "2026-06-09",
+          "kwota": 782.14,
+          "na_rachunek": "97298300000000000000836412",
+          "numer_transakcji": "QJ684291",
+          "tytul": "Dostawa magnesów",
+          "z_rachunku": "46137900000000000000471362"
+        }
+      }
+    ],
+    "task32/public-C3": [
+      "bank_transfer",
+      {
+        "przelew_bankowy": {
+          "data_operacji": "2026-06-09",
+          "kwota": 782.14,
+          "na_rachunek": null,
+          "numer_transakcji": "QJ684291",
+          "tytul": "Dostawa magnesów",
+          "z_rachunku": null
+        }
+      }
+    ],
+    "task32/public-CB": [
+      "bank_transfer",
+      {
+        "przelew_bankowy": {
+          "data_operacji": "2026-06-09",
+          "kwota": 782.14,
+          "na_rachunek": "97298300000000000000836412",
+          "numer_transakcji": "QJ684291",
+          "tytul": "Dostawa magnesów",
+          "z_rachunku": "46137900000000000000471362"
+        }
+      }
+    ],
+    "task32/public-CREF": [
+      "bank_transfer",
+      {
+        "przelew_bankowy": {
+          "data_operacji": "2026-06-09",
+          "kwota": 782.14,
+          "na_rachunek": "97298300000000000000836412",
+          "numer_transakcji": "QJ684291",
+          "tytul": "Dostawa magnesów",
+          "z_rachunku": "46137900000000000000471362"
+        }
+      }
+    ],
+    "task32/public-T3": [
+      "bank_transfer",
+      {
+        "przelew_bankowy": {
+          "data_operacji": "2026-06-09",
+          "kwota": 782.14,
+          "na_rachunek": "97298300000000000000836412",
+          "numer_transakcji": "QJ684291",
+          "tytul": "Dostawa magnesów",
+          "z_rachunku": "46137900000000000000471362"
+        }
+      }
+    ],
+    "invented/transfer-reversed-parties": [
+      "bank_transfer",
+      {
+        "przelew_bankowy": {
+          "data_operacji": "2031-02-11",
+          "kwota": 918.73,
+          "na_rachunek": "96481100000000000000942673",
+          "numer_transakcji": "TWQ641803",
+          "tytul": "Próbniki pigmentów",
+          "z_rachunku": "70182600000000000000673815"
+        }
+      }
+    ],
+    "invented/transfer-refund-after-parties": [
+      "bank_transfer",
+      {
+        "przelew_bankowy": {
+          "data_operacji": "2031-02-11",
+          "kwota": 918.73,
+          "na_rachunek": null,
+          "numer_transakcji": "TWQ641803",
+          "tytul": "Próbniki pigmentów",
+          "z_rachunku": null
+        }
+      }
+    ],
+    "invented/transfer-commission-before-parties": [
+      "bank_transfer",
+      {
+        "przelew_bankowy": {
+          "data_operacji": "2031-02-11",
+          "kwota": 918.73,
+          "na_rachunek": null,
+          "numer_transakcji": "TWQ641803",
+          "tytul": "Próbniki pigmentów",
+          "z_rachunku": null
+        }
+      }
+    ],
+    "invented/transfer-booking-date-first": [
+      "bank_transfer",
+      {
+        "przelew_bankowy": {
+          "data_operacji": "2031-02-12",
+          "kwota": 918.73,
+          "na_rachunek": "96481100000000000000942673",
+          "numer_transakcji": "TWQ641803",
+          "tytul": "Próbniki pigmentów",
+          "z_rachunku": "70182600000000000000673815"
+        }
+      }
+    ],
+    "invented/transfer-print-date-first": [
+      "bank_transfer",
+      {
+        "przelew_bankowy": {
+          "data_operacji": "2031-02-11",
+          "kwota": 918.73,
+          "na_rachunek": "96481100000000000000942673",
+          "numer_transakcji": "TWQ641803",
+          "tytul": "Próbniki pigmentów",
+          "z_rachunku": "70182600000000000000673815"
+        }
+      }
+    ],
+    "invented/transfer-negative-debit": [
+      "bank_transfer",
+      {
+        "przelew_bankowy": {
+          "data_operacji": "2031-02-11",
+          "kwota": null,
+          "na_rachunek": "96481100000000000000942673",
+          "numer_transakcji": "TWQ641803",
+          "tytul": "Próbniki pigmentów",
+          "z_rachunku": "70182600000000000000673815"
+        }
+      }
+    ],
+    "invented/transfer-daily-and-explicit": [
+      "bank_transfer",
+      {
+        "przelew_bankowy": {
+          "data_operacji": "2031-02-11",
+          "kwota": 918.73,
+          "na_rachunek": "96481100000000000000942673",
+          "numer_transakcji": "TWQ641803",
+          "tytul": "Próbniki pigmentów",
+          "z_rachunku": "70182600000000000000673815"
+        }
+      }
+    ],
+    "invented/transfer-only-daily": [
+      "bank_transfer",
+      {
+        "przelew_bankowy": {
+          "data_operacji": "2031-02-11",
+          "kwota": 918.73,
+          "na_rachunek": "96481100000000000000942673",
+          "numer_transakcji": null,
+          "tytul": "Próbniki pigmentów",
+          "z_rachunku": "70182600000000000000673815"
+        }
+      }
+    ],
+    "invented/transfer-masked-recipient": [
+      null,
+      {}
+    ],
+    "invented/transfer-masked-payer-with-dashes": [
+      null,
+      {}
+    ],
+    "invented/transfer-both-parties-on-one-row": [
+      "bank_transfer",
+      {
+        "przelew_bankowy": {
+          "data_operacji": "2031-02-11",
+          "kwota": 918.73,
+          "na_rachunek": "96481100000000000000942673",
+          "numer_transakcji": "TWQ641803",
+          "tytul": "Próbniki pigmentów",
+          "z_rachunku": "70182600000000000000673815"
+        }
+      }
+    ],
+    "invented/transfer-amount-label-next-row": [
+      "bank_transfer",
+      {
+        "przelew_bankowy": {
+          "data_operacji": "2031-02-11",
+          "kwota": 918.73,
+          "na_rachunek": "96481100000000000000942673",
+          "numer_transakcji": "TWQ641803",
+          "tytul": "Próbniki pigmentów",
+          "z_rachunku": "70182600000000000000673815"
+        }
+      }
+    ],
+    "invented/transfer-same-number-in-memo": [
+      "bank_transfer",
+      {
+        "przelew_bankowy": {
+          "data_operacji": "2031-02-11",
+          "kwota": 918.73,
+          "na_rachunek": "96481100000000000000942673",
+          "numer_transakcji": "TWQ641803",
+          "tytul": "Próbniki pigmentów",
+          "z_rachunku": "70182600000000000000673815"
+        }
+      }
+    ],
+    "invented/transfer-labelled-separate-fee": [
+      "bank_transfer",
+      {
+        "przelew_bankowy": {
+          "data_operacji": "2031-02-11",
+          "kwota": 918.73,
+          "na_rachunek": "96481100000000000000942673",
+          "numer_transakcji": "TWQ641803",
+          "tytul": "Próbniki pigmentów",
+          "z_rachunku": "70182600000000000000673815"
+        }
+      }
+    ],
+    "invented/transfer-title-wrap": [
+      "bank_transfer",
+      {
+        "przelew_bankowy": {
+          "data_operacji": "2031-02-11",
+          "kwota": 918.73,
+          "na_rachunek": "96481100000000000000942673",
+          "numer_transakcji": "TWQ641803",
+          "tytul": "Próbniki pigmentów",
+          "z_rachunku": "70182600000000000000673815"
+        }
+      }
+    ],
+    "invented/transfer-partial-reference-absent": [
+      "bank_transfer",
+      {
+        "przelew_bankowy": {
+          "data_operacji": "2031-02-11",
+          "kwota": 918.73,
+          "na_rachunek": "96481100000000000000942673",
+          "numer_transakcji": null,
+          "tytul": "Próbniki pigmentów",
+          "z_rachunku": "70182600000000000000673815"
+        }
+      }
+    ],
+    "invented/transfer-value-date-cannot-replace": [
+      "bank_transfer",
+      {
+        "przelew_bankowy": {
+          "data_operacji": "2031-02-11",
+          "kwota": 918.73,
+          "na_rachunek": "96481100000000000000942673",
+          "numer_transakcji": "TWQ641803",
+          "tytul": "Próbniki pigmentów",
+          "z_rachunku": "70182600000000000000673815"
+        }
+      }
+    ],
+    "invented/transfer-interleaved-cells": [
+      "bank_transfer",
+      {
+        "przelew_bankowy": {
+          "data_operacji": null,
+          "kwota": 918.73,
+          "na_rachunek": "96481100000000000000942673",
+          "numer_transakcji": "TWQ641803",
+          "tytul": "Próbniki pigmentów",
+          "z_rachunku": "70182600000000000000673815"
+        }
+      }
+    ],
+    "invented/transfer-pending-status": [
+      null,
+      {}
+    ],
+    "invented/transfer-invoice-with-quoted-receipt": [
+      null,
+      {}
+    ],
+    "invented/grant-plain-title": [
+      "power_of_attorney",
+      {
+        "mocodawca": [
+          {
+            "data": {
+              "imie_nazwisko": null,
+              "krs": null,
+              "nazwa": "Srebrny Kil S.A.",
+              "nip": null,
+              "typ": "osoba_prawna"
+            },
+            "podpisujacy": []
+          }
+        ],
+        "pelnomocnicy": [
+          {
+            "imie_nazwisko": "Oliwie Łagodnej",
+            "pesel": null
+          }
+        ]
+      }
+    ],
+    "invented/grant-numbered-heading": [
+      null,
+      {}
+    ],
+    "invented/grant-wrapped-attorney": [
+      "power_of_attorney",
+      {
+        "mocodawca": [
+          {
+            "data": {
+              "imie_nazwisko": null,
+              "krs": null,
+              "nazwa": "Srebrny Kil S.A.",
+              "nip": null,
+              "typ": "osoba_prawna"
+            },
+            "podpisujacy": []
+          }
+        ],
+        "pelnomocnicy": [
+          {
+            "imie_nazwisko": "Oliwie Łagodnej",
+            "pesel": null
+          }
+        ]
+      }
+    ],
+    "invented/grant-labelled-nominative": [
+      "power_of_attorney",
+      {
+        "mocodawca": [
+          {
+            "data": {
+              "imie_nazwisko": null,
+              "krs": null,
+              "nazwa": "Lniana Baszta sp. z o.o.",
+              "nip": null,
+              "typ": "osoba_prawna"
+            },
+            "podpisujacy": []
+          }
+        ],
+        "pelnomocnicy": []
+      }
+    ],
+    "invented/grant-two-different-appointees": [
+      "power_of_attorney",
+      {
+        "mocodawca": [
+          {
+            "data": {
+              "imie_nazwisko": null,
+              "krs": null,
+              "nazwa": "Srebrny Kil S.A.",
+              "nip": null,
+              "typ": "osoba_prawna"
+            },
+            "podpisujacy": []
+          }
+        ],
+        "pelnomocnicy": []
+      }
+    ],
+    "invented/grant-natural-person-trader": [
+      "power_of_attorney",
+      {
+        "mocodawca": [
+          {
+            "data": {
+              "imie_nazwisko": "Tamara Snopna",
+              "krs": null,
+              "nazwa": "Żwirownia Tamary",
+              "nip": null,
+              "typ": "osoba_fizyczna"
+            },
+            "podpisujacy": []
+          }
+        ],
+        "pelnomocnicy": [
+          {
+            "imie_nazwisko": "Oliwie Łagodnej",
+            "pesel": null
+          }
+        ]
+      }
+    ],
+    "invented/grant-with-ids": [
+      "power_of_attorney",
+      {
+        "mocodawca": [
+          {
+            "data": {
+              "imie_nazwisko": null,
+              "krs": "0000865321",
+              "nazwa": "Srebrny Kil S.A.",
+              "nip": "5863248792",
+              "typ": "osoba_prawna"
+            },
+            "podpisujacy": []
+          }
+        ],
+        "pelnomocnicy": [
+          {
+            "imie_nazwisko": "Oliwie Łagodnej",
+            "pesel": null
+          }
+        ]
+      }
+    ],
+    "invented/grant-other-registrant-after-grant": [
+      "power_of_attorney",
+      {
+        "mocodawca": [
+          {
+            "data": {
+              "imie_nazwisko": null,
+              "krs": null,
+              "nazwa": "Srebrny Kil S.A.",
+              "nip": null,
+              "typ": "osoba_prawna"
+            },
+            "podpisujacy": []
+          }
+        ],
+        "pelnomocnicy": [
+          {
+            "imie_nazwisko": "Oliwie Łagodnej",
+            "pesel": null
+          }
+        ]
+      }
+    ],
+    "invented/grant-explicit-electronic": [
+      "power_of_attorney",
+      {
+        "mocodawca": [
+          {
+            "data": {
+              "imie_nazwisko": null,
+              "krs": null,
+              "nazwa": "Srebrny Kil S.A.",
+              "nip": null,
+              "typ": "osoba_prawna"
+            },
+            "podpisujacy": []
+          }
+        ],
+        "pelnomocnicy": [
+          {
+            "imie_nazwisko": "Oliwie Łagodnej",
+            "pesel": null
+          }
+        ]
+      }
+    ],
+    "invented/grant-explicit-electronic-on-next-row": [
+      "power_of_attorney",
+      {
+        "mocodawca": [
+          {
+            "data": {
+              "imie_nazwisko": null,
+              "krs": null,
+              "nazwa": "Srebrny Kil S.A.",
+              "nip": null,
+              "typ": "osoba_prawna"
+            },
+            "podpisujacy": []
+          }
+        ],
+        "pelnomocnicy": [
+          {
+            "imie_nazwisko": "Oliwie Łagodnej",
+            "pesel": null
+          }
+        ]
+      }
+    ],
+    "invented/grant-unreadable-mark": [
+      "power_of_attorney",
+      {
+        "mocodawca": [
+          {
+            "data": {
+              "imie_nazwisko": null,
+              "krs": null,
+              "nazwa": "Srebrny Kil S.A.",
+              "nip": null,
+              "typ": "osoba_prawna"
+            },
+            "podpisujacy": []
+          }
+        ],
+        "pelnomocnicy": [
+          {
+            "imie_nazwisko": "Oliwie Łagodnej",
+            "pesel": null
+          }
+        ]
+      }
+    ],
+    "invented/grant-contact-after-signature": [
+      "power_of_attorney",
+      {
+        "mocodawca": [
+          {
+            "data": {
+              "imie_nazwisko": null,
+              "krs": null,
+              "nazwa": "Srebrny Kil S.A.",
+              "nip": null,
+              "typ": "osoba_prawna"
+            },
+            "podpisujacy": [
+              {
+                "imie_nazwisko": "Lena Wrzosowa"
+              },
+              {
+                "imie_nazwisko": "Kalina Zwinna"
+              }
+            ]
+          }
+        ],
+        "pelnomocnicy": [
+          {
+            "imie_nazwisko": "Oliwie Łagodnej",
+            "pesel": null
+          }
+        ]
+      }
+    ],
+    "invented/grant-joint-companies": [
+      "power_of_attorney",
+      {
+        "mocodawca": [
+          {
+            "data": {
+              "imie_nazwisko": null,
+              "krs": null,
+              "nazwa": "Lniana Baszta sp. z o.o.",
+              "nip": null,
+              "typ": "osoba_prawna"
+            },
+            "podpisujacy": []
+          },
+          {
+            "data": {
+              "imie_nazwisko": null,
+              "krs": null,
+              "nazwa": "Srebrny Kil S.A.",
+              "nip": null,
+              "typ": "osoba_prawna"
+            },
+            "podpisujacy": []
+          }
+        ],
+        "pelnomocnicy": [
+          {
+            "imie_nazwisko": "Oliwie Łagodnej",
+            "pesel": null
+          }
+        ]
+      }
+    ],
+    "invented/grant-explicit-joint-signatures": [
+      "power_of_attorney",
+      {
+        "mocodawca": [
+          {
+            "data": {
+              "imie_nazwisko": null,
+              "krs": null,
+              "nazwa": "Lniana Baszta sp. z o.o.",
+              "nip": null,
+              "typ": "osoba_prawna"
+            },
+            "podpisujacy": [
+              {
+                "imie_nazwisko": "Leon Piaskowy"
+              }
+            ]
+          },
+          {
+            "data": {
+              "imie_nazwisko": null,
+              "krs": null,
+              "nazwa": "Srebrny Kil S.A.",
+              "nip": null,
+              "typ": "osoba_prawna"
+            },
+            "podpisujacy": [
+              {
+                "imie_nazwisko": "Lena Wrzosowa"
+              }
+            ]
+          }
+        ],
+        "pelnomocnicy": []
+      }
+    ],
+    "invented/grant-deed-with-active-grant": [
+      null,
+      {}
+    ],
+    "invented/grant-deed-mentions-old-grant": [
+      null,
+      {}
+    ],
+    "invented/grant-other-partys-nip": [
+      "power_of_attorney",
+      {
+        "mocodawca": [
+          {
+            "data": {
+              "imie_nazwisko": null,
+              "krs": null,
+              "nazwa": "Srebrny Kil S.A.",
+              "nip": null,
+              "typ": "osoba_prawna"
+            },
+            "podpisujacy": []
+          }
+        ],
+        "pelnomocnicy": [
+          {
+            "imie_nazwisko": "Oliwie Łagodnej",
+            "pesel": null
+          }
+        ]
+      }
+    ],
+    "invented/transfer-currency-before-amount-in-header-row": [
+      "bank_transfer",
+      {
+        "przelew_bankowy": {
+          "data_operacji": "2026-06-09",
+          "kwota": 782.14,
+          "na_rachunek": "97298300000000000000836412",
+          "numer_transakcji": "QJ684291",
+          "tytul": "Dostawa magnesów",
+          "z_rachunku": "46137900000000000000471362"
+        }
+      }
+    ],
+    "invented/transfer-balance-is-not-status": [
+      "bank_transfer",
+      {
+        "przelew_bankowy": {
+          "data_operacji": "2026-06-09",
+          "kwota": 782.14,
+          "na_rachunek": "97298300000000000000836412",
+          "numer_transakcji": "QJ684291",
+          "tytul": "Dostawa magnesów",
+          "z_rachunku": "46137900000000000000471362"
+        }
+      }
+    ],
+    "invented/transfer-negative-clause-in-purpose": [
+      "bank_transfer",
+      {
+        "przelew_bankowy": {
+          "data_operacji": "2026-06-09",
+          "kwota": 782.14,
+          "na_rachunek": "97298300000000000000836412",
+          "numer_transakcji": "QJ684291",
+          "tytul": "Zwrot za usługę, której nie wykonano",
+          "z_rachunku": "46137900000000000000471362"
+        }
+      }
+    ],
+    "invented/transfer-directional-account-labels": [
+      "bank_transfer",
+      {
+        "przelew_bankowy": {
+          "data_operacji": "2026-06-09",
+          "kwota": 782.14,
+          "na_rachunek": null,
+          "numer_transakcji": "QJ684291",
+          "tytul": "Dostawa magnesów",
+          "z_rachunku": null
+        }
+      }
+    ],
+    "task40/execution-with-posting-row": [
+      "bank_transfer",
+      {
+        "przelew_bankowy": {
+          "data_operacji": "2031-07-04",
+          "kwota": 95.2,
+          "na_rachunek": "97298300000000000000836412",
+          "numer_transakcji": "RM937411",
+          "tytul": "Zakup kredy",
+          "z_rachunku": "46137900000000000000471362"
+        }
+      }
+    ],
+    "task40/debit-before-execution": [
+      "bank_transfer",
+      {
+        "przelew_bankowy": {
+          "data_operacji": "2031-07-04",
+          "kwota": 95.2,
+          "na_rachunek": "97298300000000000000836412",
+          "numer_transakcji": "RM937411",
+          "tytul": "Zakup kredy",
+          "z_rachunku": "46137900000000000000471362"
+        }
+      }
+    ],
+    "task40/realization-with-reversed-row": [
+      "bank_transfer",
+      {
+        "przelew_bankowy": {
+          "data_operacji": "2031-07-04",
+          "kwota": 95.2,
+          "na_rachunek": "97298300000000000000836412",
+          "numer_transakcji": "RM937411",
+          "tytul": "Zakup kredy",
+          "z_rachunku": "46137900000000000000471362"
+        }
+      }
+    ],
+    "task40/debit-before-realization": [
+      "bank_transfer",
+      {
+        "przelew_bankowy": {
+          "data_operacji": "2031-07-04",
+          "kwota": 95.2,
+          "na_rachunek": "97298300000000000000836412",
+          "numer_transakcji": "RM937411",
+          "tytul": "Zakup kredy",
+          "z_rachunku": "46137900000000000000471362"
+        }
+      }
+    ],
+    "task40/paid": [
+      "bank_transfer",
+      {
+        "przelew_bankowy": {
+          "data_operacji": "2031-07-04",
+          "kwota": 95.2,
+          "na_rachunek": "97298300000000000000836412",
+          "numer_transakcji": "RM937411",
+          "tytul": "Zakup kredy",
+          "z_rachunku": "46137900000000000000471362"
+        }
+      }
+    ],
+    "task40/finished": [
+      "bank_transfer",
+      {
+        "przelew_bankowy": {
+          "data_operacji": "2031-07-04",
+          "kwota": 95.2,
+          "na_rachunek": "97298300000000000000836412",
+          "numer_transakcji": "RM937411",
+          "tytul": "Zakup kredy",
+          "z_rachunku": "46137900000000000000471362"
+        }
+      }
+    ],
+    "task40/settled": [
+      "bank_transfer",
+      {
+        "przelew_bankowy": {
+          "data_operacji": "2031-07-04",
+          "kwota": 95.2,
+          "na_rachunek": "97298300000000000000836412",
+          "numer_transakcji": "RM937411",
+          "tytul": "Zakup kredy",
+          "z_rachunku": "46137900000000000000471362"
+        }
+      }
+    ],
+    "task40/completed": [
+      "bank_transfer",
+      {
+        "przelew_bankowy": {
+          "data_operacji": "2031-07-04",
+          "kwota": 95.2,
+          "na_rachunek": "97298300000000000000836412",
+          "numer_transakcji": "RM937411",
+          "tytul": "Zakup kredy",
+          "z_rachunku": "46137900000000000000471362"
+        }
+      }
+    ],
+    "task40/conditional": [
+      "bank_transfer",
+      {
+        "przelew_bankowy": {
+          "data_operacji": "2031-07-04",
+          "kwota": 95.2,
+          "na_rachunek": "97298300000000000000836412",
+          "numer_transakcji": "RM937411",
+          "tytul": "Zakup kredy",
+          "z_rachunku": "46137900000000000000471362"
+        }
+      }
+    ],
+    "task40/prior": [
+      "bank_transfer",
+      {
+        "przelew_bankowy": {
+          "data_operacji": "2031-07-04",
+          "kwota": 95.2,
+          "na_rachunek": "97298300000000000000836412",
+          "numer_transakcji": "RM937411",
+          "tytul": "Zakup kredy",
+          "z_rachunku": "46137900000000000000471362"
+        }
+      }
+    ],
+    "task40/complaints": [
+      "bank_transfer",
+      {
+        "przelew_bankowy": {
+          "data_operacji": "2031-07-04",
+          "kwota": 95.2,
+          "na_rachunek": "97298300000000000000836412",
+          "numer_transakcji": "RM937411",
+          "tytul": "Zakup kredy",
+          "z_rachunku": "46137900000000000000471362"
+        }
+      }
+    ],
+    "task40/question": [
+      "bank_transfer",
+      {
+        "przelew_bankowy": {
+          "data_operacji": "2031-07-04",
+          "kwota": 95.2,
+          "na_rachunek": "97298300000000000000836412",
+          "numer_transakcji": "RM937411",
+          "tytul": "Zakup kredy",
+          "z_rachunku": "46137900000000000000471362"
+        }
+      }
+    ],
+    "simple/receipt-01": [
+      "bank_transfer",
+      {
+        "przelew_bankowy": {
+          "data_operacji": "2032-05-01",
+          "kwota": 21.15,
+          "na_rachunek": "97298300000000000000836412",
+          "numer_transakcji": "WL731000",
+          "tytul": null,
+          "z_rachunku": "46137900000000000000471362"
+        }
+      }
+    ],
+    "simple/receipt-02": [
+      "bank_transfer",
+      {
+        "przelew_bankowy": {
+          "data_operacji": "2032-05-02",
+          "kwota": 22.15,
+          "na_rachunek": "97298300000000000000836412",
+          "numer_transakcji": null,
+          "tytul": "Zakup linijek",
+          "z_rachunku": "46137900000000000000471362"
+        }
+      }
+    ],
+    "simple/receipt-03": [
+      "bank_transfer",
+      {
+        "przelew_bankowy": {
+          "data_operacji": null,
+          "kwota": 23.15,
+          "na_rachunek": "97298300000000000000836412",
+          "numer_transakcji": "WL731002",
+          "tytul": "Zakup linijek",
+          "z_rachunku": "46137900000000000000471362"
+        }
+      }
+    ],
+    "simple/receipt-04": [
+      "bank_transfer",
+      {
+        "przelew_bankowy": {
+          "data_operacji": "2032-05-04",
+          "kwota": null,
+          "na_rachunek": "97298300000000000000836412",
+          "numer_transakcji": "WL731003",
+          "tytul": "Zakup linijek",
+          "z_rachunku": "46137900000000000000471362"
+        }
+      }
+    ],
+    "simple/receipt-05": [
+      "bank_transfer",
+      {
+        "przelew_bankowy": {
+          "data_operacji": "2032-05-05",
+          "kwota": 25.15,
+          "na_rachunek": "97298300000000000000836412",
+          "numer_transakcji": "WL731004",
+          "tytul": "Zakup linijek",
+          "z_rachunku": "46137900000000000000471362"
+        }
+      }
+    ],
+    "simple/receipt-06": [
+      "bank_transfer",
+      {
+        "przelew_bankowy": {
+          "data_operacji": "2032-05-06",
+          "kwota": 26.15,
+          "na_rachunek": "97298300000000000000836412",
+          "numer_transakcji": "WL731005",
+          "tytul": null,
+          "z_rachunku": "46137900000000000000471362"
+        }
+      }
+    ],
+    "simple/receipt-07": [
+      "bank_transfer",
+      {
+        "przelew_bankowy": {
+          "data_operacji": "2032-05-07",
+          "kwota": 27.15,
+          "na_rachunek": "97298300000000000000836412",
+          "numer_transakcji": null,
+          "tytul": "Zakup linijek",
+          "z_rachunku": "46137900000000000000471362"
+        }
+      }
+    ],
+    "simple/receipt-08": [
+      "bank_transfer",
+      {
+        "przelew_bankowy": {
+          "data_operacji": null,
+          "kwota": 28.15,
+          "na_rachunek": "97298300000000000000836412",
+          "numer_transakcji": "WL731007",
+          "tytul": "Zakup linijek",
+          "z_rachunku": "46137900000000000000471362"
+        }
+      }
+    ],
+    "simple/receipt-09": [
+      "bank_transfer",
+      {
+        "przelew_bankowy": {
+          "data_operacji": "2032-05-09",
+          "kwota": null,
+          "na_rachunek": "97298300000000000000836412",
+          "numer_transakcji": "WL731008",
+          "tytul": "Zakup linijek",
+          "z_rachunku": "46137900000000000000471362"
+        }
+      }
+    ],
+    "simple/receipt-10": [
+      "bank_transfer",
+      {
+        "przelew_bankowy": {
+          "data_operacji": "2032-05-10",
+          "kwota": 30.15,
+          "na_rachunek": "97298300000000000000836412",
+          "numer_transakcji": "WL731009",
+          "tytul": "Zakup linijek",
+          "z_rachunku": "46137900000000000000471362"
+        }
+      }
+    ],
+    "simple/receipt-11": [
+      "bank_transfer",
+      {
+        "przelew_bankowy": {
+          "data_operacji": "2032-05-11",
+          "kwota": 31.15,
+          "na_rachunek": "97298300000000000000836412",
+          "numer_transakcji": "WL731010",
+          "tytul": null,
+          "z_rachunku": "46137900000000000000471362"
+        }
+      }
+    ],
+    "simple/receipt-12": [
+      "bank_transfer",
+      {
+        "przelew_bankowy": {
+          "data_operacji": "2032-05-12",
+          "kwota": 32.15,
+          "na_rachunek": "97298300000000000000836412",
+          "numer_transakcji": null,
+          "tytul": "Zakup linijek",
+          "z_rachunku": "46137900000000000000471362"
+        }
+      }
+    ],
+    "simple/receipt-13": [
+      "bank_transfer",
+      {
+        "przelew_bankowy": {
+          "data_operacji": null,
+          "kwota": 33.15,
+          "na_rachunek": "97298300000000000000836412",
+          "numer_transakcji": "WL731012",
+          "tytul": "Zakup linijek",
+          "z_rachunku": "46137900000000000000471362"
+        }
+      }
+    ],
+    "simple/receipt-14": [
+      "bank_transfer",
+      {
+        "przelew_bankowy": {
+          "data_operacji": "2032-05-14",
+          "kwota": null,
+          "na_rachunek": "97298300000000000000836412",
+          "numer_transakcji": "WL731013",
+          "tytul": "Zakup linijek",
+          "z_rachunku": "46137900000000000000471362"
+        }
+      }
+    ],
+    "simple/receipt-15": [
+      "bank_transfer",
+      {
+        "przelew_bankowy": {
+          "data_operacji": "2032-05-15",
+          "kwota": 35.15,
+          "na_rachunek": "97298300000000000000836412",
+          "numer_transakcji": "WL731014",
+          "tytul": "Zakup linijek",
+          "z_rachunku": "46137900000000000000471362"
+        }
+      }
+    ],
+    "simple/grant-01": [
+      "power_of_attorney",
+      {
+        "mocodawca": [
+          {
+            "data": {
+              "imie_nazwisko": null,
+              "krs": "0000841237",
+              "nazwa": "Sosnowy Rulon S.A.",
+              "nip": null,
+              "typ": "osoba_prawna"
+            },
+            "podpisujacy": []
+          }
+        ],
+        "pelnomocnicy": [
+          {
+            "imie_nazwisko": "Ewie Warstwowej",
+            "pesel": null
+          }
+        ]
+      }
+    ],
+    "simple/grant-02": [
+      "power_of_attorney",
+      {
+        "mocodawca": [
+          {
+            "data": {
+              "imie_nazwisko": null,
+              "krs": null,
+              "nazwa": "Stromy Szlak sp. z o.o.",
+              "nip": "7831846213",
+              "typ": "osoba_prawna"
+            },
+            "podpisujacy": []
+          }
+        ],
+        "pelnomocnicy": [
+          {
+            "imie_nazwisko": "Janowi Kredowemu",
+            "pesel": null
+          }
+        ]
+      }
+    ],
+    "simple/grant-03": [
+      "power_of_attorney",
+      {
+        "mocodawca": [
+          {
+            "data": {
+              "imie_nazwisko": null,
+              "krs": "0000841237",
+              "nazwa": "Barwna Sonda S.A.",
+              "nip": null,
+              "typ": "osoba_prawna"
+            },
+            "podpisujacy": []
+          }
+        ],
+        "pelnomocnicy": [
+          {
+            "imie_nazwisko": "Idzie Płaskiej",
+            "pesel": "92110714869"
+          }
+        ]
+      }
+    ],
+    "simple/grant-04": [
+      "power_of_attorney",
+      {
+        "mocodawca": [
+          {
+            "data": {
+              "imie_nazwisko": null,
+              "krs": "0000841237",
+              "nazwa": "Sosnowy Rulon S.A.",
+              "nip": "7831846213",
+              "typ": "osoba_prawna"
+            },
+            "podpisujacy": []
+          }
+        ],
+        "pelnomocnicy": [
+          {
+            "imie_nazwisko": "Ewie Warstwowej",
+            "pesel": null
+          }
+        ]
+      }
+    ],
+    "simple/grant-05": [
+      "power_of_attorney",
+      {
+        "mocodawca": [
+          {
+            "data": {
+              "imie_nazwisko": null,
+              "krs": "0000841237",
+              "nazwa": "Stromy Szlak sp. z o.o.",
+              "nip": null,
+              "typ": "osoba_prawna"
+            },
+            "podpisujacy": [
+              {
+                "imie_nazwisko": "Olga Drobna"
+              }
+            ]
+          }
+        ],
+        "pelnomocnicy": [
+          {
+            "imie_nazwisko": "Janowi Kredowemu",
+            "pesel": null
+          }
+        ]
+      }
+    ],
+    "simple/grant-06": [
+      "power_of_attorney",
+      {
+        "mocodawca": [
+          {
+            "data": {
+              "imie_nazwisko": null,
+              "krs": "0000841237",
+              "nazwa": "Barwna Sonda S.A.",
+              "nip": null,
+              "typ": "osoba_prawna"
+            },
+            "podpisujacy": []
+          }
+        ],
+        "pelnomocnicy": [
+          {
+            "imie_nazwisko": "Idzie Płaskiej",
+            "pesel": null
+          }
+        ]
+      }
+    ],
+    "simple/grant-07": [
+      "power_of_attorney",
+      {
+        "mocodawca": [
+          {
+            "data": {
+              "imie_nazwisko": null,
+              "krs": null,
+              "nazwa": "Sosnowy Rulon S.A.",
+              "nip": "7831846213",
+              "typ": "osoba_prawna"
+            },
+            "podpisujacy": []
+          }
+        ],
+        "pelnomocnicy": [
+          {
+            "imie_nazwisko": "Ewie Warstwowej",
+            "pesel": null
+          }
+        ]
+      }
+    ],
+    "simple/grant-08": [
+      "power_of_attorney",
+      {
+        "mocodawca": [
+          {
+            "data": {
+              "imie_nazwisko": null,
+              "krs": "0000841237",
+              "nazwa": "Stromy Szlak sp. z o.o.",
+              "nip": null,
+              "typ": "osoba_prawna"
+            },
+            "podpisujacy": []
+          }
+        ],
+        "pelnomocnicy": [
+          {
+            "imie_nazwisko": "Janowi Kredowemu",
+            "pesel": "92110714869"
+          }
+        ]
+      }
+    ],
+    "simple/grant-09": [
+      "power_of_attorney",
+      {
+        "mocodawca": [
+          {
+            "data": {
+              "imie_nazwisko": null,
+              "krs": "0000841237",
+              "nazwa": "Barwna Sonda S.A.",
+              "nip": "7831846213",
+              "typ": "osoba_prawna"
+            },
+            "podpisujacy": []
+          }
+        ],
+        "pelnomocnicy": [
+          {
+            "imie_nazwisko": "Idzie Płaskiej",
+            "pesel": null
+          }
+        ]
+      }
+    ],
+    "simple/grant-10": [
+      "power_of_attorney",
+      {
+        "mocodawca": [
+          {
+            "data": {
+              "imie_nazwisko": null,
+              "krs": "0000841237",
+              "nazwa": "Sosnowy Rulon S.A.",
+              "nip": null,
+              "typ": "osoba_prawna"
+            },
+            "podpisujacy": [
+              {
+                "imie_nazwisko": "Olga Drobna"
+              }
+            ]
+          }
+        ],
+        "pelnomocnicy": [
+          {
+            "imie_nazwisko": "Ewie Warstwowej",
+            "pesel": null
+          }
+        ]
+      }
+    ],
+    "simple/grant-11": [
+      "power_of_attorney",
+      {
+        "mocodawca": [
+          {
+            "data": {
+              "imie_nazwisko": null,
+              "krs": "0000841237",
+              "nazwa": "Stromy Szlak sp. z o.o.",
+              "nip": null,
+              "typ": "osoba_prawna"
+            },
+            "podpisujacy": []
+          }
+        ],
+        "pelnomocnicy": [
+          {
+            "imie_nazwisko": "Janowi Kredowemu",
+            "pesel": null
+          }
+        ]
+      }
+    ],
+    "simple/grant-12": [
+      "power_of_attorney",
+      {
+        "mocodawca": [
+          {
+            "data": {
+              "imie_nazwisko": null,
+              "krs": null,
+              "nazwa": "Barwna Sonda S.A.",
+              "nip": "7831846213",
+              "typ": "osoba_prawna"
+            },
+            "podpisujacy": []
+          }
+        ],
+        "pelnomocnicy": [
+          {
+            "imie_nazwisko": "Idzie Płaskiej",
+            "pesel": null
+          }
+        ]
+      }
+    ],
+    "simple/grant-13": [
+      "power_of_attorney",
+      {
+        "mocodawca": [
+          {
+            "data": {
+              "imie_nazwisko": null,
+              "krs": "0000841237",
+              "nazwa": "Sosnowy Rulon S.A.",
+              "nip": null,
+              "typ": "osoba_prawna"
+            },
+            "podpisujacy": []
+          }
+        ],
+        "pelnomocnicy": [
+          {
+            "imie_nazwisko": "Ewie Warstwowej",
+            "pesel": "92110714869"
+          }
+        ]
+      }
+    ],
+    "simple/grant-14": [
+      "power_of_attorney",
+      {
+        "mocodawca": [
+          {
+            "data": {
+              "imie_nazwisko": null,
+              "krs": "0000841237",
+              "nazwa": "Stromy Szlak sp. z o.o.",
+              "nip": "7831846213",
+              "typ": "osoba_prawna"
+            },
+            "podpisujacy": []
+          }
+        ],
+        "pelnomocnicy": [
+          {
+            "imie_nazwisko": "Janowi Kredowemu",
+            "pesel": null
+          }
+        ]
+      }
+    ],
+    "simple/grant-15": [
+      "power_of_attorney",
+      {
+        "mocodawca": [
+          {
+            "data": {
+              "imie_nazwisko": null,
+              "krs": "0000841237",
+              "nazwa": "Barwna Sonda S.A.",
+              "nip": null,
+              "typ": "osoba_prawna"
+            },
+            "podpisujacy": [
+              {
+                "imie_nazwisko": "Olga Drobna"
+              }
+            ]
+          }
+        ],
+        "pelnomocnicy": [
+          {
+            "imie_nazwisko": "Idzie Płaskiej",
+            "pesel": null
+          }
+        ]
+      }
+    ]
+  }
+}

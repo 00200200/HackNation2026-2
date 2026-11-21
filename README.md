@@ -224,7 +224,8 @@ of how the rules generalize. The hidden test set holds real cases, and this is n
 
 A separate native-text differential test compares the class and serialized fields of 175 invented PDFs
 with a snapshot from integration base `3210643`. It includes 135 review cases and 40 additional
-documents. [Fixtures and regeneration command](tests/snapshots/README.md)
+documents. The grant and transfer suite replays 279 invented PDFs against integration base `e051dfa`. Each
+permitted field change records the original value, its replacement and a reason. [Fixtures and regeneration command](tests/snapshots/README.md)
 
 Forced OCR on all 196 training PDFs (307 rendered pages) gave strict field F1 **0.900**
 with automatic source resolution and **0.884** with explicit 300 dpi. The comparison used the rules recorded in the measurement file. To run the
@@ -255,26 +256,34 @@ the interpreter. The six unrelated documents contribute routing outcomes. No pri
 were scored for this comparison.
 
 The default engine was measured again after the extraction rules began tracking page sources.
-The real-dev result is in [the corpus report](evals/results/corpus-latest.json). The
+The result for those frozen extraction rules is in [the corpus report](evals/results/corpus-latest.json). The
 `provenance_check` entry records the paired native-text and forced-OCR checks on the same
 rules. [OCR results](evals/results/ocr-engines.json)
 
 ## Known limits
 
-- The rules follow the two layout families in the training data. `input/case1` holds the
+- Appeal extraction follows the two layout families in the training data. `input/case1` holds the
   organizer's one real, redacted, scanned appeal, which has a different layout. For that file
   the extractor finds the class, filing date, place, procurement reference, BZP number and title.
   The appellant name contains OCR noise. The contracting-authority list is empty and the challenged
   action is missing. The organizer supplies no reference JSON for this file.
-- OCR can still lose accented letters, split a notice number or reorder columns. Scans with a
-  noisy but nonempty text layer follow the native-text path. A Polish account containing OCR
-  glyphs is repaired only if a unique candidate passes the IBAN mod-97 check. A fully printed
-  digit string is retained as read, including when the printed checksum is invalid. Ambiguous
-  signatures and e-mail addresses can remain missing.
-- On a scanned receipt, the single-account route needs a confirmation heading, a transaction amount and date,
-  and two explicitly labelled accounts. One must show a mask (asterisks, Xs or a dash) and the other a checksum-valid number.
-  The classifier passes the labelled account evidence to the extractor. A repeated number elsewhere in the text cannot fill a masked role. Unlabelled or conflicting roles can leave account fields empty.
-- OCR can recover a signer from a signature caption, a signature line in the grantor’s block, or a closing name with a representation title directly beneath the grant. Ambiguous roles can leave a signer out. Attorney names retain the grammatical case used in the document.
+- Receipt routing uses evidence that a payment was executed, its amount or date, and the participating
+  accounts. A booking table or bank letter needs both an amount and a date. The extractor binds payer
+  and payee separately from fee and refund accounts. Explicit operation or execution dates and transaction IDs take
+  precedence over posting dates and daily sequence numbers. An unclear role or conflicting value can
+  leave a field empty.
+- First-page word positions can recover fields whose labels and values occupy different rows or columns.
+  OCR can still split a title or change an amount. For an unrouted scan with confirmation and transaction
+  evidence, the default engine can reread the first page at automatic resolution. Conflicting dates,
+  amounts or transaction IDs prevent that retry from supplying a result.
+- A partially masked account can identify a payment role when its field is explicit, the other account
+  passes the Polish IBAN checksum, and the confirmation supplies the amount and date. The masked number
+  is null. OCR also supports fully masked fields. Digit repairs apply only to OCR text and require a
+  single checksum-valid candidate. A number printed in a native text layer keeps its printed digits.
+- Grant extraction handles numbered or bulleted declarations and current appointments in notarial deeds.
+  A signer's name needs an identifiable owner and evidence of signing. A labelled nominative can resolve
+  an inflected appointee when the identity is unambiguous. Unreadable signatures and ambiguous identities
+  can leave fields empty.
 - UNCONFIRMED: what "empty JSON" means for unrelated documents. We write an empty file, as the
   organizer README words it.
 - UNCONFIRMED: value types. `pesel` is a number in the organizer's annotated example and a string

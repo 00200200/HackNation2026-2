@@ -29,3 +29,24 @@ git worktree remove "$snapshot_root/base"
 ```
 
 Run `uv run pytest -q tests/test_native_snapshot.py` to compare the current pipeline against the recorded outputs. Test collection reads only the committed JSON and Python files.
+
+## Grant and transfer differential
+
+`tests/test_grant_transfer_differential.py` also replays the 175 native cases above, the ten layouts and eleven controls from review 32, and 41 additional synthetic grant or transfer cases, 12 execution-date, status and notice cases from review 40, and 30 plain-label receipts and grants. The 42 review-40 and plain-label cases require exact base output. A positioned page in `grant_transfer_cases.json` contains rows of `[x, text]` cells so two-column fixtures pass through actual PDF word extraction. The expected class and entire output for each of the 104 extra documents are recorded in `grant_transfer_outputs.json`.
+
+The test's `INTENDED_CHANGES` table gives a case ID, field path, exact base and expected values, and evidence for each change. A list insertion preserves existing entries. The native snapshot test consults the same table and retains the serialized comparison and OCR-provenance checks. The base recording includes the original outputs for all 175 cases.
+
+Generate the extra snapshot from the feature worktree root with the pinned integration commit. The generator replays all 279 PDFs and checks the original 175 outputs against their existing snapshot before writing the extra results.
+
+```sh
+src=$PWD
+snapshot_root=$(mktemp -d)
+git worktree add --detach "$snapshot_root/base" e051dfa11cde0139fdd75e3f104bbe74ffb0f6ca
+(
+  cd "$snapshot_root/base" &&
+  PYTHONPATH="$PWD:$src/tests" uv run --frozen python -m snapshots.generate_grant_transfer > "$snapshot_root/extra.json"
+) && cp "$snapshot_root/extra.json" "$src/tests/snapshots/grant_transfer_outputs.json"
+git worktree remove "$snapshot_root/base"
+```
+
+Run `uv run pytest -q tests/test_grant_transfer_differential.py tests/test_native_snapshot.py` to exercise both comparisons.
