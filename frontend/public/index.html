@@ -1,0 +1,91 @@
+<!doctype html>
+<html lang="pl">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>doc2json</title>
+  <meta name="description" content="PDF-y sprawy odwoławczej KIO zamienione na JSON w schemacie Urzędu Zamówień Publicznych.">
+  <link rel="icon" href="logo-mark.svg" type="image/svg+xml">
+  <link rel="preload" href="fonts/geist-latin.woff2" as="font" type="font/woff2" crossorigin>
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+  <svg width="0" height="0" class="sprite" aria-hidden="true">
+    <symbol id="mark" viewBox="0 0 64 64">
+      <rect width="64" height="64" rx="15" class="mark-bg"/>
+      <g class="mark-fg" fill="none" stroke-width="4.5" stroke-linecap="round" stroke-linejoin="round">
+        <path d="M24 15c-4.5 0-5.5 2-5.5 6v6c0 3-1.5 5-4.5 5 3 0 4.5 2 4.5 5v6c0 4 1 6 5.5 6"/>
+        <path d="M40 15c4.5 0 5.5 2 5.5 6v6c0 3 1.5 5 4.5 5-3 0-4.5 2-4.5 5v6c0 4-1 6-5.5 6"/>
+        <path d="M28 27h8M28 37h5"/>
+      </g>
+    </symbol>
+  </svg>
+
+  <div class="dark">
+    <header class="bar wrap">
+      <a class="brand" href="#" aria-label="doc2json">
+        <svg class="brand-mark"><use href="#mark"/></svg>
+        <span>doc2json</span>
+      </a>
+      <a class="nav-link" href="https://github.com/00200200/HackNation2026-2">GitHub</a>
+    </header>
+
+    <section class="hero wrap" aria-labelledby="hero-title">
+      <h1 id="hero-title" class="hero-title"><span class="brace" aria-hidden="true">{</span>doc2json<span class="brace" aria-hidden="true">}</span></h1>
+      <p class="lead">PDF-y sprawy KIO na JSON w schemacie UZP.</p>
+
+      <div class="app" id="app">
+        <form class="drop" id="drop">
+          <input type="file" id="files" accept="application/pdf,.pdf" multiple hidden>
+          <div class="drop-empty" id="drop-empty">
+            <svg class="drop-icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 15V4m0 0L7.5 8.5M12 4l4.5 4.5M5 15v4h14v-4" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+            <p class="drop-title">Upuść PDF-y sprawy</p>
+            <p class="drop-hint">Odwołanie, pełnomocnictwo, przelew. W dowolnej kolejności.</p>
+            <button type="button" class="btn btn-light" id="pick">Wybierz pliki</button>
+          </div>
+          <div class="drop-files" id="drop-files" hidden>
+            <ul class="file-list" id="file-list"></ul>
+            <div class="drop-actions">
+              <button type="button" class="btn btn-ghost" id="add">Dodaj pliki</button>
+              <button type="button" class="btn btn-ghost" id="clear">Wyczyść</button>
+            </div>
+          </div>
+        </form>
+
+        <div class="out">
+          <div class="out-head">
+            <span id="out-name">odwolanie.json</span>
+            <span class="out-tools">
+              <span class="tag" id="out-tag">Przykład</span>
+              <button type="button" class="icon-btn" id="copy" aria-label="Kopiuj JSON" title="Kopiuj JSON" hidden>
+                <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M9 9h10v10H9zM5 15V5h10" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linejoin="round"/></svg>
+              </button>
+              <button type="button" class="icon-btn" id="download" aria-label="Pobierz plik JSON" title="Pobierz .json" hidden>
+                <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 4v11m0 0l-4.5-4.5M12 15l4.5-4.5M5 19h14" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+              </button>
+            </span>
+          </div>
+          <p class="notice" id="notice" role="status" hidden></p>
+          <pre class="json" id="out"><code id="out-code"><span class="j">{</span>
+<span class="j">  <k>"OdwolanieKIO"</k>: {</span>
+<span class="j">    <k>"data"</k>: <s>"2026-03-14"</s>,</span>
+<span class="j">    <k>"miejscowosc"</k>: <s>"Gdańsk"</s></span>
+<span class="j">  },</span>
+<span class="j">  <k>"Odwolujacy"</k>: [{</span>
+<span class="j">    <k>"nazwa"</k>: <s>"Alfa Budowa sp. z o.o."</s>,</span>
+<span class="j">    <k>"krs"</k>: <s>"0000123456"</s>,</span>
+<span class="j">    <k>"nip"</k>: <n>null</n></span>
+<span class="j">  }],</span>
+<span class="j">  <k>"ZamowieniePubliczne"</k>: {</span>
+<span class="j">    <k>"numer_bzp"</k>: <s>"2026/BZP00012345"</s></span>
+<span class="j">  }</span>
+<span class="j">}</span></code></pre>
+        </div>
+      </div>
+      <p class="app-note" id="app-note">Po prawej przykład z fikcyjnymi danymi.</p>
+    </section>
+  </div>
+
+  <script src="app.js" defer></script>
+</body>
+</html>
