@@ -1,0 +1,166 @@
+{
+  "profile": "Bundled rules with KIO_LLM_BASE_URL, KIO_LLM_MODEL and KIO_LLM_API_KEY unset; default Tesseract at explicit 300 DPI.",
+  "method": "The corpus harness staged neutral PDF names and ran the batch CLI. Seconds per PDF divides elapsed CLI wall time by the number of documents. The two real development batches ran concurrently on a shared host. A correct negative requires a zero-byte output.",
+  "corpus_1_dev": {
+    "commit": "d177cbc7854a17d9a27e49dd79e9420d8eccd1f9",
+    "dirty": false,
+    "mode": "corpus",
+    "timestamp": "2026-11-21T18:49:13+00:00",
+    "n_cases": 14,
+    "n_docs": 22,
+    "coverage_ok": false,
+    "overall_pass": false,
+    "run_error": null,
+    "metrics": {
+      "micro_f1": {
+        "value": 0.697286012526096,
+        "target": 0.9,
+        "pass": false
+      },
+      "outputs_complete": {
+        "value": 1.0,
+        "target": 1.0,
+        "pass": true
+      },
+      "negatives_empty": {
+        "value": 1.0,
+        "target": 1.0,
+        "pass": true
+      },
+      "classification_accuracy": {
+        "value": 0.8666666666666667,
+        "target": 1.0,
+        "pass": false
+      },
+      "seconds_per_doc": {
+        "value": 6.686954505678097,
+        "target": null,
+        "pass": true
+      }
+    },
+    "detail": {
+      "micro_f1": 0.697286012526096,
+      "macro_f1_documents": 0.63018163165222,
+      "macro_f1_classes": 0.6627995248684905,
+      "macro_f1_class_count": 3,
+      "macro_f1_fields": 0.6746031746031745,
+      "micro_f1_non_null": 0.5723270440251572,
+      "per_class_f1": {
+        "odwolanie": 0.7055702917771883,
+        "pelnomocnictwo": 0.7272727272727273,
+        "przelew": 0.5555555555555556
+      },
+      "classification_accuracy": 0.8666666666666667,
+      "negatives_empty": 1.0,
+      "outputs_complete": 1.0,
+      "counts": {
+        "tp": 167,
+        "fp": 65,
+        "fn": 80
+      },
+      "routing_by_class": {
+        "odwolanie": {
+          "correct": 8,
+          "total": 8
+        },
+        "pelnomocnictwo": {
+          "correct": 3,
+          "total": 3
+        },
+        "przelew": {
+          "correct": 2,
+          "total": 4
+        },
+        "negatywny": {
+          "correct": 7,
+          "total": 7
+        }
+      }
+    },
+    "holdout_51_60": null,
+    "f1_definition": "evals/metrics.py docstring (organizer formula UNCONFIRMED)",
+    "split": "dev"
+  },
+  "corpus_2_dev": {
+    "commit": "d177cbc7854a17d9a27e49dd79e9420d8eccd1f9",
+    "dirty": false,
+    "mode": "corpus",
+    "timestamp": "2026-11-21T18:49:17+00:00",
+    "n_cases": 14,
+    "n_docs": 39,
+    "coverage_ok": false,
+    "overall_pass": false,
+    "run_error": null,
+    "metrics": {
+      "micro_f1": {
+        "value": 0.5248447204968945,
+        "target": 0.9,
+        "pass": false
+      },
+      "outputs_complete": {
+        "value": 1.0,
+        "target": 1.0,
+        "pass": true
+      },
+      "negatives_empty": {
+        "value": 1.0,
+        "target": 1.0,
+        "pass": true
+      },
+      "classification_accuracy": {
+        "value": 0.6071428571428571,
+        "target": 1.0,
+        "pass": false
+      },
+      "seconds_per_doc": {
+        "value": 3.6084908835398846,
+        "target": null,
+        "pass": true
+      }
+    },
+    "detail": {
+      "micro_f1": 0.5248447204968945,
+      "macro_f1_documents": 0.3430006757195697,
+      "macro_f1_classes": 0.3618796662274923,
+      "macro_f1_class_count": 3,
+      "macro_f1_fields": 0.46520282186948847,
+      "micro_f1_non_null": 0.3719806763285024,
+      "per_class_f1": {
+        "odwolanie": 0.6007905138339921,
+        "pelnomocnictwo": 0.3333333333333333,
+        "przelew": 0.15151515151515152
+      },
+      "classification_accuracy": 0.6071428571428571,
+      "negatives_empty": 1.0,
+      "outputs_complete": 1.0,
+      "counts": {
+        "tp": 169,
+        "fp": 81,
+        "fn": 225
+      },
+      "routing_by_class": {
+        "odwolanie": {
+          "correct": 12,
+          "total": 13
+        },
+        "pelnomocnictwo": {
+          "correct": 4,
+          "total": 5
+        },
+        "przelew": {
+          "correct": 1,
+          "total": 10
+        },
+        "negatywny": {
+          "correct": 11,
+          "total": 11
+        }
+      }
+    },
+    "holdout_51_60": null,
+    "f1_definition": "evals/metrics.py docstring (organizer formula UNCONFIRMED)",
+    "split": "dev"
+  },
+  "organizer_revision": "0b360a9da4b482a6a280696df6714404e0953505",
+  "organizer_scans_report": "organizer-scans.json"
+}

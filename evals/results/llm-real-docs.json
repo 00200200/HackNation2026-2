@@ -1,0 +1,2007 @@
+{
+  "measurement_date": "2026-11-21",
+  "frozen_measurement_commit": "d288af1cb1c9f4acdc8d5125d25e3dc6ee6b78cd",
+  "integration_commit": "e051dfa",
+  "selected": {
+    "mode": "LR",
+    "routing": "fallback",
+    "dual_ocr": true,
+    "submission_profile": "Flash",
+    "development_model": "deepseek-flash",
+    "submission_host": "EU/EEA deployment, provider performance unmeasured",
+    "measured_alternative": "deepseek-v4-pro",
+    "page_count": 3,
+    "text_bytes": 16384
+  },
+  "dev": {
+    "cases": 14,
+    "pdfs": 22,
+    "positives": 15,
+    "unrelated": 7,
+    "deepseek_v4_pro": [
+      {
+        "mode": "R",
+        "routing": "rules",
+        "micro_f1": 0.43564356435643564,
+        "macro_f1_classes": 0.29800012778736185,
+        "per_class_f1": {
+          "odwolanie": 0.46846846846846846,
+          "pelnomocnictwo": 0.425531914893617,
+          "przelew": 0.0
+        },
+        "micro_f1_non_null": 0.2792452830188679,
+        "classification_accuracy": 0.6666666666666666,
+        "negatives_empty": 1.0,
+        "outputs_complete": 1.0,
+        "routing_confusion": {
+          "negatywny": {
+            "negatywny": 7
+          },
+          "odwolanie": {
+            "odwolanie": 8
+          },
+          "pelnomocnictwo": {
+            "pelnomocnictwo": 2,
+            "negatywny": 1
+          },
+          "przelew": {
+            "negatywny": 4
+          }
+        },
+        "seconds_per_doc": 3.1528812763281167,
+        "calls": {},
+        "stage_seconds": {
+          "primary": 69.36338807921857
+        }
+      },
+      {
+        "mode": "R",
+        "routing": "fallback",
+        "micro_f1": 0.42032332563510394,
+        "macro_f1_classes": 0.3228228228228228,
+        "per_class_f1": {
+          "odwolanie": 0.46846846846846846,
+          "pelnomocnictwo": 0.5,
+          "przelew": 0.0
+        },
+        "micro_f1_non_null": 0.26621160409556316,
+        "classification_accuracy": 1.0,
+        "negatives_empty": 1.0,
+        "outputs_complete": 1.0,
+        "routing_confusion": {
+          "negatywny": {
+            "negatywny": 7
+          },
+          "odwolanie": {
+            "odwolanie": 8
+          },
+          "pelnomocnictwo": {
+            "pelnomocnictwo": 3
+          },
+          "przelew": {
+            "przelew": 4
+          }
+        },
+        "seconds_per_doc": 8.179829630619762,
+        "calls": {
+          "rapid_pages": 9,
+          "route": 12
+        },
+        "stage_seconds": {
+          "primary": 69.36338807921857,
+          "rapid": 41.522391790058464,
+          "route": 69.07047200435773
+        }
+      },
+      {
+        "mode": "R",
+        "routing": "model",
+        "micro_f1": 0.42032332563510394,
+        "macro_f1_classes": 0.3228228228228228,
+        "per_class_f1": {
+          "odwolanie": 0.46846846846846846,
+          "pelnomocnictwo": 0.5,
+          "przelew": 0.0
+        },
+        "micro_f1_non_null": 0.26621160409556316,
+        "classification_accuracy": 1.0,
+        "negatives_empty": 1.0,
+        "outputs_complete": 1.0,
+        "routing_confusion": {
+          "negatywny": {
+            "negatywny": 7
+          },
+          "odwolanie": {
+            "odwolanie": 8
+          },
+          "pelnomocnictwo": {
+            "pelnomocnictwo": 3
+          },
+          "przelew": {
+            "przelew": 4
+          }
+        },
+        "seconds_per_doc": 11.667309105861932,
+        "calls": {
+          "route": 22,
+          "rapid_pages": 18
+        },
+        "stage_seconds": {
+          "primary": 69.36338807921857,
+          "route": 100.10714971087873,
+          "rapid": 87.21026253886521
+        }
+      },
+      {
+        "mode": "L",
+        "routing": "rules",
+        "micro_f1": 0.6695652173913044,
+        "macro_f1_classes": 0.42776808221834406,
+        "per_class_f1": {
+          "odwolanie": 0.7277486910994765,
+          "pelnomocnictwo": 0.5555555555555556,
+          "przelew": 0.0
+        },
+        "micro_f1_non_null": 0.5050505050505051,
+        "classification_accuracy": 0.6666666666666666,
+        "negatives_empty": 1.0,
+        "outputs_complete": 1.0,
+        "routing_confusion": {
+          "negatywny": {
+            "negatywny": 7
+          },
+          "odwolanie": {
+            "odwolanie": 8
+          },
+          "pelnomocnictwo": {
+            "pelnomocnictwo": 2,
+            "negatywny": 1
+          },
+          "przelew": {
+            "negatywny": 4
+          }
+        },
+        "seconds_per_doc": 47.0255826911254,
+        "calls": {
+          "extract": 10,
+          "rapid_pages": 23
+        },
+        "stage_seconds": {
+          "primary": 69.36338807921857,
+          "extract": 825.2941146250814,
+          "rapid": 139.90531650045887
+        }
+      },
+      {
+        "mode": "L",
+        "routing": "fallback",
+        "micro_f1": 0.7113821138211383,
+        "macro_f1_classes": 0.6767226819793954,
+        "per_class_f1": {
+          "odwolanie": 0.7277486910994765,
+          "pelnomocnictwo": 0.6774193548387096,
+          "przelew": 0.625
+        },
+        "micro_f1_non_null": 0.5749235474006116,
+        "classification_accuracy": 1.0,
+        "negatives_empty": 1.0,
+        "outputs_complete": 1.0,
+        "routing_confusion": {
+          "negatywny": {
+            "negatywny": 7
+          },
+          "odwolanie": {
+            "odwolanie": 8
+          },
+          "pelnomocnictwo": {
+            "pelnomocnictwo": 3
+          },
+          "przelew": {
+            "przelew": 4
+          }
+        },
+        "seconds_per_doc": 69.91110160601833,
+        "calls": {
+          "extract": 15,
+          "rapid_pages": 32,
+          "route": 12
+        },
+        "stage_seconds": {
+          "primary": 69.36338807921857,
+          "extract": 1218.1826669583097,
+          "rapid": 181.42770829051733,
+          "route": 69.07047200435773
+        }
+      },
+      {
+        "mode": "L",
+        "routing": "model",
+        "micro_f1": 0.7113821138211383,
+        "macro_f1_classes": 0.6767226819793954,
+        "per_class_f1": {
+          "odwolanie": 0.7277486910994765,
+          "pelnomocnictwo": 0.6774193548387096,
+          "przelew": 0.625
+        },
+        "micro_f1_non_null": 0.5749235474006116,
+        "classification_accuracy": 1.0,
+        "negatives_empty": 1.0,
+        "outputs_complete": 1.0,
+        "routing_confusion": {
+          "negatywny": {
+            "negatywny": 7
+          },
+          "odwolanie": {
+            "odwolanie": 8
+          },
+          "pelnomocnictwo": {
+            "pelnomocnictwo": 3
+          },
+          "przelew": {
+            "przelew": 4
+          }
+        },
+        "seconds_per_doc": 71.32185968358748,
+        "calls": {
+          "route": 22,
+          "extract": 15,
+          "rapid_pages": 32
+        },
+        "stage_seconds": {
+          "primary": 69.36338807921857,
+          "route": 100.10714971087873,
+          "extract": 1218.1826669583097,
+          "rapid": 181.42770829051733
+        }
+      },
+      {
+        "mode": "RL",
+        "routing": "rules",
+        "micro_f1": 0.625,
+        "macro_f1_classes": 0.42348008385744235,
+        "per_class_f1": {
+          "odwolanie": 0.6666666666666666,
+          "pelnomocnictwo": 0.6037735849056604,
+          "przelew": 0.0
+        },
+        "micro_f1_non_null": 0.4444444444444444,
+        "classification_accuracy": 0.6666666666666666,
+        "negatives_empty": 1.0,
+        "outputs_complete": 1.0,
+        "routing_confusion": {
+          "negatywny": {
+            "negatywny": 7
+          },
+          "odwolanie": {
+            "odwolanie": 8
+          },
+          "pelnomocnictwo": {
+            "pelnomocnictwo": 2,
+            "negatywny": 1
+          },
+          "przelew": {
+            "negatywny": 4
+          }
+        },
+        "seconds_per_doc": 47.0255826911254,
+        "calls": {
+          "extract": 10,
+          "rapid_pages": 23
+        },
+        "stage_seconds": {
+          "primary": 69.36338807921857,
+          "extract": 825.2941146250814,
+          "rapid": 139.90531650045887
+        }
+      },
+      {
+        "mode": "RL",
+        "routing": "fallback",
+        "micro_f1": 0.6733870967741935,
+        "macro_f1_classes": 0.6819216757741348,
+        "per_class_f1": {
+          "odwolanie": 0.6666666666666666,
+          "pelnomocnictwo": 0.7540983606557377,
+          "przelew": 0.625
+        },
+        "micro_f1_non_null": 0.5259938837920489,
+        "classification_accuracy": 1.0,
+        "negatives_empty": 1.0,
+        "outputs_complete": 1.0,
+        "routing_confusion": {
+          "negatywny": {
+            "negatywny": 7
+          },
+          "odwolanie": {
+            "odwolanie": 8
+          },
+          "pelnomocnictwo": {
+            "pelnomocnictwo": 3
+          },
+          "przelew": {
+            "przelew": 4
+          }
+        },
+        "seconds_per_doc": 69.91110160601833,
+        "calls": {
+          "extract": 15,
+          "rapid_pages": 32,
+          "route": 12
+        },
+        "stage_seconds": {
+          "primary": 69.36338807921857,
+          "extract": 1218.1826669583097,
+          "rapid": 181.42770829051733,
+          "route": 69.07047200435773
+        }
+      },
+      {
+        "mode": "RL",
+        "routing": "model",
+        "micro_f1": 0.6733870967741935,
+        "macro_f1_classes": 0.6819216757741348,
+        "per_class_f1": {
+          "odwolanie": 0.6666666666666666,
+          "pelnomocnictwo": 0.7540983606557377,
+          "przelew": 0.625
+        },
+        "micro_f1_non_null": 0.5259938837920489,
+        "classification_accuracy": 1.0,
+        "negatives_empty": 1.0,
+        "outputs_complete": 1.0,
+        "routing_confusion": {
+          "negatywny": {
+            "negatywny": 7
+          },
+          "odwolanie": {
+            "odwolanie": 8
+          },
+          "pelnomocnictwo": {
+            "pelnomocnictwo": 3
+          },
+          "przelew": {
+            "przelew": 4
+          }
+        },
+        "seconds_per_doc": 71.32185968358748,
+        "calls": {
+          "route": 22,
+          "extract": 15,
+          "rapid_pages": 32
+        },
+        "stage_seconds": {
+          "primary": 69.36338807921857,
+          "route": 100.10714971087873,
+          "extract": 1218.1826669583097,
+          "rapid": 181.42770829051733
+        }
+      },
+      {
+        "mode": "LR",
+        "routing": "rules",
+        "micro_f1": 0.6782608695652174,
+        "macro_f1_classes": 0.45245944024303536,
+        "per_class_f1": {
+          "odwolanie": 0.7277486910994765,
+          "pelnomocnictwo": 0.6296296296296297,
+          "przelew": 0.0
+        },
+        "micro_f1_non_null": 0.5252525252525253,
+        "classification_accuracy": 0.6666666666666666,
+        "negatives_empty": 1.0,
+        "outputs_complete": 1.0,
+        "routing_confusion": {
+          "negatywny": {
+            "negatywny": 7
+          },
+          "odwolanie": {
+            "odwolanie": 8
+          },
+          "pelnomocnictwo": {
+            "pelnomocnictwo": 2,
+            "negatywny": 1
+          },
+          "przelew": {
+            "negatywny": 4
+          }
+        },
+        "seconds_per_doc": 47.0255826911254,
+        "calls": {
+          "extract": 10,
+          "rapid_pages": 23
+        },
+        "stage_seconds": {
+          "primary": 69.36338807921857,
+          "extract": 825.2941146250814,
+          "rapid": 139.90531650045887
+        }
+      },
+      {
+        "mode": "LR",
+        "routing": "fallback",
+        "micro_f1": 0.7235772357723578,
+        "macro_f1_classes": 0.7089807464955244,
+        "per_class_f1": {
+          "odwolanie": 0.7277486910994765,
+          "pelnomocnictwo": 0.7741935483870968,
+          "przelew": 0.625
+        },
+        "micro_f1_non_null": 0.599388379204893,
+        "classification_accuracy": 1.0,
+        "negatives_empty": 1.0,
+        "outputs_complete": 1.0,
+        "routing_confusion": {
+          "negatywny": {
+            "negatywny": 7
+          },
+          "odwolanie": {
+            "odwolanie": 8
+          },
+          "pelnomocnictwo": {
+            "pelnomocnictwo": 3
+          },
+          "przelew": {
+            "przelew": 4
+          }
+        },
+        "seconds_per_doc": 69.91110160601833,
+        "calls": {
+          "extract": 15,
+          "rapid_pages": 32,
+          "route": 12
+        },
+        "stage_seconds": {
+          "primary": 69.36338807921857,
+          "extract": 1218.1826669583097,
+          "rapid": 181.42770829051733,
+          "route": 69.07047200435773
+        }
+      },
+      {
+        "mode": "LR",
+        "routing": "model",
+        "micro_f1": 0.7235772357723578,
+        "macro_f1_classes": 0.7089807464955244,
+        "per_class_f1": {
+          "odwolanie": 0.7277486910994765,
+          "pelnomocnictwo": 0.7741935483870968,
+          "przelew": 0.625
+        },
+        "micro_f1_non_null": 0.599388379204893,
+        "classification_accuracy": 1.0,
+        "negatives_empty": 1.0,
+        "outputs_complete": 1.0,
+        "routing_confusion": {
+          "negatywny": {
+            "negatywny": 7
+          },
+          "odwolanie": {
+            "odwolanie": 8
+          },
+          "pelnomocnictwo": {
+            "pelnomocnictwo": 3
+          },
+          "przelew": {
+            "przelew": 4
+          }
+        },
+        "seconds_per_doc": 71.32185968358748,
+        "calls": {
+          "route": 22,
+          "extract": 15,
+          "rapid_pages": 32
+        },
+        "stage_seconds": {
+          "primary": 69.36338807921857,
+          "route": 100.10714971087873,
+          "extract": 1218.1826669583097,
+          "rapid": 181.42770829051733
+        }
+      },
+      {
+        "mode": "V",
+        "routing": "rules",
+        "micro_f1": 0.6695652173913044,
+        "macro_f1_classes": 0.42776808221834406,
+        "per_class_f1": {
+          "odwolanie": 0.7277486910994765,
+          "pelnomocnictwo": 0.5555555555555556,
+          "przelew": 0.0
+        },
+        "micro_f1_non_null": 0.5050505050505051,
+        "classification_accuracy": 0.6666666666666666,
+        "negatives_empty": 1.0,
+        "outputs_complete": 1.0,
+        "routing_confusion": {
+          "negatywny": {
+            "negatywny": 7
+          },
+          "odwolanie": {
+            "odwolanie": 8
+          },
+          "pelnomocnictwo": {
+            "pelnomocnictwo": 2,
+            "negatywny": 1
+          },
+          "przelew": {
+            "negatywny": 4
+          }
+        },
+        "seconds_per_doc": 47.0255826911254,
+        "calls": {
+          "extract": 10,
+          "rapid_pages": 23
+        },
+        "stage_seconds": {
+          "primary": 69.36338807921857,
+          "extract": 825.2941146250814,
+          "rapid": 139.90531650045887
+        }
+      },
+      {
+        "mode": "V",
+        "routing": "fallback",
+        "micro_f1": 0.7113821138211383,
+        "macro_f1_classes": 0.6767226819793954,
+        "per_class_f1": {
+          "odwolanie": 0.7277486910994765,
+          "pelnomocnictwo": 0.6774193548387096,
+          "przelew": 0.625
+        },
+        "micro_f1_non_null": 0.5749235474006116,
+        "classification_accuracy": 1.0,
+        "negatives_empty": 1.0,
+        "outputs_complete": 1.0,
+        "routing_confusion": {
+          "negatywny": {
+            "negatywny": 7
+          },
+          "odwolanie": {
+            "odwolanie": 8
+          },
+          "pelnomocnictwo": {
+            "pelnomocnictwo": 3
+          },
+          "przelew": {
+            "przelew": 4
+          }
+        },
+        "seconds_per_doc": 69.91110160601833,
+        "calls": {
+          "extract": 15,
+          "rapid_pages": 32,
+          "route": 12
+        },
+        "stage_seconds": {
+          "primary": 69.36338807921857,
+          "extract": 1218.1826669583097,
+          "rapid": 181.42770829051733,
+          "route": 69.07047200435773
+        }
+      },
+      {
+        "mode": "V",
+        "routing": "model",
+        "micro_f1": 0.7113821138211383,
+        "macro_f1_classes": 0.6767226819793954,
+        "per_class_f1": {
+          "odwolanie": 0.7277486910994765,
+          "pelnomocnictwo": 0.6774193548387096,
+          "przelew": 0.625
+        },
+        "micro_f1_non_null": 0.5749235474006116,
+        "classification_accuracy": 1.0,
+        "negatives_empty": 1.0,
+        "outputs_complete": 1.0,
+        "routing_confusion": {
+          "negatywny": {
+            "negatywny": 7
+          },
+          "odwolanie": {
+            "odwolanie": 8
+          },
+          "pelnomocnictwo": {
+            "pelnomocnictwo": 3
+          },
+          "przelew": {
+            "przelew": 4
+          }
+        },
+        "seconds_per_doc": 71.32185968358748,
+        "calls": {
+          "route": 22,
+          "extract": 15,
+          "rapid_pages": 32
+        },
+        "stage_seconds": {
+          "primary": 69.36338807921857,
+          "route": 100.10714971087873,
+          "extract": 1218.1826669583097,
+          "rapid": 181.42770829051733
+        }
+      }
+    ],
+    "deepseek_flash": [
+      {
+        "mode": "R",
+        "routing": "rules",
+        "micro_f1": 0.43564356435643564,
+        "macro_f1_classes": 0.29800012778736185,
+        "per_class_f1": {
+          "odwolanie": 0.46846846846846846,
+          "pelnomocnictwo": 0.425531914893617,
+          "przelew": 0.0
+        },
+        "micro_f1_non_null": 0.2792452830188679,
+        "classification_accuracy": 0.6666666666666666,
+        "negatives_empty": 1.0,
+        "outputs_complete": 1.0,
+        "routing_confusion": {
+          "negatywny": {
+            "negatywny": 7
+          },
+          "odwolanie": {
+            "odwolanie": 8
+          },
+          "pelnomocnictwo": {
+            "pelnomocnictwo": 2,
+            "negatywny": 1
+          },
+          "przelew": {
+            "negatywny": 4
+          }
+        },
+        "seconds_per_doc": 3.1528812763281167,
+        "calls": {},
+        "stage_seconds": {
+          "primary": 69.36338807921857
+        }
+      },
+      {
+        "mode": "R",
+        "routing": "fallback",
+        "micro_f1": 0.42032332563510394,
+        "macro_f1_classes": 0.3228228228228228,
+        "per_class_f1": {
+          "odwolanie": 0.46846846846846846,
+          "pelnomocnictwo": 0.5,
+          "przelew": 0.0
+        },
+        "micro_f1_non_null": 0.26621160409556316,
+        "classification_accuracy": 1.0,
+        "negatives_empty": 1.0,
+        "outputs_complete": 1.0,
+        "routing_confusion": {
+          "negatywny": {
+            "negatywny": 7
+          },
+          "odwolanie": {
+            "odwolanie": 8
+          },
+          "pelnomocnictwo": {
+            "pelnomocnictwo": 3
+          },
+          "przelew": {
+            "przelew": 4
+          }
+        },
+        "seconds_per_doc": 5.661798164481297,
+        "calls": {
+          "rapid_pages": 9,
+          "route": 12
+        },
+        "stage_seconds": {
+          "primary": 69.36338807921857,
+          "rapid": 41.522391790058464,
+          "route": 13.673779749311507
+        }
+      },
+      {
+        "mode": "R",
+        "routing": "model",
+        "micro_f1": 0.42032332563510394,
+        "macro_f1_classes": 0.3228228228228228,
+        "per_class_f1": {
+          "odwolanie": 0.46846846846846846,
+          "pelnomocnictwo": 0.5,
+          "przelew": 0.0
+        },
+        "micro_f1_non_null": 0.26621160409556316,
+        "classification_accuracy": 1.0,
+        "negatives_empty": 1.0,
+        "outputs_complete": 1.0,
+        "routing_confusion": {
+          "negatywny": {
+            "negatywny": 7
+          },
+          "odwolanie": {
+            "odwolanie": 8
+          },
+          "pelnomocnictwo": {
+            "pelnomocnictwo": 3
+          },
+          "przelew": {
+            "przelew": 4
+          }
+        },
+        "seconds_per_doc": 8.928239164450629,
+        "calls": {
+          "route": 22,
+          "rapid_pages": 18
+        },
+        "stage_seconds": {
+          "primary": 69.36338807921857,
+          "route": 39.84761099983007,
+          "rapid": 87.21026253886521
+        }
+      },
+      {
+        "mode": "L",
+        "routing": "rules",
+        "micro_f1": 0.6608695652173913,
+        "macro_f1_classes": 0.40307672419365265,
+        "per_class_f1": {
+          "odwolanie": 0.7277486910994765,
+          "pelnomocnictwo": 0.48148148148148145,
+          "przelew": 0.0
+        },
+        "micro_f1_non_null": 0.4983164983164983,
+        "classification_accuracy": 0.6666666666666666,
+        "negatives_empty": 1.0,
+        "outputs_complete": 1.0,
+        "routing_confusion": {
+          "negatywny": {
+            "negatywny": 7
+          },
+          "odwolanie": {
+            "odwolanie": 8
+          },
+          "pelnomocnictwo": {
+            "pelnomocnictwo": 2,
+            "negatywny": 1
+          },
+          "przelew": {
+            "negatywny": 4
+          }
+        },
+        "seconds_per_doc": 11.140225566161627,
+        "calls": {
+          "extract": 10,
+          "rapid_pages": 23
+        },
+        "stage_seconds": {
+          "primary": 69.36338807921857,
+          "extract": 35.816257875878364,
+          "rapid": 139.90531650045887
+        }
+      },
+      {
+        "mode": "L",
+        "routing": "fallback",
+        "micro_f1": 0.6869918699186992,
+        "macro_f1_classes": 0.5996617500797538,
+        "per_class_f1": {
+          "odwolanie": 0.7277486910994765,
+          "pelnomocnictwo": 0.6129032258064516,
+          "przelew": 0.4583333333333333
+        },
+        "micro_f1_non_null": 0.5443425076452599,
+        "classification_accuracy": 1.0,
+        "negatives_empty": 1.0,
+        "outputs_complete": 1.0,
+        "routing_confusion": {
+          "negatywny": {
+            "negatywny": 7
+          },
+          "odwolanie": {
+            "odwolanie": 8
+          },
+          "pelnomocnictwo": {
+            "pelnomocnictwo": 3
+          },
+          "przelew": {
+            "przelew": 4
+          }
+        },
+        "seconds_per_doc": 14.12204759443094,
+        "calls": {
+          "extract": 15,
+          "rapid_pages": 32,
+          "route": 12
+        },
+        "stage_seconds": {
+          "primary": 69.36338807921857,
+          "extract": 46.2201709584333,
+          "rapid": 181.42770829051733,
+          "route": 13.673779749311507
+        }
+      },
+      {
+        "mode": "L",
+        "routing": "model",
+        "micro_f1": 0.6869918699186992,
+        "macro_f1_classes": 0.5996617500797538,
+        "per_class_f1": {
+          "odwolanie": 0.7277486910994765,
+          "pelnomocnictwo": 0.6129032258064516,
+          "przelew": 0.4583333333333333
+        },
+        "micro_f1_non_null": 0.5443425076452599,
+        "classification_accuracy": 1.0,
+        "negatives_empty": 1.0,
+        "outputs_complete": 1.0,
+        "routing_confusion": {
+          "negatywny": {
+            "negatywny": 7
+          },
+          "odwolanie": {
+            "odwolanie": 8
+          },
+          "pelnomocnictwo": {
+            "pelnomocnictwo": 3
+          },
+          "przelew": {
+            "przelew": 4
+          }
+        },
+        "seconds_per_doc": 15.311767196727239,
+        "calls": {
+          "route": 22,
+          "extract": 15,
+          "rapid_pages": 32
+        },
+        "stage_seconds": {
+          "primary": 69.36338807921857,
+          "route": 39.84761099983007,
+          "extract": 46.2201709584333,
+          "rapid": 181.42770829051733
+        }
+      },
+      {
+        "mode": "RL",
+        "routing": "rules",
+        "micro_f1": 0.6163793103448276,
+        "macro_f1_classes": 0.4091788146197975,
+        "per_class_f1": {
+          "odwolanie": 0.661498708010336,
+          "pelnomocnictwo": 0.5660377358490566,
+          "przelew": 0.0
+        },
+        "micro_f1_non_null": 0.4377104377104377,
+        "classification_accuracy": 0.6666666666666666,
+        "negatives_empty": 1.0,
+        "outputs_complete": 1.0,
+        "routing_confusion": {
+          "negatywny": {
+            "negatywny": 7
+          },
+          "odwolanie": {
+            "odwolanie": 8
+          },
+          "pelnomocnictwo": {
+            "pelnomocnictwo": 2,
+            "negatywny": 1
+          },
+          "przelew": {
+            "negatywny": 4
+          }
+        },
+        "seconds_per_doc": 11.140225566161627,
+        "calls": {
+          "extract": 10,
+          "rapid_pages": 23
+        },
+        "stage_seconds": {
+          "primary": 69.36338807921857,
+          "extract": 35.816257875878364,
+          "rapid": 139.90531650045887
+        }
+      },
+      {
+        "mode": "RL",
+        "routing": "fallback",
+        "micro_f1": 0.6491935483870968,
+        "macro_f1_classes": 0.6137145055845018,
+        "per_class_f1": {
+          "odwolanie": 0.661498708010336,
+          "pelnomocnictwo": 0.7213114754098361,
+          "przelew": 0.4583333333333333
+        },
+        "micro_f1_non_null": 0.4954128440366973,
+        "classification_accuracy": 1.0,
+        "negatives_empty": 1.0,
+        "outputs_complete": 1.0,
+        "routing_confusion": {
+          "negatywny": {
+            "negatywny": 7
+          },
+          "odwolanie": {
+            "odwolanie": 8
+          },
+          "pelnomocnictwo": {
+            "pelnomocnictwo": 3
+          },
+          "przelew": {
+            "przelew": 4
+          }
+        },
+        "seconds_per_doc": 14.12204759443094,
+        "calls": {
+          "extract": 15,
+          "rapid_pages": 32,
+          "route": 12
+        },
+        "stage_seconds": {
+          "primary": 69.36338807921857,
+          "extract": 46.2201709584333,
+          "rapid": 181.42770829051733,
+          "route": 13.673779749311507
+        }
+      },
+      {
+        "mode": "RL",
+        "routing": "model",
+        "micro_f1": 0.6491935483870968,
+        "macro_f1_classes": 0.6137145055845018,
+        "per_class_f1": {
+          "odwolanie": 0.661498708010336,
+          "pelnomocnictwo": 0.7213114754098361,
+          "przelew": 0.4583333333333333
+        },
+        "micro_f1_non_null": 0.4954128440366973,
+        "classification_accuracy": 1.0,
+        "negatives_empty": 1.0,
+        "outputs_complete": 1.0,
+        "routing_confusion": {
+          "negatywny": {
+            "negatywny": 7
+          },
+          "odwolanie": {
+            "odwolanie": 8
+          },
+          "pelnomocnictwo": {
+            "pelnomocnictwo": 3
+          },
+          "przelew": {
+            "przelew": 4
+          }
+        },
+        "seconds_per_doc": 15.311767196727239,
+        "calls": {
+          "route": 22,
+          "extract": 15,
+          "rapid_pages": 32
+        },
+        "stage_seconds": {
+          "primary": 69.36338807921857,
+          "route": 39.84761099983007,
+          "extract": 46.2201709584333,
+          "rapid": 181.42770829051733
+        }
+      },
+      {
+        "mode": "LR",
+        "routing": "rules",
+        "micro_f1": 0.6652173913043479,
+        "macro_f1_classes": 0.42602288152026374,
+        "per_class_f1": {
+          "odwolanie": 0.7225130890052356,
+          "pelnomocnictwo": 0.5555555555555556,
+          "przelew": 0.0
+        },
+        "micro_f1_non_null": 0.5117845117845118,
+        "classification_accuracy": 0.6666666666666666,
+        "negatives_empty": 1.0,
+        "outputs_complete": 1.0,
+        "routing_confusion": {
+          "negatywny": {
+            "negatywny": 7
+          },
+          "odwolanie": {
+            "odwolanie": 8
+          },
+          "pelnomocnictwo": {
+            "pelnomocnictwo": 2,
+            "negatywny": 1
+          },
+          "przelew": {
+            "negatywny": 4
+          }
+        },
+        "seconds_per_doc": 11.140225566161627,
+        "calls": {
+          "extract": 10,
+          "rapid_pages": 23
+        },
+        "stage_seconds": {
+          "primary": 69.36338807921857,
+          "extract": 35.816257875878364,
+          "rapid": 139.90531650045887
+        }
+      },
+      {
+        "mode": "LR",
+        "routing": "fallback",
+        "micro_f1": 0.6951219512195121,
+        "macro_f1_classes": 0.6301746138978025,
+        "per_class_f1": {
+          "odwolanie": 0.7225130890052356,
+          "pelnomocnictwo": 0.7096774193548387,
+          "przelew": 0.4583333333333333
+        },
+        "micro_f1_non_null": 0.5626911314984709,
+        "classification_accuracy": 1.0,
+        "negatives_empty": 1.0,
+        "outputs_complete": 1.0,
+        "routing_confusion": {
+          "negatywny": {
+            "negatywny": 7
+          },
+          "odwolanie": {
+            "odwolanie": 8
+          },
+          "pelnomocnictwo": {
+            "pelnomocnictwo": 3
+          },
+          "przelew": {
+            "przelew": 4
+          }
+        },
+        "seconds_per_doc": 14.12204759443094,
+        "calls": {
+          "extract": 15,
+          "rapid_pages": 32,
+          "route": 12
+        },
+        "stage_seconds": {
+          "primary": 69.36338807921857,
+          "extract": 46.2201709584333,
+          "rapid": 181.42770829051733,
+          "route": 13.673779749311507
+        }
+      },
+      {
+        "mode": "LR",
+        "routing": "model",
+        "micro_f1": 0.6951219512195121,
+        "macro_f1_classes": 0.6301746138978025,
+        "per_class_f1": {
+          "odwolanie": 0.7225130890052356,
+          "pelnomocnictwo": 0.7096774193548387,
+          "przelew": 0.4583333333333333
+        },
+        "micro_f1_non_null": 0.5626911314984709,
+        "classification_accuracy": 1.0,
+        "negatives_empty": 1.0,
+        "outputs_complete": 1.0,
+        "routing_confusion": {
+          "negatywny": {
+            "negatywny": 7
+          },
+          "odwolanie": {
+            "odwolanie": 8
+          },
+          "pelnomocnictwo": {
+            "pelnomocnictwo": 3
+          },
+          "przelew": {
+            "przelew": 4
+          }
+        },
+        "seconds_per_doc": 15.311767196727239,
+        "calls": {
+          "route": 22,
+          "extract": 15,
+          "rapid_pages": 32
+        },
+        "stage_seconds": {
+          "primary": 69.36338807921857,
+          "route": 39.84761099983007,
+          "extract": 46.2201709584333,
+          "rapid": 181.42770829051733
+        }
+      },
+      {
+        "mode": "V",
+        "routing": "rules",
+        "micro_f1": 0.6608695652173913,
+        "macro_f1_classes": 0.40307672419365265,
+        "per_class_f1": {
+          "odwolanie": 0.7277486910994765,
+          "pelnomocnictwo": 0.48148148148148145,
+          "przelew": 0.0
+        },
+        "micro_f1_non_null": 0.4983164983164983,
+        "classification_accuracy": 0.6666666666666666,
+        "negatives_empty": 1.0,
+        "outputs_complete": 1.0,
+        "routing_confusion": {
+          "negatywny": {
+            "negatywny": 7
+          },
+          "odwolanie": {
+            "odwolanie": 8
+          },
+          "pelnomocnictwo": {
+            "pelnomocnictwo": 2,
+            "negatywny": 1
+          },
+          "przelew": {
+            "negatywny": 4
+          }
+        },
+        "seconds_per_doc": 11.140225566161627,
+        "calls": {
+          "extract": 10,
+          "rapid_pages": 23
+        },
+        "stage_seconds": {
+          "primary": 69.36338807921857,
+          "extract": 35.816257875878364,
+          "rapid": 139.90531650045887
+        }
+      },
+      {
+        "mode": "V",
+        "routing": "fallback",
+        "micro_f1": 0.6869918699186992,
+        "macro_f1_classes": 0.5996617500797538,
+        "per_class_f1": {
+          "odwolanie": 0.7277486910994765,
+          "pelnomocnictwo": 0.6129032258064516,
+          "przelew": 0.4583333333333333
+        },
+        "micro_f1_non_null": 0.5443425076452599,
+        "classification_accuracy": 1.0,
+        "negatives_empty": 1.0,
+        "outputs_complete": 1.0,
+        "routing_confusion": {
+          "negatywny": {
+            "negatywny": 7
+          },
+          "odwolanie": {
+            "odwolanie": 8
+          },
+          "pelnomocnictwo": {
+            "pelnomocnictwo": 3
+          },
+          "przelew": {
+            "przelew": 4
+          }
+        },
+        "seconds_per_doc": 14.12204759443094,
+        "calls": {
+          "extract": 15,
+          "rapid_pages": 32,
+          "route": 12
+        },
+        "stage_seconds": {
+          "primary": 69.36338807921857,
+          "extract": 46.2201709584333,
+          "rapid": 181.42770829051733,
+          "route": 13.673779749311507
+        }
+      },
+      {
+        "mode": "V",
+        "routing": "model",
+        "micro_f1": 0.6869918699186992,
+        "macro_f1_classes": 0.5996617500797538,
+        "per_class_f1": {
+          "odwolanie": 0.7277486910994765,
+          "pelnomocnictwo": 0.6129032258064516,
+          "przelew": 0.4583333333333333
+        },
+        "micro_f1_non_null": 0.5443425076452599,
+        "classification_accuracy": 1.0,
+        "negatives_empty": 1.0,
+        "outputs_complete": 1.0,
+        "routing_confusion": {
+          "negatywny": {
+            "negatywny": 7
+          },
+          "odwolanie": {
+            "odwolanie": 8
+          },
+          "pelnomocnictwo": {
+            "pelnomocnictwo": 3
+          },
+          "przelew": {
+            "przelew": 4
+          }
+        },
+        "seconds_per_doc": 15.311767196727239,
+        "calls": {
+          "route": 22,
+          "extract": 15,
+          "rapid_pages": 32
+        },
+        "stage_seconds": {
+          "primary": 69.36338807921857,
+          "route": 39.84761099983007,
+          "extract": 46.2201709584333,
+          "rapid": 181.42770829051733
+        }
+      }
+    ]
+  },
+  "method": {
+    "metric": "evals.metrics.summarise; equal-weight mean of the three target class field F1 scores for macro. Positive routing and empty negatives are separate. The organizer formula is unconfirmed.",
+    "dev_latency": "Sum of measured primary reading, required RapidOCR pages, and route/extract call times divided by all 22 PDFs. Dev ablations replayed cached model responses through the product pipeline. Independent requests were collected in parallel; these stage sums estimate sequential batch time.",
+    "privacy": "All dev predictions, raw responses, gold and error diagnostics were retained outside the repository. Shared response cache keyed by model and prompt included schema and generation settings. Only bounded page text was sent to the explicitly authorized development endpoint.",
+    "endpoint": "Official DeepSeek Chat Completions, Pydantic AI 2.71.0 prompted JSON object mode. Flash alias deepseek-flash served V4.1-Flash-1017, thinking disabled; Pro served V4-Pro-0813. Pro was explicitly configured for low (24576 maximum completion tokens) for routing, high (32768) for extraction, 480-second deadline, one schema retry and zero transport retries.",
+    "local_runtime": "Qwen3-4B-Instruct-2507, unsloth Q4_K_M GGUF, llama.cpp b12608 (93cb37ea7), macOS arm64 Apple M1 16 GB. Weights SHA-256 3605803b982cb64aead44f6c1b2ae36e3acdb41d8e46c8a94c6533bc4c67e597.",
+    "endpoint_sources": [
+      "https://api-docs.deepseek.com/quick_start/pricing/",
+      "https://api-docs.deepseek.com/quick_start/rate_limit/",
+      "https://api-docs.deepseek.com/guides/json_mode/",
+      "https://api-docs.deepseek.com/guides/thinking_mode/",
+      "https://huggingface.co/Qwen/Qwen3-4B-Instruct-2507",
+      "https://github.com/ggml-org/llama.cpp/releases/tag/b12608"
+    ]
+  },
+  "dev_ablations": {
+    "flash_single_ocr_8KiB_literal": [
+      {
+        "mode": "R",
+        "routing": "fallback",
+        "micro_f1": 0.42032332563510394,
+        "macro_f1_classes": 0.3228228228228228,
+        "per_class_f1": {
+          "odwolanie": 0.46846846846846846,
+          "pelnomocnictwo": 0.5,
+          "przelew": 0.0
+        },
+        "micro_f1_non_null": 0.26621160409556316,
+        "classification_accuracy": 1.0,
+        "negatives_empty": 1.0,
+        "outputs_complete": 1.0,
+        "seconds_per_doc": 3.715817054733634
+      },
+      {
+        "mode": "L",
+        "routing": "fallback",
+        "micro_f1": 0.5417515274949084,
+        "macro_f1_classes": 0.415178954596172,
+        "per_class_f1": {
+          "odwolanie": 0.6020942408376964,
+          "pelnomocnictwo": 0.39344262295081966,
+          "przelew": 0.25
+        },
+        "micro_f1_non_null": 0.3241590214067278,
+        "classification_accuracy": 1.0,
+        "negatives_empty": 1.0,
+        "outputs_complete": 1.0,
+        "seconds_per_doc": 5.935561128574508
+      },
+      {
+        "mode": "RL",
+        "routing": "fallback",
+        "micro_f1": 0.5557809330628803,
+        "macro_f1_classes": 0.4751180611244765,
+        "per_class_f1": {
+          "odwolanie": 0.5891472868217055,
+          "pelnomocnictwo": 0.5862068965517241,
+          "przelew": 0.25
+        },
+        "micro_f1_non_null": 0.3569230769230769,
+        "classification_accuracy": 1.0,
+        "negatives_empty": 1.0,
+        "outputs_complete": 1.0,
+        "seconds_per_doc": 5.935561128574508
+      },
+      {
+        "mode": "LR",
+        "routing": "fallback",
+        "micro_f1": 0.5458248472505092,
+        "macro_f1_classes": 0.4261079163448059,
+        "per_class_f1": {
+          "odwolanie": 0.6020942408376964,
+          "pelnomocnictwo": 0.4262295081967213,
+          "przelew": 0.25
+        },
+        "micro_f1_non_null": 0.3363914373088685,
+        "classification_accuracy": 1.0,
+        "negatives_empty": 1.0,
+        "outputs_complete": 1.0,
+        "seconds_per_doc": 5.935561128574508
+      },
+      {
+        "mode": "V",
+        "routing": "fallback",
+        "micro_f1": 0.5417515274949084,
+        "macro_f1_classes": 0.415178954596172,
+        "per_class_f1": {
+          "odwolanie": 0.6020942408376964,
+          "pelnomocnictwo": 0.39344262295081966,
+          "przelew": 0.25
+        },
+        "micro_f1_non_null": 0.3241590214067278,
+        "classification_accuracy": 1.0,
+        "negatives_empty": 1.0,
+        "outputs_complete": 1.0,
+        "seconds_per_doc": 5.935561128574508
+      }
+    ],
+    "flash_single_ocr_16KiB_literal": [
+      {
+        "mode": "R",
+        "routing": "fallback",
+        "micro_f1": 0.42032332563510394,
+        "macro_f1_classes": 0.3228228228228228,
+        "per_class_f1": {
+          "odwolanie": 0.46846846846846846,
+          "pelnomocnictwo": 0.5,
+          "przelew": 0.0
+        },
+        "micro_f1_non_null": 0.26621160409556316,
+        "classification_accuracy": 1.0,
+        "negatives_empty": 1.0,
+        "outputs_complete": 1.0,
+        "seconds_per_doc": 3.715817054733634
+      },
+      {
+        "mode": "L",
+        "routing": "fallback",
+        "micro_f1": 0.5458248472505092,
+        "macro_f1_classes": 0.41692415529425225,
+        "per_class_f1": {
+          "odwolanie": 0.6073298429319371,
+          "pelnomocnictwo": 0.39344262295081966,
+          "przelew": 0.25
+        },
+        "micro_f1_non_null": 0.3241590214067278,
+        "classification_accuracy": 1.0,
+        "negatives_empty": 1.0,
+        "outputs_complete": 1.0,
+        "seconds_per_doc": 5.906508319778368
+      },
+      {
+        "mode": "RL",
+        "routing": "fallback",
+        "micro_f1": 0.5598377281947262,
+        "macro_f1_classes": 0.47684071400992006,
+        "per_class_f1": {
+          "odwolanie": 0.5943152454780362,
+          "pelnomocnictwo": 0.5862068965517241,
+          "przelew": 0.25
+        },
+        "micro_f1_non_null": 0.3569230769230769,
+        "classification_accuracy": 1.0,
+        "negatives_empty": 1.0,
+        "outputs_complete": 1.0,
+        "seconds_per_doc": 5.906508319778368
+      },
+      {
+        "mode": "LR",
+        "routing": "fallback",
+        "micro_f1": 0.5498981670061099,
+        "macro_f1_classes": 0.42785311704288614,
+        "per_class_f1": {
+          "odwolanie": 0.6073298429319371,
+          "pelnomocnictwo": 0.4262295081967213,
+          "przelew": 0.25
+        },
+        "micro_f1_non_null": 0.3363914373088685,
+        "classification_accuracy": 1.0,
+        "negatives_empty": 1.0,
+        "outputs_complete": 1.0,
+        "seconds_per_doc": 5.906508319778368
+      },
+      {
+        "mode": "V",
+        "routing": "fallback",
+        "micro_f1": 0.5458248472505092,
+        "macro_f1_classes": 0.41692415529425225,
+        "per_class_f1": {
+          "odwolanie": 0.6073298429319371,
+          "pelnomocnictwo": 0.39344262295081966,
+          "przelew": 0.25
+        },
+        "micro_f1_non_null": 0.3241590214067278,
+        "classification_accuracy": 1.0,
+        "negatives_empty": 1.0,
+        "outputs_complete": 1.0,
+        "seconds_per_doc": 5.906508319778368
+      }
+    ],
+    "flash_single_ocr_16KiB_spacing": [
+      {
+        "mode": "L",
+        "routing": "fallback",
+        "micro_f1": 0.6354378818737271,
+        "macro_f1_classes": 0.5196048980058937,
+        "per_class_f1": {
+          "odwolanie": 0.6858638743455497,
+          "pelnomocnictwo": 0.6229508196721312,
+          "przelew": 0.25
+        },
+        "micro_f1_non_null": 0.4709480122324159,
+        "classification_accuracy": 1.0,
+        "negatives_empty": 1.0,
+        "outputs_complete": 1.0,
+        "seconds_per_doc": 5.906508319778368
+      },
+      {
+        "mode": "RL",
+        "routing": "fallback",
+        "micro_f1": 0.6060606060606061,
+        "macro_f1_classes": 0.5285529715762274,
+        "per_class_f1": {
+          "odwolanie": 0.6356589147286822,
+          "pelnomocnictwo": 0.7,
+          "przelew": 0.25
+        },
+        "micro_f1_non_null": 0.43425076452599387,
+        "classification_accuracy": 1.0,
+        "negatives_empty": 1.0,
+        "outputs_complete": 1.0,
+        "seconds_per_doc": 5.906508319778368
+      },
+      {
+        "mode": "LR",
+        "routing": "fallback",
+        "micro_f1": 0.6435845213849287,
+        "macro_f1_classes": 0.550646582553715,
+        "per_class_f1": {
+          "odwolanie": 0.680628272251309,
+          "pelnomocnictwo": 0.7213114754098361,
+          "przelew": 0.25
+        },
+        "micro_f1_non_null": 0.4892966360856269,
+        "classification_accuracy": 1.0,
+        "negatives_empty": 1.0,
+        "outputs_complete": 1.0,
+        "seconds_per_doc": 5.906508319778368
+      }
+    ],
+    "flash_single_ocr_invented_examples": [
+      {
+        "mode": "L",
+        "routing": "fallback",
+        "micro_f1": 0.6435845213849287,
+        "macro_f1_classes": 0.5293191333123527,
+        "per_class_f1": {
+          "odwolanie": 0.6910994764397905,
+          "pelnomocnictwo": 0.6885245901639344,
+          "przelew": 0.20833333333333334
+        },
+        "micro_f1_non_null": 0.47706422018348627,
+        "classification_accuracy": 1.0,
+        "negatives_empty": 1.0,
+        "outputs_complete": 1.0,
+        "seconds_per_doc": 5.795197109607133
+      },
+      {
+        "mode": "RL",
+        "routing": "fallback",
+        "micro_f1": 0.6060606060606061,
+        "macro_f1_classes": 0.5257751937984496,
+        "per_class_f1": {
+          "odwolanie": 0.6356589147286822,
+          "pelnomocnictwo": 0.7333333333333333,
+          "przelew": 0.20833333333333334
+        },
+        "micro_f1_non_null": 0.43425076452599387,
+        "classification_accuracy": 1.0,
+        "negatives_empty": 1.0,
+        "outputs_complete": 1.0,
+        "seconds_per_doc": 5.795197109607133
+      },
+      {
+        "mode": "LR",
+        "routing": "fallback",
+        "micro_f1": 0.6517311608961304,
+        "macro_f1_classes": 0.5603608178601741,
+        "per_class_f1": {
+          "odwolanie": 0.6858638743455497,
+          "pelnomocnictwo": 0.7868852459016393,
+          "przelew": 0.20833333333333334
+        },
+        "micro_f1_non_null": 0.4954128440366973,
+        "classification_accuracy": 1.0,
+        "negatives_empty": 1.0,
+        "outputs_complete": 1.0,
+        "seconds_per_doc": 5.795197109607133
+      }
+    ],
+    "flash_single_ocr_source_lines": [
+      {
+        "mode": "L",
+        "routing": "fallback",
+        "micro_f1": 0.5760649087221096,
+        "macro_f1_classes": 0.3836775256932325,
+        "per_class_f1": {
+          "odwolanie": 0.6649214659685864,
+          "pelnomocnictwo": 0.4444444444444444,
+          "przelew": 0.041666666666666664
+        },
+        "micro_f1_non_null": 0.3719512195121951,
+        "classification_accuracy": 1.0,
+        "negatives_empty": 1.0,
+        "outputs_complete": 1.0,
+        "seconds_per_doc": 5.675752622922036
+      },
+      {
+        "mode": "RL",
+        "routing": "fallback",
+        "micro_f1": 0.5887096774193549,
+        "macro_f1_classes": 0.4570060434052046,
+        "per_class_f1": {
+          "odwolanie": 0.6408268733850129,
+          "pelnomocnictwo": 0.6885245901639344,
+          "przelew": 0.041666666666666664
+        },
+        "micro_f1_non_null": 0.4036697247706422,
+        "classification_accuracy": 1.0,
+        "negatives_empty": 1.0,
+        "outputs_complete": 1.0,
+        "seconds_per_doc": 5.675752622922036
+      },
+      {
+        "mode": "LR",
+        "routing": "fallback",
+        "micro_f1": 0.5963488843813387,
+        "macro_f1_classes": 0.4100771489514945,
+        "per_class_f1": {
+          "odwolanie": 0.680628272251309,
+          "pelnomocnictwo": 0.5079365079365079,
+          "przelew": 0.041666666666666664
+        },
+        "micro_f1_non_null": 0.40853658536585363,
+        "classification_accuracy": 1.0,
+        "negatives_empty": 1.0,
+        "outputs_complete": 1.0,
+        "seconds_per_doc": 5.675752622922036
+      }
+    ],
+    "pro_single_ocr": [
+      {
+        "mode": "L",
+        "routing": "fallback",
+        "micro_f1": 0.6517311608961304,
+        "macro_f1_classes": 0.5600568382303855,
+        "per_class_f1": {
+          "odwolanie": 0.6910994764397905,
+          "pelnomocnictwo": 0.6557377049180327,
+          "przelew": 0.3333333333333333
+        },
+        "micro_f1_non_null": 0.4892966360856269,
+        "classification_accuracy": 1.0,
+        "negatives_empty": 1.0,
+        "outputs_complete": 1.0,
+        "seconds_per_doc": 91.52972490503453
+      },
+      {
+        "mode": "RL",
+        "routing": "fallback",
+        "micro_f1": 0.6222222222222222,
+        "macro_f1_classes": 0.5691645133505598,
+        "per_class_f1": {
+          "odwolanie": 0.6408268733850129,
+          "pelnomocnictwo": 0.7333333333333333,
+          "przelew": 0.3333333333333333
+        },
+        "micro_f1_non_null": 0.4525993883792049,
+        "classification_accuracy": 1.0,
+        "negatives_empty": 1.0,
+        "outputs_complete": 1.0,
+        "seconds_per_doc": 91.52972490503453
+      },
+      {
+        "mode": "LR",
+        "routing": "fallback",
+        "micro_f1": 0.659877800407332,
+        "macro_f1_classes": 0.591098522778207,
+        "per_class_f1": {
+          "odwolanie": 0.6858638743455497,
+          "pelnomocnictwo": 0.7540983606557377,
+          "przelew": 0.3333333333333333
+        },
+        "micro_f1_non_null": 0.5076452599388379,
+        "classification_accuracy": 1.0,
+        "negatives_empty": 1.0,
+        "outputs_complete": 1.0,
+        "seconds_per_doc": 91.52972490503453
+      }
+    ],
+    "flash_matched_to_pro_single": [
+      {
+        "mode": "L",
+        "routing": "fallback",
+        "micro_f1": 0.6166328600405679,
+        "macro_f1_classes": 0.4850515249729909,
+        "per_class_f1": {
+          "odwolanie": 0.675392670157068,
+          "pelnomocnictwo": 0.5714285714285714,
+          "przelew": 0.20833333333333334
+        },
+        "micro_f1_non_null": 0.4573170731707317,
+        "classification_accuracy": 1.0,
+        "negatives_empty": 1.0,
+        "outputs_complete": 1.0,
+        "seconds_per_doc": 5.8146106191614475
+      },
+      {
+        "mode": "RL",
+        "routing": "fallback",
+        "micro_f1": 0.5955734406438632,
+        "macro_f1_classes": 0.5054145480814648,
+        "per_class_f1": {
+          "odwolanie": 0.6304909560723514,
+          "pelnomocnictwo": 0.6774193548387096,
+          "przelew": 0.20833333333333334
+        },
+        "micro_f1_non_null": 0.4268292682926829,
+        "classification_accuracy": 1.0,
+        "negatives_empty": 1.0,
+        "outputs_complete": 1.0,
+        "seconds_per_doc": 5.8146106191614475
+      },
+      {
+        "mode": "LR",
+        "routing": "fallback",
+        "micro_f1": 0.6288032454361054,
+        "macro_f1_classes": 0.5167975567190227,
+        "per_class_f1": {
+          "odwolanie": 0.675392670157068,
+          "pelnomocnictwo": 0.6666666666666666,
+          "przelew": 0.20833333333333334
+        },
+        "micro_f1_non_null": 0.4817073170731707,
+        "classification_accuracy": 1.0,
+        "negatives_empty": 1.0,
+        "outputs_complete": 1.0,
+        "seconds_per_doc": 5.8146106191614475
+      }
+    ]
+  },
+  "dev_error_audit": {
+    "method": "Strict parent-paired field-report errors, not the official pooled multiset score. Audit uses expected values, cached ungrounded and grounded outputs and displayed source readings. The cause classes are mutually exclusive; ambiguous cases remain unresolved. A reference-equivalent proposal alone is insufficient evidence.",
+    "flash_8KiB_model_only": {
+      "correct": 133,
+      "wrong": 109,
+      "missing": 5,
+      "spurious": 2,
+      "causes": {
+        "input_loss": 7,
+        "grounding_or_format": 68,
+        "nonnull_against_null": 1,
+        "convention": 5,
+        "visible_wrong_or_omitted": 6,
+        "unresolved": 29
+      }
+    },
+    "flash_dual_model_only": {
+      "correct": 169,
+      "wrong": 76,
+      "missing": 2,
+      "spurious": 0,
+      "causes": {
+        "confirmed_input_loss": 0,
+        "grounding_or_format": 46,
+        "nonnull_against_null": 2,
+        "convention": 3,
+        "visible_wrong_or_omitted": 6,
+        "unresolved": 21
+      }
+    },
+    "pro_dual_model_only": {
+      "documents": 22,
+      "reproduced": 15,
+      "classes_match": 22,
+      "statuses": {
+        "ok": 175,
+        "wrong": 70,
+        "missing": 2
+      },
+      "causes": {
+        "b_grounding_or_format": 53,
+        "c_nonnull_against_null": 1,
+        "d_convention": 3,
+        "e_visible_wrong_or_omitted": 4,
+        "u_unconfirmed_source_or_convention": 10,
+        "u_unmatched_missing_null": 1
+      },
+      "class_errors": {
+        "odwolanie": 52,
+        "pelnomocnictwo": 11,
+        "przelew": 9
+      },
+      "fields": {
+        "b_grounding_or_format": {
+          "OdwolanieKIO.czynnosc_powod_id": 8,
+          "OdwolanieKIO.czynnosc_opis": 8,
+          "Odwolujacy.przez-pelnomocnika": 6,
+          "mocodawca.data.typ": 4,
+          "Zamawiajacy.prowadzacy_postepowanie": 4,
+          "ZamowieniePubliczne.tytul": 3,
+          "pelnomocnicy.imie_nazwisko": 3,
+          "Zamawiajacy.nazwa": 3,
+          "ZamowieniePubliczne.numer_ted": 2,
+          "przelew_bankowy.tytul": 2,
+          "przelew_bankowy.na_rachunek": 2,
+          "mocodawca.data.nazwa": 1,
+          "mocodawca.data.nip": 1,
+          "OdwolanieKIO.czynnosc_dzien": 1,
+          "przelew_bankowy.data_operacji": 1,
+          "Odwolujacy.nazwa": 1,
+          "Odwolujacy.pelnomocnik.imie_nazwisko": 1,
+          "Odwolujacy.pelnomocnik.mail": 1,
+          "przelew_bankowy.z_rachunku": 1
+        },
+        "d_convention": {
+          "Odwolujacy.nazwa": 2,
+          "przelew_bankowy.tytul": 1
+        },
+        "u_unconfirmed_source_or_convention": {
+          "Odwolujacy.pelnomocnik.imie_nazwisko": 3,
+          "Odwolujacy.przez-pelnomocnika": 2,
+          "ZamowieniePubliczne.tytul": 2,
+          "mocodawca.podpisujacy.imie_nazwisko": 1,
+          "przelew_bankowy.tytul": 1,
+          "Odwolujacy.nazwa": 1
+        },
+        "e_visible_wrong_or_omitted": {
+          "Odwolujacy.pelnomocnik.nazwa": 3,
+          "przelew_bankowy.kwota": 1
+        },
+        "u_unmatched_missing_null": {
+          "mocodawca.podpisujacy.imie_nazwisko": 1
+        },
+        "c_nonnull_against_null": {
+          "Odwolujacy.pelnomocnik.nazwa": 1
+        }
+      },
+      "grounding_detail": {
+        "quote accepted; value/derivation failed": 38,
+        "quote absent/unrecoverable": 15
+      },
+      "grounding_visibility": {
+        "derived unverified": 27,
+        "copied recognizable": 9,
+        "copied unverified": 16,
+        "derived recognizable": 1
+      },
+      "raw_nonnull_against_null": {
+        "grounded_to_null": 2,
+        "retained": 1
+      },
+      "model": "deepseek-v4-pro",
+      "split": "dev",
+      "mode": "L",
+      "routing": "fallback",
+      "input_bytes": 16384,
+      "sources": "Cached full primary/alternate first-three pages and their exact clipped excerpts; no further pages or OCR."
+    }
+  },
+  "synthetic_batch_wall_time": [
+    {
+      "model": "deepseek-flash",
+      "workers": 1,
+      "docs": 2,
+      "correct_positive_routes": 2,
+      "complete_ordered": true,
+      "seconds": 5.117573041003197,
+      "seconds_per_doc": 2.5587865205015987,
+      "peak_concurrent_calls": 1,
+      "call_seconds": 5.015812581870705,
+      "stages": {
+        "route": 2,
+        "extract": 2
+      },
+      "requests": 4,
+      "input_tokens": 2274,
+      "output_tokens": 374,
+      "responses_with_reasoning": 0
+    },
+    {
+      "model": "deepseek-flash",
+      "workers": 2,
+      "docs": 2,
+      "correct_positive_routes": 2,
+      "complete_ordered": true,
+      "seconds": 2.295962540898472,
+      "seconds_per_doc": 1.147981270449236,
+      "peak_concurrent_calls": 2,
+      "call_seconds": 4.325605208519846,
+      "stages": {
+        "route": 2,
+        "extract": 2
+      },
+      "requests": 4,
+      "input_tokens": 2274,
+      "output_tokens": 374,
+      "responses_with_reasoning": 0
+    },
+    {
+      "model": "deepseek-v4-pro",
+      "workers": 1,
+      "docs": 2,
+      "correct_positive_routes": 2,
+      "complete_ordered": true,
+      "seconds": 30.18168562510982,
+      "seconds_per_doc": 15.09084281255491,
+      "peak_concurrent_calls": 1,
+      "call_seconds": 29.66893283231184,
+      "stages": {
+        "route": 2,
+        "extract": 2
+      },
+      "requests": 4,
+      "input_tokens": 2420,
+      "output_tokens": 3408,
+      "responses_with_reasoning": 4
+    },
+    {
+      "model": "deepseek-v4-pro",
+      "workers": 2,
+      "docs": 2,
+      "correct_positive_routes": 2,
+      "complete_ordered": true,
+      "seconds": 25.103329790756106,
+      "seconds_per_doc": 12.551664895378053,
+      "peak_concurrent_calls": 2,
+      "call_seconds": 38.35929099936038,
+      "stages": {
+        "route": 2,
+        "extract": 2
+      },
+      "requests": 4,
+      "input_tokens": 2420,
+      "output_tokens": 3791,
+      "responses_with_reasoning": 4
+    }
+  ],
+  "test": {
+    "deepseek_v4_pro": {
+      "model": "deepseek-v4-pro",
+      "runtime_commit": "d288af1cb1c9f4acdc8d5125d25e3dc6ee6b78cd",
+      "evaluator_commit_at_report_write": "a6ccde0d71db3a93c1c6fa4db12d8eb961b42911",
+      "evaluator_dirty_at_report_write": true,
+      "cases": 7,
+      "pdfs": 17,
+      "positive_pdfs": 13,
+      "unrelated_pdfs": 4,
+      "micro_f1": 0.70020964360587,
+      "macro_f1_classes": 0.7100632547441058,
+      "per_class_f1": {
+        "odwolanie": 0.6918918918918919,
+        "pelnomocnictwo": 0.6382978723404256,
+        "przelew": 0.8
+      },
+      "micro_f1_non_null": 0.5119453924914675,
+      "classification_accuracy": 1.0,
+      "negatives_empty": 1.0,
+      "outputs_complete": 1.0,
+      "seconds_per_doc": 64.2837128113024,
+      "counts": {
+        "tp": 167,
+        "fp": 69,
+        "fn": 74
+      },
+      "completed_evaluations": 1,
+      "batch_attempts": 1
+    },
+    "deepseek_flash": {
+      "model": "deepseek-flash",
+      "runtime_commit": "15f4fbb2e6036cb4ce47d7521aee234610ee3921",
+      "evaluator_commit_at_report_write": "15f4fbb2e6036cb4ce47d7521aee234610ee3921",
+      "evaluator_dirty_at_report_write": false,
+      "cases": 7,
+      "pdfs": 17,
+      "positive_pdfs": 13,
+      "unrelated_pdfs": 4,
+      "micro_f1": 0.6054590570719603,
+      "macro_f1_classes": 0.6625706214689265,
+      "per_class_f1": {
+        "odwolanie": 0.5627118644067797,
+        "pelnomocnictwo": 0.625,
+        "przelew": 0.8
+      },
+      "micro_f1_non_null": 0.5681818181818182,
+      "classification_accuracy": 1.0,
+      "negatives_empty": 1.0,
+      "outputs_complete": 1.0,
+      "seconds_per_doc": 6.4343886617571115,
+      "counts": {
+        "tp": 122,
+        "fp": 40,
+        "fn": 119
+      },
+      "completed_evaluations": 1,
+      "batch_attempts": 2,
+      "rules_recoveries": 1,
+      "observed_error_type": "OutputTokenLimitExceeded",
+      "secondary_ocr_errors": 0,
+      "first_attempt_diagnostic": "Batch failed before scoring; underlying exception was not retained."
+    },
+    "protocol": "Both profiles were selected and frozen using dev only. Each scored evaluation was the first to produce held-out aggregate metrics. After an initial CLI batch failure, the coordinator authorized per-document rules-only recovery and a retry without tuning any successful-path settings. Diagnostics were restricted to code stages, exception types and aggregate counters."
+  },
+  "qwen_dev": {
+    "completed": 11,
+    "scheduled": 22,
+    "positive_completed": 9,
+    "matched_scores": {
+      "qwen": {
+        "micro_f1": 0.432258064516129,
+        "macro_f1_classes": 0.3209366391184573,
+        "per_class_f1": {
+          "odwolanie": 0.4628099173553719,
+          "pelnomocnictwo": 0.5,
+          "przelew": 0.0
+        },
+        "classification_accuracy": 1.0,
+        "negatives_empty": 0.5,
+        "outputs_complete": 1.0,
+        "counts": {
+          "tp": 67,
+          "fp": 98,
+          "fn": 78
+        }
+      },
+      "pro": {
+        "micro_f1": 0.7681660899653979,
+        "macro_f1_classes": 0.7594276094276093,
+        "per_class_f1": {
+          "odwolanie": 0.7727272727272727,
+          "pelnomocnictwo": 0.7555555555555555,
+          "przelew": 0.75
+        },
+        "classification_accuracy": 1.0,
+        "negatives_empty": 1.0,
+        "outputs_complete": 1.0,
+        "counts": {
+          "tp": 111,
+          "fp": 33,
+          "fn": 34
+        }
+      },
+      "flash": {
+        "micro_f1": 0.726643598615917,
+        "macro_f1_classes": 0.6929292929292928,
+        "per_class_f1": {
+          "odwolanie": 0.7454545454545455,
+          "pelnomocnictwo": 0.6666666666666666,
+          "przelew": 0.6666666666666666
+        },
+        "classification_accuracy": 1.0,
+        "negatives_empty": 1.0,
+        "outputs_complete": 1.0,
+        "counts": {
+          "tp": 105,
+          "fp": 39,
+          "fn": 40
+        }
+      }
+    },
+    "native_run_budget_seconds": 1380,
+    "completed_prefix_wall_seconds": 1255.96,
+    "completed_prefix_wall_seconds_per_pdf": 114.18,
+    "total_comparison_budget_minutes": 30
+  },
+  "independent_flash_dev_repeat": {
+    "frozen_runtime_commit": "d288af1cb1c9f4acdc8d5125d25e3dc6ee6b78cd",
+    "method": "Separate uncached call of the repository evaluator and the original CLI with aggregate diagnostic counters. The primary mode comparison shares identical model responses across modes.",
+    "pdfs": 22,
+    "cases": 14,
+    "micro_f1": 0.680161943319838,
+    "macro_f1_classes": 0.6262180046538685,
+    "per_class_f1": {
+      "odwolanie": 0.7015706806282722,
+      "pelnomocnictwo": 0.71875,
+      "przelew": 0.4583333333333333
+    },
+    "micro_f1_non_null": 0.5426829268292683,
+    "classification_accuracy": 1.0,
+    "negatives_empty": 1.0,
+    "outputs_complete": 1.0,
+    "seconds_per_pdf": 29.177300912920725,
+    "stage_seconds": {
+      "primary_reading": 164.75,
+      "secondary_ocr": 414.57,
+      "routing": 12.99,
+      "extraction": 47.65
+    }
+  }
+}
