@@ -8,16 +8,17 @@ Shared state of the project. Rules: `CLAUDE.md` → Worklog.
   template example in `input/case1`.
 - Eval harness (`evals/`, field-level F1 on the training cases, working definition) with tests.
   `evals/field_report.py` adds a per-field error table and an OCR stress run (`--force-ocr`).
-- App: `kio2json/`, a rule-based baseline with no language model. CLI `python -m kio2json --input input --output output`;
-  classification by heading and transaction evidence; field and role boundaries in each extractor; pdfplumber text
-  with Tesseract (`pol`) for blank or page-number-only text layers. Required OCR failures identify the PDF on stderr. Branch `baseline/rule-based-extraction`.
+- On `feat/config-driven-classes`, the CLI reads class definitions from `config/classes/`.
+  The jury classes select the baseline content classifier and their Python extractors by dotted path.
+  A disabled participation form demonstrates config-only routing and labelled fields. The optional
+  model engine checks each complete source value against its own verbatim quote and reports endpoint failures per PDF.
 - Research notes on OCR, schema extraction and Polish legal NLP: `docs/kio-extraction-research.md`.
 - Claude Code setup: skills `hacknation-judging`, `odwolania2json-eval`, `build`, `verify`, `humanizer`;
   agents `judge`, `builder`, `reviewer`, `researcher`; pre-push hook in `.githooks/`.
 
 ## Last eval
 
-21.11.2026, full mode, rule-based baseline (`evals/results/latest.json`): `micro_f1` 1.000, cases 51-60 1.000,
+21.11.2026, full mode, default jury configuration (`evals/results/latest.json`): `micro_f1` 1.000, cases 51-60 1.000,
 `classification_accuracy` 1.000, `negatives_empty` 1.000. Training data (synthetic). The rules were written with
 sight of these documents, cases 53-60 included, so this is a regression check and the 51-60 figure is not an
 unseen-case estimate for this baseline.
@@ -29,8 +30,7 @@ unseen-case estimate for this baseline.
 | OCR challenger: Tesseract vs a pip-installable engine (PP-OCRv6) on `evals.field_report --force-ocr` | — |
 | OCR-tolerant rules: account checksum repair, `0.0.` → `o.o.`, signers without dotted lines | — |
 | Real-layout appeals: small reference set from real KIO appeals; coordinate-aware rules vs a grounded model call | — |
-| Config-driven classes (routing cues, fields, patterns in config files) | — |
-| Extraction per class with an open-weight LLM on an EU API (pydantic-ai), where rules fail | — |
+| Measure accuracy and latency of the config-selected LLM on real layouts once the EU model endpoint is available | — |
 | Transparency output: source page, quoted text and rule per field | — |
 | GUI: upload, run, source and JSON side by side | — |
 | Ask the UZP stand: F1 formula, stage II weights (README 50/50 vs PDF 50/30/20) | — |
@@ -53,4 +53,7 @@ unseen-case estimate for this baseline.
 - 21.11.2026 · Claude · stricter F1 normalisation (types, formats), invented test fixture, organizer data copied into the repo (UZP e8b7a67)
 - 21.11.2026 · Claude · rule-based baseline `kio2json`, field report, data refresh to UZP 7590db8 (reason 6 description is now `Odpowiedzi/wyjaśnienia do SWZ`); full eval `micro_f1` 1.000 on training data
 - 21.11.2026 · Codex · fixed OCR failure reporting, payment and party roles, first-charge dates and field-report matching. Added regressions with invented fixtures. Extraction fixes in `0ecd41c`.
+- 21.11.2026 · Codex · Configured routing and three extraction engines in `00a84f2`. The fourth class uses only TOML. All 196 synthetic corpus outputs matched baseline `4deb354` byte for byte. The field report found zero errors across 2,316 fields.
 - 21.11.2026 · Codex · Bound transfer values, appeal facts, grantors and signers to their document sections. Added invented regression cases, replaced the organizer identifier in the normalization test and checked 40 fresh adversarial inputs. Transfer and appeal changes in `aaa8057` and `a10b5ad`.
+- 21.11.2026 · Codex · Merged baseline `90d9701` and restored its routing through TOML. All 196 CLI outputs matched that baseline byte for byte, including 16 empty files. The field report found zero errors across 2,316 fields. Added regression tests for model evidence, endpoint diagnostics, alternative evidence captures, signed grouped amounts and malformed NIPs.
+- 21.11.2026 · Codex · Fixed the remaining PR #8 grounding findings from review of `002fbcb`. The model and fallback now check complete numeric runs, account and registry IDs, email addresses and references. Babel validates grouped money with attached currency. Added generated checks for clipped values and nine grouping styles.
