@@ -23,14 +23,18 @@ Shared state of the project. Rules: `CLAUDE.md` → Worklog.
 sight of these documents, cases 53-60 included, so this is a regression check and the 51-60 figure is not an
 unseen-case estimate for this baseline.
 
-21.11.2026, local real corpus. The all-corpus report is in commit `00626a5`. Both splits ran at `f93b908`.
+21.11.2026, local real corpus. The all-corpus row is the earlier run in `00626a5`. Dev and test ran at
+`79eef2a` after merging the updated extraction baseline (`90d9701`).
 All three target classes entered each class average. Every PDF had an output and every negative was empty.
 
 | Split | Cases | PDFs | Micro F1 | Macro by document | Macro by class | Macro by field | Positive classification accuracy |
 |---|---:|---:|---:|---:|---:|---:|---:|
 | All | 20 | 37 | 0.4025 | 0.3327 | 0.3681 | 0.3978 | 0.7778 |
-| Dev | 13 | 20 | 0.4352 | 0.3715 | 0.4189 | 0.4034 | 0.7857 |
-| Test | 7 | 17 | 0.3675 | 0.2909 | 0.3065 | 0.3940 | 0.7692 |
+| Dev | 13 | 20 | 0.4323 | 0.3427 | 0.3676 | 0.3910 | 0.7143 |
+| Test | 7 | 17 | 0.3481 | 0.2285 | 0.2445 | 0.3478 | 0.6154 |
+
+Both splits missed the team’s micro F1 and classification targets. Compared with the earlier split runs at
+`f93b908`, micro F1 fell from 0.4352 on dev and 0.3675 on test.
 
 ## Next
 
@@ -65,3 +69,4 @@ All three target classes entered each class average. Every PDF had an output and
 - 21.11.2026 · Codex · fixed OCR failure reporting, payment and party roles, first-charge dates and field-report matching. Added regressions with invented fixtures. Extraction fixes in `0ecd41c`.
 - 21.11.2026 · Codex · added corpus scoring and macro F1, then measured the whole-case dev and test splits at `f93b908`.
 - 21.11.2026 · Codex · Bound transfer values, appeal facts, grantors and signers to their document sections. Added invented regression cases, replaced the organizer identifier in the normalization test and checked 40 fresh adversarial inputs. Transfer and appeal changes in `aaa8057` and `a10b5ad`.
+- 21.11.2026 · Codex · fixed private report destinations, corpus I/O diagnostics and invalid UTF-8 scoring in `be82db0`. Re-ran full training and both real-corpus splits.

@@ -1,8 +1,8 @@
 {
-  "commit": "f93b908fd4ac8a75c518dfbadd580fd1d6766403",
+  "commit": "79eef2a55ce23f53aa4bfab8a96cd977062290bc",
   "dirty": false,
   "mode": "corpus",
-  "timestamp": "2026-11-21T14:37:00+00:00",
+  "timestamp": "2026-11-21T14:59:58+00:00",
   "n_cases": 7,
   "n_docs": 17,
   "coverage_ok": false,
@@ -10,7 +10,7 @@
   "run_error": null,
   "metrics": {
     "micro_f1": {
-      "value": 0.3674540682414698,
+      "value": 0.3480825958702065,
       "target": 0.9,
       "pass": false
     },
@@ -25,35 +25,35 @@
       "pass": true
     },
     "classification_accuracy": {
-      "value": 0.7692307692307693,
+      "value": 0.6153846153846154,
       "target": 1.0,
       "pass": false
     },
     "seconds_per_doc": {
-      "value": 1.4748631004682358,
+      "value": 2.0385137156528583,
       "target": null,
       "pass": true
     }
   },
   "detail": {
-    "micro_f1": 0.3674540682414698,
-    "macro_f1_documents": 0.29092312158639494,
-    "macro_f1_classes": 0.3064814814814815,
+    "micro_f1": 0.3480825958702065,
+    "macro_f1_documents": 0.22851198575180476,
+    "macro_f1_classes": 0.24453920871831317,
     "macro_f1_class_count": 3,
-    "macro_f1_fields": 0.3940329218106996,
-    "micro_f1_non_null": 0.3157894736842105,
+    "macro_f1_fields": 0.3477589908749329,
+    "micro_f1_non_null": 0.2831050228310502,
     "per_class_f1": {
-      "odwolanie": 0.4027777777777778,
-      "pelnomocnictwo": 0.26666666666666666,
-      "przelew": 0.25
+      "odwolanie": 0.39552238805970147,
+      "pelnomocnictwo": 0.17142857142857143,
+      "przelew": 0.16666666666666666
     },
-    "classification_accuracy": 0.7692307692307693,
+    "classification_accuracy": 0.6153846153846154,
     "negatives_empty": 1.0,
     "outputs_complete": 1.0,
     "counts": {
-      "tp": 70,
-      "fp": 70,
-      "fn": 171
+      "tp": 59,
+      "fp": 39,
+      "fn": 182
     }
   },
   "holdout_51_60": null,
