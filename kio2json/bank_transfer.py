@@ -5,7 +5,7 @@ import re
 from .common import DATE, squash, to_iso
 
 # 26-digit Polish account number, optionally 'PL'-prefixed, grouped or wrapped across lines.
-ACCOUNT_RE = re.compile(r"(?<![\d])(?:PL\s?)?(\d{2}(?:[ \n]?\d{4}){6})(?!\d)")
+ACCOUNT_RE = re.compile(r"(?<![\w/|*])(?:PL\s?)?(\d{2}(?:[ \n]?\d{4}){6})(?![\w/|*])")
 SENDER_RE = re.compile(r"nadawc|zleceniodawc|płatnik|obciąż|z rachunku")
 RECIPIENT_RE = re.compile(r"odbiorc|beneficjent|adresat|uznawan|na rachunek")
 
@@ -45,8 +45,15 @@ def _accounts(text: str) -> tuple[str | None, str | None]:
     for match in ACCOUNT_RE.finditer(text):
         found.setdefault(re.sub(r"\s", "", match.group(1)), match)
     numbers, matches = list(found)[:2], list(found.values())[:2]
-    if len(numbers) < 2:
-        return (numbers[0] if numbers else None), None
+    if not numbers:
+        return None, None
+    if len(numbers) == 1:
+        prefix = text[: matches[0].start()].rstrip().splitlines()
+        label = prefix[-1].lower() if prefix else ""
+        sender, recipient = bool(SENDER_RE.search(label)), bool(RECIPIENT_RE.search(label))
+        if sender != recipient:
+            return (numbers[0], None) if sender else (None, numbers[0])
+        return None, None
 
     roles, on_own_line = [], []
     previous_end = 0

@@ -82,3 +82,29 @@ def test_native_word_boxes_keep_pdfplumber_coordinates(monkeypatch):
     assert pdf_text.read_pages("native.pdf", word_boxes=words) == ["Załącznik"]
     assert words == [(2, "Załącznik", 40, 60, 91, 70)]
     page.to_image.assert_not_called()
+
+
+def test_damaged_contact_line_cannot_create_another_contracting_authority():
+    from kio2json.appeal import extract
+
+    text = "Zamawiający: Gmina Próbna\nul. Pusta 4\nNIP: 9990001122\nsekretariatQfikcja.example\nODWOŁANIE"
+    parties = extract(text)["Zamawiajacy"]
+    assert [p["nazwa"] for p in parties] == ["Gmina Próbna"]
+    assert extract("Zamawiający: przyklad.example")["Zamawiajacy"][0]["nazwa"] == "przyklad.example"
+
+
+def test_confirmed_payment_with_one_unreadable_account_preserves_the_other_role():
+    from kio2json import bank_transfer
+    from kio2json.classify import classify
+
+    account = "56458700991234567801234567"
+    text = (
+        "Potwierdzenie przelewu\nRachunek nadawcy: ****\nRachunek odbiorcy: "
+        + account
+        + "\nKwota przelewu: 64,50 PLN\nData operacji: 04.06.2025"
+    )
+    assert classify([text]) == "bank_transfer"
+    result = bank_transfer.extract(text)["przelew_bankowy"]
+    assert (result["z_rachunku"], result["na_rachunek"]) == (None, account)
+    assert classify(["Prosimy o potwierdzenie przelewu" + text.removeprefix("Potwierdzenie przelewu")]) is None
+    assert classify(["FAKTURA VAT\n" + text]) is None

@@ -103,7 +103,13 @@ def _parties(lines: list[str]) -> dict[str, list[dict]]:
                 entity = parties[section][-1]
                 for key, value in registry_ids(line).items():
                     entity[key] = entity[key] or value
-        elif "@" in line:
+        elif "@" in line or (
+            parties[section]
+            and not name_lines
+            and sublabel == parties[section][-1]["sublabel"]
+            and any(parties[section][-1][k] for k in ("krs", "nip", "regon"))
+            and re.fullmatch(r"[\w+%©®.-]+\.[a-zA-Z]{2,}", line)
+        ):
             finish_name()
         elif line:
             name_lines.append(line)
