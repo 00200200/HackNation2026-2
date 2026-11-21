@@ -5,7 +5,7 @@ import re
 from rapidfuzz.distance import Levenshtein
 from stdnum.pl import nip
 
-from .common import ATTORNEY_RE, PERSON, UPPER, registry_ids, squash
+from .common import ATTORNEY_RE, EMAIL_RE, PERSON, UPPER, registry_ids, squash
 from .personal_names import compatible_names, resolve_attorneys
 
 LEGAL_FORM = (
@@ -117,18 +117,22 @@ ENTRY_BOUNDARY = re.compile(
 )
 
 
-def _declared_officers(text: str) -> list[tuple[dict, str]]:
-    grant = GRANT.search(text)
-    if not grant:
-        return []
+def _declared_officers(declaration: str, *, known_issuers: set[str] | None = None) -> list[tuple[dict, str]]:
     officers = []
-    for entry in ENTRY_BOUNDARY.split(text[: grant.start()]):
+    for entry in ENTRY_BOUNDARY.split(declaration):
         # An officer title is often capitalized and otherwise looks like part of a company name.
         without_roles = SIGNER_ROLE_RE.sub(lambda m: "|" * len(m[0]), entry)
         companies = list(COMPANY_RE.finditer(without_roles))
         if len(companies) != 1:
             continue
         company = companies[0]
+        name = _company_name(company[1])
+        if (
+            known_issuers is not None
+            and name not in known_issuers
+            and not re.search(r"\breprezentowan\w*\s+przez\b", entry[company.end() :], re.IGNORECASE)
+        ):
+            continue
         # Remove the company from the search so a capitalized trade name cannot become the officer.
         people = entry[: company.start()] + "|" + entry[company.end() :]
         context = entry[: company.start()]
@@ -149,7 +153,7 @@ def _declared_officers(text: str) -> list[tuple[dict, str]]:
             if re.search(r"[!?;]|\.\s+[A-ZĄĆĘŁŃÓŚŹŻ]", gap) or OTHER_ROLE.search(gap):
                 continue
             person = squash((left or right)[1])
-            officers.append((_company_data(_company_name(company[1]), entry[company.end() :]), person))
+            officers.append((_company_data(name, entry[company.end() :]), person))
     return officers
 
 
@@ -407,19 +411,29 @@ def _signers(text: str, principal_names: list[str], attorney_names: set[str], *,
             continue
         if re.match(r"^pełnomocnictwo przyjmuję", line, re.IGNORECASE):
             break
+        owner = current
         if FOOTER.search(line) or re.search(r"\b(?:Sąd Rejonowy|Wydział Gospodarczy)\b", line):
             current = None
-        if current is None or index < first_candidate:
+            # Keep consecutive signature slots under the same heading, then stop at the contact block.
+            printed = SIGNATURE_WITH_EMAIL.fullmatch(line.strip())
+            if not printed:
+                continue
+            following = lines[index + 1].strip() if index + 1 < len(lines) else ""
+            if SIGNATURE_LINE_RE.fullmatch(following) or SIGNATURE_WITH_EMAIL.fullmatch(following):
+                current = owner
+            line = printed[1]
+        if owner is None or index < first_candidate:
             continue
         line = ROLE_WORDS_RE.sub("|", ATTORNEY_RE.sub("|", line))
         for person in re.findall(PERSON, line):
             person = squash(person)
-            if person not in attorney_names and person not in signers[current]:
-                signers[current].append(person)
+            if person not in attorney_names and person not in signers[owner]:
+                signers[owner].append(person)
     return signers
 
 
 STAMP = re.compile(r"(?i)^(?:podpis(?:ano|any|ana) (?:elektronicznie )?przez|signed (?:electronically )?by)\s*[:：]\s*")
+SIGNATURE_WITH_EMAIL = re.compile(rf"({PERSON})(?:[ \t]+|[ \t]*[,;(][ \t]*){EMAIL_RE.pattern}\)?[.]?")
 FOOTER = re.compile(r"(?i)(?:^tel[.:]|^https?://|\bul\.\s|\b(?:NIP|REGON)\s*[:\d]|\w@\w)")
 
 
@@ -491,7 +505,20 @@ def grant_parties(text: str) -> tuple[list[dict], list[tuple[dict, str]]]:
         ]
         return data, []
     principals = _principals(body) or _principals(text)
-    officers = _declared_officers(body)
+    officers = _declared_officers(body[: grant.start()]) if grant else []
+    if heading and grant:
+        # An explicit issuer row may precede the title, alongside unrelated letterhead.
+        prefix = text[: heading.start()]
+        earlier = _principals(prefix) if GRANTOR.search(prefix) else []
+        if earlier:
+            ordered = {p["nazwa"]: p for p in earlier}
+            for principal in principals:
+                issuer = ordered.setdefault(principal["nazwa"], principal)
+                for key in ("krs", "nip"):
+                    issuer[key] = issuer[key] or principal[key]
+            principals = list(ordered.values())
+        names = {p["nazwa"] for p in principals}
+        officers = _declared_officers(prefix, known_issuers=names) + officers
     if not principals and grant:
         # A grant made before the issuer's identity can name it in the representation clause.
         on_behalf = re.match(

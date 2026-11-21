@@ -121,7 +121,7 @@ def _merge_grantors(previous: list[dict], members: list[dict]) -> bool:
         if len(owners) != 1:
             return False
         owner = owners[0]
-        for key in ("krs", "nip"):
+        for key in ("krs", "nip", "nazwa"):
             owner["data"][key] = owner["data"][key] or old["data"][key]
         owner["podpisujacy"].extend(s for s in old["podpisujacy"] if s not in owner["podpisujacy"])
     return True
