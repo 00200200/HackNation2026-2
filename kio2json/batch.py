@@ -13,7 +13,7 @@ from .pipeline import process_pdf
 
 
 def configure_logging(classes: list[DocumentClass]) -> None:
-    if any(c.enabled and "llm" in c.engines for c in classes):
+    if any(c.enabled and ("llm" in c.engines or c.profile.routing != "rules") for c in classes):
         # The SDK banner names the model; debug logs include response headers and request URLs.
         os.environ.setdefault("PYDANTIC_AI_NO_BANNER", "1")
         os.environ.pop("OPENAI_LOG", None)
@@ -26,13 +26,17 @@ class Result:
     label: str | None
     text: str
     error: str | None = None
+    used_recovery: bool = False
 
 
 def read_document(path: Path, classes: list[DocumentClass]) -> Result:
+    recoveries = []
     try:
-        label, data = process_pdf(path, classes=classes)
+        label, data = process_pdf(path, classes=classes, on_recovery=recoveries.append)
     except (EndpointError, NoReadableTextError) as error:
         return Result(None, "", str(error))
     except Exception as error:  # noqa: BLE001 - PDF and OCR backends raise unrelated types.
         return Result(None, "", f"{type(error).__name__}: {error}")
-    return Result(label, json.dumps(data, ensure_ascii=False, indent=2) + "\n" if data else "")
+    return Result(
+        label, json.dumps(data, ensure_ascii=False, indent=2) + "\n" if data else "", used_recovery=bool(recoveries)
+    )

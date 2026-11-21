@@ -4,19 +4,26 @@ HackNation 2026 entry for the Public Procurement Office (UZP) challenge: read th
 appeal case, decide what each one is, and write the organizer's JSON for it. Task brief:
 `docs/task/BRIEF.md`. Project state and open work: `WORKLOG.md`.
 
-The jury configuration runs three rule-based extractors locally. Each class has a TOML file
+Without endpoint credentials the jury configuration runs three rule-based extractors locally. Each class has a TOML file
 that selects its routing rules, output fields and extraction engines. New classes can use
 label patterns or an optional language model.
 
 ## Run
 
-From the repository root, use 64-bit CPython 3.13 and a virtual environment. pip installs the
+From the repository root, create a virtual environment with 64-bit CPython 3.13.
+
+| Shell | Create | Activate |
+|---|---|---|
+| Windows PowerShell | `py -3.13 -m venv .venv` | `.\.venv\Scripts\Activate.ps1` |
+| macOS or Linux | `python3.13 -m venv .venv` | `. .venv/bin/activate` |
+
+Use the activated shell for the install and run commands below. pip installs the
 Tesseract native libraries from PyPI. The local language-data wheel downloads the Polish and
 English fast models (8.88 MB combined) from a pinned revision on `raw.githubusercontent.com`
-and verifies both SHA-256 hashes. Once installed, the CLI and viewer process PDFs offline.
+and verifies both SHA-256 hashes. Once installed, the rules-only CLI and viewer process PDFs offline.
 [Platform wheels](https://pypi.org/project/tesserocr/2.13.0/#files)
 
-If the model host is unreachable, download both files on a connected machine and copy them into
+If the Tesseract data host is unreachable, download both language files on a connected machine and copy them into
 one directory. Before rerunning the install command below, set
 `export KIO_TESSDATA_SOURCE=/absolute/path/to/models` in a POSIX shell or
 `$env:KIO_TESSDATA_SOURCE = 'C:\models'` in PowerShell. Keep the original filenames.
@@ -24,7 +31,7 @@ The installer verifies the same hashes for locally supplied files.
 [pol.traineddata](https://raw.githubusercontent.com/tesseract-ocr/tessdata_fast/87416418657359cb625c412a48b6e1d6d41c29bd/pol.traineddata) · [eng.traineddata](https://raw.githubusercontent.com/tesseract-ocr/tessdata_fast/87416418657359cb625c412a48b6e1d6d41c29bd/eng.traineddata)
 
 ```
-pip install -r requirements.txt
+python -m pip install -r requirements.txt
 python -m kio2json                                   # reads ./input, writes ./output
 python -m kio2json --input some/input --output some/output
 ```
@@ -38,16 +45,14 @@ The default OCR setting is `tesseract-dpi`. Set `KIO_OCR_ENGINE` to choose anoth
 | `rapidocr` | RapidOCR v6 on CPU. |
 | `hybrid` | Start with `tesseract-dpi`. Retry OCR pages with RapidOCR when the document is unreadable or fails to match a class. |
 
-Both RapidOCR modes require the optional CPU packages. Their wheels include the models and support an offline first run.
-Install them with `python -m pip install "rapidocr==3.10.0" "onnxruntime==1.32.0"`. With uv, use
-`uv run --group rapidocr python -m kio2json` after selecting the engine.
+The requirements include the CPU RapidOCR and ONNX Runtime wheels used by the keyed model profile.
+Their packaged models support an offline first run.
 For example, use `export KIO_OCR_ENGINE=rapidocr` in a POSIX shell or
 `$env:KIO_OCR_ENGINE = "rapidocr"` in PowerShell.
 
 Each PDF gets a JSON at the same relative path and file stem. Appeals, powers of attorney and
 bank-transfer confirmations get the organizer's structure. Any other document gets an empty
-file. A PDF that cannot be processed also gets an empty file, is reported on stderr, and makes
-the run exit with status 1 after processing the remaining PDFs. A nonblank scan that yields fewer than two alphabetic words after page counters are removed
+file. In the default keyless profile, an unreadable PDF receives an empty file and a diagnostic on stderr. The CLI processes the remaining PDFs and exits with status 1. The keyed organizer profile uses the document recovery described below. A nonblank scan that yields fewer than two alphabetic words after page counters are removed
 reports `no readable text after OCR`. Blank pages may stand alone or appear beside a readable page.
 
 To open the Polish document viewer, run `python -m kio2json.gui`. It opens a browser on
@@ -82,12 +87,13 @@ works offline. Page provenance is used internally and the output follows the org
    It reads headings in document order. A transfer normally needs two distinct accounts, a confirmation
    heading or execution status, and a transaction amount or date. Rejected payments and payment
    requests get an empty file.
-3. `kio2json/engines.py` sends the joined page text to the selected extractor. The three jury
-   classes use `python` with a dotted path to the existing rule function. Native pages follow
-   the integration baseline. The reader records which pages needed OCR so account repair,
-   damaged e-mail handling and signature recovery can use the source of each field.
-   A scanned attachment does not enable masked-account routing on a native receipt. `labelled_fields` extracts values by pattern. `llm`
-   generates a Pydantic AI output model from the same field definitions.
+3. The rule extractors recover party blocks and receipt fields from columns. Each page keeps its source,
+   so a scanned attachment cannot enable OCR repairs on a native receipt. Configuring an endpoint enables
+   first-page model routing after the rules reject a document. The model extracts from the original reading
+   and, on scans, an independent OCR reading. Each accepted value needs a supporting span. The class rules
+   fill gaps using the reconstructed layout. The CLI and viewer share this pipeline.
+
+[Pipeline diagram (PDF)](docs/pipeline/pipeline.pdf)
 
 ## Enable the fourth class
 
@@ -109,6 +115,8 @@ uv run pytest -q tests/test_class_config.py -k fourth
 ```
 
 ## Add a class
+
+The three organizer class definitions supply the field descriptions, types and grounding rules for a configured model. For a new class in a custom directory, its own TOML selects the routing cues and engine order.
 
 1. Create one TOML file in your class directory and choose a unique English `id`. This example
    adds a receipt with one reference field.
@@ -148,41 +156,35 @@ uv run pytest -q tests/test_class_config.py -k fourth
 
 ## Use a model endpoint
 
-Choose an OpenAI-compatible chat endpoint serving your open-weight model with structured
-tool output. Set these variables in the process environment or in an ignored `.env` in the
-working directory. Existing environment values take precedence.
+To enable a model for the three bundled classes, supply these variables in the process environment or in
+an ignored `.env` in the working directory. Environment values take precedence. Choose an OpenAI-compatible
+Chat Completions endpoint that can return structured JSON. For submission, the provider and inference
+region must meet the organizer’s EU/EEA requirements. Model selection is pending.
 
 | Variable | Value |
 |---|---|
-| `KIO_LLM_BASE_URL` | API base URL, including the endpoint's version path, e.g. `http://localhost:8000/v1` |
-| `KIO_LLM_MODEL` | Model identifier advertised by that endpoint |
-| `KIO_LLM_API_KEY` | Endpoint credential |
+| `KIO_LLM_BASE_URL` | Your provider’s API base URL, including its version path if required |
+| `KIO_LLM_MODEL` | Model ID served at that endpoint |
+| `KIO_LLM_API_KEY` | Credential accepted by the endpoint |
 
-Set `engines = ["llm"]` for model-only extraction. Remove the `extractor` entry when removing
-the Python engine. Use `engines = ["python", "llm"]` to keep values found by the rules and
-consult the model for null fields. A fallback preserves existing arrays, including empty ones.
-To fill missing fields within existing records, set `match_by` on the list to a unique scalar
-field, such as `data.nazwa` in `power_of_attorney.toml`. Ambiguous identities keep their original
-records. The built-in jury classes use only `python` and require no endpoint settings.
+Run the same CLI or viewer command. With all three variables set, the bundled classes use model-first
+extraction with rule fallback (`KIO_LLM_MODE=LR`). The router asks the model about the first page after
+the local rules reject the document (`KIO_LLM_ROUTING=fallback`). On a scan, RapidOCR provides a second
+reading alongside Tesseract. The two readings share a 16,384-byte budget. A citation must match one
+displayed source. Dates, amounts and identifiers must cover complete printed values.
 
-The model supplies a verbatim quote for each scalar. The engine checks that the page contains
-the quote and that the quote supports the value. Copied text must appear in the quote after
-normalization. Full references and email addresses keep their internal punctuation. For dates,
-amounts, accounts and registry IDs, the quote must cover the complete printed value, including
-any sign. Grouped amounts such as `9 876,54 PLN` and amounts with attached currency such as
-`EUR87,23` are supported. An incomplete value or an overlong account yields null, including for
-normally mandatory scalars. A correctly quoted value from the wrong party’s block can still pass.
-
-Pydantic AI allows one structured-output correction within a 60-second run timeout. Transport
-retries are disabled. An endpoint failure is reported on stderr with the PDF path, failure type
-and HTTP status when available. The CLI continues the batch and exits with status 1.
-Offline model tests cover these rules. Accuracy and latency on a live model have yet to be measured.
+For compatible servers, `KIO_LLM_OUTPUT=schema` requests native JSON schema support. The default is
+`json`. `KIO_LLM_TIMEOUT_SECONDS` sets the request deadline (1–600 seconds, default 180). The engine
+allows one structured-output correction. On a model or secondary OCR error, the keyed organizer
+profile retries the document with local rules, reports recovery, and continues the batch. An unreadable
+document yields an empty file. Custom class directories use the engine chains in their own TOML files.
 
 ## Measure
 
 ```
 uv run python -m evals.run --quick            # dev subset, before a push
-uv run python -m evals.run                    # all 60 training cases and the negatives
+uv run python -m evals.run                    # all 60 synthetic training cases and the negatives
+uv run python -m evals.run --organizer-scans  # 30 separately labelled scans
 uv run python -m evals.field_report --errors  # which fields fail, with list items paired inside their parent
 uv run python -m evals.field_report --force-ocr --errors   # ignore the text layer: what OCR costs
 make eval-real HN_REAL_SPLIT=dev              # /Users/domin/hn2-real-eval, or set HN_REAL_CORPUS
@@ -202,7 +204,7 @@ Training mode checks selected files against the organizer inventory committed in
 positive reference needs fields for its expected class. The negative-output target requires zero-byte predictions.
 For a case-level split, put `{"dev": [...], "test": [...]}` in `SPLIT.json` at the corpus root. Each list
 contains case folder names. The default `--split all` scores the whole corpus, including corpora without a split.
-Inspect field errors on dev. Use aggregate scores to evaluate test.
+Inspect field errors on dev. Use aggregate scores to evaluate test. The organizer scan mode validates the committed PDF/reference pairs in `data/uzp/dane/skany` and writes `evals/results/organizer-scans.json`. The synthetic training and scan scores have separate result files.
 
 `evals.run` reports pooled micro F1 and macro F1 by document, class and field path.
 The working definitions are in `evals/metrics.py`. The organizer's formula is UNCONFIRMED.
@@ -224,19 +226,34 @@ of how the rules generalize. The hidden test set holds real cases, and this is n
 
 A separate native-text differential test compares the class and serialized fields of 175 invented PDFs
 with a snapshot from integration base `3210643`. It includes 135 review cases and 40 additional
-documents. [Fixtures and regeneration command](tests/snapshots/README.md)
+documents. Two suites compare 282 invented grant, receipt and routing PDFs and 205 appeal and routing inputs with integration base `e051dfa`. Each expected change records the original value, replacement and reason. [Fixtures and regeneration commands](tests/snapshots/README.md)
 
 Forced OCR on all 196 training PDFs (307 rendered pages) gave strict field F1 **0.900**
 with automatic source resolution and **0.884** with explicit 300 dpi. The comparison used the rules recorded in the measurement file. To run the
 current rules, select `KIO_OCR_ENGINE=tesseract-dpi` and run
 `uv run python -m evals.field_report --force-ocr --errors`. [OCR measurements](evals/results/ocr-engines.json)
 
+## Rules on real documents and organizer scans
+
+These runs used local rules with the three endpoint variables unset. The two local datasets contain real documents and use whole-case splits. Corpus 1 contributes all 39 development PDFs, including its previously evaluated split. Corpus 2 contributes 39 development PDFs from 14 cases. Its 60 test PDFs are reserved for the merged system. The organizer supplied a separate set of 30 labelled scans, ten per target class. The scan command stages the committed PDF/reference pairs as one batch with neutral filenames. [Organizer scan set at the measured revision](https://github.com/Urzad-Zamowien-Publicznych/hacknation-2026/tree/0b360a9da4b482a6a280696df6714404e0953505/dane/skany)
+
+| Dataset | PDFs | Micro F1 | Macro F1 by class | Appeal | Power of attorney | Transfer | Correct routes (appeal / power / transfer) | Empty negatives | Wall s/PDF |
+|---|---:|---:|---:|---:|---:|---:|---|---:|---:|
+| Local corpus 1, all | 39 | 0.6307 | 0.6607 | 0.6016 | 0.9189 | 0.4615 | 12/13 / 6/6 / 4/9 | 11/11 | 7.39 |
+| Local corpus 2, dev | 39 | 0.6045 | 0.5662 | 0.6008 | 0.9462 | 0.1515 | 12/13 / 5/5 / 1/10 | 11/11 | 6.33 |
+| Organizer scans | 30 | 0.6852 | 0.6023 | 0.6123 | 1.0000 | 0.1944 | 9/10 / 10/10 / 2/10 | n/a | 10.05 |
+
+Micro F1 pools field matches across documents. Macro F1 averages the three class scores. The routing columns count correctly classified documents in each target class. The negatives column counts zero-byte outputs. Timing includes OCR and extraction on a shared host. [Grant development measurements](evals/results/poa-development.json) · [Organizer scan report](evals/results/organizer-scans.json)
+
+The organizer allows 45 minutes for its 150-PDF batch, an average budget of 18 seconds per PDF.
+The reported times cover these local datasets. OCR runs locally. Under the updated rules, a remote
+OCR service would count toward model parameters. [Organizer evaluation rules](data/uzp/README.md)
+
 ## OCR on real development documents
 
 All five runs used the same frozen extraction rules and 20 real development PDFs. Native text was
 used where available. Tesseract's explicit-DPI mode gained **0.0301** dev micro-F1 over automatic DPI.
-The hybrid improved on explicit DPI by **0.0133**, below the **0.0300** required to add RapidOCR to
-every installation. The shipped setting is `tesseract-dpi`. [Scores and measurement method](evals/results/ocr-engines.json)
+In that rules-only experiment, the hybrid improved on explicit DPI by **0.0133**. Keyless extraction keeps the `tesseract-dpi` setting. The separately measured keyed profile uses both readings on scanned pages. [Scores and measurement method](evals/results/ocr-engines.json)
 
 | Variant | Field micro-F1 | Macro-F1 | Routed correctly, appeal / power / transfer / other | Wall s / OCR page | CPU s / OCR page | Peak RSS, MiB | Installed MB |
 |---|---:|---:|---|---:|---:|---:|---:|
@@ -255,26 +272,39 @@ the interpreter. The six unrelated documents contribute routing outcomes. No pri
 were scored for this comparison.
 
 The default engine was measured again after the extraction rules began tracking page sources.
-The real-dev result is in [the corpus report](evals/results/corpus-latest.json). The
+The real-dev result is in [the OCR branch corpus report](https://github.com/00200200/HackNation2026-2/blob/5c4eff29d5872d64845ec533a3df0af9ba174740/evals/results/corpus-latest.json). The
 `provenance_check` entry records the paired native-text and forced-OCR checks on the same
 rules. [OCR results](evals/results/ocr-engines.json)
 
 ## Known limits
 
-- The rules follow the two layout families in the training data. `input/case1` holds the
-  organizer's one real, redacted, scanned appeal, which has a different layout. For that file
-  the extractor finds the class, filing date, place, procurement reference, BZP number and title.
-  The appellant name contains OCR noise. The contracting-authority list is empty and the challenged
-  action is missing. The organizer supplies no reference JSON for this file.
-- OCR can still lose accented letters, split a notice number or reorder columns. Scans with a
-  noisy but nonempty text layer follow the native-text path. A Polish account containing OCR
-  glyphs is repaired only if a unique candidate passes the IBAN mod-97 check. A fully printed
-  digit string is retained as read, including when the printed checksum is invalid. Ambiguous
-  signatures and e-mail addresses can remain missing.
-- On a scanned receipt, the single-account route needs a confirmation heading, a transaction amount and date,
-  and two explicitly labelled accounts. One must show a mask (asterisks, Xs or a dash) and the other a checksum-valid number.
-  The classifier passes the labelled account evidence to the extractor. A repeated number elsewhere in the text cannot fill a masked role. Unlabelled or conflicting roles can leave account fields empty.
-- OCR can recover a signer from a signature caption, a signature line in the grantor’s block, or a closing name with a representation title directly beneath the grant. Ambiguous roles can leave a signer out. Attorney names retain the grammatical case used in the document.
+- On corpus 2 dev, rules routed only one of ten transfers. A missing route makes every reference field in that document a miss.
+- A model can cite the wrong party’s valid source text. The integration measurements above cover the rules-only profile.
+
+- Appeal extraction reads the first three pages. A signature or dated notice later in the PDF can be missed.
+  The extractor uses printed word positions when a scan groups party labels into a separate column.
+  Explicit party labels and filing clauses can identify the parties. An unlabelled list, an ambiguous
+  column alignment or an inflected company name can still leave a party missing. A plain title can include
+  lowercase continuation rows before the next labelled field. A challenge date needs a link to the act
+  or its notification. Separate filing, invoice and statutory dates can appear on the same page.
+- Receipt routing uses evidence that a payment was executed, its amount or date, and the participating
+  accounts. A booking table or bank letter needs both an amount and a date. The extractor binds payer
+  and payee separately from fee and refund accounts. Explicit operation or execution dates and transaction IDs take
+  precedence over posting dates and daily sequence numbers. An unclear role or conflicting value can
+  leave a field empty.
+- First-page word positions can recover fields whose labels and values occupy different rows or columns.
+  OCR can still split a title or change an amount. For an unrouted scan with confirmation and transaction
+  evidence, the default engine can reread the first page at automatic resolution. Conflicting dates,
+  amounts or transaction IDs prevent that retry from supplying a result.
+- A partially masked account can identify a payment role when its field is explicit, the other account
+  passes the Polish IBAN checksum, and the confirmation supplies the amount and date. The masked number
+  is null. OCR also supports fully masked fields. Digit repairs apply only to OCR text and require a
+  single checksum-valid candidate. A number printed in a native text layer keeps its printed digits.
+- Grant extraction reads numbered and coordinated appointments, officers in representation clauses,
+  and digital approval signatures. Where a name is inflected, rules use a compatible printed form
+  or a unique case- and gender-compatible personal-name reading from Morfeusz2. Ambiguous readings
+  retain the printed spelling. A damaged or handwritten signature can still leave the signer missing.
+  PDF signer names are extracted from embedded CMS certificates without validating trust or revocation.
 - UNCONFIRMED: what "empty JSON" means for unrelated documents. We write an empty file, as the
   organizer README words it.
 - UNCONFIRMED: value types. `pesel` is a number in the organizer's annotated example and a string

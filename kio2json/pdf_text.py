@@ -19,6 +19,8 @@ MAX_PAGES = 3
 OCR_DPI = 300
 OCR_TIMEOUT_SECONDS = 60
 DEFAULT_OCR_ENGINE = "tesseract-dpi"
+TESSERACT_ENGINES = frozenset({"tesseract", "tesseract-dpi", "hybrid"})
+OCR_ENGINES = TESSERACT_ENGINES | {"rapidocr"}
 
 
 class NoReadableTextError(RuntimeError):
@@ -150,7 +152,7 @@ def _rapid_engine():
 def _ocr(page, words: list[WordBox] | None, *, engine: str | None = None) -> str:
     if engine is None:
         engine = os.environ.get("KIO_OCR_ENGINE", DEFAULT_OCR_ENGINE)
-    if engine in {"tesseract", "tesseract-dpi", "hybrid"}:
+    if engine in TESSERACT_ENGINES:
         return _tesseract(page, words, explicit_dpi=engine != "tesseract")
     if engine != "rapidocr":
         raise ValueError(f"Unknown KIO_OCR_ENGINE={engine!r}, expected tesseract, tesseract-dpi, rapidocr or hybrid")
@@ -252,6 +254,7 @@ def read_pages(
     word_boxes: list[WordBox] | None = None,
     engine: str | None = None,
     ocr_pages: list[int] | None = None,
+    ocr_word_boxes: list[WordBox] | None = None,
 ) -> list[str]:
     """Return the first pages and their optional boxes/OCR provenance. Check readability document-wide."""
     pages = []
@@ -272,7 +275,10 @@ def read_pages(
                 used_ocr = True
                 if include and ocr_pages is not None:
                     ocr_pages.append(page.page_number)
-                text = normalize_ocr(recognize(page, words if include else None))
+                scan_words = words if words is not None else ocr_word_boxes
+                text = normalize_ocr(recognize(page, scan_words if include else None))
+                if include and words is not None and ocr_word_boxes is not None:
+                    ocr_word_boxes.extend(box for box in words if box.page == page.page_number)
             elif include and words is not None:
                 words.extend(
                     WordBox(page.page_number, w["text"], w["x0"], w["top"], w["x1"], w["bottom"])

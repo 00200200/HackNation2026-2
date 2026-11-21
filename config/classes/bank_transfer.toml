@@ -9,12 +9,12 @@ classifier = "kio2json.classify.classify"
 [fields.przelew_bankowy]
 type = "object"
 nullable = false
-instruction = "Details of the executed bank transfer."
+instruction = "Details of this executed transfer. Return null for every unstated field."
 
 [fields.przelew_bankowy.fields]
-data_operacji = { type = "string", normalizer = "iso_date", instruction = "Operation date." }
-kwota = { type = "number", normalizer = "money", instruction = "Amount transferred as a number." }
-na_rachunek = { type = "string", normalizer = "account_number", instruction = "Beneficiary account number." }
-numer_transakcji = { type = "string", instruction = "Transaction reference if present." }
-tytul = { type = "string", instruction = "Complete transfer title." }
-z_rachunku = { type = "string", normalizer = "account_number", instruction = "Sender account number." }
+data_operacji = { type = "string", normalizer = "iso_date", instruction = "Execution date (data operacji, data realizacji) as YYYY-MM-DD. If absent, null." }
+kwota = { type = "number", normalizer = "money", instruction = "Transfer amount (kwota przelewu) as a JSON number with no currency or grouping marks. If absent, null." }
+na_rachunek = { type = "string", normalizer = "account_number", instruction = "Recipient’s account (rachunek odbiorcy, na rachunek), 26 digits preserving leading zeros. If absent, null." }
+numer_transakcji = { type = "string", instruction = "Transaction identifier or bank reference. If absent, null." }
+tytul = { type = "string", instruction = "Complete payment title (tytuł przelewu), including continuation lines. If absent, null." }
+z_rachunku = { type = "string", normalizer = "account_number", instruction = "Sender’s account (rachunek nadawcy, z rachunku), 26 digits preserving leading zeros. If absent, null." }

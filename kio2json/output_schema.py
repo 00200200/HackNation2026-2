@@ -110,7 +110,15 @@ def scalar_value(field: OutputField, raw):
     return result
 
 
-def cited_value(field: OutputField, raw, quote: str, text: str):
+def quote_covers(quote: str, text: str, start: int, end: int, visible_end: int | None) -> bool:
+    """A displayed occurrence of the quote must contain this complete source span."""
+    stop = start + len(quote)
+    if visible_end is not None:
+        stop = min(stop, visible_end)
+    return text.find(quote, max(0, end - len(quote)), stop) != -1
+
+
+def cited_value(field: OutputField, raw, quote: str, text: str, *, visible_end: int | None = None):
     """Require an entire source token inside one verbatim occurrence of this citation."""
     value = scalar_value(field, raw)
     if value is None or not quote.strip() or quote not in text:
@@ -146,7 +154,7 @@ def cited_value(field: OutputField, raw, quote: str, text: str):
             start = next(span.start(k) for k in ("outer_sign", "sign", "digits") if span[k])
             end = span.end("digits")
         # Only quote occurrences containing this complete value can support it.
-        if text.find(quote, max(0, end - len(quote)), start + len(quote)) == -1:
+        if not quote_covers(quote, text, start, end, visible_end):
             continue
         if field.normalizer == "money":
             if money_value(span) == Decimal(str(value)):

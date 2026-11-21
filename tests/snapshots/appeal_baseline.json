@@ -1,0 +1,5868 @@
+{
+  "commit": "e051dfa11cde0139fdd75e3f104bbe74ffb0f6ca",
+  "records": {
+    "r11-R1a": {
+      "class": null,
+      "output": {}
+    },
+    "r11-R1b": {
+      "class": "bank_transfer",
+      "output": {
+        "przelew_bankowy": {
+          "data_operacji": null,
+          "kwota": 48.12,
+          "na_rachunek": "84848484848484848484848484",
+          "numer_transakcji": null,
+          "tytul": null,
+          "z_rachunku": "73737373737373737373737373"
+        }
+      }
+    },
+    "r11-R1c": {
+      "class": "bank_transfer",
+      "output": {
+        "przelew_bankowy": {
+          "data_operacji": null,
+          "kwota": 48.12,
+          "na_rachunek": "84848484848484848484848484",
+          "numer_transakcji": null,
+          "tytul": null,
+          "z_rachunku": "73737373737373737373737373"
+        }
+      }
+    },
+    "r11-R2a": {
+      "class": "bank_transfer",
+      "output": {
+        "przelew_bankowy": {
+          "data_operacji": "2028-07-04",
+          "kwota": null,
+          "na_rachunek": "84848484848484848484848484",
+          "numer_transakcji": "RT123456",
+          "tytul": null,
+          "z_rachunku": "73737373737373737373737373"
+        }
+      }
+    },
+    "r11-R2b": {
+      "class": "bank_transfer",
+      "output": {
+        "przelew_bankowy": {
+          "data_operacji": "2028-07-04",
+          "kwota": 6.27,
+          "na_rachunek": "84848484848484848484848484",
+          "numer_transakcji": null,
+          "tytul": null,
+          "z_rachunku": "73737373737373737373737373"
+        }
+      }
+    },
+    "r11-R2c": {
+      "class": "bank_transfer",
+      "output": {
+        "przelew_bankowy": {
+          "data_operacji": "2028-07-04",
+          "kwota": null,
+          "na_rachunek": "84848484848484848484848484",
+          "numer_transakcji": null,
+          "tytul": "Poniższy dokument sporządzono automatycznie.",
+          "z_rachunku": "73737373737373737373737373"
+        }
+      }
+    },
+    "r11-R2d": {
+      "class": "bank_transfer",
+      "output": {
+        "przelew_bankowy": {
+          "data_operacji": "2028-07-04",
+          "kwota": 8.13,
+          "na_rachunek": "84848484848484848484848484",
+          "numer_transakcji": null,
+          "tytul": null,
+          "z_rachunku": "73737373737373737373737373"
+        }
+      }
+    },
+    "r11-R3a": {
+      "class": "appeal",
+      "output": {
+        "OdwolanieKIO": {
+          "data": null,
+          "czynnosc_dzien": null,
+          "czynnosc_powod_id": 1,
+          "czynnosc_opis": "Decyzja o odrzuceniu oferty",
+          "miejscowosc": null
+        },
+        "Odwolujacy": [
+          {
+            "krs": null,
+            "nazwa": "Luneta",
+            "nip": null,
+            "regon": null,
+            "przez-pelnomocnika": 0,
+            "pelnomocnik": {
+              "imie_nazwisko": null,
+              "nazwa": null,
+              "mail": null
+            }
+          }
+        ],
+        "Zamawiajacy": [],
+        "ZamowieniePubliczne": {
+          "numer_bzp": null,
+          "numer_postepowania": null,
+          "numer_ted": null,
+          "tytul": null
+        }
+      }
+    },
+    "r11-R3b": {
+      "class": "appeal",
+      "output": {
+        "OdwolanieKIO": {
+          "data": null,
+          "czynnosc_dzien": null,
+          "czynnosc_powod_id": 1,
+          "czynnosc_opis": "Decyzja o odrzuceniu oferty",
+          "miejscowosc": null
+        },
+        "Odwolujacy": [
+          {
+            "krs": null,
+            "nazwa": "Luneta",
+            "nip": null,
+            "regon": null,
+            "przez-pelnomocnika": 0,
+            "pelnomocnik": {
+              "imie_nazwisko": null,
+              "nazwa": null,
+              "mail": null
+            }
+          }
+        ],
+        "Zamawiajacy": [],
+        "ZamowieniePubliczne": {
+          "numer_bzp": null,
+          "numer_postepowania": null,
+          "numer_ted": null,
+          "tytul": null
+        }
+      }
+    },
+    "r11-R3c": {
+      "class": "appeal",
+      "output": {
+        "OdwolanieKIO": {
+          "data": null,
+          "czynnosc_dzien": "2028-04-14",
+          "czynnosc_powod_id": 1,
+          "czynnosc_opis": "Decyzja o odrzuceniu oferty",
+          "miejscowosc": null
+        },
+        "Odwolujacy": [
+          {
+            "krs": null,
+            "nazwa": "Luneta",
+            "nip": null,
+            "regon": null,
+            "przez-pelnomocnika": 0,
+            "pelnomocnik": {
+              "imie_nazwisko": null,
+              "nazwa": null,
+              "mail": null
+            }
+          }
+        ],
+        "Zamawiajacy": [],
+        "ZamowieniePubliczne": {
+          "numer_bzp": null,
+          "numer_postepowania": null,
+          "numer_ted": null,
+          "tytul": null
+        }
+      }
+    },
+    "r11-R3d": {
+      "class": "appeal",
+      "output": {
+        "OdwolanieKIO": {
+          "data": null,
+          "czynnosc_dzien": "2028-04-16",
+          "czynnosc_powod_id": 1,
+          "czynnosc_opis": "Decyzja o odrzuceniu oferty",
+          "miejscowosc": null
+        },
+        "Odwolujacy": [
+          {
+            "krs": null,
+            "nazwa": "Luneta",
+            "nip": null,
+            "regon": null,
+            "przez-pelnomocnika": 0,
+            "pelnomocnik": {
+              "imie_nazwisko": null,
+              "nazwa": null,
+              "mail": null
+            }
+          }
+        ],
+        "Zamawiajacy": [],
+        "ZamowieniePubliczne": {
+          "numer_bzp": null,
+          "numer_postepowania": null,
+          "numer_ted": null,
+          "tytul": null
+        }
+      }
+    },
+    "r11-R4a": {
+      "class": "appeal",
+      "output": {
+        "OdwolanieKIO": {
+          "data": null,
+          "czynnosc_dzien": null,
+          "czynnosc_powod_id": null,
+          "czynnosc_opis": null,
+          "miejscowosc": null
+        },
+        "Odwolujacy": [
+          {
+            "krs": null,
+            "nazwa": "Luneta",
+            "nip": null,
+            "regon": null,
+            "przez-pelnomocnika": 0,
+            "pelnomocnik": {
+              "imie_nazwisko": null,
+              "nazwa": null,
+              "mail": null
+            }
+          }
+        ],
+        "Zamawiajacy": [],
+        "ZamowieniePubliczne": {
+          "numer_bzp": null,
+          "numer_postepowania": null,
+          "numer_ted": null,
+          "tytul": null
+        }
+      }
+    },
+    "r11-R4b": {
+      "class": "appeal",
+      "output": {
+        "OdwolanieKIO": {
+          "data": null,
+          "czynnosc_dzien": null,
+          "czynnosc_powod_id": null,
+          "czynnosc_opis": null,
+          "miejscowosc": null
+        },
+        "Odwolujacy": [
+          {
+            "krs": null,
+            "nazwa": "Luneta I. STAN FAKTYCZNY Opis przebiegu postępowania.",
+            "nip": null,
+            "regon": null,
+            "przez-pelnomocnika": 0,
+            "pelnomocnik": {
+              "imie_nazwisko": null,
+              "nazwa": null,
+              "mail": null
+            }
+          }
+        ],
+        "Zamawiajacy": [],
+        "ZamowieniePubliczne": {
+          "numer_bzp": null,
+          "numer_postepowania": null,
+          "numer_ted": null,
+          "tytul": null
+        }
+      }
+    },
+    "r11-R4c": {
+      "class": "appeal",
+      "output": {
+        "OdwolanieKIO": {
+          "data": null,
+          "czynnosc_dzien": null,
+          "czynnosc_powod_id": null,
+          "czynnosc_opis": null,
+          "miejscowosc": null
+        },
+        "Odwolujacy": [
+          {
+            "krs": null,
+            "nazwa": "Luneta",
+            "nip": null,
+            "regon": null,
+            "przez-pelnomocnika": 0,
+            "pelnomocnik": {
+              "imie_nazwisko": null,
+              "nazwa": null,
+              "mail": null
+            }
+          }
+        ],
+        "Zamawiajacy": [],
+        "ZamowieniePubliczne": {
+          "numer_bzp": null,
+          "numer_postepowania": null,
+          "numer_ted": null,
+          "tytul": null
+        }
+      }
+    },
+    "r11-R4d": {
+      "class": "appeal",
+      "output": {
+        "OdwolanieKIO": {
+          "data": null,
+          "czynnosc_dzien": null,
+          "czynnosc_powod_id": null,
+          "czynnosc_opis": null,
+          "miejscowosc": null
+        },
+        "Odwolujacy": [
+          {
+            "krs": null,
+            "nazwa": "Luneta III. OKOLICZNOŚCI SPRAWY Składamy poniższe wyjaśnienia.",
+            "nip": null,
+            "regon": null,
+            "przez-pelnomocnika": 0,
+            "pelnomocnik": {
+              "imie_nazwisko": null,
+              "nazwa": null,
+              "mail": null
+            }
+          }
+        ],
+        "Zamawiajacy": [],
+        "ZamowieniePubliczne": {
+          "numer_bzp": null,
+          "numer_postepowania": null,
+          "numer_ted": null,
+          "tytul": null
+        }
+      }
+    },
+    "r11-R5a": {
+      "class": "appeal",
+      "output": {
+        "OdwolanieKIO": {
+          "data": null,
+          "czynnosc_dzien": null,
+          "czynnosc_powod_id": null,
+          "czynnosc_opis": null,
+          "miejscowosc": null
+        },
+        "Odwolujacy": [
+          {
+            "krs": null,
+            "nazwa": "Luneta",
+            "nip": null,
+            "regon": null,
+            "przez-pelnomocnika": 0,
+            "pelnomocnik": {
+              "imie_nazwisko": null,
+              "nazwa": null,
+              "mail": null
+            }
+          }
+        ],
+        "Zamawiajacy": [],
+        "ZamowieniePubliczne": {
+          "numer_bzp": null,
+          "numer_postepowania": null,
+          "numer_ted": null,
+          "tytul": null
+        }
+      }
+    },
+    "r11-R5b": {
+      "class": "appeal",
+      "output": {
+        "OdwolanieKIO": {
+          "data": null,
+          "czynnosc_dzien": null,
+          "czynnosc_powod_id": null,
+          "czynnosc_opis": null,
+          "miejscowosc": null
+        },
+        "Odwolujacy": [
+          {
+            "krs": null,
+            "nazwa": "Luneta",
+            "nip": null,
+            "regon": null,
+            "przez-pelnomocnika": 0,
+            "pelnomocnik": {
+              "imie_nazwisko": null,
+              "nazwa": null,
+              "mail": null
+            }
+          }
+        ],
+        "Zamawiajacy": [],
+        "ZamowieniePubliczne": {
+          "numer_bzp": null,
+          "numer_postepowania": null,
+          "numer_ted": null,
+          "tytul": null
+        }
+      }
+    },
+    "r11-R5c": {
+      "class": "appeal",
+      "output": {
+        "OdwolanieKIO": {
+          "data": null,
+          "czynnosc_dzien": null,
+          "czynnosc_powod_id": null,
+          "czynnosc_opis": null,
+          "miejscowosc": null
+        },
+        "Odwolujacy": [
+          {
+            "krs": null,
+            "nazwa": "Luneta Przystępujący po stronie zamawiającego — Firma Drewno",
+            "nip": null,
+            "regon": null,
+            "przez-pelnomocnika": 1,
+            "pelnomocnik": {
+              "imie_nazwisko": "Ada Rzeczna",
+              "nazwa": null,
+              "mail": null
+            }
+          }
+        ],
+        "Zamawiajacy": [],
+        "ZamowieniePubliczne": {
+          "numer_bzp": null,
+          "numer_postepowania": null,
+          "numer_ted": null,
+          "tytul": null
+        }
+      }
+    },
+    "r11-R6a": {
+      "class": "power_of_attorney",
+      "output": {
+        "mocodawca": [
+          {
+            "data": {
+              "imie_nazwisko": null,
+              "krs": null,
+              "nazwa": "Luneta S.A.",
+              "nip": null,
+              "typ": "osoba_prawna"
+            },
+            "podpisujacy": [
+              {
+                "imie_nazwisko": "Ada Rzeczna"
+              }
+            ]
+          },
+          {
+            "data": {
+              "imie_nazwisko": null,
+              "krs": null,
+              "nazwa": "Bursztynek sp. z o.o.",
+              "nip": null,
+              "typ": "osoba_prawna"
+            },
+            "podpisujacy": [
+              {
+                "imie_nazwisko": "Mila Jesienna"
+              }
+            ]
+          }
+        ],
+        "pelnomocnicy": []
+      }
+    },
+    "r11-R6b": {
+      "class": "power_of_attorney",
+      "output": {
+        "mocodawca": [
+          {
+            "data": {
+              "imie_nazwisko": null,
+              "krs": null,
+              "nazwa": "Luneta S.A.",
+              "nip": null,
+              "typ": "osoba_prawna"
+            },
+            "podpisujacy": [
+              {
+                "imie_nazwisko": "Kierownik Projektu"
+              },
+              {
+                "imie_nazwisko": "Ada Rzeczna"
+              }
+            ]
+          },
+          {
+            "data": {
+              "imie_nazwisko": null,
+              "krs": null,
+              "nazwa": "Bursztynek sp. z o.o.",
+              "nip": null,
+              "typ": "osoba_prawna"
+            },
+            "podpisujacy": [
+              {
+                "imie_nazwisko": "Mila Jesienna"
+              }
+            ]
+          }
+        ],
+        "pelnomocnicy": []
+      }
+    },
+    "r11-R6c": {
+      "class": "power_of_attorney",
+      "output": {
+        "mocodawca": [
+          {
+            "data": {
+              "imie_nazwisko": null,
+              "krs": null,
+              "nazwa": "Luneta S.A.",
+              "nip": null,
+              "typ": "osoba_prawna"
+            },
+            "podpisujacy": [
+              {
+                "imie_nazwisko": "Zespół Obsługi"
+              },
+              {
+                "imie_nazwisko": "Ada Rzeczna"
+              }
+            ]
+          },
+          {
+            "data": {
+              "imie_nazwisko": null,
+              "krs": null,
+              "nazwa": "Bursztynek sp. z o.o.",
+              "nip": null,
+              "typ": "osoba_prawna"
+            },
+            "podpisujacy": [
+              {
+                "imie_nazwisko": "Mila Jesienna"
+              }
+            ]
+          }
+        ],
+        "pelnomocnicy": []
+      }
+    },
+    "r11-R7a": {
+      "class": "power_of_attorney",
+      "output": {
+        "mocodawca": [
+          {
+            "data": {
+              "imie_nazwisko": null,
+              "krs": null,
+              "nazwa": "Luneta S.A.",
+              "nip": null,
+              "typ": "osoba_prawna"
+            },
+            "podpisujacy": []
+          }
+        ],
+        "pelnomocnicy": []
+      }
+    },
+    "r11-R7b": {
+      "class": "power_of_attorney",
+      "output": {
+        "mocodawca": [
+          {
+            "data": {
+              "imie_nazwisko": null,
+              "krs": null,
+              "nazwa": "Luneta S.A.",
+              "nip": null,
+              "typ": "osoba_prawna"
+            },
+            "podpisujacy": []
+          },
+          {
+            "data": {
+              "imie_nazwisko": null,
+              "krs": null,
+              "nazwa": "Bursztynek sp. z o.o.",
+              "nip": null,
+              "typ": "osoba_prawna"
+            },
+            "podpisujacy": []
+          }
+        ],
+        "pelnomocnicy": []
+      }
+    },
+    "r11-R7c": {
+      "class": "power_of_attorney",
+      "output": {
+        "mocodawca": [
+          {
+            "data": {
+              "imie_nazwisko": null,
+              "krs": null,
+              "nazwa": "Luneta S.A.",
+              "nip": null,
+              "typ": "osoba_prawna"
+            },
+            "podpisujacy": []
+          },
+          {
+            "data": {
+              "imie_nazwisko": null,
+              "krs": null,
+              "nazwa": "Bursztynek sp. z o.o.",
+              "nip": "8855443300",
+              "typ": "osoba_prawna"
+            },
+            "podpisujacy": []
+          }
+        ],
+        "pelnomocnicy": []
+      }
+    },
+    "r11-R8a": {
+      "class": null,
+      "output": {}
+    },
+    "r11-R8b": {
+      "class": "appeal",
+      "output": {
+        "OdwolanieKIO": {
+          "data": null,
+          "czynnosc_dzien": null,
+          "czynnosc_powod_id": null,
+          "czynnosc_opis": null,
+          "miejscowosc": null
+        },
+        "Odwolujacy": [
+          {
+            "krs": null,
+            "nazwa": "Luneta",
+            "nip": null,
+            "regon": null,
+            "przez-pelnomocnika": 0,
+            "pelnomocnik": {
+              "imie_nazwisko": null,
+              "nazwa": null,
+              "mail": null
+            }
+          }
+        ],
+        "Zamawiajacy": [],
+        "ZamowieniePubliczne": {
+          "numer_bzp": null,
+          "numer_postepowania": null,
+          "numer_ted": null,
+          "tytul": null
+        }
+      }
+    },
+    "r11-R8c": {
+      "class": "appeal",
+      "output": {
+        "OdwolanieKIO": {
+          "data": null,
+          "czynnosc_dzien": null,
+          "czynnosc_powod_id": null,
+          "czynnosc_opis": null,
+          "miejscowosc": null
+        },
+        "Odwolujacy": [
+          {
+            "krs": null,
+            "nazwa": "Luneta",
+            "nip": null,
+            "regon": null,
+            "przez-pelnomocnika": 0,
+            "pelnomocnik": {
+              "imie_nazwisko": null,
+              "nazwa": null,
+              "mail": null
+            }
+          }
+        ],
+        "Zamawiajacy": [],
+        "ZamowieniePubliczne": {
+          "numer_bzp": null,
+          "numer_postepowania": null,
+          "numer_ted": null,
+          "tytul": null
+        }
+      }
+    },
+    "r11-Ta": {
+      "class": "bank_transfer",
+      "output": {
+        "przelew_bankowy": {
+          "data_operacji": null,
+          "kwota": 27.34,
+          "na_rachunek": "84848484848484848484848484",
+          "numer_transakcji": null,
+          "tytul": "Bankowa gwarancja wadialna",
+          "z_rachunku": "73737373737373737373737373"
+        }
+      }
+    },
+    "r11-Tb": {
+      "class": null,
+      "output": {}
+    },
+    "r11-Tc": {
+      "class": "bank_transfer",
+      "output": {
+        "przelew_bankowy": {
+          "data_operacji": null,
+          "kwota": 27.34,
+          "na_rachunek": "84848484848484848484848484",
+          "numer_transakcji": null,
+          "tytul": null,
+          "z_rachunku": "73737373737373737373737373"
+        }
+      }
+    },
+    "r11-Td": {
+      "class": "bank_transfer",
+      "output": {
+        "przelew_bankowy": {
+          "data_operacji": null,
+          "kwota": 27.34,
+          "na_rachunek": "84848484848484848484848484",
+          "numer_transakcji": null,
+          "tytul": "Bankierska zaliczka za usługę",
+          "z_rachunku": "73737373737373737373737373"
+        }
+      }
+    },
+    "r11-Ga": {
+      "class": "power_of_attorney",
+      "output": {
+        "mocodawca": [
+          {
+            "data": {
+              "imie_nazwisko": null,
+              "krs": null,
+              "nazwa": "Luneta S.A.",
+              "nip": null,
+              "typ": "osoba_prawna"
+            },
+            "podpisujacy": []
+          }
+        ],
+        "pelnomocnicy": []
+      }
+    },
+    "r11-Gb": {
+      "class": "power_of_attorney",
+      "output": {
+        "mocodawca": [
+          {
+            "data": {
+              "imie_nazwisko": null,
+              "krs": null,
+              "nazwa": "Luneta S.A.",
+              "nip": null,
+              "typ": "osoba_prawna"
+            },
+            "podpisujacy": []
+          }
+        ],
+        "pelnomocnicy": []
+      }
+    },
+    "r11-Gc": {
+      "class": "power_of_attorney",
+      "output": {
+        "mocodawca": [
+          {
+            "data": {
+              "imie_nazwisko": null,
+              "krs": null,
+              "nazwa": "Luneta S.A.",
+              "nip": null,
+              "typ": "osoba_prawna"
+            },
+            "podpisujacy": []
+          }
+        ],
+        "pelnomocnicy": []
+      }
+    },
+    "r11-Xacc": {
+      "class": "bank_transfer",
+      "output": {
+        "przelew_bankowy": {
+          "data_operacji": null,
+          "kwota": 12.34,
+          "na_rachunek": "84848484848484848484848484",
+          "numer_transakcji": null,
+          "tytul": null,
+          "z_rachunku": "73737373737373737373737373"
+        }
+      }
+    },
+    "r11-Xact": {
+      "class": "appeal",
+      "output": {
+        "OdwolanieKIO": {
+          "data": null,
+          "czynnosc_dzien": "2028-03-11",
+          "czynnosc_powod_id": 5,
+          "czynnosc_opis": "Modyfikacja treści SWZ",
+          "miejscowosc": null
+        },
+        "Odwolujacy": [
+          {
+            "krs": null,
+            "nazwa": "Luneta",
+            "nip": null,
+            "regon": null,
+            "przez-pelnomocnika": 0,
+            "pelnomocnik": {
+              "imie_nazwisko": null,
+              "nazwa": null,
+              "mail": null
+            }
+          }
+        ],
+        "Zamawiajacy": [],
+        "ZamowieniePubliczne": {
+          "numer_bzp": null,
+          "numer_postepowania": null,
+          "numer_ted": null,
+          "tytul": null
+        }
+      }
+    },
+    "r11-Xneg": {
+      "class": "power_of_attorney",
+      "output": {
+        "mocodawca": [
+          {
+            "data": {
+              "imie_nazwisko": null,
+              "krs": null,
+              "nazwa": "Luneta S.A.",
+              "nip": null,
+              "typ": "osoba_prawna"
+            },
+            "podpisujacy": []
+          }
+        ],
+        "pelnomocnicy": [
+          {
+            "imie_nazwisko": "Ada Rzeczna",
+            "pesel": null
+          }
+        ]
+      }
+    },
+    "r11-Xrole": {
+      "class": "power_of_attorney",
+      "output": {
+        "mocodawca": [
+          {
+            "data": {
+              "imie_nazwisko": null,
+              "krs": null,
+              "nazwa": "Luneta S.A.",
+              "nip": null,
+              "typ": "osoba_prawna"
+            },
+            "podpisujacy": []
+          }
+        ],
+        "pelnomocnicy": [
+          {
+            "imie_nazwisko": "Mila Jesienna",
+            "pesel": null
+          },
+          {
+            "imie_nazwisko": "Ada Rzeczna",
+            "pesel": null
+          }
+        ]
+      }
+    },
+    "r11-Xowner": {
+      "class": "appeal",
+      "output": {
+        "OdwolanieKIO": {
+          "data": null,
+          "czynnosc_dzien": null,
+          "czynnosc_powod_id": null,
+          "czynnosc_opis": null,
+          "miejscowosc": null
+        },
+        "Odwolujacy": [
+          {
+            "krs": null,
+            "nazwa": "Luneta",
+            "nip": null,
+            "regon": null,
+            "przez-pelnomocnika": 1,
+            "pelnomocnik": {
+              "imie_nazwisko": "Ada Rzeczna",
+              "nazwa": null,
+              "mail": null
+            }
+          }
+        ],
+        "Zamawiajacy": [],
+        "ZamowieniePubliczne": {
+          "numer_bzp": null,
+          "numer_postepowania": null,
+          "numer_ted": null,
+          "tytul": null
+        }
+      }
+    },
+    "r11-Xact2": {
+      "class": "appeal",
+      "output": {
+        "OdwolanieKIO": {
+          "data": null,
+          "czynnosc_dzien": "2028-03-11",
+          "czynnosc_powod_id": 3,
+          "czynnosc_opis": "Decyzja o wykluczeniu wykonawcy",
+          "miejscowosc": null
+        },
+        "Odwolujacy": [
+          {
+            "krs": null,
+            "nazwa": "Luneta",
+            "nip": null,
+            "regon": null,
+            "przez-pelnomocnika": 0,
+            "pelnomocnik": {
+              "imie_nazwisko": null,
+              "nazwa": null,
+              "mail": null
+            }
+          }
+        ],
+        "Zamawiajacy": [],
+        "ZamowieniePubliczne": {
+          "numer_bzp": null,
+          "numer_postepowania": null,
+          "numer_ted": null,
+          "tytul": null
+        }
+      }
+    },
+    "r11-R5d": {
+      "class": "appeal",
+      "output": {
+        "OdwolanieKIO": {
+          "data": null,
+          "czynnosc_dzien": null,
+          "czynnosc_powod_id": null,
+          "czynnosc_opis": null,
+          "miejscowosc": null
+        },
+        "Odwolujacy": [
+          {
+            "krs": null,
+            "nazwa": "Luneta 2) Interwenient: Firma Drewno",
+            "nip": null,
+            "regon": null,
+            "przez-pelnomocnika": 1,
+            "pelnomocnik": {
+              "imie_nazwisko": "Ada Rzeczna",
+              "nazwa": null,
+              "mail": null
+            }
+          }
+        ],
+        "Zamawiajacy": [],
+        "ZamowieniePubliczne": {
+          "numer_bzp": null,
+          "numer_postepowania": null,
+          "numer_ted": null,
+          "tytul": null
+        }
+      }
+    },
+    "r11-R3e": {
+      "class": "appeal",
+      "output": {
+        "OdwolanieKIO": {
+          "data": null,
+          "czynnosc_dzien": "2028-04-15",
+          "czynnosc_powod_id": 1,
+          "czynnosc_opis": "Decyzja o odrzuceniu oferty",
+          "miejscowosc": null
+        },
+        "Odwolujacy": [
+          {
+            "krs": null,
+            "nazwa": "Luneta",
+            "nip": null,
+            "regon": null,
+            "przez-pelnomocnika": 0,
+            "pelnomocnik": {
+              "imie_nazwisko": null,
+              "nazwa": null,
+              "mail": null
+            }
+          }
+        ],
+        "Zamawiajacy": [],
+        "ZamowieniePubliczne": {
+          "numer_bzp": null,
+          "numer_postepowania": null,
+          "numer_ted": null,
+          "tytul": null
+        }
+      }
+    },
+    "r11-Xs0": {
+      "class": "power_of_attorney",
+      "output": {
+        "mocodawca": [
+          {
+            "data": {
+              "imie_nazwisko": null,
+              "krs": null,
+              "nazwa": "Luneta S.A.",
+              "nip": null,
+              "typ": "osoba_prawna"
+            },
+            "podpisujacy": [
+              {
+                "imie_nazwisko": "Ada Rzeczna"
+              }
+            ]
+          },
+          {
+            "data": {
+              "imie_nazwisko": null,
+              "krs": null,
+              "nazwa": "Bursztynek sp. z o.o.",
+              "nip": null,
+              "typ": "osoba_prawna"
+            },
+            "podpisujacy": []
+          }
+        ],
+        "pelnomocnicy": []
+      }
+    },
+    "r11-Xs1": {
+      "class": "power_of_attorney",
+      "output": {
+        "mocodawca": [
+          {
+            "data": {
+              "imie_nazwisko": null,
+              "krs": null,
+              "nazwa": "Luneta S.A.",
+              "nip": null,
+              "typ": "osoba_prawna"
+            },
+            "podpisujacy": [
+              {
+                "imie_nazwisko": "Ada Rzeczna"
+              }
+            ]
+          },
+          {
+            "data": {
+              "imie_nazwisko": null,
+              "krs": null,
+              "nazwa": "Bursztynek sp. z o.o.",
+              "nip": null,
+              "typ": "osoba_prawna"
+            },
+            "podpisujacy": []
+          }
+        ],
+        "pelnomocnicy": []
+      }
+    },
+    "r11-R2e": {
+      "class": "bank_transfer",
+      "output": {
+        "przelew_bankowy": {
+          "data_operacji": "2028-07-04",
+          "kwota": null,
+          "na_rachunek": "84848484848484848484848484",
+          "numer_transakcji": null,
+          "tytul": null,
+          "z_rachunku": "73737373737373737373737373"
+        }
+      }
+    },
+    "r11-R2f": {
+      "class": "bank_transfer",
+      "output": {
+        "przelew_bankowy": {
+          "data_operacji": "2028-07-04",
+          "kwota": null,
+          "na_rachunek": "84848484848484848484848484",
+          "numer_transakcji": "ZD964230",
+          "tytul": "rata",
+          "z_rachunku": "73737373737373737373737373"
+        }
+      }
+    },
+    "r11-Gd": {
+      "class": "power_of_attorney",
+      "output": {
+        "mocodawca": [],
+        "pelnomocnicy": []
+      }
+    },
+    "r11-Ge": {
+      "class": "power_of_attorney",
+      "output": {
+        "mocodawca": [],
+        "pelnomocnicy": []
+      }
+    },
+    "r29-one-column": {
+      "class": "appeal",
+      "output": {
+        "OdwolanieKIO": {
+          "data": "2034-05-04",
+          "czynnosc_dzien": null,
+          "czynnosc_powod_id": null,
+          "czynnosc_opis": null,
+          "miejscowosc": "Torfowo"
+        },
+        "Odwolujacy": [
+          {
+            "krs": null,
+            "nazwa": "Konsorcjum Witraży sp. z o.o.",
+            "nip": null,
+            "regon": null,
+            "przez-pelnomocnika": 0,
+            "pelnomocnik": {
+              "imie_nazwisko": null,
+              "nazwa": null,
+              "mail": null
+            }
+          }
+        ],
+        "Zamawiajacy": [
+          {
+            "krs": null,
+            "nazwa": "Muzeum Klepsydr",
+            "nip": null,
+            "regon": null,
+            "prowadzacy_postepowanie": null
+          }
+        ],
+        "ZamowieniePubliczne": {
+          "numer_bzp": null,
+          "numer_postepowania": "WK/34/11",
+          "numer_ted": null,
+          "tytul": null
+        }
+      }
+    },
+    "r29-two-column": {
+      "class": "appeal",
+      "output": {
+        "OdwolanieKIO": {
+          "data": null,
+          "czynnosc_dzien": null,
+          "czynnosc_powod_id": null,
+          "czynnosc_opis": null,
+          "miejscowosc": null
+        },
+        "Odwolujacy": [
+          {
+            "krs": null,
+            "nazwa": "Huta Cynobru",
+            "nip": null,
+            "regon": null,
+            "przez-pelnomocnika": 0,
+            "pelnomocnik": {
+              "imie_nazwisko": null,
+              "nazwa": null,
+              "mail": null
+            }
+          }
+        ],
+        "Zamawiajacy": [
+          {
+            "krs": null,
+            "nazwa": "Oficyna Południkowa",
+            "nip": null,
+            "regon": null,
+            "prowadzacy_postepowanie": null
+          }
+        ],
+        "ZamowieniePubliczne": {
+          "numer_bzp": null,
+          "numer_postepowania": null,
+          "numer_ted": null,
+          "tytul": null
+        }
+      }
+    },
+    "r29-numbered": {
+      "class": "appeal",
+      "output": {
+        "OdwolanieKIO": {
+          "data": null,
+          "czynnosc_dzien": null,
+          "czynnosc_powod_id": null,
+          "czynnosc_opis": null,
+          "miejscowosc": null
+        },
+        "Odwolujacy": [
+          {
+            "krs": null,
+            "nazwa": "wykonawcy wspólnie ubiegający się o zamówienie: 1) Splot Lnu (członek konsorcjum) 2) Splot Wełny (lider konsorcjum)",
+            "nip": null,
+            "regon": null,
+            "przez-pelnomocnika": 0,
+            "pelnomocnik": {
+              "imie_nazwisko": null,
+              "nazwa": null,
+              "mail": null
+            }
+          }
+        ],
+        "Zamawiajacy": [
+          {
+            "krs": null,
+            "nazwa": "Dom Mozaiki",
+            "nip": null,
+            "regon": null,
+            "prowadzacy_postepowanie": null
+          }
+        ],
+        "ZamowieniePubliczne": {
+          "numer_bzp": null,
+          "numer_postepowania": "WM/34/13",
+          "numer_ted": null,
+          "tytul": null
+        }
+      }
+    },
+    "r29-letterhead": {
+      "class": "appeal",
+      "output": {
+        "OdwolanieKIO": {
+          "data": "2034-05-09",
+          "czynnosc_dzien": null,
+          "czynnosc_powod_id": null,
+          "czynnosc_opis": null,
+          "miejscowosc": "Smyczkowo"
+        },
+        "Odwolujacy": [],
+        "Zamawiajacy": [],
+        "ZamowieniePubliczne": {
+          "numer_bzp": null,
+          "numer_postepowania": "DA/34/14",
+          "numer_ted": null,
+          "tytul": null
+        }
+      }
+    },
+    "r29-form": {
+      "class": "appeal",
+      "output": {
+        "OdwolanieKIO": {
+          "data": null,
+          "czynnosc_dzien": null,
+          "czynnosc_powod_id": 3,
+          "czynnosc_opis": "Decyzja o wykluczeniu wykonawcy",
+          "miejscowosc": null
+        },
+        "Odwolujacy": [
+          {
+            "krs": null,
+            "nazwa": "Studio Gnomonu",
+            "nip": null,
+            "regon": null,
+            "przez-pelnomocnika": 0,
+            "pelnomocnik": {
+              "imie_nazwisko": null,
+              "nazwa": null,
+              "mail": null
+            }
+          }
+        ],
+        "Zamawiajacy": [
+          {
+            "krs": null,
+            "nazwa": "Pałac Cieni",
+            "nip": null,
+            "regon": null,
+            "prowadzacy_postepowanie": null
+          }
+        ],
+        "ZamowieniePubliczne": {
+          "numer_bzp": null,
+          "numer_postepowania": "PC/34/15",
+          "numer_ted": null,
+          "tytul": null
+        }
+      }
+    },
+    "r29-register": {
+      "class": null,
+      "output": {}
+    },
+    "r29-minimal-single": {
+      "class": "appeal",
+      "output": {
+        "OdwolanieKIO": {
+          "data": null,
+          "czynnosc_dzien": null,
+          "czynnosc_powod_id": null,
+          "czynnosc_opis": null,
+          "miejscowosc": null
+        },
+        "Odwolujacy": [
+          {
+            "krs": null,
+            "nazwa": "Konsorcjum Witraży sp. z o.o.",
+            "nip": null,
+            "regon": null,
+            "przez-pelnomocnika": 0,
+            "pelnomocnik": {
+              "imie_nazwisko": null,
+              "nazwa": null,
+              "mail": null
+            }
+          }
+        ],
+        "Zamawiajacy": [
+          {
+            "krs": null,
+            "nazwa": "Muzeum Klepsydr",
+            "nip": null,
+            "regon": null,
+            "prowadzacy_postepowanie": null
+          }
+        ],
+        "ZamowieniePubliczne": {
+          "numer_bzp": null,
+          "numer_postepowania": null,
+          "numer_ted": null,
+          "tytul": null
+        }
+      }
+    },
+    "r29-minimal-reference": {
+      "class": "appeal",
+      "output": {
+        "OdwolanieKIO": {
+          "data": null,
+          "czynnosc_dzien": null,
+          "czynnosc_powod_id": null,
+          "czynnosc_opis": null,
+          "miejscowosc": null
+        },
+        "Odwolujacy": [
+          {
+            "krs": null,
+            "nazwa": "Studio Gnomonu",
+            "nip": null,
+            "regon": null,
+            "przez-pelnomocnika": 0,
+            "pelnomocnik": {
+              "imie_nazwisko": null,
+              "nazwa": null,
+              "mail": null
+            }
+          }
+        ],
+        "Zamawiajacy": [
+          {
+            "krs": null,
+            "nazwa": "Pałac Cieni",
+            "nip": null,
+            "regon": null,
+            "prowadzacy_postepowanie": null
+          }
+        ],
+        "ZamowieniePubliczne": {
+          "numer_bzp": null,
+          "numer_postepowania": "PC/34/15",
+          "numer_ted": null,
+          "tytul": null
+        }
+      }
+    },
+    "r29-payment-deadline": {
+      "class": "appeal",
+      "output": {
+        "OdwolanieKIO": {
+          "data": null,
+          "czynnosc_dzien": null,
+          "czynnosc_powod_id": null,
+          "czynnosc_opis": null,
+          "miejscowosc": null
+        },
+        "Odwolujacy": [
+          {
+            "krs": null,
+            "nazwa": "Oficyna Zakładek",
+            "nip": null,
+            "regon": null,
+            "przez-pelnomocnika": 0,
+            "pelnomocnik": {
+              "imie_nazwisko": null,
+              "nazwa": null,
+              "mail": null
+            }
+          }
+        ],
+        "Zamawiajacy": [
+          {
+            "krs": null,
+            "nazwa": "Fabryka Nitek Odwołujący zarzuca odrzucenie oferty. W odrębnej sprawie 6 maja 2034 r. stanowi początkową datę biegu terminu płatności faktury.",
+            "nip": null,
+            "regon": null,
+            "prowadzacy_postepowanie": null
+          }
+        ],
+        "ZamowieniePubliczne": {
+          "numer_bzp": null,
+          "numer_postepowania": null,
+          "numer_ted": null,
+          "tytul": null
+        }
+      }
+    },
+    "r1-reversed-accounts": {
+      "class": null,
+      "output": {}
+    },
+    "r1-invoice": {
+      "class": null,
+      "output": {}
+    },
+    "r1-background": {
+      "class": "appeal",
+      "output": {
+        "OdwolanieKIO": {
+          "data": null,
+          "czynnosc_dzien": "2026-03-08",
+          "czynnosc_powod_id": 1,
+          "czynnosc_opis": "Decyzja o odrzuceniu oferty",
+          "miejscowosc": null
+        },
+        "Odwolujacy": [
+          {
+            "krs": null,
+            "nazwa": "Alfa Zamawiający w dniu 1 marca 2026 opublikował SWZ. Zarzut nr 1 – odrzucenie oferty w dniu 8 marca 2026.",
+            "nip": null,
+            "regon": null,
+            "przez-pelnomocnika": 0,
+            "pelnomocnik": {
+              "imie_nazwisko": null,
+              "nazwa": null,
+              "mail": null
+            }
+          }
+        ],
+        "Zamawiajacy": [],
+        "ZamowieniePubliczne": {
+          "numer_bzp": null,
+          "numer_postepowania": null,
+          "numer_ted": null,
+          "tytul": null
+        }
+      }
+    },
+    "r1-filing-date": {
+      "class": "appeal",
+      "output": {
+        "OdwolanieKIO": {
+          "data": null,
+          "czynnosc_dzien": null,
+          "czynnosc_powod_id": 1,
+          "czynnosc_opis": "Decyzja o odrzuceniu oferty",
+          "miejscowosc": null
+        },
+        "Odwolujacy": [
+          {
+            "krs": null,
+            "nazwa": "Alfa",
+            "nip": null,
+            "regon": null,
+            "przez-pelnomocnika": 0,
+            "pelnomocnik": {
+              "imie_nazwisko": null,
+              "nazwa": null,
+              "mail": null
+            }
+          }
+        ],
+        "Zamawiajacy": [],
+        "ZamowieniePubliczne": {
+          "numer_bzp": null,
+          "numer_postepowania": null,
+          "numer_ted": null,
+          "tytul": null
+        }
+      }
+    },
+    "r1-other-attorney": {
+      "class": "appeal",
+      "output": {
+        "OdwolanieKIO": {
+          "data": null,
+          "czynnosc_dzien": null,
+          "czynnosc_powod_id": null,
+          "czynnosc_opis": null,
+          "miejscowosc": null
+        },
+        "Odwolujacy": [
+          {
+            "krs": null,
+            "nazwa": "Alfa",
+            "nip": null,
+            "regon": null,
+            "przez-pelnomocnika": 0,
+            "pelnomocnik": {
+              "imie_nazwisko": null,
+              "nazwa": null,
+              "mail": null
+            }
+          }
+        ],
+        "Zamawiajacy": [
+          {
+            "krs": null,
+            "nazwa": "Beta",
+            "nip": null,
+            "regon": null,
+            "prowadzacy_postepowanie": null
+          }
+        ],
+        "ZamowieniePubliczne": {
+          "numer_bzp": null,
+          "numer_postepowania": null,
+          "numer_ted": null,
+          "tytul": null
+        }
+      }
+    },
+    "r1-eof": {
+      "class": "appeal",
+      "output": {
+        "OdwolanieKIO": {
+          "data": null,
+          "czynnosc_dzien": null,
+          "czynnosc_powod_id": null,
+          "czynnosc_opis": null,
+          "miejscowosc": null
+        },
+        "Odwolujacy": [
+          {
+            "krs": null,
+            "nazwa": "Alfa",
+            "nip": null,
+            "regon": null,
+            "przez-pelnomocnika": 0,
+            "pelnomocnik": {
+              "imie_nazwisko": null,
+              "nazwa": null,
+              "mail": null
+            }
+          }
+        ],
+        "Zamawiajacy": [
+          {
+            "krs": null,
+            "nazwa": "Beta",
+            "nip": null,
+            "regon": null,
+            "prowadzacy_postepowanie": null
+          }
+        ],
+        "ZamowieniePubliczne": {
+          "numer_bzp": null,
+          "numer_postepowania": null,
+          "numer_ted": null,
+          "tytul": null
+        }
+      }
+    },
+    "r1-citation": {
+      "class": "appeal",
+      "output": {
+        "OdwolanieKIO": {
+          "data": null,
+          "czynnosc_dzien": null,
+          "czynnosc_powod_id": null,
+          "czynnosc_opis": null,
+          "miejscowosc": null
+        },
+        "Odwolujacy": [
+          {
+            "krs": null,
+            "nazwa": "Alfa W uzasadnieniu przywołuję orzeczenie Sygn. akt KIO 1/26.",
+            "nip": null,
+            "regon": null,
+            "przez-pelnomocnika": 0,
+            "pelnomocnik": {
+              "imie_nazwisko": null,
+              "nazwa": null,
+              "mail": null
+            }
+          }
+        ],
+        "Zamawiajacy": [],
+        "ZamowieniePubliczne": {
+          "numer_bzp": null,
+          "numer_postepowania": null,
+          "numer_ted": null,
+          "tytul": null
+        }
+      }
+    },
+    "r1-signature-order": {
+      "class": "power_of_attorney",
+      "output": {
+        "mocodawca": [
+          {
+            "data": {
+              "imie_nazwisko": null,
+              "krs": null,
+              "nazwa": "Alfa sp. z o.o.",
+              "nip": null,
+              "typ": "osoba_prawna"
+            },
+            "podpisujacy": [
+              {
+                "imie_nazwisko": "Marek Zielony"
+              }
+            ]
+          },
+          {
+            "data": {
+              "imie_nazwisko": null,
+              "krs": null,
+              "nazwa": "Beta sp. z o.o.",
+              "nip": null,
+              "typ": "osoba_prawna"
+            },
+            "podpisujacy": [
+              {
+                "imie_nazwisko": "Ewa Biała"
+              }
+            ]
+          }
+        ],
+        "pelnomocnicy": []
+      }
+    },
+    "r1-two-identifiers": {
+      "class": "power_of_attorney",
+      "output": {
+        "mocodawca": [
+          {
+            "data": {
+              "imie_nazwisko": null,
+              "krs": "9991234001",
+              "nazwa": "Alfa sp. z o.o.",
+              "nip": null,
+              "typ": "osoba_prawna"
+            },
+            "podpisujacy": []
+          }
+        ],
+        "pelnomocnicy": []
+      }
+    },
+    "r1-dative": {
+      "class": "power_of_attorney",
+      "output": {
+        "mocodawca": [
+          {
+            "data": {
+              "imie_nazwisko": null,
+              "krs": null,
+              "nazwa": "Alfa sp. z o.o.",
+              "nip": null,
+              "typ": "osoba_prawna"
+            },
+            "podpisujacy": []
+          }
+        ],
+        "pelnomocnicy": [
+          {
+            "imie_nazwisko": "Piotrowi Testowemu",
+            "pesel": null
+          }
+        ]
+      }
+    },
+    "r1-masked": {
+      "class": null,
+      "output": {}
+    },
+    "r1-footer": {
+      "class": null,
+      "output": {}
+    },
+    "r4-request": {
+      "class": null,
+      "output": {}
+    },
+    "r4-nested-fee": {
+      "class": null,
+      "output": {}
+    },
+    "r4-abbreviation": {
+      "class": "appeal",
+      "output": {
+        "OdwolanieKIO": {
+          "data": null,
+          "czynnosc_dzien": null,
+          "czynnosc_powod_id": 1,
+          "czynnosc_opis": "Decyzja o odrzuceniu oferty",
+          "miejscowosc": null
+        },
+        "Odwolujacy": [
+          {
+            "krs": null,
+            "nazwa": "Rdest sp. z o.o.",
+            "nip": null,
+            "regon": null,
+            "przez-pelnomocnika": 0,
+            "pelnomocnik": {
+              "imie_nazwisko": null,
+              "nazwa": null,
+              "mail": null
+            }
+          }
+        ],
+        "Zamawiajacy": [],
+        "ZamowieniePubliczne": {
+          "numer_bzp": null,
+          "numer_postepowania": null,
+          "numer_ted": null,
+          "tytul": null
+        }
+      }
+    },
+    "r4-reasoning": {
+      "class": "appeal",
+      "output": {
+        "OdwolanieKIO": {
+          "data": null,
+          "czynnosc_dzien": null,
+          "czynnosc_powod_id": null,
+          "czynnosc_opis": null,
+          "miejscowosc": null
+        },
+        "Odwolujacy": [
+          {
+            "krs": null,
+            "nazwa": "Rdest sp. z o.o.",
+            "nip": null,
+            "regon": null,
+            "przez-pelnomocnika": 0,
+            "pelnomocnik": {
+              "imie_nazwisko": null,
+              "nazwa": null,
+              "mail": null
+            }
+          }
+        ],
+        "Zamawiajacy": [],
+        "ZamowieniePubliczne": {
+          "numer_bzp": null,
+          "numer_postepowania": null,
+          "numer_ted": null,
+          "tytul": null
+        }
+      }
+    },
+    "r4-participant": {
+      "class": "appeal",
+      "output": {
+        "OdwolanieKIO": {
+          "data": null,
+          "czynnosc_dzien": null,
+          "czynnosc_powod_id": null,
+          "czynnosc_opis": null,
+          "miejscowosc": null
+        },
+        "Odwolujacy": [
+          {
+            "krs": null,
+            "nazwa": "Rdest sp. z o.o.",
+            "nip": null,
+            "regon": null,
+            "przez-pelnomocnika": 0,
+            "pelnomocnik": {
+              "imie_nazwisko": null,
+              "nazwa": null,
+              "mail": null
+            }
+          }
+        ],
+        "Zamawiajacy": [],
+        "ZamowieniePubliczne": {
+          "numer_bzp": null,
+          "numer_postepowania": null,
+          "numer_ted": null,
+          "tytul": null
+        }
+      }
+    },
+    "r4-signature": {
+      "class": "power_of_attorney",
+      "output": {
+        "mocodawca": [
+          {
+            "data": {
+              "imie_nazwisko": null,
+              "krs": null,
+              "nazwa": "Wrzos sp. z o.o.",
+              "nip": null,
+              "typ": "osoba_prawna"
+            },
+            "podpisujacy": [
+              {
+                "imie_nazwisko": "Ewa Cicha"
+              }
+            ]
+          },
+          {
+            "data": {
+              "imie_nazwisko": null,
+              "krs": null,
+              "nazwa": "Goryczka sp. z o.o.",
+              "nip": null,
+              "typ": "osoba_prawna"
+            },
+            "podpisujacy": [
+              {
+                "imie_nazwisko": "Mira Letnia"
+              }
+            ]
+          }
+        ],
+        "pelnomocnicy": []
+      }
+    },
+    "r4-authority": {
+      "class": "power_of_attorney",
+      "output": {
+        "mocodawca": [
+          {
+            "data": {
+              "imie_nazwisko": null,
+              "krs": null,
+              "nazwa": "Wrzos sp. z o.o.",
+              "nip": null,
+              "typ": "osoba_prawna"
+            },
+            "podpisujacy": []
+          }
+        ],
+        "pelnomocnicy": []
+      }
+    },
+    "r4-authority-no-id": {
+      "class": "power_of_attorney",
+      "output": {
+        "mocodawca": [
+          {
+            "data": {
+              "imie_nazwisko": null,
+              "krs": "9876543211",
+              "nazwa": "Wrzos sp. z o.o.",
+              "nip": null,
+              "typ": "osoba_prawna"
+            },
+            "podpisujacy": []
+          }
+        ],
+        "pelnomocnicy": []
+      }
+    },
+    "r4-judgment": {
+      "class": null,
+      "output": {}
+    },
+    "r4-title": {
+      "class": "bank_transfer",
+      "output": {
+        "przelew_bankowy": {
+          "data_operacji": null,
+          "kwota": 24.8,
+          "na_rachunek": "34343434343434343434343434",
+          "numer_transakcji": null,
+          "tytul": "Bankowa gwarancja wadialna",
+          "z_rachunku": "21212121212121212121212121"
+        }
+      }
+    },
+    "r4-authority-first": {
+      "class": "power_of_attorney",
+      "output": {
+        "mocodawca": [
+          {
+            "data": {
+              "imie_nazwisko": null,
+              "krs": "9876543211",
+              "nazwa": "Wrzos sp. z o.o.",
+              "nip": null,
+              "typ": "osoba_prawna"
+            },
+            "podpisujacy": []
+          }
+        ],
+        "pelnomocnicy": []
+      }
+    },
+    "r4-grantor-no-id": {
+      "class": "power_of_attorney",
+      "output": {
+        "mocodawca": [
+          {
+            "data": {
+              "imie_nazwisko": null,
+              "krs": null,
+              "nazwa": "Wrzos sp. z o.o.",
+              "nip": null,
+              "typ": "osoba_prawna"
+            },
+            "podpisujacy": []
+          }
+        ],
+        "pelnomocnicy": []
+      }
+    },
+    "r4-reverse-labels": {
+      "class": "bank_transfer",
+      "output": {
+        "przelew_bankowy": {
+          "data_operacji": null,
+          "kwota": 4.2,
+          "na_rachunek": "21212121212121212121212121",
+          "numer_transakcji": null,
+          "tytul": null,
+          "z_rachunku": "34343434343434343434343434"
+        }
+      }
+    },
+    "r4-wrapped-fee-title": {
+      "class": "bank_transfer",
+      "output": {
+        "przelew_bankowy": {
+          "data_operacji": "2029-02-17",
+          "kwota": 3.8,
+          "na_rachunek": "34343434343434343434343434",
+          "numer_transakcji": null,
+          "tytul": "Opłata za wpis",
+          "z_rachunku": "21212121212121212121212121"
+        }
+      }
+    },
+    "r4-dated-intro": {
+      "class": "appeal",
+      "output": {
+        "OdwolanieKIO": {
+          "data": null,
+          "czynnosc_dzien": "2026-03-01",
+          "czynnosc_powod_id": 1,
+          "czynnosc_opis": "Decyzja o odrzuceniu oferty",
+          "miejscowosc": null
+        },
+        "Odwolujacy": [
+          {
+            "krs": null,
+            "nazwa": "Rdest sp. z o.o. Zamawiający w dniu 1 marca 2026 odrzucił ofertę. Zarzut nr 1 – odrzucenie oferty.",
+            "nip": null,
+            "regon": null,
+            "przez-pelnomocnika": 0,
+            "pelnomocnik": {
+              "imie_nazwisko": null,
+              "nazwa": null,
+              "mail": null
+            }
+          }
+        ],
+        "Zamawiajacy": [],
+        "ZamowieniePubliczne": {
+          "numer_bzp": null,
+          "numer_postepowania": null,
+          "numer_ted": null,
+          "tytul": null
+        }
+      }
+    },
+    "r4-citation": {
+      "class": "appeal",
+      "output": {
+        "OdwolanieKIO": {
+          "data": null,
+          "czynnosc_dzien": null,
+          "czynnosc_powod_id": null,
+          "czynnosc_opis": null,
+          "miejscowosc": null
+        },
+        "Odwolujacy": [
+          {
+            "krs": null,
+            "nazwa": "Rdest sp. z o.o. W uzasadnieniu przywołuję orzeczenie Sygn. akt KIO 81/26.",
+            "nip": null,
+            "regon": null,
+            "przez-pelnomocnika": 0,
+            "pelnomocnik": {
+              "imie_nazwisko": null,
+              "nazwa": null,
+              "mail": null
+            }
+          }
+        ],
+        "Zamawiajacy": [],
+        "ZamowieniePubliczne": {
+          "numer_bzp": null,
+          "numer_postepowania": null,
+          "numer_ted": null,
+          "tytul": null
+        }
+      }
+    },
+    "r4-judgment-alone": {
+      "class": null,
+      "output": {}
+    },
+    "r4-authority-labelled": {
+      "class": "power_of_attorney",
+      "output": {
+        "mocodawca": [
+          {
+            "data": {
+              "imie_nazwisko": null,
+              "krs": null,
+              "nazwa": "Wrzos sp. z o.o.",
+              "nip": null,
+              "typ": "osoba_prawna"
+            },
+            "podpisujacy": []
+          }
+        ],
+        "pelnomocnicy": []
+      }
+    },
+    "r4-no-id": {
+      "class": "power_of_attorney",
+      "output": {
+        "mocodawca": [
+          {
+            "data": {
+              "imie_nazwisko": null,
+              "krs": null,
+              "nazwa": "Wrzos sp. z o.o.",
+              "nip": null,
+              "typ": "osoba_prawna"
+            },
+            "podpisujacy": []
+          }
+        ],
+        "pelnomocnicy": []
+      }
+    },
+    "r4-page-stub": {
+      "class": null,
+      "output": {}
+    },
+    "r4-dash-stub": {
+      "class": null,
+      "output": {}
+    },
+    "r4-colon-stub": {
+      "class": null,
+      "output": {}
+    },
+    "r11-F0": {
+      "class": "appeal",
+      "output": {
+        "OdwolanieKIO": {
+          "data": null,
+          "czynnosc_dzien": null,
+          "czynnosc_powod_id": null,
+          "czynnosc_opis": null,
+          "miejscowosc": null
+        },
+        "Odwolujacy": [
+          {
+            "krs": null,
+            "nazwa": "Luneta",
+            "nip": null,
+            "regon": null,
+            "przez-pelnomocnika": 0,
+            "pelnomocnik": {
+              "imie_nazwisko": null,
+              "nazwa": null,
+              "mail": null
+            }
+          }
+        ],
+        "Zamawiajacy": [],
+        "ZamowieniePubliczne": {
+          "numer_bzp": null,
+          "numer_postepowania": null,
+          "numer_ted": null,
+          "tytul": null
+        }
+      }
+    },
+    "r11-F0-footer": {
+      "class": null,
+      "output": {}
+    },
+    "r11-F1": {
+      "class": "appeal",
+      "output": {
+        "OdwolanieKIO": {
+          "data": null,
+          "czynnosc_dzien": null,
+          "czynnosc_powod_id": null,
+          "czynnosc_opis": null,
+          "miejscowosc": null
+        },
+        "Odwolujacy": [
+          {
+            "krs": null,
+            "nazwa": "Luneta Strona pierwsza",
+            "nip": null,
+            "regon": null,
+            "przez-pelnomocnika": 0,
+            "pelnomocnik": {
+              "imie_nazwisko": null,
+              "nazwa": null,
+              "mail": null
+            }
+          }
+        ],
+        "Zamawiajacy": [],
+        "ZamowieniePubliczne": {
+          "numer_bzp": null,
+          "numer_postepowania": null,
+          "numer_ted": null,
+          "tytul": null
+        }
+      }
+    },
+    "r11-F1-footer": {
+      "class": null,
+      "output": {}
+    },
+    "r11-F2": {
+      "class": "appeal",
+      "output": {
+        "OdwolanieKIO": {
+          "data": null,
+          "czynnosc_dzien": null,
+          "czynnosc_powod_id": null,
+          "czynnosc_opis": null,
+          "miejscowosc": null
+        },
+        "Odwolujacy": [
+          {
+            "krs": null,
+            "nazwa": "Luneta Strona nr 1 z 1",
+            "nip": null,
+            "regon": null,
+            "przez-pelnomocnika": 0,
+            "pelnomocnik": {
+              "imie_nazwisko": null,
+              "nazwa": null,
+              "mail": null
+            }
+          }
+        ],
+        "Zamawiajacy": [],
+        "ZamowieniePubliczne": {
+          "numer_bzp": null,
+          "numer_postepowania": null,
+          "numer_ted": null,
+          "tytul": null
+        }
+      }
+    },
+    "r11-F2-footer": {
+      "class": null,
+      "output": {}
+    },
+    "r11-F3": {
+      "class": "appeal",
+      "output": {
+        "OdwolanieKIO": {
+          "data": null,
+          "czynnosc_dzien": null,
+          "czynnosc_powod_id": null,
+          "czynnosc_opis": null,
+          "miejscowosc": null
+        },
+        "Odwolujacy": [
+          {
+            "krs": null,
+            "nazwa": "Luneta Strona 1 z 1 | Wydruk systemowy",
+            "nip": null,
+            "regon": null,
+            "przez-pelnomocnika": 0,
+            "pelnomocnik": {
+              "imie_nazwisko": null,
+              "nazwa": null,
+              "mail": null
+            }
+          }
+        ],
+        "Zamawiajacy": [],
+        "ZamowieniePubliczne": {
+          "numer_bzp": null,
+          "numer_postepowania": null,
+          "numer_ted": null,
+          "tytul": null
+        }
+      }
+    },
+    "r11-F3-footer": {
+      "class": null,
+      "output": {}
+    },
+    "fresh-single-word": {
+      "class": "appeal",
+      "output": {
+        "OdwolanieKIO": {
+          "data": null,
+          "czynnosc_dzien": null,
+          "czynnosc_powod_id": null,
+          "czynnosc_opis": null,
+          "miejscowosc": null
+        },
+        "Odwolujacy": [
+          {
+            "krs": null,
+            "nazwa": "Tamburyn",
+            "nip": null,
+            "regon": null,
+            "przez-pelnomocnika": 0,
+            "pelnomocnik": {
+              "imie_nazwisko": null,
+              "nazwa": null,
+              "mail": null
+            }
+          }
+        ],
+        "Zamawiajacy": [],
+        "ZamowieniePubliczne": {
+          "numer_bzp": null,
+          "numer_postepowania": null,
+          "numer_ted": null,
+          "tytul": null
+        }
+      }
+    },
+    "fresh-legal-name": {
+      "class": "appeal",
+      "output": {
+        "OdwolanieKIO": {
+          "data": null,
+          "czynnosc_dzien": null,
+          "czynnosc_powod_id": null,
+          "czynnosc_opis": null,
+          "miejscowosc": null
+        },
+        "Odwolujacy": [
+          {
+            "krs": null,
+            "nazwa": "Wspólnie sp. z o.o.",
+            "nip": null,
+            "regon": null,
+            "przez-pelnomocnika": 0,
+            "pelnomocnik": {
+              "imie_nazwisko": null,
+              "nazwa": null,
+              "mail": null
+            }
+          }
+        ],
+        "Zamawiajacy": [
+          {
+            "krs": null,
+            "nazwa": "Metronom",
+            "nip": null,
+            "regon": null,
+            "prowadzacy_postepowanie": null
+          }
+        ],
+        "ZamowieniePubliczne": {
+          "numer_bzp": null,
+          "numer_postepowania": null,
+          "numer_ted": null,
+          "tytul": null
+        }
+      }
+    },
+    "fresh-attorney-other-first": {
+      "class": "appeal",
+      "output": {
+        "OdwolanieKIO": {
+          "data": null,
+          "czynnosc_dzien": null,
+          "czynnosc_powod_id": null,
+          "czynnosc_opis": null,
+          "miejscowosc": null
+        },
+        "Odwolujacy": [
+          {
+            "krs": null,
+            "nazwa": "Klucz",
+            "nip": null,
+            "regon": null,
+            "przez-pelnomocnika": 0,
+            "pelnomocnik": {
+              "imie_nazwisko": null,
+              "nazwa": null,
+              "mail": null
+            }
+          }
+        ],
+        "Zamawiajacy": [
+          {
+            "krs": null,
+            "nazwa": "Dzwon",
+            "nip": null,
+            "regon": null,
+            "prowadzacy_postepowanie": null
+          }
+        ],
+        "ZamowieniePubliczne": {
+          "numer_bzp": null,
+          "numer_postepowania": null,
+          "numer_ted": null,
+          "tytul": null
+        }
+      }
+    },
+    "fresh-unlabelled-ref": {
+      "class": "appeal",
+      "output": {
+        "OdwolanieKIO": {
+          "data": null,
+          "czynnosc_dzien": null,
+          "czynnosc_powod_id": null,
+          "czynnosc_opis": null,
+          "miejscowosc": null
+        },
+        "Odwolujacy": [
+          {
+            "krs": null,
+            "nazwa": "Teatr Minut",
+            "nip": null,
+            "regon": null,
+            "przez-pelnomocnika": 0,
+            "pelnomocnik": {
+              "imie_nazwisko": null,
+              "nazwa": null,
+              "mail": null
+            }
+          }
+        ],
+        "Zamawiajacy": [
+          {
+            "krs": null,
+            "nazwa": "Dom Sekund",
+            "nip": null,
+            "regon": null,
+            "prowadzacy_postepowanie": null
+          }
+        ],
+        "ZamowieniePubliczne": {
+          "numer_bzp": null,
+          "numer_postepowania": "CM/7",
+          "numer_ted": null,
+          "tytul": null
+        }
+      }
+    },
+    "fresh-empty-ref": {
+      "class": "appeal",
+      "output": {
+        "OdwolanieKIO": {
+          "data": null,
+          "czynnosc_dzien": null,
+          "czynnosc_powod_id": null,
+          "czynnosc_opis": null,
+          "miejscowosc": null
+        },
+        "Odwolujacy": [
+          {
+            "krs": null,
+            "nazwa": "Teatr Minut",
+            "nip": null,
+            "regon": null,
+            "przez-pelnomocnika": 0,
+            "pelnomocnik": {
+              "imie_nazwisko": null,
+              "nazwa": null,
+              "mail": null
+            }
+          }
+        ],
+        "Zamawiajacy": [
+          {
+            "krs": null,
+            "nazwa": "Dom Sekund",
+            "nip": null,
+            "regon": null,
+            "prowadzacy_postepowanie": null
+          }
+        ],
+        "ZamowieniePubliczne": {
+          "numer_bzp": null,
+          "numer_postepowania": null,
+          "numer_ted": null,
+          "tytul": null
+        }
+      }
+    },
+    "fresh-file-only": {
+      "class": "appeal",
+      "output": {
+        "OdwolanieKIO": {
+          "data": null,
+          "czynnosc_dzien": null,
+          "czynnosc_powod_id": null,
+          "czynnosc_opis": null,
+          "miejscowosc": null
+        },
+        "Odwolujacy": [
+          {
+            "krs": null,
+            "nazwa": "Teatr Minut",
+            "nip": null,
+            "regon": null,
+            "przez-pelnomocnika": 0,
+            "pelnomocnik": {
+              "imie_nazwisko": null,
+              "nazwa": null,
+              "mail": null
+            }
+          }
+        ],
+        "Zamawiajacy": [
+          {
+            "krs": null,
+            "nazwa": "Dom Sekund",
+            "nip": null,
+            "regon": null,
+            "prowadzacy_postepowanie": null
+          }
+        ],
+        "ZamowieniePubliczne": {
+          "numer_bzp": null,
+          "numer_postepowania": null,
+          "numer_ted": null,
+          "tytul": null
+        }
+      }
+    },
+    "fresh-two-candidates": {
+      "class": "appeal",
+      "output": {
+        "OdwolanieKIO": {
+          "data": null,
+          "czynnosc_dzien": null,
+          "czynnosc_powod_id": null,
+          "czynnosc_opis": null,
+          "miejscowosc": null
+        },
+        "Odwolujacy": [
+          {
+            "krs": null,
+            "nazwa": "Teatr Minut",
+            "nip": null,
+            "regon": null,
+            "przez-pelnomocnika": 0,
+            "pelnomocnik": {
+              "imie_nazwisko": null,
+              "nazwa": null,
+              "mail": null
+            }
+          }
+        ],
+        "Zamawiajacy": [
+          {
+            "krs": null,
+            "nazwa": "Dom Sekund",
+            "nip": null,
+            "regon": null,
+            "prowadzacy_postepowanie": null
+          }
+        ],
+        "ZamowieniePubliczne": {
+          "numer_bzp": null,
+          "numer_postepowania": "WY/81",
+          "numer_ted": null,
+          "tytul": null
+        }
+      }
+    },
+    "fresh-no-reference": {
+      "class": "appeal",
+      "output": {
+        "OdwolanieKIO": {
+          "data": null,
+          "czynnosc_dzien": null,
+          "czynnosc_powod_id": null,
+          "czynnosc_opis": null,
+          "miejscowosc": null
+        },
+        "Odwolujacy": [
+          {
+            "krs": null,
+            "nazwa": "Teatr Minut",
+            "nip": null,
+            "regon": null,
+            "przez-pelnomocnika": 0,
+            "pelnomocnik": {
+              "imie_nazwisko": null,
+              "nazwa": null,
+              "mail": null
+            }
+          }
+        ],
+        "Zamawiajacy": [
+          {
+            "krs": null,
+            "nazwa": "Dom Sekund",
+            "nip": null,
+            "regon": null,
+            "prowadzacy_postepowanie": null
+          }
+        ],
+        "ZamowieniePubliczne": {
+          "numer_bzp": null,
+          "numer_postepowania": null,
+          "numer_ted": null,
+          "tytul": null
+        }
+      }
+    },
+    "fresh-plain-title": {
+      "class": "appeal",
+      "output": {
+        "OdwolanieKIO": {
+          "data": null,
+          "czynnosc_dzien": null,
+          "czynnosc_powod_id": null,
+          "czynnosc_opis": null,
+          "miejscowosc": null
+        },
+        "Odwolujacy": [
+          {
+            "krs": null,
+            "nazwa": "Teatr Minut",
+            "nip": null,
+            "regon": null,
+            "przez-pelnomocnika": 0,
+            "pelnomocnik": {
+              "imie_nazwisko": null,
+              "nazwa": null,
+              "mail": null
+            }
+          }
+        ],
+        "Zamawiajacy": [
+          {
+            "krs": null,
+            "nazwa": "Dom Sekund",
+            "nip": null,
+            "regon": null,
+            "prowadzacy_postepowanie": null
+          }
+        ],
+        "ZamowieniePubliczne": {
+          "numer_bzp": null,
+          "numer_postepowania": null,
+          "numer_ted": null,
+          "tytul": null
+        }
+      }
+    },
+    "fresh-empty-title": {
+      "class": "appeal",
+      "output": {
+        "OdwolanieKIO": {
+          "data": null,
+          "czynnosc_dzien": null,
+          "czynnosc_powod_id": null,
+          "czynnosc_opis": null,
+          "miejscowosc": null
+        },
+        "Odwolujacy": [
+          {
+            "krs": null,
+            "nazwa": "Teatr Minut",
+            "nip": null,
+            "regon": null,
+            "przez-pelnomocnika": 0,
+            "pelnomocnik": {
+              "imie_nazwisko": null,
+              "nazwa": null,
+              "mail": null
+            }
+          }
+        ],
+        "Zamawiajacy": [
+          {
+            "krs": null,
+            "nazwa": "Dom Sekund",
+            "nip": null,
+            "regon": null,
+            "prowadzacy_postepowanie": null
+          }
+        ],
+        "ZamowieniePubliczne": {
+          "numer_bzp": null,
+          "numer_postepowania": null,
+          "numer_ted": null,
+          "tytul": null
+        }
+      }
+    },
+    "fresh-quoted-title": {
+      "class": "appeal",
+      "output": {
+        "OdwolanieKIO": {
+          "data": null,
+          "czynnosc_dzien": null,
+          "czynnosc_powod_id": null,
+          "czynnosc_opis": null,
+          "miejscowosc": null
+        },
+        "Odwolujacy": [
+          {
+            "krs": null,
+            "nazwa": "Teatr Minut",
+            "nip": null,
+            "regon": null,
+            "przez-pelnomocnika": 0,
+            "pelnomocnik": {
+              "imie_nazwisko": null,
+              "nazwa": null,
+              "mail": null
+            }
+          }
+        ],
+        "Zamawiajacy": [
+          {
+            "krs": null,
+            "nazwa": "Dom Sekund",
+            "nip": null,
+            "regon": null,
+            "prowadzacy_postepowanie": null
+          }
+        ],
+        "ZamowieniePubliczne": {
+          "numer_bzp": null,
+          "numer_postepowania": null,
+          "numer_ted": null,
+          "tytul": "Odlew mis"
+        }
+      }
+    },
+    "fresh-registered-seat": {
+      "class": "appeal",
+      "output": {
+        "OdwolanieKIO": {
+          "data": null,
+          "czynnosc_dzien": null,
+          "czynnosc_powod_id": null,
+          "czynnosc_opis": null,
+          "miejscowosc": null
+        },
+        "Odwolujacy": [
+          {
+            "krs": null,
+            "nazwa": "Warsztat Wahadeł z siedzibą w Minutowie",
+            "nip": null,
+            "regon": null,
+            "przez-pelnomocnika": 0,
+            "pelnomocnik": {
+              "imie_nazwisko": null,
+              "nazwa": null,
+              "mail": null
+            }
+          }
+        ],
+        "Zamawiajacy": [
+          {
+            "krs": null,
+            "nazwa": "Ratusz",
+            "nip": null,
+            "regon": null,
+            "prowadzacy_postepowanie": null
+          }
+        ],
+        "ZamowieniePubliczne": {
+          "numer_bzp": null,
+          "numer_postepowania": null,
+          "numer_ted": null,
+          "tytul": null
+        }
+      }
+    },
+    "fresh-filing-form": {
+      "class": "appeal",
+      "output": {
+        "OdwolanieKIO": {
+          "data": null,
+          "czynnosc_dzien": null,
+          "czynnosc_powod_id": null,
+          "czynnosc_opis": null,
+          "miejscowosc": null
+        },
+        "Odwolujacy": [
+          {
+            "krs": null,
+            "nazwa": "Teatr Minut",
+            "nip": null,
+            "regon": null,
+            "przez-pelnomocnika": 0,
+            "pelnomocnik": {
+              "imie_nazwisko": null,
+              "nazwa": null,
+              "mail": null
+            }
+          }
+        ],
+        "Zamawiajacy": [
+          {
+            "krs": null,
+            "nazwa": "Dom Sekund",
+            "nip": null,
+            "regon": null,
+            "prowadzacy_postepowanie": null
+          }
+        ],
+        "ZamowieniePubliczne": {
+          "numer_bzp": null,
+          "numer_postepowania": null,
+          "numer_ted": null,
+          "tytul": null
+        }
+      }
+    },
+    "fresh-filing-only": {
+      "class": "appeal",
+      "output": {
+        "OdwolanieKIO": {
+          "data": null,
+          "czynnosc_dzien": null,
+          "czynnosc_powod_id": 1,
+          "czynnosc_opis": "Decyzja o odrzuceniu oferty",
+          "miejscowosc": null
+        },
+        "Odwolujacy": [
+          {
+            "krs": null,
+            "nazwa": "Teatr Minut",
+            "nip": null,
+            "regon": null,
+            "przez-pelnomocnika": 0,
+            "pelnomocnik": {
+              "imie_nazwisko": null,
+              "nazwa": null,
+              "mail": null
+            }
+          }
+        ],
+        "Zamawiajacy": [
+          {
+            "krs": null,
+            "nazwa": "Dom Sekund",
+            "nip": null,
+            "regon": null,
+            "prowadzacy_postepowanie": null
+          }
+        ],
+        "ZamowieniePubliczne": {
+          "numer_bzp": null,
+          "numer_postepowania": null,
+          "numer_ted": null,
+          "tytul": null
+        }
+      }
+    },
+    "fresh-omission": {
+      "class": "appeal",
+      "output": {
+        "OdwolanieKIO": {
+          "data": null,
+          "czynnosc_dzien": null,
+          "czynnosc_powod_id": null,
+          "czynnosc_opis": null,
+          "miejscowosc": null
+        },
+        "Odwolujacy": [
+          {
+            "krs": null,
+            "nazwa": "Teatr Minut",
+            "nip": null,
+            "regon": null,
+            "przez-pelnomocnika": 0,
+            "pelnomocnik": {
+              "imie_nazwisko": null,
+              "nazwa": null,
+              "mail": null
+            }
+          }
+        ],
+        "Zamawiajacy": [
+          {
+            "krs": null,
+            "nazwa": "Dom Sekund Odwołujący zarzuca zaniechanie wykluczenia wykonawcy.",
+            "nip": null,
+            "regon": null,
+            "prowadzacy_postepowanie": null
+          }
+        ],
+        "ZamowieniePubliczne": {
+          "numer_bzp": null,
+          "numer_postepowania": null,
+          "numer_ted": null,
+          "tytul": null
+        }
+      }
+    },
+    "fresh-two-charges": {
+      "class": "appeal",
+      "output": {
+        "OdwolanieKIO": {
+          "data": null,
+          "czynnosc_dzien": null,
+          "czynnosc_powod_id": null,
+          "czynnosc_opis": null,
+          "miejscowosc": null
+        },
+        "Odwolujacy": [
+          {
+            "krs": null,
+            "nazwa": "Teatr Minut",
+            "nip": null,
+            "regon": null,
+            "przez-pelnomocnika": 0,
+            "pelnomocnik": {
+              "imie_nazwisko": null,
+              "nazwa": null,
+              "mail": null
+            }
+          }
+        ],
+        "Zamawiajacy": [
+          {
+            "krs": null,
+            "nazwa": "Dom Sekund",
+            "nip": null,
+            "regon": null,
+            "prowadzacy_postepowanie": null
+          }
+        ],
+        "ZamowieniePubliczne": {
+          "numer_bzp": null,
+          "numer_postepowania": null,
+          "numer_ted": null,
+          "tytul": null
+        }
+      }
+    },
+    "fresh-only-act": {
+      "class": "appeal",
+      "output": {
+        "OdwolanieKIO": {
+          "data": null,
+          "czynnosc_dzien": "2037-05-03",
+          "czynnosc_powod_id": 1,
+          "czynnosc_opis": "Decyzja o odrzuceniu oferty",
+          "miejscowosc": null
+        },
+        "Odwolujacy": [
+          {
+            "krs": null,
+            "nazwa": "Teatr Minut",
+            "nip": null,
+            "regon": null,
+            "przez-pelnomocnika": 0,
+            "pelnomocnik": {
+              "imie_nazwisko": null,
+              "nazwa": null,
+              "mail": null
+            }
+          }
+        ],
+        "Zamawiajacy": [
+          {
+            "krs": null,
+            "nazwa": "Dom Sekund",
+            "nip": null,
+            "regon": null,
+            "prowadzacy_postepowanie": null
+          }
+        ],
+        "ZamowieniePubliczne": {
+          "numer_bzp": null,
+          "numer_postepowania": null,
+          "numer_ted": null,
+          "tytul": null
+        }
+      }
+    },
+    "fresh-empty-reason": {
+      "class": "appeal",
+      "output": {
+        "OdwolanieKIO": {
+          "data": null,
+          "czynnosc_dzien": null,
+          "czynnosc_powod_id": null,
+          "czynnosc_opis": null,
+          "miejscowosc": null
+        },
+        "Odwolujacy": [
+          {
+            "krs": null,
+            "nazwa": "Teatr Minut",
+            "nip": null,
+            "regon": null,
+            "przez-pelnomocnika": 0,
+            "pelnomocnik": {
+              "imie_nazwisko": null,
+              "nazwa": null,
+              "mail": null
+            }
+          }
+        ],
+        "Zamawiajacy": [
+          {
+            "krs": null,
+            "nazwa": "Dom Sekund Odwołanie dotyczy błędnego protokołu. Rozważano wybór oferty.",
+            "nip": null,
+            "regon": null,
+            "prowadzacy_postepowanie": null
+          }
+        ],
+        "ZamowieniePubliczne": {
+          "numer_bzp": null,
+          "numer_postepowania": null,
+          "numer_ted": null,
+          "tytul": null
+        }
+      }
+    },
+    "fresh-notice": {
+      "class": "appeal",
+      "output": {
+        "OdwolanieKIO": {
+          "data": null,
+          "czynnosc_dzien": null,
+          "czynnosc_powod_id": null,
+          "czynnosc_opis": null,
+          "miejscowosc": null
+        },
+        "Odwolujacy": [
+          {
+            "krs": null,
+            "nazwa": "Teatr Minut",
+            "nip": null,
+            "regon": null,
+            "przez-pelnomocnika": 0,
+            "pelnomocnik": {
+              "imie_nazwisko": null,
+              "nazwa": null,
+              "mail": null
+            }
+          }
+        ],
+        "Zamawiajacy": [
+          {
+            "krs": null,
+            "nazwa": "Dom Sekund Odwołujący zarzuca zmianę treści SWZ. 2) wybór oferty.",
+            "nip": null,
+            "regon": null,
+            "prowadzacy_postepowanie": null
+          }
+        ],
+        "ZamowieniePubliczne": {
+          "numer_bzp": null,
+          "numer_postepowania": null,
+          "numer_ted": null,
+          "tytul": null
+        }
+      }
+    },
+    "fresh-unrelated-signature": {
+      "class": "appeal",
+      "output": {
+        "OdwolanieKIO": {
+          "data": null,
+          "czynnosc_dzien": null,
+          "czynnosc_powod_id": null,
+          "czynnosc_opis": null,
+          "miejscowosc": null
+        },
+        "Odwolujacy": [
+          {
+            "krs": null,
+            "nazwa": "Teatr Minut",
+            "nip": null,
+            "regon": null,
+            "przez-pelnomocnika": 0,
+            "pelnomocnik": {
+              "imie_nazwisko": null,
+              "nazwa": null,
+              "mail": null
+            }
+          }
+        ],
+        "Zamawiajacy": [
+          {
+            "krs": null,
+            "nazwa": "Dom Sekund",
+            "nip": null,
+            "regon": null,
+            "prowadzacy_postepowanie": null
+          }
+        ],
+        "ZamowieniePubliczne": {
+          "numer_bzp": null,
+          "numer_postepowania": null,
+          "numer_ted": null,
+          "tytul": null
+        }
+      }
+    },
+    "fresh-explicit-counsel": {
+      "class": "appeal",
+      "output": {
+        "OdwolanieKIO": {
+          "data": null,
+          "czynnosc_dzien": null,
+          "czynnosc_powod_id": null,
+          "czynnosc_opis": null,
+          "miejscowosc": null
+        },
+        "Odwolujacy": [
+          {
+            "krs": null,
+            "nazwa": "Tor Minut",
+            "nip": null,
+            "regon": null,
+            "przez-pelnomocnika": 0,
+            "pelnomocnik": {
+              "imie_nazwisko": null,
+              "nazwa": null,
+              "mail": null
+            }
+          }
+        ],
+        "Zamawiajacy": [
+          {
+            "krs": null,
+            "nazwa": "Port",
+            "nip": null,
+            "regon": null,
+            "prowadzacy_postepowanie": null
+          }
+        ],
+        "ZamowieniePubliczne": {
+          "numer_bzp": null,
+          "numer_postepowania": null,
+          "numer_ted": null,
+          "tytul": null
+        }
+      }
+    },
+    "fresh-other-party-email": {
+      "class": "appeal",
+      "output": {
+        "OdwolanieKIO": {
+          "data": null,
+          "czynnosc_dzien": null,
+          "czynnosc_powod_id": null,
+          "czynnosc_opis": null,
+          "miejscowosc": null
+        },
+        "Odwolujacy": [
+          {
+            "krs": null,
+            "nazwa": "Cynk",
+            "nip": null,
+            "regon": null,
+            "przez-pelnomocnika": 0,
+            "pelnomocnik": {
+              "imie_nazwisko": null,
+              "nazwa": null,
+              "mail": null
+            }
+          }
+        ],
+        "Zamawiajacy": [
+          {
+            "krs": null,
+            "nazwa": "Mosiądz",
+            "nip": null,
+            "regon": null,
+            "prowadzacy_postepowanie": null
+          }
+        ],
+        "ZamowieniePubliczne": {
+          "numer_bzp": null,
+          "numer_postepowania": null,
+          "numer_ted": null,
+          "tytul": null
+        }
+      }
+    },
+    "fresh-prose-roles": {
+      "class": null,
+      "output": {}
+    },
+    "fresh-scanned-heading": {
+      "class": null,
+      "output": {}
+    },
+    "fresh-plural-register": {
+      "class": null,
+      "output": {}
+    },
+    "native-task1/background-vs-charge": {
+      "class": "appeal",
+      "output": {
+        "OdwolanieKIO": {
+          "data": null,
+          "czynnosc_dzien": "2026-03-08",
+          "czynnosc_powod_id": 1,
+          "czynnosc_opis": "Decyzja o odrzuceniu oferty",
+          "miejscowosc": null
+        },
+        "Odwolujacy": [
+          {
+            "krs": null,
+            "nazwa": "Alfa Zamawiający w dniu 1 marca 2026 opublikował SWZ.",
+            "nip": null,
+            "regon": null,
+            "przez-pelnomocnika": 0,
+            "pelnomocnik": {
+              "imie_nazwisko": null,
+              "nazwa": null,
+              "mail": null
+            }
+          }
+        ],
+        "Zamawiajacy": [],
+        "ZamowieniePubliczne": {
+          "numer_bzp": null,
+          "numer_postepowania": null,
+          "numer_ted": null,
+          "tytul": null
+        }
+      }
+    },
+    "native-task1/non-granting-company": {
+      "class": "power_of_attorney",
+      "output": {
+        "mocodawca": [
+          {
+            "data": {
+              "imie_nazwisko": null,
+              "krs": "9876543211",
+              "nazwa": "Alfa sp. z o.o.",
+              "nip": null,
+              "typ": "osoba_prawna"
+            },
+            "podpisujacy": []
+          }
+        ],
+        "pelnomocnicy": []
+      }
+    },
+    "native-task1/masked-sender": {
+      "class": null,
+      "output": {}
+    },
+    "native-task1/selectable-footer": {
+      "class": "appeal",
+      "output": {
+        "OdwolanieKIO": {
+          "data": null,
+          "czynnosc_dzien": null,
+          "czynnosc_powod_id": null,
+          "czynnosc_opis": null,
+          "miejscowosc": null
+        },
+        "Odwolujacy": [
+          {
+            "krs": null,
+            "nazwa": "Alfa",
+            "nip": null,
+            "regon": null,
+            "przez-pelnomocnika": 0,
+            "pelnomocnik": {
+              "imie_nazwisko": null,
+              "nazwa": null,
+              "mail": null
+            }
+          }
+        ],
+        "Zamawiajacy": [],
+        "ZamowieniePubliczne": {
+          "numer_bzp": null,
+          "numer_postepowania": null,
+          "numer_ted": null,
+          "tytul": null
+        }
+      }
+    },
+    "native-task4/request-account-alternatives": {
+      "class": null,
+      "output": {}
+    },
+    "native-task4/bankowa-title": {
+      "class": "bank_transfer",
+      "output": {
+        "przelew_bankowy": {
+          "data_operacji": null,
+          "kwota": 17.25,
+          "na_rachunek": "34343434343434343434343434",
+          "numer_transakcji": null,
+          "tytul": "Bankowa gwarancja wadialna",
+          "z_rachunku": "21212121212121212121212121"
+        }
+      }
+    },
+    "native-task4/leading-authority-neither-id": {
+      "class": "power_of_attorney",
+      "output": {
+        "mocodawca": [
+          {
+            "data": {
+              "imie_nazwisko": null,
+              "krs": null,
+              "nazwa": "Wrzos sp. z o.o.",
+              "nip": null,
+              "typ": "osoba_prawna"
+            },
+            "podpisujacy": []
+          }
+        ],
+        "pelnomocnicy": []
+      }
+    },
+    "native-task4/roles-recipient-first": {
+      "class": "bank_transfer",
+      "output": {
+        "przelew_bankowy": {
+          "data_operacji": null,
+          "kwota": 17.25,
+          "na_rachunek": "34343434343434343434343434",
+          "numer_transakcji": null,
+          "tytul": null,
+          "z_rachunku": "21212121212121212121212121"
+        }
+      }
+    },
+    "native-task4/valid-wrapped-fee-title": {
+      "class": "bank_transfer",
+      "output": {
+        "przelew_bankowy": {
+          "data_operacji": "2025-04-03",
+          "kwota": 17.25,
+          "na_rachunek": "34343434343434343434343434",
+          "numer_transakcji": null,
+          "tytul": "Opłata za wpis",
+          "z_rachunku": "21212121212121212121212121"
+        }
+      }
+    },
+    "native-task4/intro-dated-rejection": {
+      "class": "appeal",
+      "output": {
+        "OdwolanieKIO": {
+          "data": null,
+          "czynnosc_dzien": null,
+          "czynnosc_powod_id": 1,
+          "czynnosc_opis": "Decyzja o odrzuceniu oferty",
+          "miejscowosc": null
+        },
+        "Odwolujacy": [
+          {
+            "krs": null,
+            "nazwa": "Rdest sp. z o.o. Zamawiający odrzucił ofertę w dniu 8 marca 2026.",
+            "nip": null,
+            "regon": null,
+            "przez-pelnomocnika": 0,
+            "pelnomocnik": {
+              "imie_nazwisko": null,
+              "nazwa": null,
+              "mail": null
+            }
+          }
+        ],
+        "Zamawiajacy": [],
+        "ZamowieniePubliczne": {
+          "numer_bzp": null,
+          "numer_postepowania": null,
+          "numer_ted": null,
+          "tytul": null
+        }
+      }
+    },
+    "native-task4/authority-first": {
+      "class": "power_of_attorney",
+      "output": {
+        "mocodawca": [
+          {
+            "data": {
+              "imie_nazwisko": null,
+              "krs": null,
+              "nazwa": "Wrzos sp. z o.o.",
+              "nip": null,
+              "typ": "osoba_prawna"
+            },
+            "podpisujacy": []
+          }
+        ],
+        "pelnomocnicy": []
+      }
+    },
+    "native-task4/citation-inline": {
+      "class": "appeal",
+      "output": {
+        "OdwolanieKIO": {
+          "data": null,
+          "czynnosc_dzien": null,
+          "czynnosc_powod_id": null,
+          "czynnosc_opis": null,
+          "miejscowosc": null
+        },
+        "Odwolujacy": [
+          {
+            "krs": null,
+            "nazwa": "Rdest sp. z o.o. W uzasadnieniu przywołano orzeczenie Sygn. akt KIO 81/26.",
+            "nip": null,
+            "regon": null,
+            "przez-pelnomocnika": 0,
+            "pelnomocnik": {
+              "imie_nazwisko": null,
+              "nazwa": null,
+              "mail": null
+            }
+          }
+        ],
+        "Zamawiajacy": [],
+        "ZamowieniePubliczne": {
+          "numer_bzp": null,
+          "numer_postepowania": null,
+          "numer_ted": null,
+          "tytul": null
+        }
+      }
+    },
+    "native-task4/judgment-standalone": {
+      "class": null,
+      "output": {}
+    },
+    "native-task4/party-at-eof": {
+      "class": "appeal",
+      "output": {
+        "OdwolanieKIO": {
+          "data": null,
+          "czynnosc_dzien": null,
+          "czynnosc_powod_id": null,
+          "czynnosc_opis": null,
+          "miejscowosc": null
+        },
+        "Odwolujacy": [
+          {
+            "krs": null,
+            "nazwa": "Rdest sp. z o.o.",
+            "nip": null,
+            "regon": null,
+            "przez-pelnomocnika": 0,
+            "pelnomocnik": {
+              "imie_nazwisko": null,
+              "nazwa": null,
+              "mail": null
+            }
+          }
+        ],
+        "Zamawiajacy": [],
+        "ZamowieniePubliczne": {
+          "numer_bzp": null,
+          "numer_postepowania": null,
+          "numer_ted": null,
+          "tytul": null
+        }
+      }
+    },
+    "native-task4/direct-grant-no-id": {
+      "class": "power_of_attorney",
+      "output": {
+        "mocodawca": [
+          {
+            "data": {
+              "imie_nazwisko": null,
+              "krs": null,
+              "nazwa": "Wrzos sp. z o.o.",
+              "nip": null,
+              "typ": "osoba_prawna"
+            },
+            "podpisujacy": []
+          }
+        ],
+        "pelnomocnicy": []
+      }
+    },
+    "native-task4/footer-colon": {
+      "class": "appeal",
+      "output": {
+        "OdwolanieKIO": {
+          "data": null,
+          "czynnosc_dzien": null,
+          "czynnosc_powod_id": null,
+          "czynnosc_opis": null,
+          "miejscowosc": null
+        },
+        "Odwolujacy": [
+          {
+            "krs": null,
+            "nazwa": "Rdest sp. z o.o.",
+            "nip": null,
+            "regon": null,
+            "przez-pelnomocnika": 0,
+            "pelnomocnik": {
+              "imie_nazwisko": null,
+              "nazwa": null,
+              "mail": null
+            }
+          }
+        ],
+        "Zamawiajacy": [],
+        "ZamowieniePubliczne": {
+          "numer_bzp": null,
+          "numer_postepowania": null,
+          "numer_ted": null,
+          "tytul": null
+        }
+      }
+    },
+    "native-task4/footer-polish": {
+      "class": "appeal",
+      "output": {
+        "OdwolanieKIO": {
+          "data": null,
+          "czynnosc_dzien": null,
+          "czynnosc_powod_id": null,
+          "czynnosc_opis": null,
+          "miejscowosc": null
+        },
+        "Odwolujacy": [
+          {
+            "krs": null,
+            "nazwa": "Rdest sp. z o.o.",
+            "nip": null,
+            "regon": null,
+            "przez-pelnomocnika": 0,
+            "pelnomocnik": {
+              "imie_nazwisko": null,
+              "nazwa": null,
+              "mail": null
+            }
+          }
+        ],
+        "Zamawiajacy": [],
+        "ZamowieniePubliczne": {
+          "numer_bzp": null,
+          "numer_postepowania": null,
+          "numer_ted": null,
+          "tytul": null
+        }
+      }
+    },
+    "native-task4/footer-english": {
+      "class": "appeal",
+      "output": {
+        "OdwolanieKIO": {
+          "data": null,
+          "czynnosc_dzien": null,
+          "czynnosc_powod_id": null,
+          "czynnosc_opis": null,
+          "miejscowosc": null
+        },
+        "Odwolujacy": [
+          {
+            "krs": null,
+            "nazwa": "Rdest sp. z o.o. Page 1 of 2",
+            "nip": null,
+            "regon": null,
+            "przez-pelnomocnika": 0,
+            "pelnomocnik": {
+              "imie_nazwisko": null,
+              "nazwa": null,
+              "mail": null
+            }
+          }
+        ],
+        "Zamawiajacy": [],
+        "ZamowieniePubliczne": {
+          "numer_bzp": null,
+          "numer_postepowania": null,
+          "numer_ted": null,
+          "tytul": null
+        }
+      }
+    },
+    "native-task4/footer-dashes": {
+      "class": "appeal",
+      "output": {
+        "OdwolanieKIO": {
+          "data": null,
+          "czynnosc_dzien": null,
+          "czynnosc_powod_id": null,
+          "czynnosc_opis": null,
+          "miejscowosc": null
+        },
+        "Odwolujacy": [
+          {
+            "krs": null,
+            "nazwa": "Rdest sp. z o.o. — 1 —",
+            "nip": null,
+            "regon": null,
+            "przez-pelnomocnika": 0,
+            "pelnomocnik": {
+              "imie_nazwisko": null,
+              "nazwa": null,
+              "mail": null
+            }
+          }
+        ],
+        "Zamawiajacy": [],
+        "ZamowieniePubliczne": {
+          "numer_bzp": null,
+          "numer_postepowania": null,
+          "numer_ted": null,
+          "tytul": null
+        }
+      }
+    },
+    "native-task22/role-ascii": {
+      "class": null,
+      "output": {}
+    },
+    "native-task22/mail-paren-at": {
+      "class": "appeal",
+      "output": {
+        "OdwolanieKIO": {
+          "data": null,
+          "czynnosc_dzien": null,
+          "czynnosc_powod_id": null,
+          "czynnosc_opis": null,
+          "miejscowosc": null
+        },
+        "Odwolujacy": [
+          {
+            "krs": null,
+            "nazwa": "Studio E-mail: anna (at) firma.example",
+            "nip": null,
+            "regon": null,
+            "przez-pelnomocnika": 0,
+            "pelnomocnik": {
+              "imie_nazwisko": null,
+              "nazwa": null,
+              "mail": null
+            }
+          }
+        ],
+        "Zamawiajacy": [],
+        "ZamowieniePubliczne": {
+          "numer_bzp": null,
+          "numer_postepowania": null,
+          "numer_ted": null,
+          "tytul": null
+        }
+      }
+    },
+    "native-task22/mail-square-at": {
+      "class": "appeal",
+      "output": {
+        "OdwolanieKIO": {
+          "data": null,
+          "czynnosc_dzien": null,
+          "czynnosc_powod_id": null,
+          "czynnosc_opis": null,
+          "miejscowosc": null
+        },
+        "Odwolujacy": [
+          {
+            "krs": null,
+            "nazwa": "Studio E-mail: anna [at] firma.example",
+            "nip": null,
+            "regon": null,
+            "przez-pelnomocnika": 0,
+            "pelnomocnik": {
+              "imie_nazwisko": null,
+              "nazwa": null,
+              "mail": null
+            }
+          }
+        ],
+        "Zamawiajacy": [],
+        "ZamowieniePubliczne": {
+          "numer_bzp": null,
+          "numer_postepowania": null,
+          "numer_ted": null,
+          "tytul": null
+        }
+      }
+    },
+    "native-task22/mail-bare-q": {
+      "class": "appeal",
+      "output": {
+        "OdwolanieKIO": {
+          "data": null,
+          "czynnosc_dzien": null,
+          "czynnosc_powod_id": null,
+          "czynnosc_opis": null,
+          "miejscowosc": null
+        },
+        "Odwolujacy": [
+          {
+            "krs": null,
+            "nazwa": "Studio E-mail: annaQfirma.example",
+            "nip": null,
+            "regon": null,
+            "przez-pelnomocnika": 0,
+            "pelnomocnik": {
+              "imie_nazwisko": null,
+              "nazwa": null,
+              "mail": null
+            }
+          }
+        ],
+        "Zamawiajacy": [],
+        "ZamowieniePubliczne": {
+          "numer_bzp": null,
+          "numer_postepowania": null,
+          "numer_ted": null,
+          "tytul": null
+        }
+      }
+    },
+    "native-task22/mail-crop-q": {
+      "class": "appeal",
+      "output": {
+        "OdwolanieKIO": {
+          "data": null,
+          "czynnosc_dzien": null,
+          "czynnosc_powod_id": null,
+          "czynnosc_opis": null,
+          "miejscowosc": null
+        },
+        "Odwolujacy": [
+          {
+            "krs": null,
+            "nazwa": "Studio E-mail: testQx.example",
+            "nip": null,
+            "regon": null,
+            "przez-pelnomocnika": 0,
+            "pelnomocnik": {
+              "imie_nazwisko": null,
+              "nazwa": null,
+              "mail": null
+            }
+          }
+        ],
+        "Zamawiajacy": [],
+        "ZamowieniePubliczne": {
+          "numer_bzp": null,
+          "numer_postepowania": null,
+          "numer_ted": null,
+          "tytul": null
+        }
+      }
+    },
+    "native-task1/name-case-normalization": {
+      "class": "appeal",
+      "output": {
+        "OdwolanieKIO": {
+          "data": null,
+          "czynnosc_dzien": null,
+          "czynnosc_powod_id": null,
+          "czynnosc_opis": null,
+          "miejscowosc": null
+        },
+        "Odwolujacy": [
+          {
+            "krs": null,
+            "nazwa": "Alfa",
+            "nip": null,
+            "regon": null,
+            "przez-pelnomocnika": 0,
+            "pelnomocnik": {
+              "imie_nazwisko": null,
+              "nazwa": null,
+              "mail": null
+            }
+          }
+        ],
+        "Zamawiajacy": [
+          {
+            "krs": null,
+            "nazwa": "ALFA",
+            "nip": null,
+            "regon": null,
+            "prowadzacy_postepowanie": null
+          }
+        ],
+        "ZamowieniePubliczne": {
+          "numer_bzp": null,
+          "numer_postepowania": null,
+          "numer_ted": null,
+          "tytul": null
+        }
+      }
+    },
+    "native-task1/signer-identity-ordered": {
+      "class": "power_of_attorney",
+      "output": {
+        "mocodawca": [
+          {
+            "data": {
+              "imie_nazwisko": null,
+              "krs": null,
+              "nazwa": "Alfa sp. z o.o.",
+              "nip": null,
+              "typ": "osoba_prawna"
+            },
+            "podpisujacy": [
+              {
+                "imie_nazwisko": "Ewa Próbna"
+              },
+              {
+                "imie_nazwisko": "Iga Próbna"
+              }
+            ]
+          },
+          {
+            "data": {
+              "imie_nazwisko": null,
+              "krs": null,
+              "nazwa": "Beta sp. z o.o.",
+              "nip": null,
+              "typ": "osoba_prawna"
+            },
+            "podpisujacy": [
+              {
+                "imie_nazwisko": "Jan Próbny"
+              },
+              {
+                "imie_nazwisko": "Ola Próbna"
+              }
+            ]
+          }
+        ],
+        "pelnomocnicy": []
+      }
+    },
+    "native-task1/signer-identity-swapped": {
+      "class": "power_of_attorney",
+      "output": {
+        "mocodawca": [
+          {
+            "data": {
+              "imie_nazwisko": null,
+              "krs": null,
+              "nazwa": "Alfa sp. z o.o.",
+              "nip": null,
+              "typ": "osoba_prawna"
+            },
+            "podpisujacy": [
+              {
+                "imie_nazwisko": "Jan Próbny"
+              },
+              {
+                "imie_nazwisko": "Ola Próbna"
+              }
+            ]
+          },
+          {
+            "data": {
+              "imie_nazwisko": null,
+              "krs": null,
+              "nazwa": "Beta sp. z o.o.",
+              "nip": null,
+              "typ": "osoba_prawna"
+            },
+            "podpisujacy": [
+              {
+                "imie_nazwisko": "Ewa Próbna"
+              },
+              {
+                "imie_nazwisko": "Iga Próbna"
+              }
+            ]
+          }
+        ],
+        "pelnomocnicy": []
+      }
+    },
+    "native-task11/identifier-digits": {
+      "class": "power_of_attorney",
+      "output": {
+        "mocodawca": [
+          {
+            "data": {
+              "imie_nazwisko": null,
+              "krs": null,
+              "nazwa": "Fikcyjne Studio sp. z o.o.",
+              "nip": null,
+              "typ": "osoba_prawna"
+            },
+            "podpisujacy": []
+          }
+        ],
+        "pelnomocnicy": [
+          {
+            "imie_nazwisko": "Idzie Wymyślnej",
+            "pesel": "99422967018"
+          }
+        ]
+      }
+    },
+    "native-task11/identifier-spaces-hyphen": {
+      "class": "power_of_attorney",
+      "output": {
+        "mocodawca": [
+          {
+            "data": {
+              "imie_nazwisko": null,
+              "krs": null,
+              "nazwa": "Fikcyjne Studio sp. z o.o.",
+              "nip": null,
+              "typ": "osoba_prawna"
+            },
+            "podpisujacy": []
+          }
+        ],
+        "pelnomocnicy": [
+          {
+            "imie_nazwisko": "Idzie Wymyślnej",
+            "pesel": null
+          }
+        ]
+      }
+    },
+    "native-task11/identifier-hyphen-spaces": {
+      "class": "power_of_attorney",
+      "output": {
+        "mocodawca": [
+          {
+            "data": {
+              "imie_nazwisko": null,
+              "krs": null,
+              "nazwa": "Fikcyjne Studio sp. z o.o.",
+              "nip": null,
+              "typ": "osoba_prawna"
+            },
+            "podpisujacy": []
+          }
+        ],
+        "pelnomocnicy": [
+          {
+            "imie_nazwisko": "Idzie Wymyślnej",
+            "pesel": null
+          }
+        ]
+      }
+    },
+    "direct-appeal-mixed-contact": {
+      "class": "appeal",
+      "output": {
+        "OdwolanieKIO": {
+          "data": null,
+          "czynnosc_dzien": null,
+          "czynnosc_powod_id": null,
+          "czynnosc_opis": null,
+          "miejscowosc": null
+        },
+        "Odwolujacy": [],
+        "Zamawiajacy": [
+          {
+            "krs": null,
+            "nazwa": "Gmina Łąkowa",
+            "nip": "9990001122",
+            "regon": null,
+            "prowadzacy_postepowanie": 0
+          },
+          {
+            "krs": null,
+            "nazwa": "sekretariatQfikcja.example",
+            "nip": null,
+            "regon": null,
+            "prowadzacy_postepowanie": 0
+          }
+        ],
+        "ZamowieniePubliczne": {
+          "numer_bzp": null,
+          "numer_postepowania": null,
+          "numer_ted": null,
+          "tytul": null
+        }
+      }
+    },
+    "r39-contact": {
+      "class": "appeal",
+      "output": {
+        "OdwolanieKIO": {
+          "data": null,
+          "czynnosc_dzien": null,
+          "czynnosc_powod_id": null,
+          "czynnosc_opis": null,
+          "miejscowosc": null
+        },
+        "Odwolujacy": [
+          {
+            "krs": null,
+            "nazwa": "Kontakt sp. z o.o.",
+            "nip": null,
+            "regon": null,
+            "przez-pelnomocnika": 0,
+            "pelnomocnik": {
+              "imie_nazwisko": null,
+              "nazwa": null,
+              "mail": null
+            }
+          }
+        ],
+        "Zamawiajacy": [
+          {
+            "krs": null,
+            "nazwa": "Muzeum Rzek",
+            "nip": null,
+            "regon": null,
+            "prowadzacy_postepowanie": null
+          }
+        ],
+        "ZamowieniePubliczne": {
+          "numer_bzp": null,
+          "numer_postepowania": null,
+          "numer_ted": null,
+          "tytul": null
+        }
+      }
+    },
+    "r39-contact-wrapped": {
+      "class": "appeal",
+      "output": {
+        "OdwolanieKIO": {
+          "data": null,
+          "czynnosc_dzien": null,
+          "czynnosc_powod_id": null,
+          "czynnosc_opis": null,
+          "miejscowosc": null
+        },
+        "Odwolujacy": [
+          {
+            "krs": null,
+            "nazwa": "Faks i Papier S.A.",
+            "nip": null,
+            "regon": null,
+            "przez-pelnomocnika": 0,
+            "pelnomocnik": {
+              "imie_nazwisko": null,
+              "nazwa": null,
+              "mail": null
+            }
+          }
+        ],
+        "Zamawiajacy": [
+          {
+            "krs": null,
+            "nazwa": "Muzeum Rzek",
+            "nip": null,
+            "regon": null,
+            "prowadzacy_postepowanie": null
+          }
+        ],
+        "ZamowieniePubliczne": {
+          "numer_bzp": null,
+          "numer_postepowania": null,
+          "numer_ted": null,
+          "tytul": null
+        }
+      }
+    },
+    "r39-contact-authority": {
+      "class": "appeal",
+      "output": {
+        "OdwolanieKIO": {
+          "data": null,
+          "czynnosc_dzien": null,
+          "czynnosc_powod_id": null,
+          "czynnosc_opis": null,
+          "miejscowosc": null
+        },
+        "Odwolujacy": [
+          {
+            "krs": null,
+            "nazwa": "Most Żurawi",
+            "nip": null,
+            "regon": null,
+            "przez-pelnomocnika": 0,
+            "pelnomocnik": {
+              "imie_nazwisko": null,
+              "nazwa": null,
+              "mail": null
+            }
+          }
+        ],
+        "Zamawiajacy": [
+          {
+            "krs": null,
+            "nazwa": "Telefon i Kabel",
+            "nip": null,
+            "regon": null,
+            "prowadzacy_postepowanie": null
+          }
+        ],
+        "ZamowieniePubliczne": {
+          "numer_bzp": null,
+          "numer_postepowania": null,
+          "numer_ted": null,
+          "tytul": null
+        }
+      }
+    },
+    "r39-bidder": {
+      "class": "appeal",
+      "output": {
+        "OdwolanieKIO": {
+          "data": null,
+          "czynnosc_dzien": null,
+          "czynnosc_powod_id": null,
+          "czynnosc_opis": null,
+          "miejscowosc": null
+        },
+        "Odwolujacy": [
+          {
+            "krs": null,
+            "nazwa": "Warsztat Kresek",
+            "nip": null,
+            "regon": null,
+            "przez-pelnomocnika": 0,
+            "pelnomocnik": {
+              "imie_nazwisko": null,
+              "nazwa": null,
+              "mail": null
+            }
+          }
+        ],
+        "Zamawiajacy": [
+          {
+            "krs": null,
+            "nazwa": "Muzeum Atramentu",
+            "nip": null,
+            "regon": null,
+            "prowadzacy_postepowanie": null
+          }
+        ],
+        "ZamowieniePubliczne": {
+          "numer_bzp": null,
+          "numer_postepowania": null,
+          "numer_ted": null,
+          "tytul": null
+        }
+      }
+    },
+    "r39-bidder-mandate": {
+      "class": "appeal",
+      "output": {
+        "OdwolanieKIO": {
+          "data": null,
+          "czynnosc_dzien": null,
+          "czynnosc_powod_id": null,
+          "czynnosc_opis": null,
+          "miejscowosc": null
+        },
+        "Odwolujacy": [
+          {
+            "krs": null,
+            "nazwa": "Most Żurawi",
+            "nip": null,
+            "regon": null,
+            "przez-pelnomocnika": 0,
+            "pelnomocnik": {
+              "imie_nazwisko": null,
+              "nazwa": null,
+              "mail": null
+            }
+          }
+        ],
+        "Zamawiajacy": [
+          {
+            "krs": null,
+            "nazwa": "Muzeum Rzek",
+            "nip": null,
+            "regon": null,
+            "prowadzacy_postepowanie": null
+          }
+        ],
+        "ZamowieniePubliczne": {
+          "numer_bzp": null,
+          "numer_postepowania": null,
+          "numer_ted": null,
+          "tytul": null
+        }
+      }
+    },
+    "r39-bidder-inline": {
+      "class": "appeal",
+      "output": {
+        "OdwolanieKIO": {
+          "data": null,
+          "czynnosc_dzien": null,
+          "czynnosc_powod_id": null,
+          "czynnosc_opis": null,
+          "miejscowosc": null
+        },
+        "Odwolujacy": [
+          {
+            "krs": null,
+            "nazwa": "Błękitny Ołówek",
+            "nip": null,
+            "regon": null,
+            "przez-pelnomocnika": 0,
+            "pelnomocnik": {
+              "imie_nazwisko": null,
+              "nazwa": null,
+              "mail": null
+            }
+          }
+        ],
+        "Zamawiajacy": [
+          {
+            "krs": null,
+            "nazwa": "Muzeum Rzek",
+            "nip": null,
+            "regon": null,
+            "prowadzacy_postepowanie": null
+          }
+        ],
+        "ZamowieniePubliczne": {
+          "numer_bzp": null,
+          "numer_postepowania": null,
+          "numer_ted": null,
+          "tytul": null
+        }
+      }
+    },
+    "r39-date-before": {
+      "class": "appeal",
+      "output": {
+        "OdwolanieKIO": {
+          "data": null,
+          "czynnosc_dzien": "2035-05-03",
+          "czynnosc_powod_id": 1,
+          "czynnosc_opis": "Decyzja o odrzuceniu oferty",
+          "miejscowosc": null
+        },
+        "Odwolujacy": [
+          {
+            "krs": null,
+            "nazwa": "Most Żurawi",
+            "nip": null,
+            "regon": null,
+            "przez-pelnomocnika": 0,
+            "pelnomocnik": {
+              "imie_nazwisko": null,
+              "nazwa": null,
+              "mail": null
+            }
+          }
+        ],
+        "Zamawiajacy": [
+          {
+            "krs": null,
+            "nazwa": "Muzeum Rzek",
+            "nip": null,
+            "regon": null,
+            "prowadzacy_postepowanie": null
+          }
+        ],
+        "ZamowieniePubliczne": {
+          "numer_bzp": null,
+          "numer_postepowania": null,
+          "numer_ted": null,
+          "tytul": null
+        }
+      }
+    },
+    "r39-date-before-numeric": {
+      "class": "appeal",
+      "output": {
+        "OdwolanieKIO": {
+          "data": null,
+          "czynnosc_dzien": "2035-08-23",
+          "czynnosc_powod_id": 2,
+          "czynnosc_opis": "Ogłoszenie wyboru oferty",
+          "miejscowosc": null
+        },
+        "Odwolujacy": [
+          {
+            "krs": null,
+            "nazwa": "Most Żurawi",
+            "nip": null,
+            "regon": null,
+            "przez-pelnomocnika": 0,
+            "pelnomocnik": {
+              "imie_nazwisko": null,
+              "nazwa": null,
+              "mail": null
+            }
+          }
+        ],
+        "Zamawiajacy": [
+          {
+            "krs": null,
+            "nazwa": "Muzeum Rzek",
+            "nip": null,
+            "regon": null,
+            "prowadzacy_postepowanie": null
+          }
+        ],
+        "ZamowieniePubliczne": {
+          "numer_bzp": null,
+          "numer_postepowania": null,
+          "numer_ted": null,
+          "tytul": null
+        }
+      }
+    },
+    "r39-date-before-exclusion": {
+      "class": "appeal",
+      "output": {
+        "OdwolanieKIO": {
+          "data": null,
+          "czynnosc_dzien": "2035-03-18",
+          "czynnosc_powod_id": 3,
+          "czynnosc_opis": "Decyzja o wykluczeniu wykonawcy",
+          "miejscowosc": null
+        },
+        "Odwolujacy": [
+          {
+            "krs": null,
+            "nazwa": "Most Żurawi",
+            "nip": null,
+            "regon": null,
+            "przez-pelnomocnika": 0,
+            "pelnomocnik": {
+              "imie_nazwisko": null,
+              "nazwa": null,
+              "mail": null
+            }
+          }
+        ],
+        "Zamawiajacy": [
+          {
+            "krs": null,
+            "nazwa": "Muzeum Rzek",
+            "nip": null,
+            "regon": null,
+            "prowadzacy_postepowanie": null
+          }
+        ],
+        "ZamowieniePubliczne": {
+          "numer_bzp": null,
+          "numer_postepowania": null,
+          "numer_ted": null,
+          "tytul": null
+        }
+      }
+    },
+    "r39-date-after": {
+      "class": "appeal",
+      "output": {
+        "OdwolanieKIO": {
+          "data": null,
+          "czynnosc_dzien": "2035-06-14",
+          "czynnosc_powod_id": 3,
+          "czynnosc_opis": "Decyzja o wykluczeniu wykonawcy",
+          "miejscowosc": null
+        },
+        "Odwolujacy": [
+          {
+            "krs": null,
+            "nazwa": "Most Żurawi",
+            "nip": null,
+            "regon": null,
+            "przez-pelnomocnika": 0,
+            "pelnomocnik": {
+              "imie_nazwisko": null,
+              "nazwa": null,
+              "mail": null
+            }
+          }
+        ],
+        "Zamawiajacy": [
+          {
+            "krs": null,
+            "nazwa": "Muzeum Rzek",
+            "nip": null,
+            "regon": null,
+            "prowadzacy_postepowanie": null
+          }
+        ],
+        "ZamowieniePubliczne": {
+          "numer_bzp": null,
+          "numer_postepowania": null,
+          "numer_ted": null,
+          "tytul": null
+        }
+      }
+    },
+    "r39-date-after-rejection": {
+      "class": "appeal",
+      "output": {
+        "OdwolanieKIO": {
+          "data": null,
+          "czynnosc_dzien": "2035-05-12",
+          "czynnosc_powod_id": 1,
+          "czynnosc_opis": "Decyzja o odrzuceniu oferty",
+          "miejscowosc": null
+        },
+        "Odwolujacy": [
+          {
+            "krs": null,
+            "nazwa": "Most Żurawi",
+            "nip": null,
+            "regon": null,
+            "przez-pelnomocnika": 0,
+            "pelnomocnik": {
+              "imie_nazwisko": null,
+              "nazwa": null,
+              "mail": null
+            }
+          }
+        ],
+        "Zamawiajacy": [
+          {
+            "krs": null,
+            "nazwa": "Muzeum Rzek",
+            "nip": null,
+            "regon": null,
+            "prowadzacy_postepowanie": null
+          }
+        ],
+        "ZamowieniePubliczne": {
+          "numer_bzp": null,
+          "numer_postepowania": null,
+          "numer_ted": null,
+          "tytul": null
+        }
+      }
+    },
+    "r39-date-after-selection": {
+      "class": "appeal",
+      "output": {
+        "OdwolanieKIO": {
+          "data": null,
+          "czynnosc_dzien": "2035-07-18",
+          "czynnosc_powod_id": 2,
+          "czynnosc_opis": "Ogłoszenie wyboru oferty",
+          "miejscowosc": null
+        },
+        "Odwolujacy": [
+          {
+            "krs": null,
+            "nazwa": "Most Żurawi",
+            "nip": null,
+            "regon": null,
+            "przez-pelnomocnika": 0,
+            "pelnomocnik": {
+              "imie_nazwisko": null,
+              "nazwa": null,
+              "mail": null
+            }
+          }
+        ],
+        "Zamawiajacy": [
+          {
+            "krs": null,
+            "nazwa": "Muzeum Rzek",
+            "nip": null,
+            "regon": null,
+            "prowadzacy_postepowanie": null
+          }
+        ],
+        "ZamowieniePubliczne": {
+          "numer_bzp": null,
+          "numer_postepowania": null,
+          "numer_ted": null,
+          "tytul": null
+        }
+      }
+    },
+    "r39-register": {
+      "class": null,
+      "output": {}
+    },
+    "r39-register-labelled": {
+      "class": null,
+      "output": {}
+    },
+    "r39-register-quoted": {
+      "class": null,
+      "output": {}
+    },
+    "simple-01": {
+      "class": "appeal",
+      "output": {
+        "OdwolanieKIO": {
+          "data": null,
+          "czynnosc_dzien": null,
+          "czynnosc_powod_id": null,
+          "czynnosc_opis": null,
+          "miejscowosc": null
+        },
+        "Odwolujacy": [
+          {
+            "krs": null,
+            "nazwa": "Most Żurawi",
+            "nip": null,
+            "regon": null,
+            "przez-pelnomocnika": 0,
+            "pelnomocnik": {
+              "imie_nazwisko": null,
+              "nazwa": null,
+              "mail": null
+            }
+          }
+        ],
+        "Zamawiajacy": [],
+        "ZamowieniePubliczne": {
+          "numer_bzp": null,
+          "numer_postepowania": null,
+          "numer_ted": null,
+          "tytul": null
+        }
+      }
+    },
+    "simple-02": {
+      "class": "appeal",
+      "output": {
+        "OdwolanieKIO": {
+          "data": null,
+          "czynnosc_dzien": null,
+          "czynnosc_powod_id": null,
+          "czynnosc_opis": null,
+          "miejscowosc": null
+        },
+        "Odwolujacy": [
+          {
+            "krs": null,
+            "nazwa": "Most Żurawi",
+            "nip": null,
+            "regon": null,
+            "przez-pelnomocnika": 0,
+            "pelnomocnik": {
+              "imie_nazwisko": null,
+              "nazwa": null,
+              "mail": null
+            }
+          }
+        ],
+        "Zamawiajacy": [
+          {
+            "krs": null,
+            "nazwa": "Muzeum Rzek",
+            "nip": null,
+            "regon": null,
+            "prowadzacy_postepowanie": null
+          }
+        ],
+        "ZamowieniePubliczne": {
+          "numer_bzp": null,
+          "numer_postepowania": null,
+          "numer_ted": null,
+          "tytul": null
+        }
+      }
+    },
+    "simple-03": {
+      "class": "appeal",
+      "output": {
+        "OdwolanieKIO": {
+          "data": null,
+          "czynnosc_dzien": null,
+          "czynnosc_powod_id": null,
+          "czynnosc_opis": null,
+          "miejscowosc": null
+        },
+        "Odwolujacy": [
+          {
+            "krs": null,
+            "nazwa": "Most Żurawi",
+            "nip": null,
+            "regon": null,
+            "przez-pelnomocnika": 0,
+            "pelnomocnik": {
+              "imie_nazwisko": null,
+              "nazwa": null,
+              "mail": null
+            }
+          }
+        ],
+        "Zamawiajacy": [
+          {
+            "krs": null,
+            "nazwa": "Muzeum Rzek",
+            "nip": null,
+            "regon": null,
+            "prowadzacy_postepowanie": null
+          }
+        ],
+        "ZamowieniePubliczne": {
+          "numer_bzp": null,
+          "numer_postepowania": null,
+          "numer_ted": null,
+          "tytul": null
+        }
+      }
+    },
+    "simple-04": {
+      "class": "appeal",
+      "output": {
+        "OdwolanieKIO": {
+          "data": null,
+          "czynnosc_dzien": null,
+          "czynnosc_powod_id": null,
+          "czynnosc_opis": null,
+          "miejscowosc": null
+        },
+        "Odwolujacy": [
+          {
+            "krs": null,
+            "nazwa": "Most Żurawi",
+            "nip": null,
+            "regon": null,
+            "przez-pelnomocnika": 0,
+            "pelnomocnik": {
+              "imie_nazwisko": null,
+              "nazwa": null,
+              "mail": null
+            }
+          }
+        ],
+        "Zamawiajacy": [
+          {
+            "krs": null,
+            "nazwa": "Muzeum Węzłów",
+            "nip": null,
+            "regon": null,
+            "prowadzacy_postepowanie": null
+          }
+        ],
+        "ZamowieniePubliczne": {
+          "numer_bzp": null,
+          "numer_postepowania": null,
+          "numer_ted": null,
+          "tytul": null
+        }
+      }
+    },
+    "simple-05": {
+      "class": "appeal",
+      "output": {
+        "OdwolanieKIO": {
+          "data": null,
+          "czynnosc_dzien": null,
+          "czynnosc_powod_id": null,
+          "czynnosc_opis": null,
+          "miejscowosc": null
+        },
+        "Odwolujacy": [
+          {
+            "krs": null,
+            "nazwa": "Fabryka Kulek",
+            "nip": null,
+            "regon": null,
+            "przez-pelnomocnika": 0,
+            "pelnomocnik": {
+              "imie_nazwisko": null,
+              "nazwa": null,
+              "mail": null
+            }
+          }
+        ],
+        "Zamawiajacy": [
+          {
+            "krs": null,
+            "nazwa": "Muzeum Rzek",
+            "nip": null,
+            "regon": null,
+            "prowadzacy_postepowanie": null
+          }
+        ],
+        "ZamowieniePubliczne": {
+          "numer_bzp": null,
+          "numer_postepowania": null,
+          "numer_ted": null,
+          "tytul": null
+        }
+      }
+    },
+    "simple-06": {
+      "class": "appeal",
+      "output": {
+        "OdwolanieKIO": {
+          "data": null,
+          "czynnosc_dzien": null,
+          "czynnosc_powod_id": null,
+          "czynnosc_opis": null,
+          "miejscowosc": null
+        },
+        "Odwolujacy": [
+          {
+            "krs": null,
+            "nazwa": "Rysik",
+            "nip": null,
+            "regon": null,
+            "przez-pelnomocnika": 0,
+            "pelnomocnik": {
+              "imie_nazwisko": null,
+              "nazwa": null,
+              "mail": null
+            }
+          }
+        ],
+        "Zamawiajacy": [
+          {
+            "krs": null,
+            "nazwa": "Teatr Szyn",
+            "nip": null,
+            "regon": null,
+            "prowadzacy_postepowanie": null
+          }
+        ],
+        "ZamowieniePubliczne": {
+          "numer_bzp": null,
+          "numer_postepowania": null,
+          "numer_ted": null,
+          "tytul": null
+        }
+      }
+    },
+    "simple-07": {
+      "class": "appeal",
+      "output": {
+        "OdwolanieKIO": {
+          "data": null,
+          "czynnosc_dzien": null,
+          "czynnosc_powod_id": null,
+          "czynnosc_opis": null,
+          "miejscowosc": null
+        },
+        "Odwolujacy": [
+          {
+            "krs": null,
+            "nazwa": "Złoty Pręt",
+            "nip": null,
+            "regon": null,
+            "przez-pelnomocnika": 0,
+            "pelnomocnik": {
+              "imie_nazwisko": null,
+              "nazwa": null,
+              "mail": null
+            }
+          }
+        ],
+        "Zamawiajacy": [
+          {
+            "krs": null,
+            "nazwa": "Muzeum Rzek",
+            "nip": null,
+            "regon": null,
+            "prowadzacy_postepowanie": null
+          }
+        ],
+        "ZamowieniePubliczne": {
+          "numer_bzp": null,
+          "numer_postepowania": null,
+          "numer_ted": null,
+          "tytul": null
+        }
+      }
+    },
+    "simple-08": {
+      "class": "appeal",
+      "output": {
+        "OdwolanieKIO": {
+          "data": null,
+          "czynnosc_dzien": null,
+          "czynnosc_powod_id": null,
+          "czynnosc_opis": null,
+          "miejscowosc": null
+        },
+        "Odwolujacy": [
+          {
+            "krs": null,
+            "nazwa": "Most Żurawi",
+            "nip": null,
+            "regon": null,
+            "przez-pelnomocnika": 0,
+            "pelnomocnik": {
+              "imie_nazwisko": null,
+              "nazwa": null,
+              "mail": null
+            }
+          }
+        ],
+        "Zamawiajacy": [
+          {
+            "krs": null,
+            "nazwa": "Muzeum Rzek",
+            "nip": null,
+            "regon": null,
+            "prowadzacy_postepowanie": null
+          }
+        ],
+        "ZamowieniePubliczne": {
+          "numer_bzp": null,
+          "numer_postepowania": null,
+          "numer_ted": null,
+          "tytul": null
+        }
+      }
+    },
+    "simple-09": {
+      "class": "appeal",
+      "output": {
+        "OdwolanieKIO": {
+          "data": null,
+          "czynnosc_dzien": null,
+          "czynnosc_powod_id": null,
+          "czynnosc_opis": null,
+          "miejscowosc": null
+        },
+        "Odwolujacy": [
+          {
+            "krs": null,
+            "nazwa": "Most Żurawi",
+            "nip": null,
+            "regon": null,
+            "przez-pelnomocnika": 0,
+            "pelnomocnik": {
+              "imie_nazwisko": null,
+              "nazwa": null,
+              "mail": null
+            }
+          }
+        ],
+        "Zamawiajacy": [
+          {
+            "krs": null,
+            "nazwa": "Muzeum Rzek",
+            "nip": null,
+            "regon": null,
+            "prowadzacy_postepowanie": null
+          }
+        ],
+        "ZamowieniePubliczne": {
+          "numer_bzp": null,
+          "numer_postepowania": null,
+          "numer_ted": null,
+          "tytul": null
+        }
+      }
+    },
+    "simple-10": {
+      "class": "appeal",
+      "output": {
+        "OdwolanieKIO": {
+          "data": null,
+          "czynnosc_dzien": null,
+          "czynnosc_powod_id": null,
+          "czynnosc_opis": null,
+          "miejscowosc": null
+        },
+        "Odwolujacy": [
+          {
+            "krs": null,
+            "nazwa": "Most Żurawi",
+            "nip": "9990001122",
+            "regon": null,
+            "przez-pelnomocnika": 0,
+            "pelnomocnik": {
+              "imie_nazwisko": null,
+              "nazwa": null,
+              "mail": null
+            }
+          }
+        ],
+        "Zamawiajacy": [
+          {
+            "krs": null,
+            "nazwa": "Muzeum Rzek",
+            "nip": null,
+            "regon": null,
+            "prowadzacy_postepowanie": null
+          }
+        ],
+        "ZamowieniePubliczne": {
+          "numer_bzp": null,
+          "numer_postepowania": null,
+          "numer_ted": null,
+          "tytul": null
+        }
+      }
+    },
+    "simple-11": {
+      "class": "appeal",
+      "output": {
+        "OdwolanieKIO": {
+          "data": null,
+          "czynnosc_dzien": null,
+          "czynnosc_powod_id": null,
+          "czynnosc_opis": null,
+          "miejscowosc": null
+        },
+        "Odwolujacy": [
+          {
+            "krs": null,
+            "nazwa": "Most Żurawi",
+            "nip": null,
+            "regon": null,
+            "przez-pelnomocnika": 0,
+            "pelnomocnik": {
+              "imie_nazwisko": null,
+              "nazwa": null,
+              "mail": null
+            }
+          }
+        ],
+        "Zamawiajacy": [
+          {
+            "krs": null,
+            "nazwa": "Muzeum Rzek",
+            "nip": null,
+            "regon": "123456785",
+            "prowadzacy_postepowanie": null
+          }
+        ],
+        "ZamowieniePubliczne": {
+          "numer_bzp": null,
+          "numer_postepowania": null,
+          "numer_ted": null,
+          "tytul": null
+        }
+      }
+    },
+    "simple-12": {
+      "class": "appeal",
+      "output": {
+        "OdwolanieKIO": {
+          "data": null,
+          "czynnosc_dzien": null,
+          "czynnosc_powod_id": null,
+          "czynnosc_opis": null,
+          "miejscowosc": null
+        },
+        "Odwolujacy": [
+          {
+            "krs": "0000123456",
+            "nazwa": "Most Żurawi",
+            "nip": null,
+            "regon": null,
+            "przez-pelnomocnika": 0,
+            "pelnomocnik": {
+              "imie_nazwisko": null,
+              "nazwa": null,
+              "mail": null
+            }
+          }
+        ],
+        "Zamawiajacy": [
+          {
+            "krs": null,
+            "nazwa": "Muzeum Rzek",
+            "nip": null,
+            "regon": null,
+            "prowadzacy_postepowanie": null
+          }
+        ],
+        "ZamowieniePubliczne": {
+          "numer_bzp": null,
+          "numer_postepowania": null,
+          "numer_ted": null,
+          "tytul": null
+        }
+      }
+    },
+    "simple-13": {
+      "class": "appeal",
+      "output": {
+        "OdwolanieKIO": {
+          "data": null,
+          "czynnosc_dzien": null,
+          "czynnosc_powod_id": null,
+          "czynnosc_opis": null,
+          "miejscowosc": null
+        },
+        "Odwolujacy": [
+          {
+            "krs": null,
+            "nazwa": "Most Żurawi",
+            "nip": null,
+            "regon": null,
+            "przez-pelnomocnika": 1,
+            "pelnomocnik": {
+              "imie_nazwisko": "Iga Wstęga",
+              "nazwa": null,
+              "mail": null
+            }
+          }
+        ],
+        "Zamawiajacy": [
+          {
+            "krs": null,
+            "nazwa": "Muzeum Rzek",
+            "nip": null,
+            "regon": null,
+            "prowadzacy_postepowanie": null
+          }
+        ],
+        "ZamowieniePubliczne": {
+          "numer_bzp": null,
+          "numer_postepowania": null,
+          "numer_ted": null,
+          "tytul": null
+        }
+      }
+    },
+    "simple-14": {
+      "class": "appeal",
+      "output": {
+        "OdwolanieKIO": {
+          "data": null,
+          "czynnosc_dzien": null,
+          "czynnosc_powod_id": null,
+          "czynnosc_opis": null,
+          "miejscowosc": null
+        },
+        "Odwolujacy": [
+          {
+            "krs": null,
+            "nazwa": "Most Żurawi",
+            "nip": null,
+            "regon": null,
+            "przez-pelnomocnika": 0,
+            "pelnomocnik": {
+              "imie_nazwisko": null,
+              "nazwa": null,
+              "mail": null
+            }
+          }
+        ],
+        "Zamawiajacy": [
+          {
+            "krs": null,
+            "nazwa": "Muzeum Rzek",
+            "nip": null,
+            "regon": null,
+            "prowadzacy_postepowanie": null
+          }
+        ],
+        "ZamowieniePubliczne": {
+          "numer_bzp": null,
+          "numer_postepowania": null,
+          "numer_ted": null,
+          "tytul": null
+        }
+      }
+    },
+    "simple-15": {
+      "class": "appeal",
+      "output": {
+        "OdwolanieKIO": {
+          "data": null,
+          "czynnosc_dzien": null,
+          "czynnosc_powod_id": null,
+          "czynnosc_opis": null,
+          "miejscowosc": null
+        },
+        "Odwolujacy": [
+          {
+            "krs": null,
+            "nazwa": "Most Żurawi",
+            "nip": null,
+            "regon": null,
+            "przez-pelnomocnika": 0,
+            "pelnomocnik": {
+              "imie_nazwisko": null,
+              "nazwa": null,
+              "mail": null
+            }
+          }
+        ],
+        "Zamawiajacy": [
+          {
+            "krs": null,
+            "nazwa": "Muzeum Rzek",
+            "nip": null,
+            "regon": null,
+            "prowadzacy_postepowanie": null
+          }
+        ],
+        "ZamowieniePubliczne": {
+          "numer_bzp": null,
+          "numer_postepowania": "MR/45/1",
+          "numer_ted": null,
+          "tytul": null
+        }
+      }
+    },
+    "simple-16": {
+      "class": "appeal",
+      "output": {
+        "OdwolanieKIO": {
+          "data": null,
+          "czynnosc_dzien": null,
+          "czynnosc_powod_id": null,
+          "czynnosc_opis": null,
+          "miejscowosc": null
+        },
+        "Odwolujacy": [
+          {
+            "krs": null,
+            "nazwa": "Most Żurawi",
+            "nip": null,
+            "regon": null,
+            "przez-pelnomocnika": 0,
+            "pelnomocnik": {
+              "imie_nazwisko": null,
+              "nazwa": null,
+              "mail": null
+            }
+          }
+        ],
+        "Zamawiajacy": [
+          {
+            "krs": null,
+            "nazwa": "Muzeum Rzek",
+            "nip": null,
+            "regon": null,
+            "prowadzacy_postepowanie": null
+          }
+        ],
+        "ZamowieniePubliczne": {
+          "numer_bzp": null,
+          "numer_postepowania": "MG/29",
+          "numer_ted": null,
+          "tytul": null
+        }
+      }
+    },
+    "simple-17": {
+      "class": "appeal",
+      "output": {
+        "OdwolanieKIO": {
+          "data": null,
+          "czynnosc_dzien": null,
+          "czynnosc_powod_id": null,
+          "czynnosc_opis": null,
+          "miejscowosc": null
+        },
+        "Odwolujacy": [
+          {
+            "krs": null,
+            "nazwa": "Most Żurawi",
+            "nip": null,
+            "regon": null,
+            "przez-pelnomocnika": 0,
+            "pelnomocnik": {
+              "imie_nazwisko": null,
+              "nazwa": null,
+              "mail": null
+            }
+          }
+        ],
+        "Zamawiajacy": [
+          {
+            "krs": null,
+            "nazwa": "Muzeum Rzek",
+            "nip": null,
+            "regon": null,
+            "prowadzacy_postepowanie": null
+          }
+        ],
+        "ZamowieniePubliczne": {
+          "numer_bzp": null,
+          "numer_postepowania": "KW.12.7",
+          "numer_ted": null,
+          "tytul": null
+        }
+      }
+    },
+    "simple-18": {
+      "class": "appeal",
+      "output": {
+        "OdwolanieKIO": {
+          "data": null,
+          "czynnosc_dzien": null,
+          "czynnosc_powod_id": null,
+          "czynnosc_opis": null,
+          "miejscowosc": null
+        },
+        "Odwolujacy": [
+          {
+            "krs": null,
+            "nazwa": "Most Żurawi",
+            "nip": null,
+            "regon": null,
+            "przez-pelnomocnika": 0,
+            "pelnomocnik": {
+              "imie_nazwisko": null,
+              "nazwa": null,
+              "mail": null
+            }
+          }
+        ],
+        "Zamawiajacy": [
+          {
+            "krs": null,
+            "nazwa": "Muzeum Rzek",
+            "nip": null,
+            "regon": null,
+            "prowadzacy_postepowanie": null
+          }
+        ],
+        "ZamowieniePubliczne": {
+          "numer_bzp": null,
+          "numer_postepowania": "ZP-8",
+          "numer_ted": null,
+          "tytul": null
+        }
+      }
+    },
+    "simple-19": {
+      "class": "appeal",
+      "output": {
+        "OdwolanieKIO": {
+          "data": "2036-03-09",
+          "czynnosc_dzien": null,
+          "czynnosc_powod_id": null,
+          "czynnosc_opis": null,
+          "miejscowosc": "Rysowo"
+        },
+        "Odwolujacy": [
+          {
+            "krs": null,
+            "nazwa": "Most Żurawi",
+            "nip": null,
+            "regon": null,
+            "przez-pelnomocnika": 0,
+            "pelnomocnik": {
+              "imie_nazwisko": null,
+              "nazwa": null,
+              "mail": null
+            }
+          }
+        ],
+        "Zamawiajacy": [
+          {
+            "krs": null,
+            "nazwa": "Muzeum Rzek",
+            "nip": null,
+            "regon": null,
+            "prowadzacy_postepowanie": null
+          }
+        ],
+        "ZamowieniePubliczne": {
+          "numer_bzp": null,
+          "numer_postepowania": null,
+          "numer_ted": null,
+          "tytul": null
+        }
+      }
+    },
+    "simple-20": {
+      "class": "appeal",
+      "output": {
+        "OdwolanieKIO": {
+          "data": "2036-04-11",
+          "czynnosc_dzien": null,
+          "czynnosc_powod_id": null,
+          "czynnosc_opis": null,
+          "miejscowosc": "Brzegowo"
+        },
+        "Odwolujacy": [
+          {
+            "krs": null,
+            "nazwa": "Most Żurawi",
+            "nip": null,
+            "regon": null,
+            "przez-pelnomocnika": 0,
+            "pelnomocnik": {
+              "imie_nazwisko": null,
+              "nazwa": null,
+              "mail": null
+            }
+          }
+        ],
+        "Zamawiajacy": [
+          {
+            "krs": null,
+            "nazwa": "Muzeum Rzek",
+            "nip": null,
+            "regon": null,
+            "prowadzacy_postepowanie": null
+          }
+        ],
+        "ZamowieniePubliczne": {
+          "numer_bzp": null,
+          "numer_postepowania": null,
+          "numer_ted": null,
+          "tytul": null
+        }
+      }
+    },
+    "simple-21": {
+      "class": "appeal",
+      "output": {
+        "OdwolanieKIO": {
+          "data": null,
+          "czynnosc_dzien": null,
+          "czynnosc_powod_id": null,
+          "czynnosc_opis": null,
+          "miejscowosc": null
+        },
+        "Odwolujacy": [
+          {
+            "krs": null,
+            "nazwa": "Most Żurawi",
+            "nip": null,
+            "regon": null,
+            "przez-pelnomocnika": 0,
+            "pelnomocnik": {
+              "imie_nazwisko": null,
+              "nazwa": null,
+              "mail": null
+            }
+          }
+        ],
+        "Zamawiajacy": [
+          {
+            "krs": null,
+            "nazwa": "Muzeum Rzek",
+            "nip": null,
+            "regon": null,
+            "prowadzacy_postepowanie": null
+          }
+        ],
+        "ZamowieniePubliczne": {
+          "numer_bzp": null,
+          "numer_postepowania": null,
+          "numer_ted": null,
+          "tytul": "Piec do szkła"
+        }
+      }
+    },
+    "simple-22": {
+      "class": "appeal",
+      "output": {
+        "OdwolanieKIO": {
+          "data": null,
+          "czynnosc_dzien": null,
+          "czynnosc_powod_id": null,
+          "czynnosc_opis": null,
+          "miejscowosc": null
+        },
+        "Odwolujacy": [
+          {
+            "krs": null,
+            "nazwa": "Most Żurawi",
+            "nip": null,
+            "regon": null,
+            "przez-pelnomocnika": 0,
+            "pelnomocnik": {
+              "imie_nazwisko": null,
+              "nazwa": null,
+              "mail": null
+            }
+          }
+        ],
+        "Zamawiajacy": [
+          {
+            "krs": null,
+            "nazwa": "Muzeum Rzek",
+            "nip": null,
+            "regon": null,
+            "prowadzacy_postepowanie": null
+          }
+        ],
+        "ZamowieniePubliczne": {
+          "numer_bzp": "2036/BZP00001234/01",
+          "numer_postepowania": null,
+          "numer_ted": null,
+          "tytul": null
+        }
+      }
+    },
+    "simple-23": {
+      "class": "appeal",
+      "output": {
+        "OdwolanieKIO": {
+          "data": null,
+          "czynnosc_dzien": null,
+          "czynnosc_powod_id": null,
+          "czynnosc_opis": null,
+          "miejscowosc": null
+        },
+        "Odwolujacy": [
+          {
+            "krs": null,
+            "nazwa": "Most Żurawi",
+            "nip": null,
+            "regon": null,
+            "przez-pelnomocnika": 0,
+            "pelnomocnik": {
+              "imie_nazwisko": null,
+              "nazwa": null,
+              "mail": null
+            }
+          }
+        ],
+        "Zamawiajacy": [
+          {
+            "krs": null,
+            "nazwa": "Muzeum Rzek",
+            "nip": null,
+            "regon": null,
+            "prowadzacy_postepowanie": null
+          }
+        ],
+        "ZamowieniePubliczne": {
+          "numer_bzp": null,
+          "numer_postepowania": null,
+          "numer_ted": "123456-2036",
+          "tytul": null
+        }
+      }
+    },
+    "simple-24": {
+      "class": "appeal",
+      "output": {
+        "OdwolanieKIO": {
+          "data": null,
+          "czynnosc_dzien": null,
+          "czynnosc_powod_id": 1,
+          "czynnosc_opis": "Decyzja o odrzuceniu oferty",
+          "miejscowosc": null
+        },
+        "Odwolujacy": [
+          {
+            "krs": null,
+            "nazwa": "Most Żurawi",
+            "nip": null,
+            "regon": null,
+            "przez-pelnomocnika": 0,
+            "pelnomocnik": {
+              "imie_nazwisko": null,
+              "nazwa": null,
+              "mail": null
+            }
+          }
+        ],
+        "Zamawiajacy": [
+          {
+            "krs": null,
+            "nazwa": "Muzeum Rzek",
+            "nip": null,
+            "regon": null,
+            "prowadzacy_postepowanie": null
+          }
+        ],
+        "ZamowieniePubliczne": {
+          "numer_bzp": null,
+          "numer_postepowania": null,
+          "numer_ted": null,
+          "tytul": null
+        }
+      }
+    },
+    "simple-25": {
+      "class": "appeal",
+      "output": {
+        "OdwolanieKIO": {
+          "data": null,
+          "czynnosc_dzien": null,
+          "czynnosc_powod_id": 3,
+          "czynnosc_opis": "Decyzja o wykluczeniu wykonawcy",
+          "miejscowosc": null
+        },
+        "Odwolujacy": [
+          {
+            "krs": null,
+            "nazwa": "Most Żurawi",
+            "nip": null,
+            "regon": null,
+            "przez-pelnomocnika": 0,
+            "pelnomocnik": {
+              "imie_nazwisko": null,
+              "nazwa": null,
+              "mail": null
+            }
+          }
+        ],
+        "Zamawiajacy": [
+          {
+            "krs": null,
+            "nazwa": "Muzeum Rzek",
+            "nip": null,
+            "regon": null,
+            "prowadzacy_postepowanie": null
+          }
+        ],
+        "ZamowieniePubliczne": {
+          "numer_bzp": null,
+          "numer_postepowania": null,
+          "numer_ted": null,
+          "tytul": null
+        }
+      }
+    },
+    "simple-26": {
+      "class": "appeal",
+      "output": {
+        "OdwolanieKIO": {
+          "data": null,
+          "czynnosc_dzien": "2036-03-03",
+          "czynnosc_powod_id": 9,
+          "czynnosc_opis": "Decyzja o unieważnieniu postępowania",
+          "miejscowosc": null
+        },
+        "Odwolujacy": [
+          {
+            "krs": null,
+            "nazwa": "Most Żurawi",
+            "nip": null,
+            "regon": null,
+            "przez-pelnomocnika": 0,
+            "pelnomocnik": {
+              "imie_nazwisko": null,
+              "nazwa": null,
+              "mail": null
+            }
+          }
+        ],
+        "Zamawiajacy": [
+          {
+            "krs": null,
+            "nazwa": "Muzeum Rzek",
+            "nip": null,
+            "regon": null,
+            "prowadzacy_postepowanie": null
+          }
+        ],
+        "ZamowieniePubliczne": {
+          "numer_bzp": null,
+          "numer_postepowania": null,
+          "numer_ted": null,
+          "tytul": null
+        }
+      }
+    },
+    "simple-27": {
+      "class": "appeal",
+      "output": {
+        "OdwolanieKIO": {
+          "data": null,
+          "czynnosc_dzien": "2036-07-04",
+          "czynnosc_powod_id": 2,
+          "czynnosc_opis": "Ogłoszenie wyboru oferty",
+          "miejscowosc": null
+        },
+        "Odwolujacy": [
+          {
+            "krs": null,
+            "nazwa": "Most Żurawi",
+            "nip": null,
+            "regon": null,
+            "przez-pelnomocnika": 0,
+            "pelnomocnik": {
+              "imie_nazwisko": null,
+              "nazwa": null,
+              "mail": null
+            }
+          }
+        ],
+        "Zamawiajacy": [
+          {
+            "krs": null,
+            "nazwa": "Muzeum Rzek",
+            "nip": null,
+            "regon": null,
+            "prowadzacy_postepowanie": null
+          }
+        ],
+        "ZamowieniePubliczne": {
+          "numer_bzp": null,
+          "numer_postepowania": null,
+          "numer_ted": null,
+          "tytul": null
+        }
+      }
+    },
+    "simple-28": {
+      "class": "appeal",
+      "output": {
+        "OdwolanieKIO": {
+          "data": null,
+          "czynnosc_dzien": null,
+          "czynnosc_powod_id": 11,
+          "czynnosc_opis": "Opis przedmiotu zamówienia (OPZ)",
+          "miejscowosc": null
+        },
+        "Odwolujacy": [
+          {
+            "krs": null,
+            "nazwa": "Most Żurawi",
+            "nip": null,
+            "regon": null,
+            "przez-pelnomocnika": 0,
+            "pelnomocnik": {
+              "imie_nazwisko": null,
+              "nazwa": null,
+              "mail": null
+            }
+          }
+        ],
+        "Zamawiajacy": [
+          {
+            "krs": null,
+            "nazwa": "Muzeum Rzek",
+            "nip": null,
+            "regon": null,
+            "prowadzacy_postepowanie": null
+          }
+        ],
+        "ZamowieniePubliczne": {
+          "numer_bzp": null,
+          "numer_postepowania": null,
+          "numer_ted": null,
+          "tytul": null
+        }
+      }
+    },
+    "simple-29": {
+      "class": "appeal",
+      "output": {
+        "OdwolanieKIO": {
+          "data": null,
+          "czynnosc_dzien": null,
+          "czynnosc_powod_id": null,
+          "czynnosc_opis": null,
+          "miejscowosc": null
+        },
+        "Odwolujacy": [
+          {
+            "krs": null,
+            "nazwa": "Most Żurawi",
+            "nip": null,
+            "regon": null,
+            "przez-pelnomocnika": 0,
+            "pelnomocnik": {
+              "imie_nazwisko": null,
+              "nazwa": null,
+              "mail": null
+            }
+          }
+        ],
+        "Zamawiajacy": [
+          {
+            "krs": null,
+            "nazwa": "Muzeum Rzek",
+            "nip": null,
+            "regon": null,
+            "prowadzacy_postepowanie": null
+          }
+        ],
+        "ZamowieniePubliczne": {
+          "numer_bzp": null,
+          "numer_postepowania": "AM/41",
+          "numer_ted": null,
+          "tytul": null
+        }
+      }
+    },
+    "simple-30": {
+      "class": "appeal",
+      "output": {
+        "OdwolanieKIO": {
+          "data": null,
+          "czynnosc_dzien": null,
+          "czynnosc_powod_id": null,
+          "czynnosc_opis": null,
+          "miejscowosc": null
+        },
+        "Odwolujacy": [
+          {
+            "krs": null,
+            "nazwa": "Most Żurawi",
+            "nip": "9990001122",
+            "regon": null,
+            "przez-pelnomocnika": 0,
+            "pelnomocnik": {
+              "imie_nazwisko": null,
+              "nazwa": null,
+              "mail": null
+            }
+          }
+        ],
+        "Zamawiajacy": [
+          {
+            "krs": null,
+            "nazwa": "Muzeum Rzek",
+            "nip": null,
+            "regon": null,
+            "prowadzacy_postepowanie": null
+          }
+        ],
+        "ZamowieniePubliczne": {
+          "numer_bzp": null,
+          "numer_postepowania": "MK/91",
+          "numer_ted": null,
+          "tytul": null
+        }
+      }
+    },
+    "r39-value-name": {
+      "class": "appeal",
+      "output": {
+        "OdwolanieKIO": {
+          "data": null,
+          "czynnosc_dzien": null,
+          "czynnosc_powod_id": null,
+          "czynnosc_opis": null,
+          "miejscowosc": null
+        },
+        "Odwolujacy": [
+          {
+            "krs": null,
+            "nazwa": "Wartość S.A.",
+            "nip": null,
+            "regon": null,
+            "przez-pelnomocnika": 0,
+            "pelnomocnik": {
+              "imie_nazwisko": null,
+              "nazwa": null,
+              "mail": null
+            }
+          }
+        ],
+        "Zamawiajacy": [
+          {
+            "krs": null,
+            "nazwa": "Oset",
+            "nip": null,
+            "regon": null,
+            "prowadzacy_postepowanie": null
+          }
+        ],
+        "ZamowieniePubliczne": {
+          "numer_bzp": null,
+          "numer_postepowania": null,
+          "numer_ted": null,
+          "tytul": null
+        }
+      }
+    },
+    "r39-fee-name": {
+      "class": "appeal",
+      "output": {
+        "OdwolanieKIO": {
+          "data": null,
+          "czynnosc_dzien": null,
+          "czynnosc_powod_id": null,
+          "czynnosc_opis": null,
+          "miejscowosc": null
+        },
+        "Odwolujacy": [
+          {
+            "krs": null,
+            "nazwa": "Wpis sp. z o.o.",
+            "nip": null,
+            "regon": null,
+            "przez-pelnomocnika": 0,
+            "pelnomocnik": {
+              "imie_nazwisko": null,
+              "nazwa": null,
+              "mail": null
+            }
+          }
+        ],
+        "Zamawiajacy": [
+          {
+            "krs": null,
+            "nazwa": "Oset",
+            "nip": null,
+            "regon": null,
+            "prowadzacy_postepowanie": null
+          }
+        ],
+        "ZamowieniePubliczne": {
+          "numer_bzp": null,
+          "numer_postepowania": null,
+          "numer_ted": null,
+          "tytul": null
+        }
+      }
+    },
+    "r39-direct-after": {
+      "class": "appeal",
+      "output": {
+        "OdwolanieKIO": {
+          "data": null,
+          "czynnosc_dzien": "2037-04-12",
+          "czynnosc_powod_id": 1,
+          "czynnosc_opis": "Decyzja o odrzuceniu oferty",
+          "miejscowosc": null
+        },
+        "Odwolujacy": [
+          {
+            "krs": null,
+            "nazwa": "Most Żurawi",
+            "nip": null,
+            "regon": null,
+            "przez-pelnomocnika": 0,
+            "pelnomocnik": {
+              "imie_nazwisko": null,
+              "nazwa": null,
+              "mail": null
+            }
+          }
+        ],
+        "Zamawiajacy": [
+          {
+            "krs": null,
+            "nazwa": "Muzeum Rzek",
+            "nip": null,
+            "regon": null,
+            "prowadzacy_postepowanie": null
+          }
+        ],
+        "ZamowieniePubliczne": {
+          "numer_bzp": null,
+          "numer_postepowania": null,
+          "numer_ted": null,
+          "tytul": null
+        }
+      }
+    },
+    "r39-direct-before": {
+      "class": "appeal",
+      "output": {
+        "OdwolanieKIO": {
+          "data": null,
+          "czynnosc_dzien": "2037-04-12",
+          "czynnosc_powod_id": 1,
+          "czynnosc_opis": "Decyzja o odrzuceniu oferty",
+          "miejscowosc": null
+        },
+        "Odwolujacy": [
+          {
+            "krs": null,
+            "nazwa": "Most Żurawi",
+            "nip": null,
+            "regon": null,
+            "przez-pelnomocnika": 0,
+            "pelnomocnik": {
+              "imie_nazwisko": null,
+              "nazwa": null,
+              "mail": null
+            }
+          }
+        ],
+        "Zamawiajacy": [
+          {
+            "krs": null,
+            "nazwa": "Muzeum Rzek",
+            "nip": null,
+            "regon": null,
+            "prowadzacy_postepowanie": null
+          }
+        ],
+        "ZamowieniePubliczne": {
+          "numer_bzp": null,
+          "numer_postepowania": null,
+          "numer_ted": null,
+          "tytul": null
+        }
+      }
+    },
+    "r39-performed": {
+      "class": "appeal",
+      "output": {
+        "OdwolanieKIO": {
+          "data": null,
+          "czynnosc_dzien": "2035-05-03",
+          "czynnosc_powod_id": 1,
+          "czynnosc_opis": "Decyzja o odrzuceniu oferty",
+          "miejscowosc": null
+        },
+        "Odwolujacy": [
+          {
+            "krs": null,
+            "nazwa": "Most Żurawi",
+            "nip": null,
+            "regon": null,
+            "przez-pelnomocnika": 0,
+            "pelnomocnik": {
+              "imie_nazwisko": null,
+              "nazwa": null,
+              "mail": null
+            }
+          }
+        ],
+        "Zamawiajacy": [
+          {
+            "krs": null,
+            "nazwa": "Muzeum Rzek",
+            "nip": null,
+            "regon": null,
+            "prowadzacy_postepowanie": null
+          }
+        ],
+        "ZamowieniePubliczne": {
+          "numer_bzp": null,
+          "numer_postepowania": null,
+          "numer_ted": null,
+          "tytul": null
+        }
+      }
+    }
+  }
+}

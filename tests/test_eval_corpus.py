@@ -81,6 +81,8 @@ def test_corpus_staging_aggregation_and_private_detail(corpus, repo, monkeypatch
     assert "docs" not in aggregate
     assert aggregate["n_cases"] == aggregate["n_docs"] == 2
     assert aggregate["detail"]["counts"] == {"tp": 0, "fp": 1, "fn": 1}
+    assert aggregate["detail"]["routing_by_class"]["pelnomocnictwo"] == {"correct": 0, "total": 1}
+    assert aggregate["detail"]["routing_by_class"]["negatywny"] == {"correct": 0, "total": 1}
     assert len(json.loads(detail.read_text())["docs"]) == 2
     assert (repo / "evals/results/latest.json").read_text() == "training"
     assert (repo / ".git/eval-latest.json").read_text() == "gate"
@@ -510,3 +512,33 @@ def test_empty_pdfminer_page_tree_requires_an_independent_decode(tmp_path, monke
     else:
         with pytest.raises(ValueError, match="could not be decoded"):
             run.check_pdf(path)
+
+
+def test_organizer_scan_predictions_preserve_nested_paths_and_training_gate(repo, monkeypatch):
+    data = repo / "data/uzp/dane"
+    for group, marker in [("odwolania", "OdwolanieKIO"), ("potwierdzenia", "przelew_bankowy")]:
+        folder = data / "skany" / group / "0001"
+        folder.mkdir(parents=True)
+        (folder / "0001.pdf").write_bytes(invented_pdf())
+        (folder / "0001.json").write_text(json.dumps({marker: {"field": 1}}))
+    subprocess.run(["git", "add", "data"], cwd=repo, check=True)
+    subprocess.run(
+        [
+            "git",
+            "-c",
+            "user.name=Tester",
+            "-c",
+            "user.email=t@example.invalid",
+            "commit",
+            "-qm",
+            "Invented scan inventory",
+        ],
+        cwd=repo,
+        check=True,
+    )
+    monkeypatch.setattr(sys, "argv", ["eval", "--organizer-scans", "--data", str(data), "--pred", str(data)])
+    assert run.main() == 0
+    report = json.loads((repo / "evals/results/organizer-scans.json").read_text())
+    assert report["n_docs"] == 2 and report["detail"]["micro_f1"] == 1
+    assert report["detail"]["routing_by_class"]["przelew"]["correct"] == 1
+    assert "docs" not in report and (repo / ".git/eval-latest.json").read_text() == "gate"
