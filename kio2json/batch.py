@@ -12,7 +12,7 @@ from .pipeline import process_pdf
 
 
 def configure_logging(classes: list[DocumentClass]) -> None:
-    if any(c.enabled and "llm" in c.engines for c in classes):
+    if any(c.enabled and ("llm" in c.engines or c.profile.routing != "rules") for c in classes):
         # The SDK banner names the model; debug logs include response headers and request URLs.
         os.environ.setdefault("PYDANTIC_AI_NO_BANNER", "1")
         os.environ.pop("OPENAI_LOG", None)

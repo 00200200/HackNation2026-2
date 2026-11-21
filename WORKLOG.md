@@ -80,3 +80,4 @@ Both splits missed the team’s micro F1 and classification targets. Compared wi
 - 21.11.2026 · Codex · merged the config-driven extraction baseline (`4b1cc42`) into the evaluation branch for the final training and corpus checks.
 - 21.11.2026 · Codex · added training checks for empty or mislabelled positive references. The negative output check now distinguishes a zero-byte prediction from an empty JSON object.
 - 21.11.2026 · Codex · Added the local PDF viewer and start scripts for #11 in `d1c9749`. Browser uploads and ZIP downloads matched the CLI for all three document classes, a scanned appeal and an unrelated PDF.
+- 21.11.2026, local model evaluation checkpoint. The organizer registry supports five extraction modes and first-page model routing. The rules baseline scored 0.4444 micro-F1 on 22 dev PDFs, routed 11/15 positives and kept 7/7 negatives empty. The local model run and keyed default selection are pending.

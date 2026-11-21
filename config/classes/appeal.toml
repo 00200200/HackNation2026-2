@@ -9,20 +9,20 @@ classifier = "kio2json.classify.classify"
 [fields.OdwolanieKIO]
 type = "object"
 nullable = false
-instruction = "Facts about the appeal and its first allegation."
+instruction = "Appeal heading and first allegation. Use null for unstated facts."
 
 [fields.OdwolanieKIO.fields]
-data = { type = "string", normalizer = "iso_date", instruction = "Filing date from the date line in the first-page heading." }
+data = { type = "string", normalizer = "iso_date", instruction = "Date on the first-page place/date line, as YYYY-MM-DD. If absent, null." }
 czynnosc_dzien = { type = "string", normalizer = "iso_date", instruction = "Date of the act starting the appeal deadline for the first allegation. Return null without a reliable date for that allegation." }
-czynnosc_powod_id = { type = "integer", instruction = "Take the integer reason ID solely from the first allegation. The canonical ID and description pairs are 1=Decyzja o odrzuceniu oferty, 2=Ogłoszenie wyboru oferty, 3=Decyzja o wykluczeniu wykonawcy, 4=Publikacja specyfikacji warunków zamówienia (SWZ), 5=Modyfikacja treści SWZ, 6=Odpowiedzi/wyjaśnienia do SWZ, 7=Zaniechanie odrzucenia oferty, 8=Zaniechanie wykluczenia wykonawcy, 9=Decyzja o unieważnieniu postępowania, 10=Zaniechanie unieważnienia postępowania, 11=Opis przedmiotu zamówienia (OPZ), 12=Projektowane postanowienia umowy." }
-czynnosc_opis = { type = "string", instruction = "Return the canonical Polish description from the organizer's action dictionary for the ID determined from the first allegation." }
-miejscowosc = { type = "string", instruction = "Place from the first-page heading on the date line." }
+czynnosc_powod_id = { type = "integer", instruction = "Classify only the first zarzut. Return its integer ID, or null if undetermined. Dictionary: 1=Decyzja o odrzuceniu oferty, 2=Ogłoszenie wyboru oferty, 3=Decyzja o wykluczeniu wykonawcy, 4=Publikacja specyfikacji warunków zamówienia (SWZ), 5=Modyfikacja treści SWZ, 6=Odpowiedzi/wyjaśnienia do SWZ, 7=Zaniechanie odrzucenia oferty, 8=Zaniechanie wykluczenia wykonawcy, 9=Decyzja o unieważnieniu postępowania, 10=Zaniechanie unieważnienia postępowania, 11=Opis przedmiotu zamówienia (OPZ), 12=Projektowane postanowienia umowy." }
+czynnosc_opis = { type = "string", instruction = "Copy the exact dictionary description for the first allegation’s ID. If undetermined, null." }
+miejscowosc = { type = "string", instruction = "Town on the first-page date line (X, dnia … or X DD.MM.RRRR). If absent, null." }
 
 [fields.Odwolujacy]
 match_by = "nazwa"
 type = "list"
 nullable = false
-instruction = "Appellant, or the leader of the appellant consortium."
+instruction = "Party labelled Odwołujący. For a consortium include its leader. For no identifiable appellant return []."
 
 [fields.Odwolujacy.items]
 type = "object"
@@ -30,11 +30,11 @@ nullable = false
 instruction = "Identify the appellant from its party block."
 
 [fields.Odwolujacy.items.fields]
-krs = { type = "string", normalizer = "krs", instruction = "KRS of the appellant or consortium leader, if given." }
-nazwa = { type = "string", instruction = "Full name in the appellant section. For a consortium give the leader's name." }
-nip = { type = "string", normalizer = "nip", instruction = "NIP of the appellant or consortium leader, if given." }
-regon = { type = "string", normalizer = "regon", instruction = "REGON of the appellant or consortium leader, if given." }
-przez-pelnomocnika = { type = "integer", nullable = false, instruction = "Whether the appellant acts through counsel: 1 for yes, 0 for no." }
+krs = { type = "string", normalizer = "krs", instruction = "Appellant or consortium leader’s KRS, ten digits including leading zeros. If absent, null." }
+nazwa = { type = "string", instruction = "Full name from the Odwołujący section. For a consortium use the leader’s name. If absent, null." }
+nip = { type = "string", normalizer = "nip", instruction = "Appellant or consortium leader’s NIP, ten digits. If absent, null." }
+regon = { type = "string", normalizer = "regon", instruction = "Appellant or consortium leader’s REGON, nine or fourteen digits. If absent, null." }
+przez-pelnomocnika = { type = "integer", nullable = false, instruction = "1 if the appellant acts through counsel, 0 if acting directly. If unclear, null." }
 
 [fields.Odwolujacy.items.fields.pelnomocnik]
 type = "object"
@@ -42,15 +42,15 @@ nullable = false
 instruction = "Counsel representing the appellant."
 
 [fields.Odwolujacy.items.fields.pelnomocnik.fields]
-imie_nazwisko = { type = "string", instruction = "First and last name of the appellant's counsel, if present." }
-nazwa = { type = "string", instruction = "Name of the entity employing counsel." }
-mail = { type = "string", instruction = "Contact email of the appellant's counsel." }
+imie_nazwisko = { type = "string", instruction = "Given name and surname of counsel representing the appellant. If absent, null." }
+nazwa = { type = "string", instruction = "Name of the firm employing the appellant’s counsel. If absent, null." }
+mail = { type = "string", instruction = "Contact email stated for the appellant’s counsel. If absent, null." }
 
 [fields.Zamawiajacy]
 match_by = "nazwa"
 type = "list"
 nullable = false
-instruction = "Contracting authorities named in the appeal."
+instruction = "One row per Zamawiający. Keep each authority’s identifiers with that authority. For no identified authority return []."
 
 [fields.Zamawiajacy.items]
 type = "object"
@@ -58,11 +58,11 @@ nullable = false
 instruction = "One contracting authority."
 
 [fields.Zamawiajacy.items.fields]
-krs = { type = "string", normalizer = "krs", instruction = "KRS explicitly given for this contracting authority." }
-nazwa = { type = "string", instruction = "Full name of the entity in the contracting authority section." }
-nip = { type = "string", normalizer = "nip", instruction = "NIP explicitly given for this contracting authority." }
-regon = { type = "string", normalizer = "regon", instruction = "REGON explicitly given for this contracting authority." }
-prowadzacy_postepowanie = { type = "integer", instruction = "Null without information. When multiple authorities are named, use 1 for the designated lead and 0 for an authority that is not designated lead." }
+krs = { type = "string", normalizer = "krs", instruction = "KRS stated beside this Zamawiający, ten digits including leading zeros. Otherwise null." }
+nazwa = { type = "string", instruction = "Full name from the Zamawiający section. If absent, null." }
+nip = { type = "string", normalizer = "nip", instruction = "NIP stated beside this Zamawiający, ten digits. Otherwise null." }
+regon = { type = "string", normalizer = "regon", instruction = "REGON stated beside this Zamawiający, nine or fourteen digits. Otherwise null." }
+prowadzacy_postepowanie = { type = "integer", instruction = "For a sole authority or missing information, null. With multiple authorities, 1 for the designated prowadzący postępowanie or lider, 0 for a non-lead." }
 
 [fields.ZamowieniePubliczne]
 type = "object"
@@ -70,7 +70,7 @@ nullable = false
 instruction = "The public procurement procedure."
 
 [fields.ZamowieniePubliczne.fields]
-numer_bzp = { type = "string", instruction = "BZP notice number in YYYY/BZP######## format, optionally followed by /## for a correction. Remove spaces and exclude TED numbers." }
-numer_postepowania = { type = "string", instruction = "Internal procurement reference number found after its label." }
-numer_ted = { type = "string", instruction = "TED notice number as NNNNNN-YYYY. Convert YYYY/S ###-NNNNNN to this form." }
-tytul = { type = "string", instruction = "Title of the procurement or procedure, if stated." }
+numer_bzp = { type = "string", instruction = "BZP notice as YYYY/BZP########, plus /## if printed for a correction. Remove spaces. If absent, null." }
+numer_postepowania = { type = "string", instruction = "Internal ID after numer referencyjny, nr postępowania or equivalent. Copy the whole ID. If absent, null." }
+numer_ted = { type = "string", instruction = "TED notice as NNNNNN-YYYY. Convert YYYY/S ###-NNNNNN to NNNNNN-YYYY. If absent, null." }
+tytul = { type = "string", instruction = "Full title of the procurement or procedure as printed. If absent, null." }

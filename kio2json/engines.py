@@ -34,23 +34,27 @@ def identity(record, path: str):
     return record
 
 
-def gaps(field: OutputField, value) -> bool:
-    if value is None:
+def gaps(field: OutputField, value, *, fill_empty: bool = False) -> bool:
+    if value is None or (fill_empty and field.type == "list" and not value):
         return True
     if field.type == "object":
-        return any(gaps(child, value.get(key)) for key, child in field.fields.items())
+        return any(gaps(child, value.get(key), fill_empty=fill_empty) for key, child in field.fields.items())
     if field.match_by:
-        return any(identity(row, field.match_by) is not None and gaps(field.items, row) for row in value)
+        return any(
+            identity(row, field.match_by) is not None and gaps(field.items, row, fill_empty=fill_empty) for row in value
+        )
     return False
 
 
-def fill(field: OutputField, primary, fallback):
+def fill(field: OutputField, primary, fallback, *, fill_empty: bool = False):
     if primary is None:
         return fallback
     if fallback is None:
         return primary
+    if fill_empty and field.type == "list" and not primary:
+        return fallback
     if field.type == "object":
-        return {k: fill(f, primary.get(k), fallback.get(k)) for k, f in field.fields.items()}
+        return {k: fill(f, primary.get(k), fallback.get(k), fill_empty=fill_empty) for k, f in field.fields.items()}
     if field.match_by:
         # Match unique identities on both sides. Positional merging can assign a signer to the wrong principal.
         primary_ids = [identity(row, field.match_by) for row in primary]
@@ -60,7 +64,9 @@ def fill(field: OutputField, primary, fallback):
             key = identity(row, field.match_by)
             index[key] = row if key not in index else None
         return [
-            fill(field.items, row, index.get(key)) if key is not None and counts[key] == 1 else row
+            fill(field.items, row, index.get(key), fill_empty=fill_empty)
+            if key is not None and counts[key] == 1
+            else row
             for row, key in zip(primary, primary_ids, strict=True)
         ]
     return primary
@@ -78,16 +84,25 @@ def bind_engine(name: str, definition: DocumentClass, model=None) -> Callable[[s
 
 def extract(definition: DocumentClass, text: str, *, model=None) -> dict:
     values = None
+    fill_empty = definition.profile.mode in ("RL", "LR")
     for engine in definition.engines:
-        if values is not None and not any(gaps(f, values.get(k)) for k, f in definition.fields.items()):
+        if values is not None and not any(
+            gaps(f, values.get(k), fill_empty=fill_empty) for k, f in definition.fields.items()
+        ):
             break
         extractor = bind_engine(engine, definition, model)
         candidate = extractor(text)
         if values is None:
             values = candidate
         else:
-            values = {k: fill(f, values.get(k), candidate.get(k)) for k, f in definition.fields.items()}
+            values = {
+                k: fill(f, values.get(k), candidate.get(k), fill_empty=fill_empty) for k, f in definition.fields.items()
+            }
     if definition.engines == ["python"]:
         # Python extractors own their normalization and serialization order.
         return values
+    if definition.profile.mode == "V":
+        from .model_validation import validate_fields
+
+        values = validate_fields(definition, values)
     return definition.output_model.model_validate(values).model_dump(by_alias=True)
