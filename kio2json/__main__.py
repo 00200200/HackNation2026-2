@@ -12,6 +12,7 @@ from pathlib import Path
 
 import pytesseract
 
+from .class_config import load_classes
 from .pipeline import process_pdf
 
 
@@ -32,6 +33,11 @@ def main() -> int:
 
     if not args.input_dir.is_dir():
         parser.error(f"input folder not found: {args.input_dir}")
+    try:
+        classes = load_classes()
+    except (OSError, ValueError) as error:
+        print(f"Class configuration: {error}", file=sys.stderr)
+        return 1
     problem = ocr_problem()
     if problem:
         print(f"{problem}: scanned PDFs cannot be read and will get an empty file.", file=sys.stderr)
@@ -40,7 +46,7 @@ def main() -> int:
     failed = 0
     for pdf in pdfs:
         try:
-            label, data = process_pdf(pdf)
+            label, data = process_pdf(pdf, classes=classes)
         except Exception as error:  # noqa: BLE001 - pdfminer raises many unrelated types on damaged files
             print(f"{pdf}: not processed ({type(error).__name__}: {error})", file=sys.stderr)
             label, data, failed = "failed", {}, failed + 1

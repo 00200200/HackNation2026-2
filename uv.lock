@@ -597,7 +597,9 @@ version = "0.1.0"
 source = { virtual = "." }
 dependencies = [
     { name = "pdfplumber" },
+    { name = "pydantic" },
     { name = "pydantic-ai" },
+    { name = "pydantic-settings" },
     { name = "pytesseract" },
 ]
 
@@ -611,7 +613,9 @@ dev = [
 [package.metadata]
 requires-dist = [
     { name = "pdfplumber", specifier = ">=0.11.11" },
+    { name = "pydantic", specifier = ">=2.14.4" },
     { name = "pydantic-ai", specifier = ">=2.71.0" },
+    { name = "pydantic-settings", specifier = ">=2.16.3" },
     { name = "pytesseract", specifier = ">=0.3.13" },
 ]
 

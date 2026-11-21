@@ -1,0 +1,58 @@
+id = "power_of_attorney"
+priority = 20
+engines = ["python"]
+extractor = "kio2json.power_of_attorney.extract"
+
+[routing]
+headings = ['pełnomocnictwo.{0,16}']
+
+[fields.mocodawca]
+match_by = "data.nazwa"
+type = "list"
+nullable = false
+instruction = "Principals granting authority. A consortium may grant authority jointly."
+
+[fields.mocodawca.items]
+type = "object"
+nullable = false
+instruction = "One principal and its signers."
+
+[fields.mocodawca.items.fields.data]
+type = "object"
+nullable = false
+instruction = "Identity of the person or legal entity granting authority."
+
+[fields.mocodawca.items.fields.data.fields]
+imie_nazwisko = { type = "string", instruction = "Full name for a natural person. Return null for a legal entity." }
+krs = { type = "string", normalizer = "krs", instruction = "KRS of the legal entity granting authority." }
+nazwa = { type = "string", instruction = "Full name of the principal." }
+nip = { type = "string", normalizer = "nip", instruction = "NIP of the principal." }
+typ = { type = "string", instruction = "Type of principal: osoba_prawna or osoba_fizyczna." }
+
+[fields.mocodawca.items.fields.podpisujacy]
+type = "list"
+nullable = false
+instruction = "People signing for this principal."
+
+[fields.mocodawca.items.fields.podpisujacy.items]
+type = "object"
+nullable = false
+instruction = "One signer for this principal."
+
+[fields.mocodawca.items.fields.podpisujacy.items.fields]
+imie_nazwisko = { type = "string", instruction = "Full name of the person signing on behalf of this principal." }
+
+[fields.pelnomocnicy]
+match_by = "imie_nazwisko"
+type = "list"
+nullable = false
+instruction = "People receiving authority."
+
+[fields.pelnomocnicy.items]
+type = "object"
+nullable = false
+instruction = "One recipient of the power of attorney."
+
+[fields.pelnomocnicy.items.fields]
+imie_nazwisko = { type = "string", instruction = "Attorney's first and last name in the nominative case." }
+pesel = { type = "string", normalizer = "pesel", instruction = "Attorney's PESEL, if stated." }
