@@ -251,8 +251,8 @@ were scored for this comparison.
 - Appeal extraction follows the two layout families in the training data. `input/case1` holds the
   organizer's one real, redacted, scanned appeal, which has a different layout. For that file
   the extractor finds the class, filing date, place, procurement reference, BZP number and title.
-  Both party lists and the challenged action are empty. The organizer supplies no reference JSON
-  for this file.
+  The appellant name contains OCR noise. The contracting-authority list is empty and the challenged
+  action is missing. The organizer supplies no reference JSON for this file.
 - OCR can still lose accented letters, split a notice number or reorder columns. Scans with a
   noisy but nonempty text layer follow the native-text path. On an executed receipt with detached
   label and value columns, the extractor uses first-page word positions to restore the rows.
@@ -265,6 +265,7 @@ were scored for this comparison.
   layouts preserve fully printed numbers, including synthetic identifiers with an invalid checksum.
 - A receipt with one masked account needs a confirmation heading, a transaction amount and date,
   and two explicitly labelled accounts. One must be fully masked by asterisks and the other checksum-valid.
+  The classifier passes that account evidence to the extractor. Unlabelled or conflicting roles can leave account fields empty.
 - Joint declarations can identify each signing officer and company in the same numbered entry.
   Stamps and electronic signatures need a readable name and an identifiable grantor. An explicitly
   illegible signature produces a null name. An unidentifiable signature can be omitted.
