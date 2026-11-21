@@ -1,0 +1,197 @@
+{
+  "base": "dbda1511d72b8e79deab00fa4ebae1dce5c06ff5",
+  "product": "59aa13a3ecfd54c9848016e43873320c8ff2485c",
+  "machine": "Apple M1, 8 logical CPUs, 16 GiB, macOS 15.6.1, Python 3.13.1; keyless local rules and shipped OCR data",
+  "method": {
+    "calibration": "One PDF at a time with the document clock set to one hour. Took the union of elapsed intervals in optional full-page rereads, targeted crop helpers, board-stamp recovery, and English crop reader lifetimes within a document. Overlapping page-thread work counts once. Helper setup and checks are included. Private measurements use the 39-PDF corpus 1 development pool and the 39-PDF corpus 2 development split.",
+    "simulation": "One PDF at a time with the production document allowance, advancing its monotonic clock four times as fast and dividing optional native Tesseract and RapidOCR timeouts by four. Counted expired optional budget checks, unsuccessful Tesseract recognition and RapidOCR timeouts. Required first-pass page watchdogs used their ordinary timeouts. This simulation exercised the final limits before the change to handling expired optional page reads. No watchdog expired.",
+    "wall": "Separate cold CLI invocations per inventory, timed from spawn through writing all JSON files and exit. The ordinary runs used the shared desktop with no added CPU workers. Loaded runs kept eight busy-loop processes active. CPU idle is a one-second host sample taken immediately before each final CLI launch. Load averages are 1, 5 and 15 minutes.",
+    "mix": "Two copies of all 30 organizer scans plus 90 training PDFs at sorted zero-based indices i*196//90 for i=0..89, each under a distinct path.",
+    "parity": "Verified identical relative file inventories and compared raw bytes, including zero-byte outputs. The manifest is SHA-256 of the ASCII encoding of Python json.dumps({relative_posix_path: lowercase_file_sha256}, sort_keys=True). Scan paths include skany/."
+  },
+  "serial_measurement": "The 150-PDF stress measurement preceded the final change to handling expired optional page watchdogs. It used the same limits and all outputs matched the final four-worker runs. The test suite and public-output scoring ran during part of this serial measurement.",
+  "watchdogs_seconds": {
+    "document": 300,
+    "optional_page": 180,
+    "crop": 10,
+    "required_page": 60
+  },
+  "batch_seconds": "max(300, 0.60 * 2700 / 150 * input_pdf_count), starting before worker dispatch.",
+  "profile": {
+    "organizer": {
+      "pdfs": 30,
+      "max_optional_seconds": 2.287,
+      "max_document_seconds": 17.745,
+      "simulated_4x_optional_tesseract_reads": 71,
+      "simulated_4x_optional_rapidocr_reads": 0,
+      "simulated_4x_cutoffs": 0
+    },
+    "private-1": {
+      "pdfs": 39,
+      "max_optional_seconds": 33.181,
+      "max_document_seconds": 41.107,
+      "simulated_4x_optional_tesseract_reads": 38,
+      "simulated_4x_optional_rapidocr_reads": 2,
+      "simulated_4x_cutoffs": 0
+    },
+    "private-2": {
+      "pdfs": 39,
+      "max_optional_seconds": 10.696,
+      "max_document_seconds": 19.092,
+      "simulated_4x_optional_tesseract_reads": 26,
+      "simulated_4x_optional_rapidocr_reads": 1,
+      "simulated_4x_cutoffs": 0
+    }
+  },
+  "cold_recheck": {
+    "max_optional_seconds": 48.588,
+    "document_seconds": 51.851,
+    "pool": "private-1",
+    "note": "Separate single-document repeat on the busy shared host."
+  },
+  "accuracy": {
+    "training": {
+      "pdfs": 196,
+      "true_positive_fields": 2316,
+      "false_positive_fields": 0,
+      "false_negative_fields": 0,
+      "empty_negatives": 16,
+      "micro_f1": 1.0
+    },
+    "scans": {
+      "pdfs": 30,
+      "true_positive_fields": 387,
+      "false_positive_fields": 1,
+      "false_negative_fields": 1,
+      "exact_documents": 29,
+      "micro_f1": 0.9974226804123711
+    }
+  },
+  "runs": [
+    {
+      "profile": "main",
+      "dataset": "training",
+      "workers": 4,
+      "seconds": 39.997,
+      "cli_exit": 0,
+      "load_start": [
+        46.28,
+        33.51,
+        23.51
+      ],
+      "load_end": [
+        42.14,
+        34.08,
+        24.18
+      ],
+      "outputs": 196,
+      "manifest_sha256": "eb84c8da577849129fd20cb5298da70b0cc95e9af624e1bdf2d20a70d7a5cda6"
+    },
+    {
+      "profile": "ordinary",
+      "dataset": "scans",
+      "workers": 4,
+      "seconds": 41.537,
+      "cli_exit": 0,
+      "cpu_idle_pct_before": 76.5,
+      "load_start": [
+        6.31,
+        20.04,
+        24.81
+      ],
+      "load_end": [
+        13.67,
+        20.08,
+        24.58
+      ],
+      "outputs": 30,
+      "manifest_sha256": "4c7927838718398f0a4752a4d873249bb76b71d85cad804e9b05dcddbb80ee38",
+      "exact": 29
+    },
+    {
+      "profile": "ordinary",
+      "dataset": "training",
+      "workers": 4,
+      "seconds": 13.651,
+      "cli_exit": 0,
+      "cpu_idle_pct_before": 42.98,
+      "load_start": [
+        13.67,
+        20.08,
+        24.58
+      ],
+      "load_end": [
+        13.04,
+        19.62,
+        24.34
+      ],
+      "outputs": 196,
+      "manifest_sha256": "eb84c8da577849129fd20cb5298da70b0cc95e9af624e1bdf2d20a70d7a5cda6",
+      "matches_main": 196
+    },
+    {
+      "profile": "loaded",
+      "dataset": "scans",
+      "workers": 4,
+      "seconds": 216.89,
+      "cli_exit": 0,
+      "cpu_idle_pct_before": 0.0,
+      "load_start": [
+        15.41,
+        19.9,
+        24.38
+      ],
+      "load_end": [
+        89.7,
+        53.0,
+        37.47
+      ],
+      "outputs": 30,
+      "manifest_sha256": "4c7927838718398f0a4752a4d873249bb76b71d85cad804e9b05dcddbb80ee38",
+      "exact": 29,
+      "byte_matches_ordinary": 30
+    },
+    {
+      "profile": "loaded",
+      "dataset": "training",
+      "workers": 4,
+      "seconds": 47.352,
+      "cli_exit": 0,
+      "cpu_idle_pct_before": 0.0,
+      "load_start": [
+        87.83,
+        53.78,
+        37.92
+      ],
+      "load_end": [
+        84.54,
+        57.58,
+        40.13
+      ],
+      "outputs": 196,
+      "manifest_sha256": "eb84c8da577849129fd20cb5298da70b0cc95e9af624e1bdf2d20a70d7a5cda6",
+      "matches_main": 196,
+      "byte_matches_ordinary": 196
+    },
+    {
+      "profile": "loaded-serial",
+      "dataset": "mix",
+      "workers": 1,
+      "seconds": 401.873,
+      "cli_exit": 0,
+      "load_start": [
+        38.55,
+        30.45,
+        26.43
+      ],
+      "load_end": [
+        41.06,
+        35.87,
+        30.26
+      ],
+      "outputs": 150,
+      "manifest_sha256": "95e860e912d94287f816b50cc3be994bff3eaeb7d02c471ff211746aaa59a16b",
+      "byte_matches_ordinary": 150
+    }
+  ]
+}
