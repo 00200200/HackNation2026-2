@@ -30,6 +30,7 @@ from datetime import UTC, datetime
 from pathlib import Path
 
 import pdfplumber
+import pypdfium2 as pdfium
 from pdfminer import settings as pdf_settings
 
 from evals.metrics import DocResult, load_reference, reject_json_constant, score_doc, summarise
@@ -57,7 +58,15 @@ def check_pdf(path: Path) -> None:
         try:
             with pdfplumber.open(stream) as pdf:
                 if not pdf.pages:
-                    raise ValueError("empty page tree")
+                    # Some readable PDFs have a page tree only PDFium can recover.
+                    stream.seek(0)
+                    with pdfium.PdfDocument(stream) as rendered:
+                        if not len(rendered):
+                            raise ValueError("empty page tree")
+                        for page in rendered:
+                            page.render(scale=512 / max(page.get_size())).close()
+                            page.close()
+                    return
                 # pdfminer otherwise recovers damaged compressed streams as empty content.
                 pdf_settings.STRICT = True
                 for page in pdf.pages:

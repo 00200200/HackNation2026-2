@@ -481,3 +481,18 @@ def test_extractor_failure_cannot_publish_partial_results(corpus, repo, monkeypa
     add_document(corpus, "private-case", "private-doc", {})
     monkeypatch.setattr(run, "run_app", lambda *args: (1, "private failure"))
     assert_input_abort(run, ["--corpus", corpus], repo, monkeypatch, capsys)
+
+
+@pytest.mark.parametrize("readable", [True, False])
+def test_empty_pdfminer_page_tree_requires_an_independent_decode(tmp_path, monkeypatch, readable):
+    from contextlib import nullcontext
+    from types import SimpleNamespace
+
+    path = tmp_path / "fixture.pdf"
+    path.write_bytes(invented_pdf() if readable else b"%PDF-1.7\nundecryptable")
+    monkeypatch.setattr(run.pdfplumber, "open", lambda _: nullcontext(SimpleNamespace(pages=[])))
+    if readable:
+        run.check_pdf(path)
+    else:
+        with pytest.raises(ValueError, match="could not be decoded"):
+            run.check_pdf(path)
