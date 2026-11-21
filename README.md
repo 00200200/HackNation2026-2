@@ -29,10 +29,12 @@ the run exit with status 1 after processing the remaining PDFs. This includes re
 1. `kio2json/pdf_text.py` reads the first three pages with pdfplumber. Pages with no text or
    only page numbers go through Polish Tesseract at 300 dpi.
 2. `kio2json/classify.py` uses document content. It checks appeal and power-of-attorney
-   headings. For a transfer it looks for two distinct accounts and evidence of confirmation
-   or execution. An invoice asking for payment gets an empty file.
+   headings in reading order. A transfer needs two distinct accounts, a confirmation heading
+   or execution status, and the transaction’s own amount or date. A rejected payment or an
+   invoice asking for confirmation gets an empty file.
 3. `kio2json/appeal.py`, `power_of_attorney.py` and `bank_transfer.py` extract the fields with
-   regular expressions and line-level layout rules.
+   labelled fields, party sections and grant declarations. The appeal extractor reads the
+   challenged act and date from the first charge or its dated introductory sentence.
 
 ## Measure
 
@@ -72,7 +74,10 @@ of how the rules generalize. The hidden test set holds real cases, and this is n
   `/` in account numbers, `@` in e-mail addresses, `sp. z o.o.` as `sp. z 0.0.`) and drops the
   dotted signature lines that the power-of-attorney rules use to find signers.
   `evals.field_report --force-ocr` shows the affected fields.
-- Transfer confirmations with a masked account can be rejected. Attorney names retain the grammatical
+- A confirmation with a masked account, or with neither a transaction amount nor a date,
+  can be rejected. Unlabelled or conflicting account roles can produce null fields.
+- The party and signature rules need legible section boundaries. A missing grantor heading or
+  an ambiguous signature can leave a party or signer out. Attorney names retain the grammatical
   case used in the document.
 - Nothing is configuration-driven yet: classes, fields and patterns live in Python modules.
 - UNCONFIRMED: what "empty JSON" means for unrelated documents. We write an empty file, as the
