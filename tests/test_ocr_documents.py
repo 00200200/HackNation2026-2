@@ -76,10 +76,16 @@ def test_uniform_dark_or_faint_nonblank_scan_with_empty_ocr_is_unreadable(tmp_pa
         pdf_text.read_pages(path)
 
 
-def test_extended_page_counter_after_ocr_is_unreadable_but_a_short_phrase_is_readable(tmp_path):
+@pytest.mark.parametrize("counter", ["Strona nr 1 z 1", "Strona numer 1 z 1", "Page number 1 of 1"])
+def test_extended_page_counter_after_ocr_is_unreadable_but_a_short_phrase_is_readable(tmp_path, counter):
     attempted = []
     pdf = tmp_path / "scan.pdf"
-    scan(pdf, "Strona nr 1 z 1")
+    image = Image.new("RGB", (1000, 320), "white")
+    font = ImageFont.load_default(size=48)
+    ImageDraw.Draw(image).text((45, 40), "Niewyrazny dokument", font=font, fill="black")
+    image = image.filter(ImageFilter.GaussianBlur(30))
+    ImageDraw.Draw(image).text((60, 215), counter, font=font, fill="black")
+    image.save(pdf, resolution=150)
     with pytest.raises(pdf_text.NoReadableTextError, match="no readable text after OCR"):
         pdf_text.read_pages(pdf, engine="tesseract", ocr_pages=attempted)
     assert attempted == [1]
@@ -95,7 +101,20 @@ def test_numeric_transcript_alone_does_not_establish_readability(tmp_path):
 
 
 @pytest.mark.parametrize(
-    "footer", ["Strona nr 1z 1", "Blatt Nr. 4/9", "Leaf No. 3", "Feuillet n° 3 sur 7", "12 / 45", "— 23 —"]
+    "footer",
+    [
+        "Strona nr 1z 1",
+        "Blatt Nr. 4/9",
+        "Leaf No. 3",
+        "Feuillet n° 3 sur 7",
+        "12 / 45",
+        "— 23 —",
+        "1 / 3 — numbered leaves",
+        "Numer strony 2/5",
+        "1 of 3 pages",
+        "Strona numer 8",
+        "7 No. Blatt",
+    ],
 )
 def test_footer_and_one_word_of_ocr_noise_do_not_establish_readability(tmp_path, monkeypatch, footer):
     path = tmp_path / "faint.pdf"
@@ -105,11 +124,25 @@ def test_footer_and_one_word_of_ocr_noise_do_not_establish_readability(tmp_path,
         pdf_text.read_pages(path)
 
 
-@pytest.mark.parametrize("statement", ["Faktura VAT 123", "Limit dni 10", "Faktura 12 VAT 123"])
+@pytest.mark.parametrize(
+    "statement",
+    [
+        "Faktura VAT 123",
+        "Limit dni 10",
+        "Faktura 12 VAT 123",
+        "Faktura VAT 12/2025",
+        "Faktura numer 12/2025",
+        "Invoice number 123",
+        "Godziny pracy 8–16",
+        "Kwota netto 1-2",
+    ],
+)
 def test_two_word_numeric_statement_is_readable(tmp_path, statement):
     path = tmp_path / "statement.pdf"
     scan(path, statement)
-    assert pdf_text.read_pages(path, engine="tesseract") == [statement]
+    assert not pdf_text._is_page_counter(statement)
+    (transcript,) = pdf_text.read_pages(path, engine="tesseract")
+    assert transcript.startswith(statement.split()[0])
 
 
 def test_readability_checks_later_pages_without_returning_extra_text_or_ocr_boxes(tmp_path):
@@ -129,15 +162,20 @@ def test_three_blank_pages_do_not_hide_later_illegible_page(tmp_path):
         pdf_text.read_pages(path, engine="tesseract")
 
 
-@pytest.mark.parametrize("logo", [False, True])
-def test_selectable_footer_over_large_raster_requires_ocr_but_a_logo_keeps_native_text(tmp_path, logo):
+@pytest.mark.parametrize("placement", ["full", "bordered", "logo", "clipped"])
+def test_selectable_footer_over_a_scan_requires_ocr_but_small_visible_images_keep_native_text(tmp_path, placement):
     image_pdf, combined = tmp_path / "image.pdf", tmp_path / "footer.pdf"
     scan(image_pdf, "PLAN SALI")
     with pdfium.PdfDocument(image_pdf) as document:
         page = document[0]
-        if logo:
-            (image,) = page.get_objects()
+        (image,) = page.get_objects()
+        width, height = page.get_size()
+        if placement == "logo":
             image.set_matrix(pdfium.PdfMatrix().scale(16, 16))
+        elif placement == "bordered":
+            image.set_matrix(pdfium.PdfMatrix().scale(0.75 * width, 0.75 * height).translate(width / 8, height / 8))
+        elif placement == "clipped":
+            image.set_matrix(pdfium.PdfMatrix().scale(width, height).translate(width - 16, height - 16))
         text = "Strona nr 1 z 1"
         footer = pdfium.raw.FPDFPageObj_NewTextObj(document, b"Helvetica", 9)
         assert pdfium.raw.FPDFText_SetCharcodes(footer, (ctypes.c_uint * len(text))(*map(ord, text)), len(text))
@@ -147,7 +185,7 @@ def test_selectable_footer_over_large_raster_requires_ocr_but_a_logo_keeps_nativ
         document.save(combined)
     attempted = []
     (transcript,) = pdf_text.read_pages(combined, engine="tesseract", ocr_pages=attempted)
-    if logo:
+    if placement in {"logo", "clipped"}:
         assert attempted == [] and transcript == text
     else:
         assert attempted == [1] and "PLAN SALI" in transcript

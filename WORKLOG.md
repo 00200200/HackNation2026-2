@@ -37,8 +37,8 @@ micro-F1 0.3864/0.4164/0.4588/0.4297. The default is `tesseract-dpi`. Full timin
 `evals/results/ocr-engines.json`. Synthetic forced-OCR strict F1 was 0.900 for T0 and 0.884 for T1.
 
 21.11.2026, local real corpus. The all-corpus row comes from `00626a5`. The dev and test scores below
-were first measured at `79eef2a` after the baseline merge. The latest test run records its commit in
-`evals/results/corpus-latest.json`.
+were first measured at `79eef2a` after the baseline merge. The test aggregate is preserved in
+[the earlier corpus result](https://github.com/00200200/HackNation2026-2/blob/c2227166f4c311fe3c9d4098732927e2a0adfbc7/evals/results/corpus-latest.json).
 All three target classes entered each class average. Every PDF had an output and every negative was empty.
 
 | Split | Cases | PDFs | Micro F1 | Macro by document | Macro by class | Macro by field | Positive classification accuracy |
@@ -98,3 +98,4 @@ Both splits missed the team’s micro F1 and classification targets. Compared wi
 
 - 21.11.2026 · Codex · Scoped the OCR rules on `feat/ocr-engine` to recognized text after the review of `c222716`. Added document-level checks for unreadable scans and regression tests for mixed PDFs.
 - 21.11.2026 · Codex · Added a native PDF snapshot from `3210643` to check the new page-provenance rules in `2a500e4`. All 175 cases match, including 24 that differed at `c222716`. The ordinary CLI still matches class, path and bytes on all 196 organizer PDFs.
+- 21.11.2026 · Codex · After `f1aa51b`, fixed spelled-out page counters and recognition of scanned bodies inside wide margins. The default-engine recheck is recorded in `evals/results/ocr-engines.json` under `provenance_check`, with the dev harness aggregate in `evals/results/corpus-latest.json`.

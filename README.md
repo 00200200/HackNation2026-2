@@ -254,6 +254,11 @@ Peak RSS covers the process tree. Installed sizes are decimal MB excluding pip, 
 the interpreter. The six unrelated documents contribute routing outcomes. No private test cases
 were scored for this comparison.
 
+The default engine was measured again after the extraction rules began tracking page sources.
+The real-dev result is in [the corpus report](evals/results/corpus-latest.json). The
+`provenance_check` entry records the paired native-text and forced-OCR checks on the same
+rules. [OCR results](evals/results/ocr-engines.json)
+
 ## Known limits
 
 - The rules follow the two layout families in the training data. `input/case1` holds the

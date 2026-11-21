@@ -10,6 +10,7 @@ from pathlib import Path
 from typing import NamedTuple
 
 import pdfplumber
+from pdfplumber.utils import get_bbox_overlap, obj_to_bbox
 
 from .ocr_normalize import MAIL_TOKEN_RE, confirmed_email, normalize_ocr
 
@@ -30,18 +31,48 @@ class OCRRecognitionError(RuntimeError):
 
 MIN_OCR_WORDS = 2
 _WORD = re.compile(r"\b[^\W\d_]{2,}\b")
-# An optional label and abbreviation, a page number, and an optional total.
-# Punctuation, spacing and the short word joining the numbers can vary by language and OCR.
-_PAGE_COUNTER = re.compile(
-    r"[\W_]*(?:[^\W\d_]+[\W_]*)?(?:n[roº°][\W_]*)?"
-    r"\d+(?:[\W_]*(?:(?:z|of|sur|von|van|de|di|din|av|af|iz|na)[\W_]*)?\d+)?[\W_]*",
-    re.IGNORECASE,
-)
+_COUNTER_SEPARATOR = re.compile(r"[/\\|⁄∕–—−-]|z|of|sur|von|van|de|di|din|av|af|iz|na", re.IGNORECASE)
+_NUMBER_MARKERS = {"n", "nº", "nr", "no", "numer", "number", "numbered"}
+_PAGE_LABELS = {
+    "str",
+    "strona",
+    "strony",
+    "stron",
+    "kartka",
+    "karta",
+    "arkusz",
+    "p",
+    "page",
+    "pages",
+    "sheet",
+    "leaf",
+    "leaves",
+    "blatt",
+    "seite",
+    "feuillet",
+}
 
 
 def _is_page_counter(line: str) -> bool:
     line = line.strip()
-    return len(line) <= 64 and _PAGE_COUNTER.fullmatch(line) is not None
+    if len(line) > 64:
+        return False
+    numbers = list(re.finditer(r"\d+", line))
+    if len(numbers) not in (1, 2):
+        return False
+    before = re.findall(r"[^\W\d_]+", line[: numbers[0].start()].lower())
+    after = re.findall(r"[^\W\d_]+", line[numbers[-1].end() :].lower())
+    label_words = len(before) + len(after)
+    if label_words > 2:
+        return False
+    # Two genuine words with a reference or range (e.g. an invoice) are body text.
+    if label_words == 2 and not _PAGE_LABELS.intersection(before + after):
+        return False
+    if len(numbers) == 2:
+        separator = line[numbers[0].end() : numbers[1].start()].strip()
+        return _COUNTER_SEPARATOR.fullmatch(separator) is not None
+    # Without a total, two ordinary words and a number can be a complete statement.
+    return label_words < 2 or any(word in _NUMBER_MARKERS for word in before[-1:] + after[:1])
 
 
 def _body_word_count(text: str) -> int:
@@ -68,13 +99,17 @@ def _needs_ocr(page, text: str) -> bool:
         return True
     if not all(_is_page_counter(line) for line in text.splitlines() if line.strip()):
         return False
-    # A selectable footer can sit on top of a scanned page. Ignore small decorative images.
-    left, top, right, bottom = page.bbox
-    return any(
-        min(right, image["x1"]) - max(left, image["x0"]) >= 0.8 * page.width
-        and min(bottom, image["bottom"]) - max(top, image["top"]) >= 0.8 * page.height
-        for image in page.images
-    )
+    # A selectable footer can sit below a scanned body with generous margins.
+    visible_page = get_bbox_overlap(page.bbox, page.cropbox)
+    if visible_page:
+        for image in page.images:
+            overlap = get_bbox_overlap(visible_page, obj_to_bbox(image))
+            if overlap:
+                left, top, right, bottom = overlap
+                width, height = right - left, bottom - top
+                if min(width, height) > 0 and max(width, height) > 36:  # Exclude half-inch decorative marks.
+                    return True
+    return False
 
 
 class WordBox(NamedTuple):
