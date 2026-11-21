@@ -5,7 +5,14 @@ from dataclasses import dataclass
 
 from stdnum import iban
 
-from .bank_transfer import AMOUNT_LABEL, BOUNDARY_RE, completed_value_block, posted_party_debit, printed_accounts
+from .bank_transfer import (
+    ACCOUNT_CURRENCY,
+    AMOUNT_LABEL,
+    BOUNDARY_RE,
+    completed_value_block,
+    posted_party_debit,
+    printed_accounts,
+)
 from .common import DATE, to_iso
 from .ocr_booking import normalize_booking_rows
 from .receipt_layout import validated_account
@@ -19,10 +26,10 @@ SENDER_FIELD = rf"(?:{ACCOUNT_NOUN} (?:{SENDER}|obciąż(?:an|on)[ye])|z rachunk
 RECIPIENT_FIELD = rf"(?:{ACCOUNT_NOUN} (?:{RECIPIENT}|uznawan[ye])|na rachunek)"
 ACCOUNT_LABEL = re.compile(
     rf"(?:(?P<sender>{SENDER_FIELD}|(?:dane )?{SENDER})|"
-    rf"(?P<recipient>{RECIPIENT_FIELD}|(?:dane )?{RECIPIENT})|(?P<generic>{ACCOUNT_NOUN}))\b",
+    rf"(?P<recipient>{RECIPIENT_FIELD}|(?:dane )?{RECIPIENT})|(?P<generic>{ACCOUNT_NOUN}))\b{ACCOUNT_CURRENCY}",
     re.IGNORECASE,
 )
-ACCOUNT_FIELD = re.compile(rf"(?:{SENDER_FIELD}|{RECIPIENT_FIELD})", re.IGNORECASE)
+ACCOUNT_FIELD = re.compile(rf"(?:{SENDER_FIELD}|{RECIPIENT_FIELD}){ACCOUNT_CURRENCY}", re.IGNORECASE)
 ACCOUNT_VALUE = re.compile(rf"(?:{ACCOUNT_RE.pattern}|(?<!\w)(?:\*{{4,}}|[Xx]{{3,}}|[—–-])(?!\w))")
 
 
@@ -165,6 +172,11 @@ def account_evidence(text: str) -> AccountEvidence:
 
 # Normalize only complete account tokens and calendar dates read by OCR on a receipt.
 OCR_NRB = re.compile(r"(?<![\w/?*])(?:PL\s?)?([0-9?]{2}(?:[ \n]?[0-9?]{4}){6})(?![\w/?*])")
+# An inserted stroke can split an otherwise complete printed account. Only remove
+# it in an explicit account cell when the remaining 26 digits verify unchanged.
+SLASH_ACCOUNT = re.compile(
+    rf"(?im)^((?:{ACCOUNT_FIELD.pattern})[ \t]*:[ \t]*(?:\n[ \t]*)?(?:PL[ \t]*)?)(\d+/\d+)[ \t]*$"
+)
 OCR_DATE = re.compile(r"(?<!\d)(\d{2})\.(\d{2})(\d{4})(?!\d)")
 
 
@@ -176,10 +188,15 @@ def normalize_receipt(text: str) -> str:
         repaired = validated_account(compact)
         return ("PL" if match[0].startswith("PL") else "") + repaired if repaired else "?"
 
+    def remove_stroke(match: re.Match) -> str:
+        digits = match[2].replace("/", "")
+        return match[1] + digits if len(digits) == 26 and iban.is_valid("PL" + digits) else match[0]
+
     def date(match: re.Match) -> str:
         candidate = ".".join(match.groups())
         return candidate if to_iso(candidate) else match[0]
 
+    text = SLASH_ACCOUNT.sub(remove_stroke, text)
     # Ignore a section title in front of the three booking columns. The typed row
     # parser still requires a date in both date columns and exactly one debit.
     text = re.sub(

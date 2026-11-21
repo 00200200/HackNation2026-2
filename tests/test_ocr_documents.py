@@ -76,7 +76,9 @@ def test_uniform_dark_or_faint_nonblank_scan_with_empty_ocr_is_unreadable(tmp_pa
         pdf_text.read_pages(path)
 
 
-@pytest.mark.parametrize("counter", ["Strona nr 1 z 1", "Strona numer 1 z 1", "Page number 1 of 1"])
+@pytest.mark.parametrize(
+    "counter", ["Strona nr 1 z 1", "Strona nr 1 (z 1)", "Strona numer 1 z 1", "Page number 1 of 1"]
+)
 def test_extended_page_counter_after_ocr_is_unreadable_but_a_short_phrase_is_readable(tmp_path, counter):
     attempted = []
     pdf = tmp_path / "scan.pdf"
@@ -162,8 +164,11 @@ def test_three_blank_pages_do_not_hide_later_illegible_page(tmp_path):
         pdf_text.read_pages(path, engine="tesseract")
 
 
+@pytest.mark.parametrize("text", ["Strona nr 1 z 1", "Strona nr 1 (z 1)"])
 @pytest.mark.parametrize("placement", ["full", "bordered", "logo", "clipped"])
-def test_selectable_footer_over_a_scan_requires_ocr_but_small_visible_images_keep_native_text(tmp_path, placement):
+def test_selectable_footer_over_a_scan_requires_ocr_but_small_visible_images_keep_native_text(
+    tmp_path, placement, text
+):
     image_pdf, combined = tmp_path / "image.pdf", tmp_path / "footer.pdf"
     scan(image_pdf, "PLAN SALI")
     with pdfium.PdfDocument(image_pdf) as document:
@@ -176,7 +181,6 @@ def test_selectable_footer_over_a_scan_requires_ocr_but_small_visible_images_kee
             image.set_matrix(pdfium.PdfMatrix().scale(0.75 * width, 0.75 * height).translate(width / 8, height / 8))
         elif placement == "clipped":
             image.set_matrix(pdfium.PdfMatrix().scale(width, height).translate(width - 16, height - 16))
-        text = "Strona nr 1 z 1"
         footer = pdfium.raw.FPDFPageObj_NewTextObj(document, b"Helvetica", 9)
         assert pdfium.raw.FPDFText_SetCharcodes(footer, (ctypes.c_uint * len(text))(*map(ord, text)), len(text))
         pdfium.raw.FPDFPageObj_Transform(footer, 1, 0, 0, 1, 30, 6)

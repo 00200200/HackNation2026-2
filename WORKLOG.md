@@ -157,6 +157,8 @@ Two and four grant JSONs matched exactly. The ten organizer grants remained exac
 
 - 21.11.2026 · Integrated #27 and #34 with streamed upload limits and a disposable OCR process per document. The request deadline includes upload and queue time.
 
+- 22.11.2026 · Codex · Fixed appeal party boundaries at numbered headings, parenthesized page counters over scans, labelled OCR receipt accounts and explicit grantor signature blocks. The remaining round-three routing and role errors are tracked in #1.
+
 ## Frontend branch snapshot before API integration
 
 Public landing https://doc2json.pl (`frontend/`, static nginx, monochrome) runs on the team VPS as `doc2json-web`
