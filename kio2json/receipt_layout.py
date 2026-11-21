@@ -3,7 +3,7 @@
 import re
 from collections import defaultdict
 from functools import lru_cache
-from itertools import product
+from itertools import pairwise, product
 from statistics import median
 
 from rapidfuzz.distance import Levenshtein
@@ -41,6 +41,7 @@ LABELS = {
         "rachunek nadawcy",
         "rachunek zleceniodawcy",
         "rachunek obciążany",
+        "z rachunku nr",
         "z rachunku",
         "dane nadawcy",
         "dane zleceniodawcy",
@@ -50,6 +51,7 @@ LABELS = {
         "płatnik",
     ),
     "Rachunek odbiorcy": (
+        "numer rachunku odbiorcy",
         "rachunek odbiorcy",
         "rachunek beneficjenta",
         "rachunek uznawany",
@@ -74,7 +76,7 @@ LABELS = {
     "Data operacji": ("data operacji", "data transakcji"),
     "Data księgowania": ("data księgowania",),
     "Data obciążenia": ("data obciążenia",),
-    "Data realizacji": ("data realizacji", "data wykonania"),
+    "Data realizacji": ("data realizacji przelewu", "data realizacji", "data wykonania"),
     "": (
         "data waluty",
         "data wydruku",
@@ -274,11 +276,65 @@ def _level_scan_rows(boxes: list[WordBox]) -> list[WordBox]:
     ]
 
 
+def _account_below_party(rows, height):
+    """Bind the adjacent account row before OCR normalization merges the columns."""
+    for header, cells in pairwise(rows):
+        if len(header) < 2 or len(cells) < 3:
+            continue
+        owner, kind = (w.text.casefold().strip(" :;") for w in header[:2])
+        if Levenshtein.distance(kind, "przelewu", score_cutoff=1) > 1:
+            continue
+        role = next(
+            (name for name in ("nadawca", "odbiorca") if Levenshtein.distance(owner, name, score_cutoff=1) <= 1), None
+        )
+        if role is None or abs(cells[0].x0 - header[0].x0) > height or cells[0].y0 - header[0].y1 > 3 * height:
+            continue
+        # A second heading can share the row. Its column owns the words
+        # beneath it, even when the first party's account cell is empty.
+        right = header[2].x0 - height if len(header) > 2 else float("inf")
+        words = " ".join(w.text for w in cells if w.x1 <= right)
+        account = re.match(r"(?i)^nr\.? rachunku[;:]\s+[_ ]*((?:PL\s*)?\d{2}(?: \d{4}){6})(?!\d| \d{4}\b)", words)
+        if account:
+            number = "".join(account[1].split())
+            if iban.is_valid("PL" + number.removeprefix("PL")):
+                yield ("Rachunek nadawcy" if role == "nadawca" else "Rachunek odbiorcy"), number
+
+
+def _amount_beside_label(rows, labels, index, anchor, height):
+    """An independently labelled column can continue beside the amount's value."""
+    amounts = []
+    bottom = anchor.y1
+    for row, headers in zip(rows[index + 1 : index + 4], labels[index + 1 : index + 4], strict=True):
+        if not headers or min(word.y0 for word in row) - bottom > 3 * height:
+            break
+        if any(
+            row[start].x0 >= anchor.x0 - height
+            or not field.startswith(("Rachunek", "Data", "Numer transakcji", "Dzienny numer"))
+            for start, _, field in headers
+        ):
+            break
+        bottom = max(word.y1 for word in row)
+        cell = [word for word in row if word.x0 >= anchor.x0 - height]
+        if cell:
+            value = " ".join(word.text for word in cell)
+            if (
+                abs(cell[0].x0 - anchor.x0) > height
+                or not MONEY_CELL.fullmatch(value)
+                or not re.search(r"[A-Za-zł]", value)
+            ):
+                break
+            amounts.append(value)
+    return amounts[0] if len(amounts) == 1 else None
+
+
 def receipt_cell_fields(boxes: list[WordBox], *, ocr: bool = False) -> dict[str, str]:
     first_page = [word for word in boxes if word.page == 1]
     rows, height = _word_rows(_level_scan_rows(first_page) if ocr else first_page)
     labels = [_row_headers(row, following, height, ocr) for row, following in zip(rows, rows[1:] + [[]])]
     evidence = defaultdict(set)
+    if ocr:
+        for label, value in _account_below_party(rows, height):
+            evidence[label].add(value)
     for index, (row, headers) in enumerate(zip(rows, labels)):
         if not headers or headers[0][0] != 0:
             continue
@@ -308,6 +364,10 @@ def receipt_cell_fields(boxes: list[WordBox], *, ocr: bool = False) -> dict[str,
             cells = [" ".join(w.text for w in row[stop:end])]
             cells.extend(" ".join(w.text for w in values if left <= w.x0 < right) for values in below)
             values = [value for cell in cells if (value := _cell_value(field, cell, ocr))]
+            if not values and field == "Kwota" and stop == len(row):
+                adjacent = _amount_beside_label(rows, labels, index, row[start], height)
+                if adjacent:
+                    values.append(adjacent)
             if field == "Tytuł" and values:
                 columns[field] = " ".join(values)
             elif len(values) > 1 and (field == "Kwota" or field.startswith("Data")):

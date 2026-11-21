@@ -10,7 +10,7 @@ from PIL import Image
 from rapidfuzz.fuzz import ratio
 
 from .bank_transfer import BOUNDARY_RE, STATUS, _field_text, _title
-from .ocr_budget import RereadExpired, require_remaining_ms
+from .ocr_budget import CROP_TIMEOUT_MS, RereadExpired, require_remaining_ms
 from .pdf_text import OCR_DPI, WordBox, _language_dir
 
 _LABEL = re.compile(
@@ -136,7 +136,7 @@ def _read_sloped_lines(pdf_path: Path, selected: list[list[WordBox]], tilt: floa
                 require_remaining_ms()
                 api.SetImage(_line_image(image, row, tilt))
                 api.SetSourceResolution(dpi)
-                if not api.Recognize(timeout=require_remaining_ms(400)):
+                if not api.Recognize(timeout=require_remaining_ms(CROP_TIMEOUT_MS)):
                     return False
                 candidate = api.GetUTF8Text().strip()
                 if not candidate:
