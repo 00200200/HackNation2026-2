@@ -12,7 +12,7 @@ RECIPIENT_RE = re.compile(r"odbiorc|beneficjent|adresat|uznawan|na rachunek")
 MONEY = r"(?<![\d.,])(?:\d{1,3}(?:[ .\u00a0]\d{3})+[.,]\d{2}|\d+[.,]\d{2})(?![.,]?\d)"
 AMOUNT_LABEL = r"(?:kwota(?: (?:operacji|przelewu|transakcji|zaksięgowana))?|wartość)"
 DATE_LABEL = r"data (?:operacji|transakcji|realizacji|wykonania|księgowania|obciążenia|zlecenia)"
-REFERENCE_LABEL = r"(?:nr ref\.?|nr transakcji(?: w [^:\n]{1,55}(?=:))?|numer (?:referencyjny|transakcji)|identyfikator (?:operacji|transakcji))(?: operacji)?"
+REFERENCE_LABEL = r"(?:nr ref\.?|nr transakcji(?: w [^:\n]{1,55}(?=:))?|numer (?:referencyjny|transakcji)|(?:id|identyfikator) (?:operacji|transakcji))(?: operacji)?"
 TITLE_LABEL = r"(?:szczegóły płatności|tytułem|tytu[łl](?: (?:przelewu|operacji))?|opis)"
 FIELD_LABEL = rf"(?:{AMOUNT_LABEL}|{DATE_LABEL}|{REFERENCE_LABEL}|{TITLE_LABEL})"
 GENERIC_LABEL = r"[^\W\d_][\w /().-]{0,55}:"
@@ -125,6 +125,11 @@ def completed_value_block(text: str) -> tuple[str, str] | None:
     return blocks[0] if len(blocks) == 1 else None
 
 
+REMITTANCE_WITH_REFERENCE = re.compile(
+    r"^(?:wpis|opłata) (?:od|za|do) [^:\n]+?\b(?:znak|numer|nr) (?:sprawy|postępowania):\s*\S", re.IGNORECASE
+)
+
+
 def _title(text: str) -> str | None:
     lines = text.splitlines()
     for index, line in enumerate(lines):
@@ -132,7 +137,7 @@ def _title(text: str) -> str | None:
         if not label or re.fullmatch(r"opis\s+kwota", line.strip(), re.IGNORECASE):
             continue
         value = label.group(1).strip()
-        if BOUNDARY_RE.match(value) or STATUS.match(value):
+        if (BOUNDARY_RE.match(value) and not REMITTANCE_WITH_REFERENCE.match(value)) or STATUS.match(value):
             return None
         parts = [value]
         for following in lines[index + 1 :]:
@@ -156,7 +161,7 @@ def _field_text(text: str) -> str:
         label = TITLE_LABEL_RE.match(line)
         if label:
             value = re.sub(rf"\s+(?=(?:{FIELD_LABEL}|status|waluta|tryb)\s*:)", "\n", label[1], flags=re.IGNORECASE)
-            if re.match(GENERIC_LABEL, value):
+            if re.match(GENERIC_LABEL, value) and not REMITTANCE_WITH_REFERENCE.match(value):
                 value = "\n" + value
             line = line[: label.start(1)] + value
         lines.append(line)
@@ -408,6 +413,17 @@ def extract(text: str) -> dict:
         r"(?im)^referencj[ae] (?:banku|transakcji)\s*:?\s+([A-Z0-9/#-]*\d[A-Z0-9/#-]*)[ \t]*$", fields
     )
     title = _title(fields)
+    if title is None and reference:
+        # The unqualified details cell is a remittance description when the
+        # next row opens the separate client-reference field.
+        details = re.search(r"(?im)^szczegóły[ :\t]+([^\n]+)\nreferencje klienta\b", fields)
+        if (
+            details
+            and not details[1].rstrip().endswith(":")
+            and not re.fullmatch(r"(?:operacji|transakcji|przelewu|płatności)[. ]*", details[1], re.IGNORECASE)
+            and not BOUNDARY_RE.match(details[1])
+        ):
+            title = details[1].strip()
     if executed_letter(fields):
         reference = reference or re.search(
             r"(?i)\b(?:pod |z )?identyfikator(?:em)?\s+([A-Z0-9/-]*\d[A-Z0-9/-]*)\b", fields

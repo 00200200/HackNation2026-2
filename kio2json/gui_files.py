@@ -15,6 +15,7 @@ from shiny.types import FileInfo
 
 from .batch import Result, configure_logging, read_document
 from .class_config import load_classes
+from .ocr_budget import batch_deadline
 
 type Source = tuple[Path, Path]  # relative name for the jury and path to read
 
@@ -62,6 +63,7 @@ class Document:
 
 
 def analyze(sources: list[Source], directory: Path) -> list[Document]:
+    deadline = batch_deadline(len(sources))
     targets = set()
     for name, _ in sources:
         for part in name.parts:
@@ -81,7 +83,7 @@ def analyze(sources: list[Source], directory: Path) -> list[Document]:
         except OSError as error:
             result = Result(None, "", str(error))
         else:
-            result = read_document(snapshot, classes)
+            result = read_document(snapshot, classes, batch_deadline=deadline)
         documents.append(Document(name, snapshot, result))
     return documents
 
