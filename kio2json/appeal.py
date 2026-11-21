@@ -86,7 +86,7 @@ def _first_sentence(text: str) -> str:
     return text
 
 
-def _parties(lines: list[str]) -> dict[str, list[dict]]:
+def _parties(lines: list[str], ocr_mail_lines: frozenset[int] = frozenset()) -> dict[str, list[dict]]:
     """Party blocks from the header: a name, then an address line, then a KRS/NIP/REGON line."""
     parties = {"Zamawiający": [], "Odwołujący": []}
     section = None
@@ -101,7 +101,7 @@ def _parties(lines: list[str]) -> dict[str, list[dict]]:
             )
         name_lines.clear()
 
-    for line in map(str.strip, lines):
+    for index, line in enumerate(map(str.strip, lines)):
         label = SECTION_RE.match(line)
         if label:
             finish_name()
@@ -133,11 +133,11 @@ def _parties(lines: list[str]) -> dict[str, list[dict]]:
                 for key, value in registry_ids(line).items():
                     entity[key] = entity[key] or value
         elif "@" in line or (
-            parties[section]
+            index in ocr_mail_lines
+            and parties[section]
             and not name_lines
             and sublabel == parties[section][-1]["sublabel"]
             and any(parties[section][-1][k] for k in ("krs", "nip", "regon"))
-            and re.fullmatch(r"[\w+%©®.-]+\.[a-zA-Z]{2,}", line)
         ):
             finish_name()
         elif line:
@@ -241,9 +241,9 @@ def _procurement(text: str) -> dict:
     }
 
 
-def extract(text: str) -> dict:
+def extract(text: str, *, ocr_mail_lines: frozenset[int] = frozenset()) -> dict:
     header = text.split("Działając w imieniu", 1)[0]
-    parties = _parties(header.splitlines())
+    parties = _parties(header.splitlines(), ocr_mail_lines)
     place_date = PLACE_DATE_RE.search(header)
     action_date, reason = _challenged_action(text)
     representative = _representative(header)

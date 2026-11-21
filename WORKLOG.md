@@ -10,7 +10,8 @@ Shared state of the project. Rules: `CLAUDE.md` → Worklog.
   content-based classification with a rejection path; regex and line-layout extraction per class; pdfplumber text
   with wheel-packaged Tesseract for blank or page-number-only text layers. Installation fetches and verifies the
   language models or reads supplied copies from `KIO_TESSDATA_SOURCE`. The default is `tesseract-dpi`. RapidOCR and the document retry mode are opt-in. Both engines run offline
-  and return word boxes in PDF points on request. Branch `feat/ocr-engine`.
+  and return word boxes in PDF points on request. The reader records the source of each page. Native
+  content uses the baseline rules, and OCR signer, account and e-mail rules use page provenance. Branch `feat/ocr-engine`.
 - The eval harness scores training cases and local paired PDF/JSON corpora. It reports micro F1 and macro F1 by
   document, represented class and field. Both layouts support per-field errors and OCR stress runs (`--force-ocr`).
   Private detail files must be outside all worktrees and Git metadata. Input or extraction failures stop evaluation
@@ -94,3 +95,5 @@ Both splits missed the team’s micro F1 and classification targets. Compared wi
 - 21.11.2026 · Codex · Merged the GUI baseline through `ac78d2d` into the OCR branch. Added unreadable-scan diagnostics, signature ownership checks, labelled account evidence, a RapidOCR worker deadline, and a checksum-verified local model source.
 - 21.11.2026 · Codex · Integrated the corpus and macro-F1 harness from `3210643`. The OCR comparison uses the frozen extraction rules from `865b1ea`.
 - 21.11.2026 · Codex · Measured T0, T1, T1 with PNG input, R and TR on the dev cases. The hybrid gain was 0.0133, below the 0.0300 gate. Selected `tesseract-dpi` and kept RapidOCR optional.
+
+- 21.11.2026 · Codex · Scoped the OCR rules on `feat/ocr-engine` to recognized text after the review of `c222716`. Added document-level checks for unreadable scans and regression tests for mixed PDFs.

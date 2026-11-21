@@ -10,8 +10,8 @@ from typing import Annotated, Literal, Self
 
 from pydantic import BaseModel, BeforeValidator, ConfigDict, Field, ImportString, model_validator
 
-from .bank_transfer import AccountEvidence
-from .classify import classify, classify_with_evidence
+from .classify import classify
+from .ocr_accounts import AccountEvidence
 
 DEFAULT_DIR = Path(__file__).resolve().parents[1] / "config" / "classes"
 
@@ -153,14 +153,9 @@ def load_classes(directory: Path | None = None) -> list[DocumentClass]:
     return sorted(classes.values(), key=lambda c: (c.priority, c.id))
 
 
-def route(pages: list[str], definitions: list[DocumentClass]) -> DocumentClass | None:
-    definition, _ = route_with_evidence(pages, definitions)
-    return definition
-
-
-def route_with_evidence(
-    pages: list[str], definitions: list[DocumentClass]
-) -> tuple[DocumentClass | None, AccountEvidence | None]:
+def route(
+    pages: list[str], definitions: list[DocumentClass], *, ocr_accounts: AccountEvidence | None = None
+) -> DocumentClass | None:
     # Organizer classes share a classifier. Compute its result once for this PDF.
     labels = {}
     for definition in definitions:
@@ -171,11 +166,12 @@ def route_with_evidence(
             classifier = routing.classifier
             if classifier not in labels:
                 labels[classifier] = (
-                    classify_with_evidence(pages) if classifier is classify else (classifier(pages), None)
+                    classify(pages, ocr_accounts=ocr_accounts)
+                    if classifier is classify and ocr_accounts is not None
+                    else classifier(pages)
                 )
-            label, accounts = labels[classifier]
-            if label == definition.id:
-                return definition, accounts
+            if labels[classifier] == definition.id:
+                return definition
         elif routing.matches(pages):
-            return definition, None
-    return None, None
+            return definition
+    return None
