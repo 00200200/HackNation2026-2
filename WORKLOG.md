@@ -6,8 +6,8 @@ Shared state of the project. Rules: `CLAUDE.md` → Worklog.
 
 - Task brief, FAQ and details PDF in `docs/task/`; organizer repo copied into `data/uzp` (`make data` refreshes);
   template example in `input/case1`.
-- Eval harness (`evals/`, field-level F1 on the training cases, working definition) with tests.
-  `evals/field_report.py` adds a per-field error table and an OCR stress run (`--force-ocr`).
+- The eval harness scores training cases and local paired PDF/JSON corpora. It reports micro F1 and macro F1 by
+  document, represented class and field. Both layouts support per-field errors and OCR stress runs (`--force-ocr`).
 - App: `kio2json/`, a rule-based baseline with no language model. CLI `python -m kio2json --input input --output output`;
   content-based classification with a rejection path; regex and line-layout extraction per class; pdfplumber text
   with Tesseract (`pol`) for blank or page-number-only text layers. Required OCR failures identify the PDF on stderr. Branch `baseline/rule-based-extraction`.
@@ -21,6 +21,10 @@ Shared state of the project. Rules: `CLAUDE.md` → Worklog.
 `classification_accuracy` 1.000, `negatives_empty` 1.000. Training data (synthetic). The rules were written with
 sight of these documents, cases 53-60 included, so this is a regression check and the 51-60 figure is not an
 unseen-case estimate for this baseline.
+
+21.11.2026, local real corpus at `946a550` (`evals/results/corpus-latest.json`), 37 PDFs in 20 cases.
+Micro F1 was 0.403. Macro F1 was 0.333 by document, 0.368 across all three target classes and 0.398 by field.
+All PDFs had outputs and every negative was empty. Classification accuracy on positive documents was 0.778.
 
 ## Next
 
@@ -53,3 +57,4 @@ unseen-case estimate for this baseline.
 - 21.11.2026 · Claude · stricter F1 normalisation (types, formats), invented test fixture, organizer data copied into the repo (UZP e8b7a67)
 - 21.11.2026 · Claude · rule-based baseline `kio2json`, field report, data refresh to UZP 7590db8 (reason 6 description is now `Odpowiedzi/wyjaśnienia do SWZ`); full eval `micro_f1` 1.000 on training data
 - 21.11.2026 · Codex · fixed OCR failure reporting, payment and party roles, first-charge dates and field-report matching. Added regressions with invented fixtures. Extraction fixes in `0ecd41c`.
+- 21.11.2026 · Codex · added corpus scoring and macro F1, then measured the 37-document local corpus at `946a550`.

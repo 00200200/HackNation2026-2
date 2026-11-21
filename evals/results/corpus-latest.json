@@ -1,0 +1,61 @@
+{
+  "commit": "946a550d2d78d71e849dd91fc276db6ce3082c4c",
+  "dirty": false,
+  "mode": "corpus",
+  "timestamp": "2026-11-21T14:27:36+00:00",
+  "n_cases": 20,
+  "n_docs": 37,
+  "coverage_ok": false,
+  "overall_pass": false,
+  "run_error": null,
+  "metrics": {
+    "micro_f1": {
+      "value": 0.40253164556962023,
+      "target": 0.9,
+      "pass": false
+    },
+    "outputs_complete": {
+      "value": 1.0,
+      "target": 1.0,
+      "pass": true
+    },
+    "negatives_empty": {
+      "value": 1.0,
+      "target": 1.0,
+      "pass": true
+    },
+    "classification_accuracy": {
+      "value": 0.7777777777777778,
+      "target": 1.0,
+      "pass": false
+    },
+    "seconds_per_doc": {
+      "value": 7.8367716441610575,
+      "target": null,
+      "pass": true
+    }
+  },
+  "detail": {
+    "micro_f1": 0.40253164556962023,
+    "macro_f1_documents": 0.33272289078590667,
+    "macro_f1_classes": 0.36805874935093835,
+    "macro_f1_class_count": 3,
+    "macro_f1_fields": 0.3977742235836593,
+    "micro_f1_non_null": 0.30739299610894943,
+    "per_class_f1": {
+      "odwolanie": 0.4163934426229508,
+      "pelnomocnictwo": 0.43137254901960786,
+      "przelew": 0.2564102564102564
+    },
+    "classification_accuracy": 0.7777777777777778,
+    "negatives_empty": 1.0,
+    "outputs_complete": 1.0,
+    "counts": {
+      "tp": 159,
+      "fp": 165,
+      "fn": 307
+    }
+  },
+  "holdout_51_60": null,
+  "f1_definition": "evals/metrics.py docstring (organizer formula UNCONFIRMED)"
+}
