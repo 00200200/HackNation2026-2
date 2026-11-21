@@ -1,0 +1,20 @@
+id = "bank_transfer"
+priority = 30
+engines = ["python"]
+extractor = "kio2json.bank_transfer.extract"
+
+[routing]
+classifier = "kio2json.classify.classify"
+
+[fields.przelew_bankowy]
+type = "object"
+nullable = false
+instruction = "Details of the executed bank transfer."
+
+[fields.przelew_bankowy.fields]
+data_operacji = { type = "string", normalizer = "iso_date", instruction = "Operation date." }
+kwota = { type = "number", normalizer = "money", instruction = "Amount transferred as a number." }
+na_rachunek = { type = "string", normalizer = "account_number", instruction = "Beneficiary account number." }
+numer_transakcji = { type = "string", instruction = "Transaction reference if present." }
+tytul = { type = "string", instruction = "Complete transfer title." }
+z_rachunku = { type = "string", normalizer = "account_number", instruction = "Sender account number." }
