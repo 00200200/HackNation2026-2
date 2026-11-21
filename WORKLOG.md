@@ -24,6 +24,8 @@ The integration baseline used local rules with the three endpoint variables unse
 
 [Real dev aggregates](evals/results/integration-rules.json) · [Organizer scan aggregate](evals/results/organizer-scans.json)
 
+The scanned-transfer rules routed 5/5 organizer dev transfers and 3/5 on the single organizer holdout, along with 4/4 and 9/10 transfers on the two private dev partitions. The synthetic regression still matched all 196 outputs byte for byte. [Per-step and holdout aggregates](evals/results/scanned-transfers.json)
+
 ## Next
 
 | Item | Owner |

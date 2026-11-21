@@ -1,8 +1,8 @@
 {
-  "commit": "8d79e66ccde434d240665a615fca5f142ac3ac82",
+  "commit": "7ccd053df4c55b1beef2250f913b9662185bfa9e",
   "dirty": false,
   "mode": "full",
-  "timestamp": "2026-11-21T19:02:05+00:00",
+  "timestamp": "2026-11-21T19:41:22+00:00",
   "n_cases": 60,
   "n_docs": 196,
   "coverage_ok": true,
@@ -30,7 +30,7 @@
       "pass": true
     },
     "seconds_per_doc": {
-      "value": 0.14758142028051446,
+      "value": 0.41811109673022767,
       "target": null,
       "pass": true
     }

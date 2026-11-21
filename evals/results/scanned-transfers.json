@@ -1,0 +1,780 @@
+{
+  "base": "f357741d598d424ca5b8f9d03732900c067121f2",
+  "rules_commit": "7ccd053df4c55b1beef2250f913b9662185bfa9e",
+  "profile": "rules, default OCR, no model",
+  "metric": "evals.metrics.summarise",
+  "development": {
+    "Integration baseline": {
+      "Organizer dev": {
+        "micro_f1": 0.5676567656765676,
+        "macro_f1_documents": 0.42250759961286277,
+        "macro_f1_classes": 0.4806637806637806,
+        "macro_f1_class_count": 3,
+        "macro_f1_fields": 0.5407169990503324,
+        "micro_f1_non_null": 0.5355648535564853,
+        "per_class_f1": {
+          "odwolanie": 0.6,
+          "pelnomocnictwo": 0.6753246753246753,
+          "przelew": 0.16666666666666666
+        },
+        "classification_accuracy": 0.6666666666666666,
+        "negatives_empty": null,
+        "outputs_complete": 1.0,
+        "counts": {
+          "tp": 86,
+          "fp": 23,
+          "fn": 108
+        },
+        "routing": {
+          "odwolanie": [
+            4,
+            5
+          ],
+          "pelnomocnictwo": [
+            5,
+            5
+          ],
+          "przelew": [
+            1,
+            5
+          ]
+        }
+      },
+      "Corpus 1 dev": {
+        "micro_f1": 0.697286012526096,
+        "macro_f1_documents": 0.63018163165222,
+        "macro_f1_classes": 0.6627995248684905,
+        "macro_f1_class_count": 3,
+        "macro_f1_fields": 0.6746031746031745,
+        "micro_f1_non_null": 0.5723270440251572,
+        "per_class_f1": {
+          "odwolanie": 0.7055702917771883,
+          "pelnomocnictwo": 0.7272727272727273,
+          "przelew": 0.5555555555555556
+        },
+        "classification_accuracy": 0.8666666666666667,
+        "negatives_empty": 1.0,
+        "outputs_complete": 1.0,
+        "counts": {
+          "tp": 167,
+          "fp": 65,
+          "fn": 80
+        },
+        "routing": {
+          "negatywny": [
+            7,
+            7
+          ],
+          "odwolanie": [
+            8,
+            8
+          ],
+          "pelnomocnictwo": [
+            3,
+            3
+          ],
+          "przelew": [
+            2,
+            4
+          ]
+        }
+      },
+      "Corpus 2 dev": {
+        "micro_f1": 0.5248447204968945,
+        "macro_f1_documents": 0.3430006757195697,
+        "macro_f1_classes": 0.3618796662274923,
+        "macro_f1_class_count": 3,
+        "macro_f1_fields": 0.46520282186948847,
+        "micro_f1_non_null": 0.3719806763285024,
+        "per_class_f1": {
+          "odwolanie": 0.6007905138339921,
+          "pelnomocnictwo": 0.3333333333333333,
+          "przelew": 0.15151515151515152
+        },
+        "classification_accuracy": 0.6071428571428571,
+        "negatives_empty": 1.0,
+        "outputs_complete": 1.0,
+        "counts": {
+          "tp": 169,
+          "fp": 81,
+          "fn": 225
+        },
+        "routing": {
+          "negatywny": [
+            11,
+            11
+          ],
+          "odwolanie": [
+            12,
+            13
+          ],
+          "pelnomocnictwo": [
+            4,
+            5
+          ],
+          "przelew": [
+            1,
+            10
+          ]
+        }
+      }
+    },
+    "Debit headings and direction": {
+      "Organizer dev": {
+        "micro_f1": 0.5676567656765676,
+        "macro_f1_documents": 0.42250759961286277,
+        "macro_f1_classes": 0.4806637806637806,
+        "macro_f1_class_count": 3,
+        "macro_f1_fields": 0.5407169990503324,
+        "micro_f1_non_null": 0.5355648535564853,
+        "per_class_f1": {
+          "odwolanie": 0.6,
+          "pelnomocnictwo": 0.6753246753246753,
+          "przelew": 0.16666666666666666
+        },
+        "classification_accuracy": 0.6666666666666666,
+        "negatives_empty": null,
+        "outputs_complete": 1.0,
+        "counts": {
+          "tp": 86,
+          "fp": 23,
+          "fn": 108
+        },
+        "routing": {
+          "odwolanie": [
+            4,
+            5
+          ],
+          "pelnomocnictwo": [
+            5,
+            5
+          ],
+          "przelew": [
+            1,
+            5
+          ]
+        }
+      },
+      "Corpus 1 dev": {
+        "micro_f1": 0.697286012526096,
+        "macro_f1_documents": 0.63018163165222,
+        "macro_f1_classes": 0.6627995248684905,
+        "macro_f1_class_count": 3,
+        "macro_f1_fields": 0.6746031746031745,
+        "micro_f1_non_null": 0.5723270440251572,
+        "per_class_f1": {
+          "odwolanie": 0.7055702917771883,
+          "pelnomocnictwo": 0.7272727272727273,
+          "przelew": 0.5555555555555556
+        },
+        "classification_accuracy": 0.8666666666666667,
+        "negatives_empty": 1.0,
+        "outputs_complete": 1.0,
+        "counts": {
+          "tp": 167,
+          "fp": 65,
+          "fn": 80
+        },
+        "routing": {
+          "negatywny": [
+            7,
+            7
+          ],
+          "odwolanie": [
+            8,
+            8
+          ],
+          "pelnomocnictwo": [
+            3,
+            3
+          ],
+          "przelew": [
+            2,
+            4
+          ]
+        }
+      },
+      "Corpus 2 dev": {
+        "micro_f1": 0.6034985422740525,
+        "macro_f1_documents": 0.569191151910046,
+        "macro_f1_classes": 0.5768067144878739,
+        "macro_f1_class_count": 3,
+        "macro_f1_fields": 0.5726663459996792,
+        "micro_f1_non_null": 0.5043859649122807,
+        "per_class_f1": {
+          "odwolanie": 0.6007905138339921,
+          "pelnomocnictwo": 0.3333333333333333,
+          "przelew": 0.7962962962962963
+        },
+        "classification_accuracy": 0.8571428571428571,
+        "negatives_empty": 1.0,
+        "outputs_complete": 1.0,
+        "counts": {
+          "tp": 207,
+          "fp": 85,
+          "fn": 187
+        },
+        "routing": {
+          "negatywny": [
+            11,
+            11
+          ],
+          "odwolanie": [
+            12,
+            13
+          ],
+          "pelnomocnictwo": [
+            4,
+            5
+          ],
+          "przelew": [
+            8,
+            10
+          ]
+        }
+      }
+    },
+    "OCR fields and tilted rows": {
+      "Organizer dev": {
+        "micro_f1": 0.6666666666666666,
+        "macro_f1_documents": 0.6780631551684183,
+        "macro_f1_classes": 0.713997113997114,
+        "macro_f1_class_count": 3,
+        "macro_f1_fields": 0.657383665716999,
+        "micro_f1_non_null": 0.6461538461538462,
+        "per_class_f1": {
+          "odwolanie": 0.6,
+          "pelnomocnictwo": 0.6753246753246753,
+          "przelew": 0.8666666666666667
+        },
+        "classification_accuracy": 0.9333333333333333,
+        "negatives_empty": null,
+        "outputs_complete": 1.0,
+        "counts": {
+          "tp": 109,
+          "fp": 24,
+          "fn": 85
+        },
+        "routing": {
+          "odwolanie": [
+            4,
+            5
+          ],
+          "pelnomocnictwo": [
+            5,
+            5
+          ],
+          "przelew": [
+            5,
+            5
+          ]
+        }
+      },
+      "Corpus 1 dev": {
+        "micro_f1": 0.697286012526096,
+        "macro_f1_documents": 0.63018163165222,
+        "macro_f1_classes": 0.6627995248684905,
+        "macro_f1_class_count": 3,
+        "macro_f1_fields": 0.6746031746031745,
+        "micro_f1_non_null": 0.5723270440251572,
+        "per_class_f1": {
+          "odwolanie": 0.7055702917771883,
+          "pelnomocnictwo": 0.7272727272727273,
+          "przelew": 0.5555555555555556
+        },
+        "classification_accuracy": 0.8666666666666667,
+        "negatives_empty": 1.0,
+        "outputs_complete": 1.0,
+        "counts": {
+          "tp": 167,
+          "fp": 65,
+          "fn": 80
+        },
+        "routing": {
+          "negatywny": [
+            7,
+            7
+          ],
+          "odwolanie": [
+            8,
+            8
+          ],
+          "pelnomocnictwo": [
+            3,
+            3
+          ],
+          "przelew": [
+            2,
+            4
+          ]
+        }
+      },
+      "Corpus 2 dev": {
+        "micro_f1": 0.6034985422740525,
+        "macro_f1_documents": 0.569191151910046,
+        "macro_f1_classes": 0.5768067144878739,
+        "macro_f1_class_count": 3,
+        "macro_f1_fields": 0.5726663459996792,
+        "micro_f1_non_null": 0.5043859649122807,
+        "per_class_f1": {
+          "odwolanie": 0.6007905138339921,
+          "pelnomocnictwo": 0.3333333333333333,
+          "przelew": 0.7962962962962963
+        },
+        "classification_accuracy": 0.8571428571428571,
+        "negatives_empty": 1.0,
+        "outputs_complete": 1.0,
+        "counts": {
+          "tp": 207,
+          "fp": 85,
+          "fn": 187
+        },
+        "routing": {
+          "negatywny": [
+            11,
+            11
+          ],
+          "odwolanie": [
+            12,
+            13
+          ],
+          "pelnomocnictwo": [
+            4,
+            5
+          ],
+          "przelew": [
+            8,
+            10
+          ]
+        }
+      }
+    },
+    "Corroborated confirmations": {
+      "Organizer dev": {
+        "micro_f1": 0.672782874617737,
+        "macro_f1_documents": 0.6891742662795295,
+        "macro_f1_classes": 0.725108225108225,
+        "macro_f1_class_count": 3,
+        "macro_f1_fields": 0.6629392212725546,
+        "micro_f1_non_null": 0.6538461538461539,
+        "per_class_f1": {
+          "odwolanie": 0.6,
+          "pelnomocnictwo": 0.6753246753246753,
+          "przelew": 0.9
+        },
+        "classification_accuracy": 0.9333333333333333,
+        "negatives_empty": null,
+        "outputs_complete": 1.0,
+        "counts": {
+          "tp": 110,
+          "fp": 23,
+          "fn": 84
+        },
+        "routing": {
+          "odwolanie": [
+            4,
+            5
+          ],
+          "pelnomocnictwo": [
+            5,
+            5
+          ],
+          "przelew": [
+            5,
+            5
+          ]
+        }
+      },
+      "Corpus 1 dev": {
+        "micro_f1": 0.697286012526096,
+        "macro_f1_documents": 0.63018163165222,
+        "macro_f1_classes": 0.6627995248684905,
+        "macro_f1_class_count": 3,
+        "macro_f1_fields": 0.6746031746031745,
+        "micro_f1_non_null": 0.5723270440251572,
+        "per_class_f1": {
+          "odwolanie": 0.7055702917771883,
+          "pelnomocnictwo": 0.7272727272727273,
+          "przelew": 0.5555555555555556
+        },
+        "classification_accuracy": 0.8666666666666667,
+        "negatives_empty": 1.0,
+        "outputs_complete": 1.0,
+        "counts": {
+          "tp": 167,
+          "fp": 65,
+          "fn": 80
+        },
+        "routing": {
+          "negatywny": [
+            7,
+            7
+          ],
+          "odwolanie": [
+            8,
+            8
+          ],
+          "pelnomocnictwo": [
+            3,
+            3
+          ],
+          "przelew": [
+            2,
+            4
+          ]
+        }
+      },
+      "Corpus 2 dev": {
+        "micro_f1": 0.6098265895953757,
+        "macro_f1_documents": 0.5930006757195698,
+        "macro_f1_classes": 0.5862284168920324,
+        "macro_f1_class_count": 3,
+        "macro_f1_fields": 0.5773771972017586,
+        "micro_f1_non_null": 0.5119305856832972,
+        "per_class_f1": {
+          "odwolanie": 0.6007905138339921,
+          "pelnomocnictwo": 0.3333333333333333,
+          "przelew": 0.8245614035087719
+        },
+        "classification_accuracy": 0.8928571428571429,
+        "negatives_empty": 1.0,
+        "outputs_complete": 1.0,
+        "counts": {
+          "tp": 211,
+          "fp": 87,
+          "fn": 183
+        },
+        "routing": {
+          "negatywny": [
+            11,
+            11
+          ],
+          "odwolanie": [
+            12,
+            13
+          ],
+          "pelnomocnictwo": [
+            4,
+            5
+          ],
+          "przelew": [
+            9,
+            10
+          ]
+        }
+      }
+    },
+    "Booking columns and prefixes": {
+      "Organizer dev": {
+        "micro_f1": 0.672782874617737,
+        "macro_f1_documents": 0.6891742662795295,
+        "macro_f1_classes": 0.725108225108225,
+        "macro_f1_class_count": 3,
+        "macro_f1_fields": 0.6629392212725546,
+        "micro_f1_non_null": 0.6538461538461539,
+        "per_class_f1": {
+          "odwolanie": 0.6,
+          "pelnomocnictwo": 0.6753246753246753,
+          "przelew": 0.9
+        },
+        "classification_accuracy": 0.9333333333333333,
+        "negatives_empty": null,
+        "outputs_complete": 1.0,
+        "counts": {
+          "tp": 110,
+          "fp": 23,
+          "fn": 84
+        },
+        "routing": {
+          "odwolanie": [
+            4,
+            5
+          ],
+          "pelnomocnictwo": [
+            5,
+            5
+          ],
+          "przelew": [
+            5,
+            5
+          ]
+        }
+      },
+      "Corpus 1 dev": {
+        "micro_f1": 0.6924643584521385,
+        "macro_f1_documents": 0.6635149649855533,
+        "macro_f1_classes": 0.6581698952388607,
+        "macro_f1_class_count": 3,
+        "macro_f1_fields": 0.6722883597883598,
+        "micro_f1_non_null": 0.5696969696969697,
+        "per_class_f1": {
+          "odwolanie": 0.7055702917771883,
+          "pelnomocnictwo": 0.7272727272727273,
+          "przelew": 0.5416666666666666
+        },
+        "classification_accuracy": 1.0,
+        "negatives_empty": 1.0,
+        "outputs_complete": 1.0,
+        "counts": {
+          "tp": 170,
+          "fp": 74,
+          "fn": 77
+        },
+        "routing": {
+          "negatywny": [
+            7,
+            7
+          ],
+          "odwolanie": [
+            8,
+            8
+          ],
+          "pelnomocnictwo": [
+            3,
+            3
+          ],
+          "przelew": [
+            4,
+            4
+          ]
+        }
+      },
+      "Corpus 2 dev": {
+        "micro_f1": 0.6098265895953757,
+        "macro_f1_documents": 0.5930006757195698,
+        "macro_f1_classes": 0.5862284168920324,
+        "macro_f1_class_count": 3,
+        "macro_f1_fields": 0.5773771972017586,
+        "micro_f1_non_null": 0.5119305856832972,
+        "per_class_f1": {
+          "odwolanie": 0.6007905138339921,
+          "pelnomocnictwo": 0.3333333333333333,
+          "przelew": 0.8245614035087719
+        },
+        "classification_accuracy": 0.8928571428571429,
+        "negatives_empty": 1.0,
+        "outputs_complete": 1.0,
+        "counts": {
+          "tp": 211,
+          "fp": 87,
+          "fn": 183
+        },
+        "routing": {
+          "negatywny": [
+            11,
+            11
+          ],
+          "odwolanie": [
+            12,
+            13
+          ],
+          "pelnomocnictwo": [
+            4,
+            5
+          ],
+          "przelew": [
+            9,
+            10
+          ]
+        }
+      }
+    },
+    "Reviewed rules": {
+      "Organizer dev": {
+        "micro_f1": 0.6666666666666666,
+        "macro_f1_documents": 0.6780631551684183,
+        "macro_f1_classes": 0.713997113997114,
+        "macro_f1_class_count": 3,
+        "macro_f1_fields": 0.657383665716999,
+        "micro_f1_non_null": 0.6461538461538462,
+        "per_class_f1": {
+          "odwolanie": 0.6,
+          "pelnomocnictwo": 0.6753246753246753,
+          "przelew": 0.8666666666666667
+        },
+        "classification_accuracy": 0.9333333333333333,
+        "negatives_empty": null,
+        "outputs_complete": 1.0,
+        "counts": {
+          "tp": 109,
+          "fp": 24,
+          "fn": 85
+        },
+        "routing": {
+          "odwolanie": [
+            4,
+            5
+          ],
+          "pelnomocnictwo": [
+            5,
+            5
+          ],
+          "przelew": [
+            5,
+            5
+          ]
+        }
+      },
+      "Corpus 1 dev": {
+        "micro_f1": 0.6965376782077393,
+        "macro_f1_documents": 0.6746260760966644,
+        "macro_f1_classes": 0.6720587841277497,
+        "macro_f1_class_count": 3,
+        "macro_f1_fields": 0.6792328042328042,
+        "micro_f1_non_null": 0.5757575757575758,
+        "per_class_f1": {
+          "odwolanie": 0.7055702917771883,
+          "pelnomocnictwo": 0.7272727272727273,
+          "przelew": 0.5833333333333334
+        },
+        "classification_accuracy": 1.0,
+        "negatives_empty": 1.0,
+        "outputs_complete": 1.0,
+        "counts": {
+          "tp": 171,
+          "fp": 73,
+          "fn": 76
+        },
+        "routing": {
+          "negatywny": [
+            7,
+            7
+          ],
+          "odwolanie": [
+            8,
+            8
+          ],
+          "pelnomocnictwo": [
+            3,
+            3
+          ],
+          "przelew": [
+            4,
+            4
+          ]
+        }
+      },
+      "Corpus 2 dev": {
+        "micro_f1": 0.6098265895953757,
+        "macro_f1_documents": 0.5930006757195698,
+        "macro_f1_classes": 0.5862284168920324,
+        "macro_f1_class_count": 3,
+        "macro_f1_fields": 0.5773771972017586,
+        "micro_f1_non_null": 0.5119305856832972,
+        "per_class_f1": {
+          "odwolanie": 0.6007905138339921,
+          "pelnomocnictwo": 0.3333333333333333,
+          "przelew": 0.8245614035087719
+        },
+        "classification_accuracy": 0.8928571428571429,
+        "negatives_empty": 1.0,
+        "outputs_complete": 1.0,
+        "counts": {
+          "tp": 211,
+          "fp": 87,
+          "fn": 183
+        },
+        "routing": {
+          "negatywny": [
+            11,
+            11
+          ],
+          "odwolanie": [
+            12,
+            13
+          ],
+          "pelnomocnictwo": [
+            4,
+            5
+          ],
+          "przelew": [
+            9,
+            10
+          ]
+        }
+      }
+    }
+  },
+  "holdout": {
+    "Organizer holdout": {
+      "micro_f1": 0.5982404692082112,
+      "macro_f1_documents": 0.5326311018416282,
+      "macro_f1_classes": 0.5816835619161201,
+      "macro_f1_class_count": 3,
+      "macro_f1_fields": 0.5959876543209877,
+      "micro_f1_non_null": 0.5454545454545454,
+      "per_class_f1": {
+        "odwolanie": 0.6232558139534884,
+        "pelnomocnictwo": 0.5384615384615384,
+        "przelew": 0.5833333333333334
+      },
+      "classification_accuracy": 0.8666666666666667,
+      "negatives_empty": null,
+      "outputs_complete": 1.0,
+      "counts": {
+        "tp": 102,
+        "fp": 45,
+        "fn": 92
+      },
+      "routing": {
+        "odwolanie": [
+          5,
+          5
+        ],
+        "pelnomocnictwo": [
+          5,
+          5
+        ],
+        "przelew": [
+          3,
+          5
+        ]
+      },
+      "seconds_per_doc": 13.39660466387868,
+      "n": 15,
+      "cli_error": false
+    },
+    "Corpus 2 test": {
+      "micro_f1": 0.5711711711711712,
+      "macro_f1_documents": 0.5482614254039575,
+      "macro_f1_classes": 0.5631624925997647,
+      "macro_f1_class_count": 3,
+      "macro_f1_fields": 0.5534692330744962,
+      "micro_f1_non_null": 0.45838668373879643,
+      "per_class_f1": {
+        "odwolanie": 0.5678704856787049,
+        "pelnomocnictwo": 0.3597122302158273,
+        "przelew": 0.7619047619047619
+      },
+      "classification_accuracy": 0.8409090909090909,
+      "negatives_empty": 1.0,
+      "outputs_complete": 1.0,
+      "counts": {
+        "tp": 317,
+        "fp": 143,
+        "fn": 333
+      },
+      "routing": {
+        "negatywny": [
+          16,
+          16
+        ],
+        "odwolanie": [
+          17,
+          20
+        ],
+        "pelnomocnictwo": [
+          7,
+          9
+        ],
+        "przelew": [
+          13,
+          15
+        ]
+      },
+      "seconds_per_doc": 5.455996288886914,
+      "n": 60,
+      "cli_error": false
+    }
+  }
+}
