@@ -222,6 +222,10 @@ Read these as a regression check. The rules were written by looking at these sam
 documents, cases 51-60 included, so no case here is unseen and the 51-60 figure is no estimate
 of how the rules generalize. The hidden test set holds real cases, and this is not its score.
 
+A separate native-text differential test compares the class and serialized fields of 175 invented PDFs
+with a snapshot from integration base `3210643`. It includes 135 review cases and 40 additional
+documents. [Fixtures and regeneration command](tests/snapshots/README.md)
+
 Forced OCR on all 196 training PDFs (307 rendered pages) gave strict field F1 **0.900**
 with automatic source resolution and **0.884** with explicit 300 dpi. The comparison used the rules recorded in the measurement file. To run the
 current rules, select `KIO_OCR_ENGINE=tesseract-dpi` and run

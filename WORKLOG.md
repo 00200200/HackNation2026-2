@@ -97,3 +97,4 @@ Both splits missed the team’s micro F1 and classification targets. Compared wi
 - 21.11.2026 · Codex · Measured T0, T1, T1 with PNG input, R and TR on the dev cases. The hybrid gain was 0.0133, below the 0.0300 gate. Selected `tesseract-dpi` and kept RapidOCR optional.
 
 - 21.11.2026 · Codex · Scoped the OCR rules on `feat/ocr-engine` to recognized text after the review of `c222716`. Added document-level checks for unreadable scans and regression tests for mixed PDFs.
+- 21.11.2026 · Codex · Added a native PDF snapshot from `3210643` to check the new page-provenance rules in `2a500e4`. All 175 cases match, including 24 that differed at `c222716`. The ordinary CLI still matches class, path and bytes on all 196 organizer PDFs.
