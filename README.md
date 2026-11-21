@@ -108,6 +108,8 @@ uv run pytest -q tests/test_class_config.py -k fourth
 
 ## Add a class
 
+The three organizer class definitions supply the field descriptions, types and grounding rules for the recommended Flash profile. For a new class in a custom directory, its own TOML selects the routing cues and engine order.
+
 1. Create one TOML file in your class directory and choose a unique English `id`. This example
    adds a receipt with one reference field.
 
@@ -146,7 +148,7 @@ uv run pytest -q tests/test_class_config.py -k fourth
 
 ## Use a model endpoint
 
-For submission, choose an EU/EEA provider and inference region that serve an open-weight chat model.
+**For submission,** serve the open-weight Flash release through an EU/EEA provider and EU/EEA inference region. Use model-first extraction with rules filling gaps (`KIO_LLM_MODE=LR`), model routing after rules reject a document (`KIO_LLM_ROUTING=fallback`) and a second OCR reading on scanned pages (`KIO_LLM_DUAL_OCR=true`). These are the bundled keyed defaults. Use the Flash column below to reproduce the measured generation settings on compatible servers. Pro is a measured alternative.
 Set all three variables in the process environment or in an ignored `.env` in the working directory.
 Environment values take precedence. The application has no built-in endpoint or credential.
 
@@ -226,19 +228,19 @@ Matching model releases can still differ in quantization and serving settings.
 
 ### Measurements on real KIO documents
 
-On the private dev split (22 PDFs in 14 cases), DeepSeek V4 Pro with model-first extraction and rule fallback (`LR`) scored **0.7236 field micro-F1**. The keyless rules profile scored **0.4356**. The keyed profile asks the model to classify a first page only when the rules reject it. This recovered all five positive documents the rule router missed, and all seven unrelated PDFs still produced empty files. The EU-hosted submission endpoint still needs its own evaluation. [Aggregate results](evals/results/llm-real-docs.json)
+On the private dev split (22 PDFs in 14 cases), the recommended Flash profile scored **0.6951 field micro-F1**, the Pro comparison scored **0.7236**, and keyless rules scored **0.4356**. The keyed profile asks the model to classify a first page only when the rules reject it. This recovered all five positive documents the rule router missed, and all seven unrelated PDFs still produced empty files. The EU-hosted submission endpoint still needs its own evaluation. [Aggregate results](evals/results/llm-real-docs.json)
 
-All five rows below use the same fallback router, including `R`, where the model can route but rules extract every field. Macro F1 gives equal weight to the three classes. All five modes classified 15/15 positives correctly and returned empty files for 7/7 negatives.
+The table uses model routing after rule rejection for all modes, including `R`, where rules extract every field. Macro F1 gives equal weight to the three classes. Both models classified 15/15 positives correctly and returned empty files for 7/7 negatives with this router.
 
-| Pro extraction mode | Micro F1 | Macro F1 | Appeal | Power of attorney | Transfer | Serial stage seconds/PDF |
-|---|---:|---:|---:|---:|---:|---:|
-| R | 0.4203 | 0.3228 | 0.4685 | 0.5000 | 0.0000 | 8.18 |
-| L | 0.7114 | 0.6767 | 0.7277 | 0.6774 | 0.6250 | 69.91 |
-| RL | 0.6734 | 0.6819 | 0.6667 | 0.7541 | 0.6250 | 69.91 |
-| **LR** | **0.7236** | **0.7090** | 0.7277 | 0.7742 | 0.6250 | 69.91 |
-| V | 0.7114 | 0.6767 | 0.7277 | 0.6774 | 0.6250 | 69.91 |
+| Mode | Flash micro | Flash macro | Flash appeal / POA / transfer | Pro micro | Pro macro | Pro appeal / POA / transfer |
+|---|---:|---:|---|---:|---:|---|
+| R | 0.4203 | 0.3228 | 0.4685 / 0.5000 / 0.0000 | 0.4203 | 0.3228 | 0.4685 / 0.5000 / 0.0000 |
+| L | 0.6870 | 0.5997 | 0.7277 / 0.6129 / 0.4583 | 0.7114 | 0.6767 | 0.7277 / 0.6774 / 0.6250 |
+| RL | 0.6492 | 0.6137 | 0.6615 / 0.7213 / 0.4583 | 0.6734 | 0.6819 | 0.6667 / 0.7541 / 0.6250 |
+| LR | 0.6951 | 0.6302 | 0.7225 / 0.7097 / 0.4583 | 0.7236 | 0.7090 | 0.7277 / 0.7742 / 0.6250 |
+| V | 0.6870 | 0.5997 | 0.7277 / 0.6129 / 0.4583 | 0.7114 | 0.6767 | 0.7277 / 0.6774 / 0.6250 |
 
-With `LR`, rule-only routing scored 0.6783 micro-F1 and found 10/15 positives. Asking Pro about every first page produced the same score and routes as fallback but required 22 classification calls instead of 12. On the same dev PDFs, DeepSeek Flash scored 0.6951 micro-F1 and 0.6302 macro-F1 with `LR` and fallback routing. Its class scores were 0.7225 for appeals, 0.7097 for powers of attorney and 0.4583 for transfers. Flash took 14.12 serial stage seconds per PDF. These timings sum the recorded OCR, routing and extraction calls and divide by 22. The comparison reuses identical calls across modes.
+With Pro and `LR`, rule-only routing scored 0.6783 micro-F1 and found 10/15 positives. Asking Pro about every first page produced the same score and routes as fallback and required 22 classification calls instead of 12. The selected Flash configuration took 14.12 serial stage seconds per PDF, compared with 69.91 for Pro. These timings sum the measured OCR, routing and extraction durations and divide by 22. The comparison reuses identical calls across modes. An independent uncached Flash run scored 0.6802 micro-F1 and 0.6262 macro-F1 with the same 15/15 positive routes and 7/7 empty negatives. It took 29.18 wall seconds/PDF. Of its recorded stage times, 164.75 seconds went to the primary reading and 414.57 to secondary OCR across the batch.
 
 
 In a separate uncached test on two invented native-text PDFs, one worker took 2.56 s/PDF with Flash and 15.09 s/PDF with Pro. Two simultaneous document workers took 1.15 and 12.55 s/PDF respectively. Each PDF needed one route followed by one extraction. The class decision selects the extraction schema, so these calls run in sequence within each PDF. The fixture had no OCR cost.
@@ -247,6 +249,15 @@ The model reads up to three pages. Scanned pages receive a second OCR reading, a
 
 In a strict audit that paired repeated records within their parent, Pro `L` had 72 errors across 247 dev field comparisons. In 53 cases the raw response proposed the reference value and grounding replaced it with null. Fifteen quotes could not be recovered. Another 38 quotes matched the source but failed the check for the proposed value. The audit found one nonnull output against a null reference, three name or title convention differences and four incorrect or omitted values recognizable in the input. Eleven cases remained unresolved. This audit used the cached primary and secondary readings and could not establish an input-loss count beyond the first three pages.
 
+
+**Held-out results.** Both development profiles were frozen before scoring the same 17 PDFs from seven cases. The repository evaluator measured elapsed CLI wall time with OCR.
+
+| Model | Micro F1 | Macro F1 | Appeal | POA | Transfer | Positive routes | Empty negatives | Wall s/PDF |
+|---|---:|---:|---:|---:|---:|---:|---:|---:|
+| Flash (selected) | 0.6055 | 0.6626 | 0.5627 | 0.6250 | 0.8000 | 13/13 | 4/4 | 6.43 |
+| Pro | 0.7002 | 0.7101 | 0.6919 | 0.6383 | 0.8000 | 13/13 | 4/4 | 64.28 |
+
+The first Flash batch exited before scoring and the evaluator discarded its diagnostics. The authorized second attempt added document-level rule recovery. A diagnostic counter on that run observed an extraction response exceeding its token limit. Flash used rule recovery on 1 of the 17 PDFs. Prompts, generation limits, class definitions and routing were frozen throughout. Pro completed its first attempt before the recovery change.
 
 **Local Qwen comparison.** On the 16 GB Apple M1 we served Unsloth’s Apache-2.0 GGUF of Qwen3-4B-Instruct-2507 (`Q4_K_M`, 2,497,281,120 bytes) using llama.cpp build `b12608`. From the directory containing the binary distribution and the model saved as `qwen.gguf`, run the following command. The measured model file has SHA-256 `3605803b982cb64aead44f6c1b2ae36e3acdb41d8e46c8a94c6533bc4c67e597`. [Model files](https://huggingface.co/unsloth/Qwen3-4B-Instruct-2507-GGUF) · [llama.cpp release](https://github.com/ggml-org/llama.cpp/releases/tag/b12608)
 

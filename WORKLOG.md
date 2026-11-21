@@ -26,7 +26,9 @@ Shared state of the project. Rules: `CLAUDE.md` → Worklog.
 
 ## Last eval
 
-- 21.11.2026 · Codex · Measured five extraction modes and three routing policies on 22 real dev PDFs. Selected model-first extraction with rules filling gaps (`LR`) and model routing after rule rejection. DeepSeek V4 Pro scored 0.7236 field micro-F1, Flash 0.6951, and keyless rules 0.4356. Both keyed runs routed 15/15 positives and kept 7/7 negatives empty. The Pro model-only audit traced 53 of 72 strict field errors to grounding. The aggregate record is `evals/results/llm-real-docs.json`.
+The selected Flash profile scored 0.6055 held-out field micro-F1 and 0.6626 macro-F1 at 6.43 s/PDF on 17 PDFs. Pro scored 0.7002 and 0.7101 at 64.28 s/PDF. Flash used document-level recovery on its authorized retry. The EU-hosted Flash deployment still needs measurement.
+
+- 21.11.2026 · Codex · Measured five extraction modes and three routing policies on 22 real dev PDFs. The submission uses the Flash profile with two OCR readings on scans, model-first extraction with rules filling gaps (`LR`) and model routing after rule rejection. DeepSeek V4 Pro scored 0.7236 field micro-F1, Flash 0.6951, and keyless rules 0.4356. Both keyed runs routed 15/15 positives and kept 7/7 negatives empty. The Pro model-only audit traced 53 of 72 strict field errors to grounding. The aggregate record is `evals/results/llm-real-docs.json`.
 
 The full clean training run recorded in `evals/results/latest.json` scored `micro_f1` 1.000, cases 51-60 1.000,
 `classification_accuracy` 1.000, `negatives_empty` 1.000. Training data (synthetic). The rules were written with
