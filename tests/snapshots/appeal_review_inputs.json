@@ -152,5 +152,6 @@
   "native-task1/signer-identity-swapped": "PEŁNOMOCNICTWO\nAlfa sp. z o.o. i Beta sp. z o.o. udzielają pełnomocnictwa.\nZa Alfa sp. z o.o.:\n..................\nJan Próbny\nOla Próbna\nZa Beta sp. z o.o.:\n..................\nEwa Próbna\nIga Próbna",
   "native-task11/identifier-digits": "PEŁNOMOCNICTWO\nMocodawca: Fikcyjne Studio sp. z o.o. udziela\npełnomocnictwa adw. Idzie Wymyślnej.\nPESEL: 99422967018",
   "native-task11/identifier-spaces-hyphen": "PEŁNOMOCNICTWO\nMocodawca: Fikcyjne Studio sp. z o.o. udziela\npełnomocnictwa adw. Idzie Wymyślnej.\nPESEL: 9942-296 7018",
-  "native-task11/identifier-hyphen-spaces": "PEŁNOMOCNICTWO\nMocodawca: Fikcyjne Studio sp. z o.o. udziela\npełnomocnictwa adw. Idzie Wymyślnej.\nPESEL: 99 422 967-018"
+  "native-task11/identifier-hyphen-spaces": "PEŁNOMOCNICTWO\nMocodawca: Fikcyjne Studio sp. z o.o. udziela\npełnomocnictwa adw. Idzie Wymyślnej.\nPESEL: 99 422 967-018",
+  "direct-appeal-mixed-contact": "Zamawiający: Gmina Łąkowa\nul. Leśna 1\nNIP: 9990001122\nsekretariatQfikcja.example\nODWOŁANIE"
 }

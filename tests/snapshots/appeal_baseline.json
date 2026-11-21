@@ -3897,6 +3897,41 @@
           }
         ]
       }
+    },
+    "direct-appeal-mixed-contact": {
+      "class": "appeal",
+      "output": {
+        "OdwolanieKIO": {
+          "data": null,
+          "czynnosc_dzien": null,
+          "czynnosc_powod_id": null,
+          "czynnosc_opis": null,
+          "miejscowosc": null
+        },
+        "Odwolujacy": [],
+        "Zamawiajacy": [
+          {
+            "krs": null,
+            "nazwa": "Gmina Łąkowa",
+            "nip": "9990001122",
+            "regon": null,
+            "prowadzacy_postepowanie": 0
+          },
+          {
+            "krs": null,
+            "nazwa": "sekretariatQfikcja.example",
+            "nip": null,
+            "regon": null,
+            "prowadzacy_postepowanie": 0
+          }
+        ],
+        "ZamowieniePubliczne": {
+          "numer_bzp": null,
+          "numer_postepowania": null,
+          "numer_ted": null,
+          "tytul": null
+        }
+      }
     }
   }
 }

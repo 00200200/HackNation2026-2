@@ -514,6 +514,22 @@ INTENDED_CHANGES = [
         "Studio",
         "The appellant name ends before the labelled e-mail contact.",
     ),
+    (
+        "direct-appeal-mixed-contact",
+        "/output/Zamawiajacy",
+        [
+            {"krs": None, "nazwa": "Gmina Łąkowa", "nip": "9990001122", "regon": None, "prowadzacy_postepowanie": 0},
+            {
+                "krs": None,
+                "nazwa": "sekretariatQfikcja.example",
+                "nip": None,
+                "regon": None,
+                "prowadzacy_postepowanie": 0,
+            },
+        ],
+        [{"krs": None, "nazwa": "Gmina Łąkowa", "nip": "9990001122", "regon": None, "prowadzacy_postepowanie": None}],
+        "One labelled authority precedes its address and tax ID. The unlabelled contact on the next page supplies no second authority.",
+    ),
 ]
 
 
@@ -535,7 +551,11 @@ def test_differential_inventory():
 
 @pytest.mark.parametrize("key", list(INPUTS))
 def test_against_integration_baseline(key):
-    actual = list(differences(BASELINE[key], extract_page(INPUTS[key], DEFINITIONS)))
+    actual = list(
+        differences(
+            BASELINE[key], extract_page(INPUTS[key], DEFINITIONS, direct_appeal=key.startswith("direct-appeal-"))
+        )
+    )
     allowed = [(field, old, new) for case, field, old, new, reason in INTENDED_CHANGES if case == key]
     assert sorted(actual) == sorted(allowed)
 

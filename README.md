@@ -224,7 +224,7 @@ of how the rules generalize. The hidden test set holds real cases, and this is n
 
 A separate native-text differential test compares the class and serialized fields of 175 invented PDFs
 with a snapshot from integration base `3210643`. It includes 135 review cases and 40 additional
-documents. A second suite checks 154 invented appeal and routing inputs against the same base.
+documents. A second suite checks 155 invented appeal and routing inputs against the same base.
 Both suites use the same field-by-field table for intended appeal corrections. [Fixtures and regeneration command](tests/snapshots/README.md)
 
 Forced OCR on all 196 training PDFs (307 rendered pages) gave strict field F1 **0.900**

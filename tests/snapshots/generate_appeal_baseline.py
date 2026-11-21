@@ -14,12 +14,15 @@ from pathlib import Path
 HERE = Path(__file__).resolve().parent
 
 
-def extract_page(text, definitions):
+def extract_page(text, definitions, *, direct_appeal=False):
+    from kio2json import appeal
     from kio2json.class_config import route
     from kio2json.engines import extract
     from kio2json.pdf_text import join_pages
 
     pages = [text]
+    if direct_appeal:
+        return {"class": "appeal", "output": appeal.extract(join_pages(pages))}
     definition = route(pages, definitions)
     if definition is None:
         return {"class": None, "output": {}}
@@ -38,7 +41,10 @@ def main(checkout):
 
     definitions = load_classes(checkout / "config" / "classes")
     inputs = json.loads((HERE / "appeal_review_inputs.json").read_text(encoding="utf-8"))
-    records = {key: extract_page(value, definitions) for key, value in inputs.items()}
+    records = {
+        key: extract_page(value, definitions, direct_appeal=key.startswith("direct-appeal-"))
+        for key, value in inputs.items()
+    }
     snapshot = {"commit": head, "records": records}
     (HERE / "appeal_baseline.json").write_text(
         json.dumps(snapshot, ensure_ascii=False, indent=2) + "\n", encoding="utf-8"

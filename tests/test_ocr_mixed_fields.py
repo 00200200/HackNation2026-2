@@ -1,7 +1,9 @@
 """A neighbouring OCR page cannot change which rules apply to a native field."""
 
 import pytest
+from test_appeal_differential import BASELINE, INPUTS, expected_native_result
 
+from kio2json import appeal
 from kio2json.ocr_extract import extract_appeal, extract_bank_transfer, extract_power_of_attorney
 
 GRANT = "Mocodawca: Fiołkowe Studio sp. z o.o. udziela pełnomocnictwa adw. Idzie Scenicznej."
@@ -33,12 +35,23 @@ def test_only_ocr_signature_blocks_use_the_undotted_fallback(pages, ocr_pages, s
     assert records["mocodawca"][0]["podpisujacy"] == [{"imie_nazwisko": name} for name in signers]
 
 
-@pytest.mark.parametrize(
-    ("ocr_page", "parties"), [(1, ["Gmina Łąkowa", "sekretariatQfikcja.example"]), (2, ["Gmina Łąkowa"])]
-)
-def test_damaged_mail_is_suppressed_only_when_its_own_line_was_scanned(ocr_page, parties):
-    pages = ["Zamawiający: Gmina Łąkowa\nul. Leśna 1\nNIP: 9990001122", "sekretariatQfikcja.example\nODWOŁANIE"]
-    assert [party["nazwa"] for party in extract_appeal(pages, {ocr_page})["Zamawiajacy"]] == parties
+@pytest.mark.parametrize(("ocr_page", "mail_lines"), [(1, frozenset()), (2, frozenset({3}))])
+def test_only_scanned_contact_lines_receive_mail_repair(ocr_page, mail_lines, monkeypatch):
+    key = "direct-appeal-mixed-contact"
+    text = INPUTS[key]
+    lines = text.splitlines()
+    pages = ["\n".join(lines[:3]), "\n".join(lines[3:])]
+    extract = appeal.extract
+
+    def check_provenance(joined, *, ocr_mail_lines):
+        assert joined == text
+        assert ocr_mail_lines == mail_lines
+        return extract(joined, ocr_mail_lines=ocr_mail_lines)
+
+    monkeypatch.setattr(appeal, "extract", check_provenance)
+    baseline = BASELINE[key]
+    expected = expected_native_result([text], [baseline["class"], baseline["output"]])
+    assert extract_appeal(pages, {ocr_page}) == expected[1]
 
 
 @pytest.mark.parametrize(("ocr_pages", "sender"), [({2}, OTHER), ({1}, None)])
