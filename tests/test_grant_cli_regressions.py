@@ -110,13 +110,17 @@ def test_certificate_requires_issuer_evidence(monkeypatch, tmp_path):
         assert [s["imie_nazwisko"] for s in record["mocodawca"][0]["podpisujacy"]] == expected
 
 
-def test_sole_certificate_of_a_named_witness(monkeypatch, tmp_path):
+@pytest.mark.parametrize(
+    "caption",
+    ["Świadek: Ewa Letnia", "Podpis świadka: Ewa Letnia", "W charakterze świadka dokument podpisała Ewa Letnia."],
+)
+def test_sole_certificate_of_a_named_witness(monkeypatch, tmp_path, caption):
     from kio2json import grant_certificates
     from kio2json.power_of_attorney import extract
 
     text = (
         "PEŁNOMOCNICTWO\nW imieniu Wrzos S.A. upoważniam adwokata Roberta Polnego do reprezentowania spółki."
-        "\nŚwiadek: Ewa Letnia"
+        f"\n{caption}"
     )
     record = extract(text)
     monkeypatch.setattr(grant_certificates, "signed_names", lambda _: ["Ewa Letnia"])
@@ -158,3 +162,33 @@ def test_separate_issuer_signature_slots_exclude_witness_row(tmp_path):
         left, right = _issuer_rules(doc.pages[0], "Wrzos S.A.")
     assert left[2] < right[0]
     assert left[1] == right[1]
+
+
+@pytest.mark.parametrize("reason", ["Witness", "Signed as a witness", "Podpis świadka", "Certification of a true copy"])
+def test_non_issuer_pdf_signature_reason_is_excluded(monkeypatch, reason):
+    import ctypes
+
+    from kio2json import grant_certificates
+
+    raw = (reason + "\x00").encode("utf-16-le")
+
+    def get_reason(obj, buffer, size):
+        if buffer is not None:
+            assert size == len(raw)
+            ctypes.memmove(buffer, raw, size)
+        return len(raw)
+
+    monkeypatch.setattr(grant_certificates.pdfium.raw, "FPDFSignatureObj_GetReason", get_reason)
+    assert grant_certificates._non_issuer_approval(None)
+
+
+@pytest.mark.parametrize("gap", [" ", "\n"])
+def test_authority_to_question_a_witness_preserves_grant_approval(monkeypatch, tmp_path, gap):
+    from kio2json import grant_certificates
+    from kio2json.power_of_attorney import extract
+
+    text = f"PEŁNOMOCNICTWO\nW imieniu Wrzos S.A. upoważniam adwokata Roberta Polnego do udziału w przesłuchaniu{gap}świadka."
+    record = extract(text)
+    monkeypatch.setattr(grant_certificates, "signed_names", lambda _: ["Ewa Letnia"])
+    grant_certificates.add_certificate_signers(tmp_path / "grant.pdf", record, text)
+    assert record["mocodawca"][0]["podpisujacy"] == [{"imie_nazwisko": "Ewa Letnia"}]

@@ -57,7 +57,7 @@ def signed_names(path: Path) -> list[str]:
         with pdfium.PdfDocument(path) as doc:
             for index in range(pdfium.raw.FPDF_GetSignatureCount(doc)):
                 obj = pdfium.raw.FPDF_GetSignatureObject(doc, index)
-                if _copy_approval(obj):
+                if _non_issuer_approval(obj):
                     continue
                 size = pdfium.raw.FPDFSignatureObj_GetContents(obj, None, 0)
                 if not 0 < size <= MAX_SIGNATURE_BYTES:
@@ -111,14 +111,19 @@ NON_ISSUER_SIGNATURE = re.compile(
     r"(?im)pełnomocnictwo przyjmuję|akt notarialny|^[ \t]*(?:za zgodność z oryginałem|"
     r"(?:poświadczam|potwierdzam|zaświadczam)\s+(?:za\s+)?zgodność\b)"
 )
-WITNESS = re.compile(r"(?im)^[ \t]*świad(?:ek|kowie)\b")
+WITNESS = r"(?:świadek|świadk\w*|witness(?:es|ed|ing)?)\b"
+WITNESS_SIGNATURE = re.compile(
+    r"^[ \t]*(?:świadek|świadkowie|witness(?:es)?)\b"
+    rf"|\b(?:podpis\w*|w charakterze|jako|w obecności|signed as(?: a)?)\s+{WITNESS}",
+    re.IGNORECASE | re.MULTILINE,
+)
 COPY_REASON = re.compile(
     r"(?i)\b(?:true|certified) copy\b|\bcopy certification\b|\b(?:poświadczeni\w*|potwierdzeni\w*|za) "
     r"zgodnoś(?:ć|ci)\b"
 )
 
 
-def _copy_approval(obj) -> bool:
+def _non_issuer_approval(obj) -> bool:
     size = pdfium.raw.FPDFSignatureObj_GetReason(obj, None, 0)
     if not size:
         return False
@@ -127,7 +132,8 @@ def _copy_approval(obj) -> bool:
     buffer = ctypes.create_string_buffer(size)
     if pdfium.raw.FPDFSignatureObj_GetReason(obj, buffer, size) != size:
         return True
-    return bool(COPY_REASON.search(buffer.raw.decode("utf-16-le", errors="replace")))
+    reason = buffer.raw.decode("utf-16-le", errors="replace")
+    return bool(COPY_REASON.search(reason) or re.search(rf"\b{WITNESS}", reason, re.IGNORECASE))
 
 
 def _issuer_approvals(path: Path, text: str, principals: list[dict], names: list[str]) -> set[str]:
@@ -135,12 +141,12 @@ def _issuer_approvals(path: Path, text: str, principals: list[dict], names: list
         return set()
     company = principals[0]["data"]["nazwa"]
     grant = GRANT.search(text)
-    if not company or not grant:
+    # An unnamed corporate representative cannot be inferred if the document also names a witness role.
+    if not company or not grant or WITNESS_SIGNATURE.search(text):
         return set()
     if (
         len(names) == 1
         and not principals[0]["podpisujacy"]
-        and not WITNESS.search(text)
         and grant[0].casefold().endswith(("m", "my"))
         and re.search(
             rf"\bw imieniu\s+(?:spółki\s+)?{re.escape(company)}(?!\w)", squash(text[: grant.start()]), re.IGNORECASE
@@ -163,7 +169,7 @@ def _issuer_rules(page, company: str) -> list:
             active = True
         elif NAMED_SIGNATURE.match(text):
             active = NAMED_SIGNATURE.sub("", text).strip(" :").casefold() == company.casefold()
-        elif WITNESS.match(text) or OTHER_ROLE.match(text) or re.match(r"(?i)^pełnomocni(?:k|cy)\b", text):
+        elif WITNESS_SIGNATURE.search(text) or OTHER_ROLE.match(text) or re.match(r"(?i)^pełnomocni(?:k|cy)\b", text):
             active = False
         elif active and re.fullmatch(r"[.…\s]{6,}", text):
             rules.extend(obj_to_bbox(word) for word in extract_words(line["chars"]))
