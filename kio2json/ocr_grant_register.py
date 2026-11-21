@@ -8,7 +8,7 @@ from pathlib import Path
 
 import pdfplumber
 
-from .ocr_budget import remaining_ms
+from .ocr_budget import CROP_TIMEOUT_MS, remaining_ms
 from .pdf_text import OCR_DPI, WordBox, _language_dir
 
 LABEL = re.compile(r"\bKRS\s*:?\s*(\d{10})(?!\d)", re.IGNORECASE)
@@ -18,7 +18,7 @@ def _agreement(crop, readers, original: str) -> str:
     values = []
     for reader in readers:
         reader.SetImage(crop)
-        timeout = remaining_ms(1000)
+        timeout = remaining_ms(CROP_TIMEOUT_MS)
         if not timeout or not reader.Recognize(timeout=timeout):
             return original
         result = re.fullmatch(r"(\d{10})[,.;:]?", reader.GetUTF8Text().strip())
