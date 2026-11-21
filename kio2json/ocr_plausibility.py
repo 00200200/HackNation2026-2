@@ -13,9 +13,11 @@ _LEGAL_FORM = re.compile(
 # A short capitals-only token: real in acronyms, but a run of them after the legal form is stamp noise.
 _NOISE_TOKEN = re.compile(r"[A-ZĄĆĘŁŃÓŚŹŻ]{1,5}|\W+")
 # A further consortium member or a role marker after the legal form is not noise.
-_JOINER = re.compile(r"(?:^|\s)(?:i|oraz|&)(?:\s|$)|,|(?i:\b(?:partner|lider|członek|konsorcj)\w*)")
-# A law firm named after a professional title ends in that lawyer's name.
+_JOINER = re.compile(r"(?i)(?:^|\s)(?:i|oraz|&)(?:\s|$)|,|\b(?:partner|lider|członek|konsorcj)\w*")
+# A law firm named after a professional title ends in that lawyer's name; a given name followed by
+# one to three capitals is a misread surname (a full surname in capitals is longer).
 _LAWYER_TITLE = re.compile(r"(?i)\b(?:adwokat\w*|radc\w*\s+prawn\w*)\s+(.+)$")
+_MISREAD_SURNAME = re.compile(r"\b[A-ZĄĆĘŁŃÓŚŹŻ][a-ząćęłńóśźż]+\s+[A-ZĄĆĘŁŃÓŚŹŻ]{1,3}\b(?!\.)")
 
 
 def _noise(token: str) -> bool:
@@ -40,7 +42,7 @@ def plausible_text(text: str | None, min_letters: float = 0.6) -> str | None:
             text = head
     if _STRAY.search(text) or _letter_ratio(text) < min_letters:
         return None
-    if (lawyer := _LAWYER_TITLE.search(text)) and any(map(_noise, lawyer[1].split())):
+    if (lawyer := _LAWYER_TITLE.search(text)) and _MISREAD_SURNAME.search(lawyer[1]):
         return None
     return text
 
