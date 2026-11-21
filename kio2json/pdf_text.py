@@ -10,13 +10,14 @@ from functools import cache, partial
 from importlib.metadata import files
 from math import ceil
 from pathlib import Path
+from time import monotonic
 from typing import NamedTuple
 
 import pdfplumber
 from pdfplumber.utils import get_bbox_overlap, obj_to_bbox
 from PIL import Image
 
-from .ocr_budget import RereadExpired, remaining_ms, require_remaining_ms
+from .ocr_budget import CROP_TIMEOUT_MS, REREAD_PAGE_TIMEOUT_SECONDS, RereadExpired, remaining_ms, require_remaining_ms
 from .ocr_normalize import MAIL_TOKEN_RE, confirmed_email, normalize_ocr
 
 # The organizer README says the key information sits on the first three pages.
@@ -184,11 +185,11 @@ def _ocr(page, words: list[WordBox] | None, *, engine: str | None = None, reread
         raise ValueError(f"Unknown KIO_OCR_ENGINE={engine!r}, expected tesseract, tesseract-dpi, rapidocr or hybrid")
     from .rapid_worker import recognize
 
-    timeout = require_remaining_ms(1000 * OCR_TIMEOUT_SECONDS) / 1000 if reread else OCR_TIMEOUT_SECONDS
+    timeout = require_remaining_ms(1000 * REREAD_PAGE_TIMEOUT_SECONDS) / 1000 if reread else OCR_TIMEOUT_SECONDS
     try:
         text, boxes = recognize(page.pdf.path, page.page_number, words is not None, timeout)
     except TimeoutError as error:
-        if reread and timeout < OCR_TIMEOUT_SECONDS:
+        if reread:
             raise RereadExpired from error
         raise
     if words is not None:
@@ -245,9 +246,10 @@ def _tesseract(image: _Raster, words: list[WordBox] | None, *, explicit_dpi: boo
         api.SetImage(image.original)
         if explicit_dpi:
             api.SetSourceResolution(OCR_DPI)
-        timeout = require_remaining_ms(1000 * OCR_TIMEOUT_SECONDS) if reread else 1000 * OCR_TIMEOUT_SECONDS
+        timeout = require_remaining_ms(1000 * REREAD_PAGE_TIMEOUT_SECONDS) if reread else 1000 * OCR_TIMEOUT_SECONDS
+        recognition_deadline = monotonic() + timeout / 1000
         if not api.Recognize(timeout=timeout):
-            if reread and not remaining_ms(1):
+            if reread and (not remaining_ms(1) or monotonic() >= recognition_deadline):
                 raise RereadExpired
             raise OCRRecognitionError("Polish OCR failed or timed out")
         text = api.GetUTF8Text()
@@ -291,7 +293,7 @@ def _tesseract(image: _Raster, words: list[WordBox] | None, *, explicit_dpi: boo
                 english.SetImage(image.original.crop(crop))
                 if explicit_dpi:
                     english.SetSourceResolution(OCR_DPI)
-                timeout = remaining_ms(1000)
+                timeout = remaining_ms(CROP_TIMEOUT_MS)
                 if timeout and english.Recognize(timeout=timeout):
                     replacement = confirmed_email(token, english.GetUTF8Text().strip())
                     text = text[:start] + replacement + text[cursor:]
@@ -343,6 +345,7 @@ def read_pages(
     *,
     word_boxes: list[WordBox] | None = None,
     first_ocr_words: list[WordBox] | None = None,
+    page_sizes: dict[int, tuple[float, float]] | None = None,
     repair_image_text: bool = False,
     engine: str | None = None,
     ocr_pages: list[int] | None = None,
@@ -407,6 +410,8 @@ def read_pages(
                     for w in page.extract_words()
                 )
             if include:
+                if page_sizes is not None:
+                    page_sizes[number] = page.width, page.height
                 pages.append(text)
             if not readable:
                 page_words = _body_word_count(text)

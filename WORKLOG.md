@@ -10,12 +10,14 @@ variables unset. Keyed runs can use a second OCR reading and recover a failed do
 
 The opt-in small-model profile uses Mistral’s regional API, compact source spans and bounded PDF workers. [Provider comparison](docs/small-model-providers.md)
 
-The batch CLI defaults to up to four PDF workers, with one thread per Tesseract instance and up to three concurrent page reads per PDF. The first OCR pass supplies layout word boxes, and optional OCR shares a 27-second per-document deadline.
+The batch CLI defaults to up to four PDF workers, with one thread per Tesseract instance and up to three concurrent page reads per PDF. The first OCR pass supplies layout word boxes, and optional OCR has up to 300 seconds per document. A shared batch cutoff stops rereads after 27 minutes for 150 PDFs.
 
 The grant certificate and board-stamp readers share the copy-attestation check so that a certifier cannot be counted as the issuing officer.
 
 Public landing https://doc2json.pl (`frontend/`, static nginx, monochrome) runs on the team VPS as `doc2json-web`
 behind the faktczyfejk Caddy; deploy in `docs/deploy.md`. Its upload calls `kio2json.web_api` (`/api/extract`, rules engine, no keys) in the `doc2json-api` container.
+
+The jury can run the batch CLI and upload UI locally with the root Compose file. [Docker instructions](README.md#run-with-docker-compose)
 
 ## Last eval
 
@@ -79,6 +81,8 @@ Two and four grant JSONs matched exactly. The ten organizer grants remained exac
   `/orchestrator`, not to Claude subagents.
 
 ## Log
+
+- 22.11.2026 · Codex · Grouped appeal and mandate word boxes by printed role and column. Added regressions for wrapped names, repeated stationery, extra appointees and principal-specific signatures.
 
 - 21.11.2026 · Codex · Added native span output for small models, local source validation and a bounded parallel CLI. Verified the native schema on the quantized local model and both regional API releases.
 
@@ -145,6 +149,7 @@ Two and four grant JSONs matched exactly. The ten organizer grants remained exac
 
 
 - 21.11.2026 · Codex · Measured `a32ba1c` against `5297660`. All 226 outputs matched byte for byte. Four workers processed 30 scans in 37.15 s and the 150-PDF mix in 74.42 s on an M1. [Per-PDF runtime profile](evals/results/batch-runtime.json)
+- 21.11.2026 · Codex · On `perf/adaptive-budget`, all 226 public outputs matched under eight CPU busy loops. A single worker completed the 150-PDF mix under that load in 401.87 seconds. [OCR budget measurements](evals/results/adaptive-ocr-budget.json)
 - 21.11.2026 · Codex · In the integrated Ministral profile, preserve the required null personal name for a corporate grantor after filling model gaps. The previous profile filled it on three organizer scans and one corpus 1 grant.
 - 21.11.2026 · Codex · Restored issuer declarations above grant titles, printed signers beside email addresses, and scanned sole-trader names. Certificate attribution now checks the signer's role. Eight invented CLI cases compare the affected records with the pre-PR #25 base.
 - 21.11.2026 · Codex · Measured the integrated accuracy and runtime PRs at `ca2975392`. Both profiles matched all 196 training outputs from main byte for byte. On the shared 16 GB Apple M1, the integrated CLI processed 30 organizer scans in 36.12 s with four rules workers and 44.91 s with three Ministral workers. The 150-PDF batch took 57.54 s and 70.38 s respectively. It used two copies of the 30 scans and 90 training PDFs. [Combined measurements](evals/results/round2-integration.json)
@@ -177,3 +182,5 @@ These runs used local rules with the three endpoint variables unset. The two loc
 | Wire the doc2json.pl upload to the extraction (serve the GUI backend behind `/api/` or point the page at it) | Open |
 
 - 21.11.2026 · Codex · Round 3 traced 130 field errors on 78 real development PDFs. Recovered identifiers from matching party records, checked damaged company names against declarations and read debit amounts across bank columns. The single-field Ministral whitespace trial lost one correct title in 12 calls and was dropped.
+
+- 22.11.2026 · Codex · Added local jury Compose services and the signed task rules for #60. Compose configuration validated. Docker Desktop did not answer its health probe, so container byte parity is pending.

@@ -8,7 +8,7 @@ from functools import cache, partial
 from pathlib import Path
 
 from . import appeal, bank_transfer, ocr_extract, power_of_attorney
-from .appeal_layout import restore_party_columns
+from .appeal_layout import apply_appeal_blocks, party_inventory, read_role_columns, restore_party_columns
 from .class_config import DocumentClass, load_classes, route
 from .classify import incomplete_booking_scan, resembles_appeal_heading
 from .engines import extract
@@ -125,7 +125,7 @@ def _grant_signers(pdf_path, record, pages, ocr_pages, engine):
         recover_board_stamp(pdf_path, record, pages[0])
 
 
-def _document_rules(definition, pdf_path, pages, ocr_pages, boxes, engine, selected, accounts):
+def _document_rules(definition, pdf_path, pages, ocr_pages, boxes, engine, selected, accounts, blocks):
     """Build the local candidate, including PDF evidence, before optional model gap filling."""
     rules_first = definition.profile.rules_first
     if definition.extractor is bank_transfer.extract and ocr_pages:
@@ -136,33 +136,47 @@ def _document_rules(definition, pdf_path, pages, ocr_pages, boxes, engine, selec
             if title is not None:
                 fields["tytul"] = title
         return record
-    if definition.extractor is appeal.extract and ocr_pages:
-        if rules_first:
+    if definition.extractor is appeal.extract:
+        if ocr_pages and rules_first:
             words = [box for box in boxes if box.page == 1] if selected == "tesseract-dpi" else []
-            return ocr_extract.extract_scanned_appeal(pages, ocr_pages, pdf_path, words)
-        return ocr_extract.extract_appeal(pages, ocr_pages)
+            record = ocr_extract.extract_scanned_appeal(pages, ocr_pages, pdf_path, words)
+        elif ocr_pages:
+            record = ocr_extract.extract_appeal(pages, ocr_pages)
+        else:
+            record = appeal.extract(join_pages(pages))
+        apply_appeal_blocks(record, blocks)
+        return record
     if definition.extractor is power_of_attorney.extract:
         if ocr_pages:
             grant_pages = verified_pages(pdf_path, pages, boxes) if rules_first else pages
             record = ocr_extract.extract_power_of_attorney(grant_pages, ocr_pages)
         else:
             record = power_of_attorney.extract(join_pages(pages))
+        power_of_attorney.apply_grant_blocks(record, blocks, join_pages(pages))
         if definition.profile.mode == "RL":
             _grant_signers(pdf_path, record, pages, ocr_pages, engine)
         return record
     return definition.extractor(join_pages(pages))
 
 
-@document_budget()
 def process_pdf(
     pdf_path: Path,
     force_ocr: bool = False,
     *,
     classes: list[DocumentClass] | None = None,
     on_recovery: Callable[[str], None] | None = None,
+    batch_deadline: float | None = None,
 ) -> tuple[str | None, dict]:
     """Return the class and JSON, using local recovery for a failed keyed organizer document."""
-    definitions = classes if classes is not None else load_classes()
+    with document_budget(batch_deadline):
+        definitions = classes if classes is not None else load_classes()
+        return _process_with_recovery(pdf_path, definitions, force_ocr, on_recovery)
+
+
+def _process_with_recovery(
+    pdf_path: Path, definitions: list[DocumentClass], force_ocr: bool, on_recovery: Callable[[str], None] | None
+) -> tuple[str | None, dict]:
+    page_sizes = {}
 
     @cache
     def read(engine: str) -> tuple[list[str], list[int], list[WordBox]]:
@@ -174,12 +188,13 @@ def process_pdf(
             engine=engine,
             ocr_pages=scanned,
             word_boxes=boxes,
+            page_sizes=page_sizes,
             reread=engine == "rapidocr" and os.getenv("KIO_OCR_ENGINE") == "hybrid",
         )
         return pages, scanned, boxes
 
     try:
-        return _process(pdf_path, definitions, read)
+        return _process(pdf_path, definitions, read, page_sizes)
     except Exception:  # The PDF, OCR and model libraries raise unrelated per-document errors.
         if not any(d.enabled and d.profile.keyed for d in definitions):
             raise
@@ -187,7 +202,7 @@ def process_pdf(
     message = "Could not read document. Returning empty output."
     if read.cache_info().currsize:
         try:
-            result = _process(pdf_path, [d.rules_only for d in definitions if d.profile.keyed], read)
+            result = _process(pdf_path, [d.rules_only for d in definitions if d.profile.keyed], read, page_sizes)
             message = "Used rules after document processing failed."
         except Exception:  # noqa: BLE001 - a failed per-document rule retry must yield an empty output
             message = "Document processing and rule recovery failed. Returning empty output."
@@ -201,6 +216,7 @@ def _process(
     pdf_path: Path,
     definitions: list[DocumentClass],
     read: Callable[[str], tuple[list[str], list[int], list[WordBox]]],
+    page_sizes: dict[int, tuple[float, float]],
 ) -> tuple[str | None, dict]:
     selected = os.getenv("KIO_OCR_ENGINE", DEFAULT_OCR_ENGINE)
     engines = ("tesseract-dpi", "rapidocr") if selected == "hybrid" else (selected,)
@@ -289,11 +305,18 @@ def _process(
                 and definition.profile.mode == "RL"
                 and definition.profile.gap_scope == "incomplete"
             )
+            blocks = (
+                party_inventory(boxes, page_sizes)
+                if definition.extractor in (appeal.extract, power_of_attorney.extract)
+                and definition.profile.rules_first
+                else []
+            )
+            pages = read_role_columns(pages, blocks)
             if definition.id == "appeal":
                 pages = restore_party_columns(pages, boxes)
             scan_boxes = [box for box in boxes if box.page in ocr_pages]
             python_rules = partial(
-                _document_rules, definition, pdf_path, pages, ocr_pages, scan_boxes, engine, selected, accounts
+                _document_rules, definition, pdf_path, pages, ocr_pages, scan_boxes, engine, selected, accounts, blocks
             )
             record = extract(
                 definition,

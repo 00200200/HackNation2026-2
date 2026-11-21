@@ -15,6 +15,7 @@ from pathlib import Path
 
 from .class_config import DocumentClass, parse_classes
 from .endpoint_error import EndpointError
+from .ocr_budget import batch_deadline
 from .pdf_text import NoReadableTextError
 from .pipeline import process_pdf
 
@@ -36,10 +37,10 @@ class Result:
     used_recovery: bool = False
 
 
-def read_document(path: Path, classes: list[DocumentClass]) -> Result:
+def read_document(path: Path, classes: list[DocumentClass], *, batch_deadline: float | None = None) -> Result:
     recoveries = []
     try:
-        label, data = process_pdf(path, classes=classes, on_recovery=recoveries.append)
+        label, data = process_pdf(path, classes=classes, on_recovery=recoveries.append, batch_deadline=batch_deadline)
         text = json.dumps(data, ensure_ascii=False, indent=2) + "\n" if data else ""
         return Result(label, text, used_recovery=bool(recoveries))
     except (EndpointError, NoReadableTextError) as error:
@@ -57,10 +58,10 @@ def _init_worker(sources: dict[Path, bytes]) -> None:
     configure_logging(_worker_classes)
 
 
-def _read_in_worker(path: Path) -> tuple[Result, str]:
+def _read_in_worker(path: Path, deadline: float) -> tuple[Result, str]:
     with redirect_stderr(StringIO()) as diagnostics:
         try:
-            result = read_document(path, _worker_classes)
+            result = read_document(path, _worker_classes, batch_deadline=deadline)
         except SystemExit as error:
             result = Result(None, "", f"PDF worker requested exit ({error.code})")
     return result, diagnostics.getvalue()
@@ -69,6 +70,7 @@ def _read_in_worker(path: Path) -> tuple[Result, str]:
 def read_batch(pdfs: list[Path], sources: dict[Path, bytes], workers: int) -> Iterator[Result]:
     """Yield in input order so the parent owns all writes, including colliding stems."""
     os.environ["OMP_THREAD_LIMIT"] = "1"
+    deadline = batch_deadline(len(pdfs))
     inputs = iter(enumerate(pdfs))
     pending = {}
     ready = {}
@@ -87,7 +89,7 @@ def read_batch(pdfs: list[Path], sources: dict[Path, bytes], workers: int) -> It
                         1, mp_context=get_context("spawn"), initializer=_init_worker, initargs=(sources,)
                     )
                 )
-            pending[pool.submit(_read_in_worker, path)] = (pool, index)
+            pending[pool.submit(_read_in_worker, path, deadline)] = (pool, index)
 
         for _ in range(min(workers, len(pdfs))):
             submit_next()

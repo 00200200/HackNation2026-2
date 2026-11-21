@@ -8,6 +8,32 @@ Without endpoint credentials the jury configuration runs three rule-based extrac
 that selects its routing rules, output fields and extraction engines. New classes can use
 label patterns or an optional language model.
 
+## Run with Docker Compose
+
+Install Docker with Compose v2.24 or later. From the repository root, place case PDFs in
+`input/<case>/` or use the bundled `input/case1/`, then run:
+
+```sh
+docker compose run --rm cli
+```
+
+The first build downloads the Python dependencies and Polish and English OCR data.
+Each input PDF gets a matching file under `output/<case>/`. To upload PDFs in a browser, run:
+
+```sh
+docker compose up gui
+```
+
+Open <http://127.0.0.1:8000> for the upload page or <http://127.0.0.1:8000/api/docs> for
+the API. Press Ctrl+C to stop the server. Both services use local extraction by default.
+To enable a model, copy `.env.example` to `.env`, fill in the three endpoint settings,
+and rerun the service. Keep the key in the ignored `.env` file.
+
+Both services read the host's `config/classes/` directory. See the
+[pipeline architecture](#how-it-works), [class configuration example](#enable-the-fourth-class)
+and [instructions for adding a class](#add-a-class). The handover requirements are in
+[§3.5 of the task rules](docs/task/regulamin.pdf).
+
 ## Run
 
 From the repository root, create a virtual environment with 64-bit CPython 3.13.
@@ -82,10 +108,14 @@ works offline. Page provenance is used internally and the output follows the org
    only when the rest of both readings agrees. Call `read_pages(path, word_boxes=boxes)` with
    an empty list to collect raw words and their rectangles alongside the page strings. Coordinates
    are PDF points from the top left, with one-based page numbers. Polish Tesseract has 60 seconds per
-   primary page and each English verification crop has one second. Optional OCR calls also share a
-   27-second deadline measured from the start of each PDF. When it expires, extraction continues with the
-   available readings. Every page required for the first reading still gets its full recognition timeout. RapidOCR runs in a reusable
-   child process. A 60-second page deadline kills a stalled worker so processing can continue.
+   primary page. Verification crops get up to 10 seconds each and optional full-page reads get up to
+   180 seconds each. All optional OCR shares a deadline of
+   300 seconds from the start of a PDF. The CLI and GUI also share one cutoff across the batch,
+   10.8 seconds per input PDF with a minimum of 300 seconds for small batches. For the jury’s 150 PDFs
+   this stops rereads after 27 minutes and leaves 18 minutes for remaining work. When either deadline
+   expires, extraction uses the readings already available. Every required first-pass page keeps its full
+   recognition timeout. RapidOCR runs in a reusable
+   child process. A watchdog kills a stalled RapidOCR worker at its page deadline.
 2. The CLI loads `config/classes/*.toml` once per batch. `kio2json/class_config.py` matches the
    page text against enabled definitions in ascending `priority`, then class ID order. The first
    match wins. The three organizer classes share the content classifier in `kio2json/classify.py`.
@@ -284,7 +314,33 @@ On all 30 organizer development scans, the rules routed 10/10 transfer confirmat
 
 On the shared 16 GB Apple M1, the integrated CLI processed 30 organizer scans in 36.12 s with four rules workers and 44.91 s with three Ministral workers. The 150-PDF batch took 57.54 s and 70.38 s respectively. It used two copies of the 30 scans and 90 training PDFs. [Combined measurements](evals/results/round2-integration.json)
 
-The organizer allows 45 minutes for its 150-PDF batch, an average budget of 18 seconds per PDF.
+### Optional OCR under load
+
+The organizer allows 45 minutes for 150 PDFs. The batch uses 60% of that allowance for optional OCR,
+scaled by the number of input PDFs. Required page reads continue after the cutoff.
+
+On the shared 16 GiB M1, four local rules workers produced byte-identical outputs in both runs below.
+The CPU was 76.5% idle before the ordinary scan run. The loaded run added one busy loop per CPU core
+and reached a one-minute load average of 89.7. Training outputs also matched the baseline at
+`dbda151` byte for byte, including all 16 empty negatives.
+
+| Input | No added load | Eight busy loops | Bytes matched | Accuracy |
+|---|---:|---:|---:|---|
+| 30 organizer scans | 41.54 s | 216.89 s | 30/30 | 29/30 exact |
+| 196 training PDFs | 13.65 s | 47.35 s | 196/196 | 1.000 micro F1 |
+
+The 108-document calibration covered all 30 scans and both private development pools. The longest
+optional work in that pass took 33.18 seconds. A separate cold repeat of a repaired scan took 48.59
+seconds for optional OCR and 51.85 seconds for the whole document. At four times that wall time the
+document would take 207.4 seconds, within the 300-second document allowance. A separate run advanced
+the deadline clock four times as fast and divided optional engine timeouts by four. All 135 optional
+Tesseract reads and three RapidOCR reads finished across the 108 PDFs.
+
+With these limits, eight busy loops and `--jobs 1`, the CLI processed the 150-PDF mix in **401.87 seconds**
+(6 min 42 s of the jury’s 45 min). All 150 outputs matched the corresponding four-worker readings.
+The mix contained two copies of each organizer scan and 90 training PDFs. This timing preceded the
+final change to handling expired optional page reads. [Measurements and output digests](evals/results/adaptive-ocr-budget.json)
+
 In the earlier runtime-only experiment on a 16 GiB M1 MacBook Air, four workers processed 30 organizer scans in 37.15 seconds and a mix of
 60 scans and 90 training PDFs in 74.42 seconds. Peak sampled process-tree RSS for the mix was
 1,504 MiB. All 226 training and scan outputs matched sequential main (`5297660`) byte for byte.
@@ -378,12 +434,15 @@ rules. [OCR results](evals/results/ocr-engines.json)
   passes the Polish IBAN checksum, and the confirmation supplies the amount and date. The masked number
   is null. OCR also supports fully masked fields. Digit repairs apply only to OCR text and require a
   single checksum-valid candidate. A number printed in a native text layer keeps its printed digits.
+- On appeals and mandates, side-by-side role headings and a consistent gutter can delimit separate party cards.
+  A signer caption can supply a name when its column identifies the principal. Conflicting identities or
+  an unlabelled signature can leave the signer missing.
 - Grant extraction reads numbered and coordinated appointments, officers in representation clauses,
   and digital approval signatures. Where a name is inflected, rules use a compatible printed form
   or a unique case- and gender-compatible personal-name reading from Morfeusz2. Ambiguous readings
   retain the printed spelling. On single-page scans with a sole corporate grantor and no identified
   signer, a local RapidOCR pass can read a board title and a name in the same stamp column after
-  the mandate. It has a 35-second deadline. A damaged or handwritten signature can still leave the signer missing.
+  the mandate. It shares the optional full-page OCR budget. A damaged or handwritten signature can still leave the signer missing.
   PDF signer names are extracted from embedded CMS certificates without validating trust or revocation.
 - UNCONFIRMED: what "empty JSON" means for unrelated documents. We write an empty file, as the
   organizer README words it.

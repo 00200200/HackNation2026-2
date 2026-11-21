@@ -85,14 +85,16 @@ def test_expired_reread_budget_keeps_primary_ocr(monkeypatch):
 @pytest.mark.parametrize(("workers", "exit_call"), [(1, "os._exit(17)"), (2, "os._exit(17)"), (2, "sys.exit(0)")])
 def test_crashed_worker_does_not_lose_healthy_documents(tmp_path, monkeypatch, workers, exit_call):
     # A trusted custom extractor simulates a native backend terminating its process.
-    from kio2json.batch import read_batch
+    from kio2json import batch
     from kio2json.class_config import class_sources
 
     (tmp_path / "runtime_fixture.py").write_text(
         "import os, sys\n"
+        "from kio2json.ocr_budget import remaining_ms\n"
         "def backend(text):\n"
         "    if text.startswith('PEŁNOMOCNICTWO'):\n"
         f"        {exit_call}\n"
+        "    assert remaining_ms(1) == 0, 'worker received a fresh batch deadline'\n"
         "    return {'threads': os.environ['OMP_THREAD_LIMIT']}\n"
         "extract = lambda text: backend(text)\n"
     )
@@ -104,7 +106,8 @@ def test_crashed_worker_does_not_lose_healthy_documents(tmp_path, monkeypatch, w
     source = Path("data/uzp/dane/przyklad_01")
     pdfs = [source / name for name in ("przelew.pdf", "pelnomocnictwo.pdf", "odwolanie.pdf")]
     monkeypatch.setenv("OMP_THREAD_LIMIT", "8")
-    first, failed, last = read_batch(pdfs, class_sources(tmp_path), workers)
+    monkeypatch.setattr(batch, "batch_deadline", lambda count: 0.0)
+    first, failed, last = batch.read_batch(pdfs, class_sources(tmp_path), workers)
     assert first.text == last.text == '{\n  "threads": "1"\n}\n'
     assert failed.text == "" and failed.error
 
@@ -134,3 +137,49 @@ def test_crop_verification_obeys_remaining_milliseconds(monkeypatch):
         assert AlternateOCR(Path("unused.pdf"), [1, 2]).read_all() == ["", ""]
     with ocr_budget.document_budget():
         assert ocr_budget.remaining_ms(5000) == 1000
+
+
+def test_batch_deadline_is_shared_across_documents_and_preserves_primary(monkeypatch):
+    from kio2json import ocr_budget
+    from kio2json.batch import read_document
+    from kio2json.class_config import load_classes
+
+    clock = [100.0]
+    monkeypatch.setattr(ocr_budget, "monotonic", lambda: clock[0])
+    deadline = ocr_budget.batch_deadline(150)
+    assert deadline - clock[0] == 27 * 60
+    remaining = []
+
+    def read(path, *, engine, ocr_pages=None, **kwargs):
+        remaining.append((engine, ocr_budget.remaining_ms(10_000_000)))
+        if ocr_pages is not None:
+            ocr_pages.append(1)
+        return ["Potwierdzenie wykonania operacji\nDzienny numer transakcji"]
+
+    monkeypatch.setattr(pipeline, "read_pages", read)
+    classes = load_classes()
+    for seconds_left in (0.25, 0):
+        clock[0] = deadline - seconds_left
+        result = read_document(Path("receipt.pdf"), classes, batch_deadline=deadline)
+        assert not result.error
+    # First PDF receives a primary and an alternate read. Second receives only its primary.
+    assert remaining == [("tesseract-dpi", 250), ("tesseract", 250), ("tesseract-dpi", 0)]
+    assert ocr_budget.remaining_ms(5000) == 5000
+
+
+def test_long_primary_pass_leaves_room_for_optional_ocr(monkeypatch):
+    from kio2json import ocr_budget
+
+    clock = [0.0]
+    monkeypatch.setattr(ocr_budget, "monotonic", lambda: clock[0])
+    with ocr_budget.document_budget():
+        clock[0] += 59
+        assert ocr_budget.remaining_ms(1000) == 1000
+
+
+def test_small_batch_has_room_for_one_slow_scan(monkeypatch):
+    from kio2json import ocr_budget
+
+    monkeypatch.setattr(ocr_budget, "monotonic", lambda: 100.0)
+    assert ocr_budget.batch_deadline(1) == 100 + ocr_budget.REREAD_DEADLINE_SECONDS
+    assert ocr_budget.batch_deadline(30) == 100 + 324
