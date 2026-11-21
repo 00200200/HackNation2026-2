@@ -10,7 +10,7 @@ Shared state of the project. Rules: `CLAUDE.md` → Worklog.
   `evals/field_report.py` adds a per-field error table and an OCR stress run (`--force-ocr`).
 - App: `kio2json/`, a rule-based baseline with no language model. CLI `python -m kio2json --input input --output output`;
   content-based classification with a rejection path; regex and line-layout extraction per class; pdfplumber text
-  with Tesseract (`pol`) for pages that have no text layer. Branch `baseline/rule-based-extraction`.
+  with Tesseract (`pol`) for blank or page-number-only text layers. Required OCR failures identify the PDF on stderr. Branch `baseline/rule-based-extraction`.
 - Research notes on OCR, schema extraction and Polish legal NLP: `docs/kio-extraction-research.md`.
 - Claude Code setup: skills `hacknation-judging`, `odwolania2json-eval`, `build`, `verify`, `humanizer`;
   agents `judge`, `builder`, `reviewer`, `researcher`; pre-push hook in `.githooks/`.
@@ -39,11 +39,9 @@ unseen-case estimate for this baseline.
 
 - 21.11.2026: Python 3.13, uv, pydantic-ai 2.71.0. Cases 51–60 are the holdout for prompt work.
 - 21.11.2026: rules first. Every training target PDF has a text layer and the rules match all reference JSONs, so
-  an OCR or model change has to beat this baseline in the eval. The baseline's rules have seen cases 51-60; the
-  holdout is clean only for work that starts after it.
-- 21.11.2026: the challenged action is read from the sentence "Zamawiający w dniu <date> ..." that opens a sentence
-  before the charges. In cases 01-39 the heading of "Zarzut nr 1" does not match the reference reason, so it is only
-  a fallback.
+  an OCR or model change has to beat this baseline in the eval. The baseline's rules have seen cases 51-60; a fresh case split is needed to measure generalization for work that builds on these rules.
+- 21.11.2026: use the date and act stated together in the first charge. When its heading lacks a date, use
+  the introductory sentence describing the dated act. In cases 01–39 that sentence supplies the reference reason.
 - 21.11.2026: unrelated documents get an empty file (UNCONFIRMED with UZP; `evals.metrics` also accepts `{}`).
 - 21.11.2026: file, module and identifier names are English; Polish only in the organizer's JSON keys and file stems.
 - 21.11.2026: delegated work and reviews (pre-commit review, pre-push judge) go to Codex workers through
@@ -54,3 +52,4 @@ unseen-case estimate for this baseline.
 - 21.11.2026 · Claude · brief, eval harness, judge/eval skills, pre-push hook · f6db304
 - 21.11.2026 · Claude · stricter F1 normalisation (types, formats), invented test fixture, organizer data copied into the repo (UZP e8b7a67)
 - 21.11.2026 · Claude · rule-based baseline `kio2json`, field report, data refresh to UZP 7590db8 (reason 6 description is now `Odpowiedzi/wyjaśnienia do SWZ`); full eval `micro_f1` 1.000 on training data
+- 21.11.2026 · Codex · fixed OCR failure reporting, payment and party roles, first-charge dates and field-report matching. Added regressions with invented fixtures. Extraction fixes in `0ecd41c`.

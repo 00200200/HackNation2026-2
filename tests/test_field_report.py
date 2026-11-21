@@ -67,3 +67,40 @@ def test_list_matching_finds_the_best_assignment():
 
 def test_container_type_mismatch_counts_both_sides():
     assert statuses(compare({"a": [{"x": 1}]}, {"a": {"x": 1}})) == [("a.x", "missing"), ("a.x", "spurious")]
+
+
+def test_normalized_list_pairing_uses_the_reported_mode():
+    gold = [{"a": "Amber", "b": "Beryl"}, {"a": "Cloud", "b": "Dune"}]
+    predicted = [{"a": "CLOUD", "b": "DUNE"}, {"a": "AMBER", "b": "BERYL"}]
+    assert f1(compare(gold, predicted))[2] == 0.0
+    assert f1(compare(gold, predicted, mode="normalized"), "normalized")[2] == 1.0
+
+
+def test_principal_identity_precedes_signer_overlap():
+    def principal(name, *signers):
+        return {"data": {"nazwa": name}, "podpisujacy": [{"imie_nazwisko": s} for s in signers]}
+
+    gold = {"mocodawca": [principal("Amber", "Iga", "Ewa"), principal("Cloud", "Mira", "Zyga")]}
+    predicted = {"mocodawca": [principal("Cloud", "Iga", "Ewa"), principal("Amber", "Mira", "Zyga")]}
+    records = compare(gold, predicted)
+    assert [r["field"] for r in records if r["status"] == "ok"] == ["mocodawca.data.nazwa"] * 2
+
+
+def test_boolean_differs_from_a_json_number_in_both_modes():
+    records = compare({"flag": 0}, {"flag": False})
+    assert statuses(records) == [("flag", "wrong")]
+    assert f1(records, "normalized")[2] == 0.0
+
+
+def test_large_lists_and_empty_predictions():
+    items = [{"n": str(i)} for i in range(24)]
+    assert all(r["status"] == "missing" for r in compare(items, []))
+    assert all(r["status"] == "spurious" for r in compare([], items))
+    assert f1(compare(items, list(reversed(items))))[2] == 1.0
+
+
+def test_strict_and_normalized_optima_can_pair_different_items():
+    gold = [{"x": "AA", "y": "BB", "z": "CC"}, {"x": "DD", "y": "EE", "z": "FF"}]
+    predicted = [{"x": "AA", "y": "ee", "z": "ff"}, {"x": "DD", "y": "bb", "z": "cc"}]
+    assert f1(compare(gold, predicted))[2] == 2 / 6
+    assert f1(compare(gold, predicted, mode="normalized"))[2] == 4 / 6

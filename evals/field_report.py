@@ -9,10 +9,11 @@ A wrong value costs one false positive and one false negative; null counts as a 
 """
 
 import argparse
-import itertools
 import re
 import time
 from collections import Counter, defaultdict
+
+from munkres import linear_sum_assignment
 
 from evals.metrics import NEGATIVE, doc_class
 from evals.run import DATA, HOLDOUT, load_cases
@@ -27,7 +28,49 @@ def normalized(value):
     return value
 
 
-def compare(gold, predicted, path: str = "") -> list[dict]:
+def principal_name(item):
+    if isinstance(item, dict) and isinstance(item.get("data"), dict):
+        return normalized(item["data"].get("nazwa"))
+    return None
+
+
+def compare_list(gold, predicted, path, mode):
+    pairs = {}
+    if gold and predicted:
+        scores = []
+        for left in gold:
+            row = []
+            for right in predicted:
+                left_name, right_name = principal_name(left), principal_name(right)
+                if left_name and right_name and left_name != right_name:
+                    row.append((0, 0, False))
+                    continue
+                fields = compare(left, right, path, mode=mode)
+                hits = sum(field["status"] == "ok" for field in fields)
+                # Maximize matching leaves; use normalized hits to break strict ties.
+                row.append(
+                    (hits, sum(field["ok_normalized"] for field in fields), bool(left_name and left_name == right_name))
+                )
+            scores.append(row)
+        # Lexicographic priorities for the whole assignment: identity, strict (or normalized)
+        # hits, then normalized tie-breaks. One unit outweighs every possible lower-level hit.
+        bound = 1 + sum(max((score[1] for score in row), default=0) for row in scores)
+        weights = [[(identity * bound + hits) * bound + ties for hits, ties, identity in row] for row in scores]
+        rows, columns = linear_sum_assignment(weights, maximize=True)
+        pairs = {i: j for i, j in zip(rows, columns) if weights[i][j]}
+
+    records = []
+    for i, left in enumerate(gold):
+        right = predicted[pairs[i]] if i in pairs else _ABSENT
+        records.extend(compare(left, right, path, mode=mode))
+    matched = set(pairs.values())
+    for j, right in enumerate(predicted):
+        if j not in matched:
+            records.extend(compare(_ABSENT, right, path, mode=mode))
+    return records
+
+
+def compare(gold, predicted, path: str = "", *, mode: str = "strict") -> list[dict]:
     """Field records with status ok | wrong | missing (not predicted) | spurious (not in reference)."""
     containers = (dict, list)
     both_present = gold is not _ABSENT and predicted is not _ABSENT
@@ -37,41 +80,19 @@ def compare(gold, predicted, path: str = "") -> list[dict]:
         or (both_present and isinstance(gold, containers) and type(gold) is not type(predicted))
     ):
         # A dict where a list or scalar belongs: nothing lines up, so count both sides in full.
-        return compare(gold, _ABSENT, path) + compare(_ABSENT, predicted, path)
+        return compare(gold, _ABSENT, path, mode=mode) + compare(_ABSENT, predicted, path, mode=mode)
     if isinstance(gold, dict) or isinstance(predicted, dict):
         gold = gold if isinstance(gold, dict) else {}
         predicted = predicted if isinstance(predicted, dict) else {}
         records = []
         for key in dict.fromkeys([*gold, *predicted]):
             child = f"{path}.{key}" if path else key
-            records += compare(gold.get(key, _ABSENT), predicted.get(key, _ABSENT), child)
+            records += compare(gold.get(key, _ABSENT), predicted.get(key, _ABSENT), child, mode=mode)
         return records
     if isinstance(gold, list) or isinstance(predicted, list):
         gold = gold if isinstance(gold, list) else []
         predicted = predicted if isinstance(predicted, list) else []
-        # Pair items so that the number of correct fields is maximal. Lists here hold a few
-        # items, so trying every assignment is cheap. Pairs with nothing in common stay unpaired.
-        size = max(len(gold), len(predicted))
-        agreement = [
-            [sum(r["status"] == "ok" for r in compare(g, p, path)) for p in predicted] + [0] * (size - len(predicted))
-            for g in gold
-        ]
-        best = max(
-            itertools.permutations(range(size), len(gold)),
-            key=lambda order: sum(agreement[i][j] for i, j in enumerate(order)),
-            default=(),
-        )
-        records, paired = [], set()
-        for i, j in enumerate(best):
-            if agreement[i][j] > 0:
-                paired.add(j)
-                records += compare(gold[i], predicted[j], path)
-            else:
-                records += compare(gold[i], _ABSENT, path)
-        for j, item in enumerate(predicted):
-            if j not in paired:
-                records += compare(_ABSENT, item, path)
-        return records
+        return compare_list(gold, predicted, path, mode)
     if gold is _ABSENT and predicted is _ABSENT:
         return []
     if predicted is _ABSENT:
@@ -79,20 +100,23 @@ def compare(gold, predicted, path: str = "") -> list[dict]:
     elif gold is _ABSENT:
         status = "spurious"
     else:
-        status = (
-            "ok"
-            if gold == predicted
-            and type(gold) is type(predicted)
-            or (isinstance(gold, (int, float)) and isinstance(predicted, (int, float)) and gold == predicted)
-            else "wrong"
-        )
+        numeric = type(gold) in (int, float) and type(predicted) in (int, float)
+        compatible = type(gold) is type(predicted) or numeric
+        equal = normalized(gold) == normalized(predicted) if mode == "normalized" else gold == predicted
+        status = "ok" if compatible and equal else "wrong"
     return [
         {
             "field": path,
             "gold": None if gold is _ABSENT else gold,
             "predicted": None if predicted is _ABSENT else predicted,
             "status": status,
-            "ok_normalized": status == "ok" or (status == "wrong" and normalized(gold) == normalized(predicted)),
+            "ok_normalized": status == "ok"
+            or (
+                status == "wrong"
+                and isinstance(gold, str)
+                and isinstance(predicted, str)
+                and normalized(gold) == normalized(predicted)
+            ),
         }
     ]
 
@@ -118,6 +142,7 @@ def main() -> None:
         cases = {case: documents for case, documents in cases.items() if case in HOLDOUT}
     confusion = Counter()
     by_class = defaultdict(list)
+    normalized_by_class = defaultdict(list)
     exact = Counter()
     counts = Counter()
     seconds = []
@@ -133,9 +158,12 @@ def main() -> None:
             gold_class, predicted_class = doc_class(gold), doc_class(predicted)
             confusion[(gold_class, predicted_class)] += 1
             # A misrouted document loses all its reference fields and adds the fields it invented.
-            records = compare(gold, predicted if predicted_class == gold_class else {})
-            if predicted_class != gold_class:
-                records += compare({}, predicted)
+            if predicted_class == gold_class:
+                records = compare(gold, predicted)
+                normalized_by_class[gold_class].extend(compare(gold, predicted, mode="normalized"))
+            else:
+                records = compare(gold, {}) + compare({}, predicted)
+                normalized_by_class[gold_class].extend(records)
             for record in records:
                 record["document"] = f"{case}/{name}"
             by_class[gold_class] += records
@@ -161,12 +189,13 @@ def main() -> None:
         precision, recall, score = f1(records)
         print(
             f"{name:18}{counts[name]:>6}{exact[name]:>12}{len(records):>8}"
-            f"{precision:>8.3f}{recall:>8.3f}{score:>8.3f}{f1(records, 'normalized')[2]:>10.3f}"
+            f"{precision:>8.3f}{recall:>8.3f}{score:>8.3f}{f1(normalized_by_class[name])[2]:>10.3f}"
         )
+    normalized_all = [record for records in normalized_by_class.values() for record in records]
     precision, recall, score = f1(everything)
     print(
         f"{'ALL (micro)':18}{len(seconds):>6}{sum(exact.values()):>12}{len(everything):>8}"
-        f"{precision:>8.3f}{recall:>8.3f}{score:>8.3f}{f1(everything, 'normalized')[2]:>10.3f}"
+        f"{precision:>8.3f}{recall:>8.3f}{score:>8.3f}{f1(normalized_all)[2]:>10.3f}"
     )
 
     print(f"\n{'field':58}{'n':>5}{'ok':>5}{'wrong':>7}{'missing':>9}{'spurious':>10}")
