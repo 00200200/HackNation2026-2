@@ -137,8 +137,8 @@ if [ -f pyproject.toml ] && command -v uv >/dev/null 2>&1; then
   if [ -f uv.lock ]; then
     if [ ! -f requirements.txt ]; then
       block "requirements.txt missing (run: make requirements)"
-    elif ! diff -q <(uv export --quiet --frozen --no-hashes --no-dev --no-emit-project 2>/dev/null | grep -v '^#') \
-      <(grep -v '^#' requirements.txt) >/dev/null; then
+    elif ! diff -q <(uv export --quiet --frozen --no-hashes --no-dev --no-emit-project 2>/dev/null | grep -v '^ *#') \
+      <(grep -v '^ *#' requirements.txt) >/dev/null; then
       block "requirements.txt out of sync with uv.lock (run: make requirements)"
     fi
   fi

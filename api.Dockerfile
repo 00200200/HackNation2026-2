@@ -2,7 +2,6 @@
 FROM python:3.13-slim
 WORKDIR /app
 COPY requirements.txt ./
-COPY packaging ./packaging
 RUN pip install --no-cache-dir -r requirements.txt
 COPY kio2json ./kio2json
 COPY config ./config

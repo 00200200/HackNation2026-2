@@ -3,9 +3,8 @@ name = "hacknation2026-2"
 version = "0.1.0"
 requires-python = ">=3.13"
 dependencies = [
-    "kio-polish-ocr-data",
     "pdfplumber>=0.11.11",
-    "pydantic-ai>=2.71.0",
+    "pydantic-ai-slim[openai]>=2.71.0",
     "python-stdnum>=2.2",
     "tesserocr==2.13.0",
     "rapidocr==3.10.0",
@@ -25,6 +24,7 @@ dependencies = [
 # Preserve existing uv commands that request this group explicitly.
 rapidocr = []
 dev = [
+    "httpx>=0.28.1",
     "munkres>=3.0.0",
     "pytest>=9.2.0",
     "ruff>=0.17.6",
@@ -36,6 +36,3 @@ pythonpath = ["."]
 [tool.ruff]
 line-length = 120
 extend-exclude = ["data"]
-
-[tool.uv.sources]
-kio-polish-ocr-data = { path = "packaging/polish_ocr_data" }

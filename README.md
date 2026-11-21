@@ -17,18 +17,13 @@ From the repository root, create a virtual environment with 64-bit CPython 3.13.
 | Windows PowerShell | `py -3.13 -m venv .venv` | `.\.venv\Scripts\Activate.ps1` |
 | macOS or Linux | `python3.13 -m venv .venv` | `. .venv/bin/activate` |
 
-Use the activated shell for the install and run commands below. pip installs the
-Tesseract native libraries from PyPI. The local language-data wheel downloads the Polish and
-English fast models (8.88 MB combined) from a pinned revision on `raw.githubusercontent.com`
-and verifies both SHA-256 hashes. Once installed, the rules-only CLI and viewer process PDFs offline.
+Use the activated shell for the install and run commands below. `requirements.txt` lists only pinned PyPI
+packages, so `pip install -r requirements.txt` works from any directory and contacts no other host. pip installs the
+Tesseract native libraries from PyPI. The Polish and English fast models (8.88 MB, Apache-2.0) ship in
+`kio2json/tessdata/` with their licence. They come from a pinned `tessdata_fast` revision, and the CLI checks both
+SHA-256 hashes before the first OCR page. Run `python -m kio2json` from the repository root. The rules-only CLI and
+viewer process PDFs offline.
 [Platform wheels](https://pypi.org/project/tesserocr/2.13.0/#files)
-
-If the Tesseract data host is unreachable, download both language files on a connected machine and copy them into
-one directory. Before rerunning the install command below, set
-`export KIO_TESSDATA_SOURCE=/absolute/path/to/models` in a POSIX shell or
-`$env:KIO_TESSDATA_SOURCE = 'C:\models'` in PowerShell. Keep the original filenames.
-The installer verifies the same hashes for locally supplied files.
-[pol.traineddata](https://raw.githubusercontent.com/tesseract-ocr/tessdata_fast/87416418657359cb625c412a48b6e1d6d41c29bd/pol.traineddata) · [eng.traineddata](https://raw.githubusercontent.com/tesseract-ocr/tessdata_fast/87416418657359cb625c412a48b6e1d6d41c29bd/eng.traineddata)
 
 ```
 python -m pip install -r requirements.txt
