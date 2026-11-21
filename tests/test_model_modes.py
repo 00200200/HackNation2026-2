@@ -238,3 +238,31 @@ def test_rules_first_keeps_verified_receipt_title_before_model_gap_fill(keyed, m
     assert label == "bank_transfer"
     assert record["przelew_bankowy"]["tytul"] == "Druk katalogu"
     assert record["przelew_bankowy"]["numer_transakcji"] == "KAT-42"
+
+
+def test_incomplete_scope_keeps_absent_reference_on_complete_scanned_payment(keyed, monkeypatch):
+    monkeypatch.setenv("KIO_LLM_MODE", "RL")
+    monkeypatch.setenv("KIO_LLM_GAP_SCOPE", "incomplete")
+    monkeypatch.setenv("KIO_LLM_DUAL_OCR", "false")
+    sender = "46137900000000000000471362"
+    receipt = (
+        f"Potwierdzenie przelewu\nZ rachunku: {sender}\nNa rachunek: 97298300000000000000836412\n"
+        "Kwota: 12,00\nData operacji: 2030-01-06\nTytuł: Druk katalogu"
+    )
+
+    def read(*args, ocr_pages=None, **kwargs):
+        if ocr_pages is not None:
+            ocr_pages.append(1)
+        return [receipt]
+
+    def model(definition, text, model=None):
+        values = dict.fromkeys(definition.fields["przelew_bankowy"].fields)
+        return {"przelew_bankowy": dict(values, numer_transakcji=sender)}
+
+    monkeypatch.setattr(pipeline, "read_pages", read)
+    monkeypatch.setattr(llm, "extract_llm", model)
+    label, result = pipeline.process_pdf(Path("opaque.pdf"))
+    assert label == "bank_transfer"
+    fields = result["przelew_bankowy"]
+    assert fields["z_rachunku"] == sender
+    assert fields["numer_transakcji"] is None

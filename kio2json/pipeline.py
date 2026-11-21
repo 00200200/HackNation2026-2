@@ -254,9 +254,15 @@ def _process(
                 accounts = account_evidence(primary[0]) if 1 in ocr_pages else None
             definition = routed
         if definition is not None:
-            check_native_roles = (
+            check_core_fields = (
                 definition is rule_class
-                and not ocr_pages
+                and (
+                    not ocr_pages
+                    or (
+                        definition.profile.routing != "model"
+                        and definition.extractor in (appeal.extract, bank_transfer.extract)
+                    )
+                )
                 and definition.profile.mode == "RL"
                 and definition.profile.gap_scope == "incomplete"
             )
@@ -273,7 +279,7 @@ def _process(
                 ocr_python=python_rules,
                 alternate=alternate if definition.profile.dual_ocr else None,
                 model_text=join_pages(primary) if pages is not primary else None,
-                check_native_roles=check_native_roles,
+                check_core_fields=check_core_fields,
             )
             if definition.extractor is power_of_attorney.extract and not definition.profile.keyed:
                 _grant_signers(pdf_path, record, pages, ocr_pages, engine)

@@ -88,7 +88,7 @@ def bind_engine(
 
 
 def missing_core_fields(class_id: str, record: dict) -> bool:
-    """A missing party or transaction detail warrants a second reading of a native document."""
+    """A missing party or transaction detail warrants a second reading of a rule-routed document."""
     if class_id == "appeal":
         return not all(any(row.get("nazwa") for row in record[key]) for key in ("Odwolujacy", "Zamawiajacy"))
     if class_id == "power_of_attorney":
@@ -109,7 +109,7 @@ def extract(
     ocr_python: Callable[[], dict] | None = None,
     alternate: AlternateOCR | None = None,
     model_text: str | None = None,
-    check_native_roles: bool = False,
+    check_core_fields: bool = False,
 ) -> dict:
     values = None
     fill_empty = definition.profile.mode in ("RL", "LR")
@@ -132,7 +132,7 @@ def extract(
                 focus_charge(values["OdwolanieKIO"], source, model=model)
                 if charge_focus == "only":
                     break
-        if engine == "llm" and check_native_roles and not missing_core_fields(definition.id, values):
+        if engine == "llm" and check_core_fields and not missing_core_fields(definition.id, values):
             return values
         if engine == "python" and ocr_python is not None:
             candidate = ocr_python()
