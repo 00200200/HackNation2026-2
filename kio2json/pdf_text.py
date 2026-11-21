@@ -2,6 +2,7 @@
 
 import os
 import re
+from collections.abc import Iterator
 from contextlib import ExitStack
 from functools import cache, partial
 from importlib.metadata import files
@@ -27,16 +28,29 @@ class OCRRecognitionError(RuntimeError):
     """The OCR engine failed or timed out while recognizing a page."""
 
 
+MIN_OCR_WORDS = 2
+_WORD = re.compile(r"\b[^\W\d_]{2,}\b")
+# An optional label and abbreviation, a page number, and an optional total.
+# Punctuation, spacing and the short word joining the numbers can vary by language and OCR.
 _PAGE_COUNTER = re.compile(
-    # A printed label identifies a page number. Bare long digit strings can be the document's only content.
-    r"\W*(?:(?:strona|str\.?|page|p\.?|arkusz)\W*\d+(?:\s*(?:/|of|z)\s*\d+)?"
-    r"|\d{1,3}(?:\s*(?:/|of|z)\s*\d{1,3})?)\W*",
+    r"[\W_]*(?:[^\W\d_]+[\W_]*)?(?:n[roº°][\W_]*)?"
+    r"\d+(?:[\W_]*(?:(?:z|of|sur|von|van|de|di|din|av|af|iz|na)[\W_]*)?\d+)?[\W_]*",
     re.IGNORECASE,
 )
 
 
-def _readable(text: str) -> bool:
-    return any(any(c.isalnum() for c in line) and not _PAGE_COUNTER.fullmatch(line) for line in text.splitlines())
+def _is_page_counter(line: str) -> bool:
+    line = line.strip()
+    return len(line) <= 64 and _PAGE_COUNTER.fullmatch(line) is not None
+
+
+def _body_word_count(text: str) -> int:
+    return sum(len(_WORD.findall(line)) for line in text.splitlines() if not _is_page_counter(line))
+
+
+def _has_visible_marks(page) -> bool:
+    darkest, lightest = page.to_image(resolution=72).original.convert("L").getextrema()
+    return darkest < 250 or darkest != lightest
 
 
 def _has_content(text: str) -> bool:
@@ -47,6 +61,20 @@ def _has_content(text: str) -> bool:
         if words and (not re.search(r"\d", line) or len(words) > 2 or (len(words) == 2 and len(words[1]) > 2)):
             return True
     return False
+
+
+def _needs_ocr(page, text: str) -> bool:
+    if not _has_content(text):
+        return True
+    if not all(_is_page_counter(line) for line in text.splitlines() if line.strip()):
+        return False
+    # A selectable footer can sit on top of a scanned page. Ignore small decorative images.
+    left, top, right, bottom = page.bbox
+    return any(
+        min(right, image["x1"]) - max(left, image["x0"]) >= 0.8 * page.width
+        and min(bottom, image["bottom"]) - max(top, image["top"]) >= 0.8 * page.height
+        for image in page.images
+    )
 
 
 class WordBox(NamedTuple):
@@ -190,39 +218,56 @@ def read_pages(
     engine: str | None = None,
     ocr_pages: list[int] | None = None,
 ) -> list[str]:
-    """Read text, optionally collecting raw word boxes and the page numbers sent to OCR."""
+    """Return the first pages and their optional boxes/OCR provenance. Check readability document-wide."""
     pages = []
     words = [] if word_boxes is not None else None
     used_ocr = False
+    readable = False
+    word_count = 0
     recognize = _ocr if engine is None else partial(_ocr, engine=engine)
     with pdfplumber.open(pdf_path) as pdf:
-        for page in pdf.pages[:max_pages]:
+        limit = len(pdf.pages[:max_pages])
+        for index, page in enumerate(pdf.pages):
+            include = index < limit
+            if not include and (not used_ocr or readable):
+                break
             text = "" if force_ocr else page.extract_text() or ""
-            if not _has_content(text):
+            scanned = _needs_ocr(page, text)
+            if scanned:
                 used_ocr = True
-                if ocr_pages is not None:
+                if include and ocr_pages is not None:
                     ocr_pages.append(page.page_number)
-                text = normalize_ocr(recognize(page, words))
-            elif words is not None:
+                text = normalize_ocr(recognize(page, words if include else None))
+            elif include and words is not None:
                 words.extend(
                     WordBox(page.page_number, w["text"], w["x0"], w["top"], w["x1"], w["bottom"])
                     for w in page.extract_words()
                 )
-            pages.append(text)
-    if used_ocr and not any(_readable(text) for text in pages):
-        raise NoReadableTextError("no readable text after OCR")
+            if include:
+                pages.append(text)
+            if not readable:
+                page_words = _body_word_count(text)
+                word_count += page_words
+                readable = word_count >= MIN_OCR_WORDS or (not scanned and page_words > 0)
+        if used_ocr and not readable and any(_has_visible_marks(page) for page in pdf.pages):
+            raise NoReadableTextError("no readable text after OCR")
     if word_boxes is not None and words:
         word_boxes.extend(words)
     return pages
 
 
+def iter_page_lines(pages: list[str]) -> Iterator[tuple[int, str]]:
+    """Yield each retained line with its original 1-based page number."""
+    first_lines = [page.split("\n", 1)[0] for page in pages]
+    for page_number, page in enumerate(pages, start=1):
+        lines = page.split("\n")
+        if page_number > 1 and first_lines.count(lines[0]) > 1:
+            lines = lines[1:]
+        for line in lines:
+            if not re.fullmatch(r"\s*Strona \d+ z \d+\s*", line):
+                yield page_number, line
+
+
 def join_pages(pages: list[str]) -> str:
     """Join pages into one text without 'Strona 1 z 11' footers and running headers."""
-    first_lines = [page.split("\n", 1)[0] for page in pages]
-    kept = []
-    for index, page in enumerate(pages):
-        lines = page.split("\n")
-        if index > 0 and first_lines.count(lines[0]) > 1:
-            lines = lines[1:]
-        kept.extend(line for line in lines if not re.fullmatch(r"\s*Strona \d+ z \d+\s*", line))
-    return "\n".join(kept)
+    return "\n".join(line for _, line in iter_page_lines(pages))
