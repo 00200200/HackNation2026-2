@@ -32,11 +32,11 @@ Run `uv run pytest -q tests/test_native_snapshot.py` to compare the current pipe
 
 ## Grant and transfer differential
 
-`tests/test_grant_transfer_differential.py` also replays the 175 native cases above, the ten layouts and eleven controls from review 32, and 41 additional synthetic grant or transfer cases, 12 execution-date, status and notice cases from review 40, 30 plain-label receipts and grants, and three receipts checking execution-date precedence from review 47. These last 45 cases require exact base output. A positioned page in `grant_transfer_cases.json` contains rows of `[x, text]` cells so two-column fixtures pass through actual PDF word extraction. The expected class and entire output for each of the 107 extra documents are recorded in `grant_transfer_outputs.json`.
+`tests/test_grant_transfer_differential.py` also replays the 175 native cases above, the ten layouts and eleven controls from review 32, and 41 additional synthetic grant or transfer cases, 12 execution-date, status and notice cases from review 40, 30 plain-label receipts and grants, and three receipts checking execution-date precedence from review 47. These last 45 cases require exact base output. A positioned page in `grant_transfer_cases.json` contains rows of `[x, text]` cells so two-column fixtures pass through actual PDF word extraction. Review 52 adds two exact-base receipts about making or archiving a copy and one transfer executed before its booking date. Only the execution date differs from the base on that transfer. The expected class and entire output for each of the 110 extra documents are recorded in `grant_transfer_outputs.json`.
 
 The `grant_transfer_changes.py` module’s `INTENDED_CHANGES` table gives a case ID, field path, exact base and expected values, and evidence for each change. A list insertion preserves existing entries. The native snapshot test consults the same table and retains the serialized comparison and OCR-provenance checks. The base recording includes the original outputs for all 175 cases.
 
-Generate the extra snapshot from the feature worktree root with the pinned integration commit. The generator replays all 282 PDFs and checks the original 175 outputs against their existing snapshot before writing the extra results.
+Generate the extra snapshot from the feature worktree root with the pinned integration commit. The generator replays all 285 PDFs and checks the original 175 outputs against their existing snapshot before writing the extra results.
 
 ```sh
 src=$PWD
