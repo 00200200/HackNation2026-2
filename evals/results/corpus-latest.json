@@ -1,8 +1,8 @@
 {
-  "commit": "6b34bc53d0f56dbabf7c752136f87c25ca5bf758",
+  "commit": "c13dc3e7fbbc555f73a7c8679ccca6d33a80b593",
   "dirty": false,
   "mode": "corpus",
-  "timestamp": "2026-11-22T00:07:41+00:00",
+  "timestamp": "2026-11-22T00:46:10+00:00",
   "n_cases": 14,
   "n_docs": 39,
   "coverage_ok": false,
@@ -10,7 +10,7 @@
   "run_error": null,
   "metrics": {
     "micro_f1": {
-      "value": 0.9221052631578948,
+      "value": 0.9358178053830227,
       "target": 0.9,
       "pass": true
     },
@@ -30,42 +30,42 @@
       "pass": true
     },
     "seconds_per_doc": {
-      "value": null,
+      "value": 7.780784009621502,
       "target": null,
       "pass": true
     },
     "micro_f1_strict": {
-      "value": 0.8925831202046036,
+      "value": 0.9123252858958069,
       "target": null,
       "pass": null
     }
   },
   "detail": {
-    "micro_f1": 0.9221052631578948,
-    "micro_f1_strict": 0.8925831202046036,
+    "micro_f1": 0.9358178053830227,
+    "micro_f1_strict": 0.9123252858958069,
     "counts_strict": {
-      "tp": 349,
-      "fp": 39,
-      "fn": 45
+      "tp": 359,
+      "fp": 34,
+      "fn": 35
     },
-    "macro_f1_documents": 0.9245993841858503,
-    "macro_f1_classes": 0.9473106689207004,
+    "macro_f1_documents": 0.9400668532247479,
+    "macro_f1_classes": 0.9565239060397178,
     "macro_f1_class_count": 3,
-    "macro_f1_fields": 0.9078757341286054,
-    "micro_f1_non_null": 0.8431372549019608,
+    "macro_f1_fields": 0.9226763980274416,
+    "micro_f1_non_null": 0.8688845401174168,
     "per_class_f1": {
-      "odwolanie": 0.8940397350993378,
+      "odwolanie": 0.9120521172638436,
       "pelnomocnictwo": 0.9836065573770492,
-      "przelew": 0.9642857142857143
+      "przelew": 0.9739130434782609
     },
     "classification_accuracy": 1.0,
     "negatives_empty": 1.0,
     "outputs_complete": 1.0,
     "counts": {
-      "tp": 219,
-      "fp": 12,
-      "fn": 25,
-      "tn": 138
+      "tp": 226,
+      "fp": 10,
+      "fn": 21,
+      "tn": 137
     },
     "routing_by_class": {
       "odwolanie": {
