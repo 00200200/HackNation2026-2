@@ -1,6 +1,7 @@
 """Read the parties in a scanned grant's declaration, before its list of powers."""
 
 import re
+from collections.abc import Collection
 
 from .common import LOWER, PERSON, UPPER, registry_ids, squash
 from .personal_names import compatible_names
@@ -28,6 +29,23 @@ LIST_NAME = re.compile(
 DETAIL = re.compile(
     r"\s*(?:\([^()]*\)|[-–—]\s*(?:adwokat|radca\s+prawny|pracownik)\b[^();]*)?\s*[,.;]?\s*", re.IGNORECASE
 )
+
+
+def check_ocr_trade_names(record: dict, pages: list[str], ocr_pages: Collection[int]) -> None:
+    """A proprietor's name embedded in an OCR-only trade name must agree on diacritics."""
+    for row in record["mocodawca"]:
+        data = row["data"]
+        if data["typ"] != "osoba_fizyczna" or not data["nazwa"] or not data["imie_nazwisko"]:
+            continue
+        firm = data["nazwa"].casefold()
+        owner = data["imie_nazwisko"].casefold()
+        matches = list(re.finditer(rf"(?<!\w){re.escape(owner.translate(FOLD))}(?!\w)", firm.translate(FOLD)))
+        if not matches or any(firm[m.start() : m.end()] == owner for m in matches):
+            continue
+        printed_firm = re.compile(rf"(?<!\w){re.escape(firm)}(?!\w)")
+        sources = {i in ocr_pages for i, page in enumerate(pages, 1) if printed_firm.search(squash(page).casefold())}
+        if sources == {True}:
+            data["nazwa"] = None
 
 
 def _legal_forms(text: str) -> str:

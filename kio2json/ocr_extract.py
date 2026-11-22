@@ -11,7 +11,7 @@ from .appeal_scan_action import apply_action
 from .appeal_scan_crops import verify_cover
 from .appeal_scan_parties import apply_parties
 from .appeal_scan_procurement import apply_procurement
-from .grant_declarations import complete_represented_company, read_declaration
+from .grant_declarations import check_ocr_trade_names, complete_represented_company, read_declaration
 from .ocr_accounts import AccountEvidence, account_evidence
 from .ocr_normalize import MAIL_TOKEN_RE
 from .ocr_plausibility import gate_appeal
@@ -139,4 +139,6 @@ def extract_power_of_attorney(pages: list[str], ocr_pages: Collection[int]) -> d
         read_declaration(pages[0], record)
         complete_represented_company(pages[0], record)
         ocr_signatures.confirmed_scan_signer(pages[0], record)
+    if ocr_pages:
+        check_ocr_trade_names(record, pages, ocr_pages)
     return record

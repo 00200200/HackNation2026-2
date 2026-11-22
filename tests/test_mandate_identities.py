@@ -235,3 +235,40 @@ NIP 7654321089, udzielam umocowania."""
     (row,) = extract(page)["mocodawca"]
     assert row["data"]["nazwa"] == name
     assert row["data"]["nip"] == "7654321089"
+
+
+@pytest.mark.parametrize(
+    ("business", "declaration_scanned", "expected"),
+    [
+        ("Łucja Wąsik Ceramika", True, "Łucja Wąsik Ceramika"),
+        ("Łucja Wasik Ceramika", True, None),
+        ("Ceramika Łucja Wasik", True, None),
+        ("Ceramika Ozdobna", True, "Ceramika Ozdobna"),
+        ("Łucja Wasik Ceramika", False, "Łucja Wasik Ceramika"),
+    ],
+)
+def test_only_scanned_business_name_abstains_on_conflicting_personal_spelling(business, declaration_scanned, expected):
+    declaration = f"""PEŁNOMOCNICTWO
+Ja, niżej podpisana Łucja Wąsik, prowadząca działalność gospodarczą pod nazwą {business},
+NIP 6489072176, udzielam pełnomocnictwa adw. Żanecie Szkliwnej."""
+    pages = ["Pismo przewodnie", declaration]
+    (row,) = extract_power_of_attorney(pages, {2} if declaration_scanned else {1})["mocodawca"]
+    assert row["data"]["nazwa"] == expected
+    assert row["data"]["imie_nazwisko"] == "Łucja Wąsik"
+    assert row["data"]["nip"] == "6489072176"
+
+
+@pytest.mark.parametrize(
+    ("printed", "expected"),
+    [
+        ("Łucja Wasik Ceramika", "Łucja Wasik Ceramika"),
+        ("Łucja Wasik CeramikaArt", None),
+        ("ArtŁucja Wasik Ceramika", None),
+    ],
+)
+def test_independent_native_printing_supports_a_business_name_from_a_scan(printed, expected):
+    declaration = """Mocodawca: Łucja Wąsik, wpisana do CEIDG.
+Firma: Łucja Wasik Ceramika
+NIP 6489072176. Udzielam umocowania."""
+    (row,) = extract_power_of_attorney([declaration, f"Firma: {printed}"], {1})["mocodawca"]
+    assert row["data"]["nazwa"] == expected
