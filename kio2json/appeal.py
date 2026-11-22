@@ -71,7 +71,7 @@ PARTY_FIELD = re.compile(
 )
 SECTION_LABEL = re.compile(r"^[^\W\d_][\w ()./-]{0,80}:")
 BODY_HEADING = re.compile(
-    r"^(?:[IVXLCDM]+[.)]\s+)?(?:odpowiedź zamawiającego|stan faktyczny|okoliczności sprawy|uzasadnienie|dowody|żądania|zarzuty|zarzut nr \d+|wnioski|załączniki)\b",
+    r"^(?:[IVXLCDM]+[.)]\s+)?(?:odpowiedź zamawiającego|stan faktyczny|okoliczności sprawy|uzasadnienie|dowody|żądania|zarzuty|zarzut nr \d+|wnioski|(?P<attachments>załączniki))\b",
     re.IGNORECASE,
 )
 
@@ -307,7 +307,9 @@ def _parties(
         name_lines.clear()
 
     for index, line in enumerate(map(str.strip, lines)):
-        if party_header_end(line):
+        # Electronic cover sheets can list attachments before their explicit party cards.
+        boundary = BODY_HEADING.match(line)
+        if _QUOTE_INTRO.search(line) or (boundary and (not boundary["attachments"] or role or any(parties.values()))):
             in_body = True
             if role == "Zamawiający":
                 finish_name()
