@@ -89,7 +89,8 @@ Install Docker with Compose v2.24 or later. From the repository root, place case
 docker compose run --rm cli
 ```
 
-The first build downloads the Python dependencies and Polish and English OCR data.
+The first build downloads the Python dependencies from PyPI. The Polish and English OCR data ship in the repository
+(`kio2json/tessdata/`), so nothing else is fetched.
 Each input PDF gets a matching file under `output/<case>/`. To upload PDFs in a browser, run:
 
 ```sh
@@ -115,18 +116,14 @@ From the repository root, create a virtual environment with 64-bit CPython 3.13.
 | Windows PowerShell | `py -3.13 -m venv .venv` | `.\.venv\Scripts\Activate.ps1` |
 | macOS or Linux | `python3.13 -m venv .venv` | `. .venv/bin/activate` |
 
-Use the activated shell for the install and run commands below. pip installs the
-Tesseract native libraries from PyPI. The local language-data wheel downloads the Polish and
-English fast models (8.88 MB combined) from a pinned revision on `raw.githubusercontent.com`
-and verifies both SHA-256 hashes. Once installed, the rules-only CLI and viewer process PDFs offline.
+Use the activated shell for the install and run commands below. `requirements.txt` lists only pinned PyPI
+packages and no local paths, so pip downloads only from PyPI (`pypi.org` and `files.pythonhosted.org`). Run the install
+from the repository root; from another directory, pass the file's full path to `-r`. pip installs the
+Tesseract native libraries from PyPI. The Polish and English fast models (8.88 MB, Apache-2.0) ship in
+`kio2json/tessdata/` with their licence. They come from a pinned `tessdata_fast` revision, and the CLI checks both
+SHA-256 hashes before the first OCR page. Run `python -m kio2json` from the repository root. The rules-only CLI and
+viewer process PDFs offline.
 [Platform wheels](https://pypi.org/project/tesserocr/2.13.0/#files)
-
-If the Tesseract data host is unreachable, download both language files on a connected machine and copy them into
-one directory. Before rerunning the install command below, set
-`export KIO_TESSDATA_SOURCE=/absolute/path/to/models` in a POSIX shell or
-`$env:KIO_TESSDATA_SOURCE = 'C:\models'` in PowerShell. Keep the original filenames.
-The installer verifies the same hashes for locally supplied files.
-[pol.traineddata](https://raw.githubusercontent.com/tesseract-ocr/tessdata_fast/87416418657359cb625c412a48b6e1d6d41c29bd/pol.traineddata) · [eng.traineddata](https://raw.githubusercontent.com/tesseract-ocr/tessdata_fast/87416418657359cb625c412a48b6e1d6d41c29bd/eng.traineddata)
 
 ```
 python -m pip install -r requirements.txt
@@ -187,8 +184,11 @@ corrected only when its NIP checksum fails. Missing fields stay empty.
    a possible e-mail address with a missing `@`, an English single-word pass rereads that crop. The extractor accepts the separator
    only when the rest of both readings agrees. Call `read_pages(path, word_boxes=boxes)` with
    an empty list to collect raw words and their rectangles alongside the page strings. Coordinates
-   are PDF points from the top left, with one-based page numbers. Polish Tesseract has 60 seconds per
-   primary page. Verification crops get up to 10 seconds each and optional full-page reads get up to
+   are PDF points from the top left, with one-based page numbers. Required Tesseract and RapidOCR
+   pages use a 180-second recognition watchdog at 300 dpi. After a timeout, the reader retries once
+   at 150 dpi if the document and batch still have time. It gives the retry the smaller of 60 seconds
+   and the remaining budget. Tesseract checks its timer during recognition, so setup and cancellation
+   can add wall time. Verification crops get up to 10 seconds each and optional full-page reads get up to
    180 seconds each. All optional OCR shares a deadline of
    300 seconds from the start of a PDF. The CLI and GUI also share one cutoff across the batch,
    10.8 seconds per input PDF with a minimum of 300 seconds for small batches. For the jury’s 150 PDFs
@@ -423,12 +423,21 @@ With these limits, eight busy loops and `--jobs 1`, the CLI processed the 150-PD
 The mix contained two copies of each organizer scan and 90 training PDFs. This timing preceded the
 final change to handling expired optional page reads. [Measurements and output digests](evals/results/adaptive-ocr-budget.json)
 
+With the 180-second primary watchdog (`watchdog_commit` `21f55e0`), two workers processed all 226 public PDFs in 160.75 seconds
+(`public_batch.watchdog.wall_seconds`, 160.753; `public_batch.command` uses `--jobs 2`) on the shared Apple M1 (`public_batch.conditions`), with a one-minute load average of 34.65 at the start and 32.54 at the end
+(`public_batch.watchdog.load_average_1min_start` and `load_average_1min_end`). The baseline `328f705` took 266.02 seconds
+(`public_batch.baseline.wall_seconds`, 266.021) at a load average of 43.59 to 34.65 (`public_batch.baseline.load_average_1min_start` and `load_average_1min_end`). The two runs were sequential on a shared host, so they are not a controlled comparison.
+Every output matched `328f705` byte for byte (`public_batch.training_byte_identical_to_baseline`, 196, and `public_batch.scan_byte_identical_to_baseline`, 30). In a separate serial run on three scans,
+suspending the OCR worker for 65 seconds during the first page caused one document failure with the old watchdog (`serial_stress.baseline.document_errors`, 1).
+The new watchdog finished in 83.76 seconds including the pause (`serial_stress.watchdog.wall_seconds`, 83.758), and all three outputs matched
+their ordinary readings (`serial_stress.watchdog.byte_matches`, 3). [Watchdog measurements](evals/results/first-pass-watchdog.json)
+
 An earlier runtime-only experiment (product `a32ba1c`, base `5297660`, keyless `tesseract-dpi`, a 16 GiB M1 MacBook Air per `host`)
 recorded these figures. Four workers processed 30 organizer scans in 37.15 seconds (`runs.four-scans.wall`, 37.1466) and a mix of
 60 scans and 90 training PDFs in 74.42 seconds (`runs.four-mixed.wall`, 74.4154). Peak sampled process-tree RSS for the mix was
 1,504 MiB (`runs.four-mixed.peak_kib`, 1,540,208 KiB; shared mappings can be counted more than once, see `method.rss`).
 The outputs for all 226 training and scan PDFs matched sequential main byte for byte (`parity.four-out-scans`, 30 of 30, and `parity.four-out-train`, 196 of 196).
-These runs predate the adaptive-budget runs above (`a32ba1c` is an ancestor of `59aa13a`).
+These runs predate the adaptive-budget and watchdog runs above (`a32ba1c` is an ancestor of `59aa13a` and of `21f55e0`).
 [Batch timings and per-PDF profile](evals/results/batch-runtime.json)
 
 The reported times cover these local datasets. OCR runs locally. Under the updated rules, a remote
