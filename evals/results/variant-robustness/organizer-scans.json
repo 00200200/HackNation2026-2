@@ -1,0 +1,92 @@
+{
+  "commit": "eb9bfa16d43b1c2fb74715dba6f0da06f673a7a0",
+  "dirty": false,
+  "mode": "organizer-scans",
+  "timestamp": "2026-11-22T01:39:01+00:00",
+  "n_cases": 30,
+  "n_docs": 30,
+  "coverage_ok": false,
+  "overall_pass": true,
+  "run_error": null,
+  "metrics": {
+    "micro_f1": {
+      "value": 1.0,
+      "target": 0.9,
+      "pass": true
+    },
+    "outputs_complete": {
+      "value": 1.0,
+      "target": 1.0,
+      "pass": true
+    },
+    "negatives_empty": {
+      "value": null,
+      "target": 1.0,
+      "pass": null
+    },
+    "classification_accuracy": {
+      "value": 1.0,
+      "target": 1.0,
+      "pass": true
+    },
+    "seconds_per_doc": {
+      "value": 4.365894869435579,
+      "target": null,
+      "pass": true
+    },
+    "micro_f1_strict": {
+      "value": 0.9974226804123711,
+      "target": null,
+      "pass": null
+    }
+  },
+  "detail": {
+    "micro_f1": 1.0,
+    "micro_f1_strict": 0.9974226804123711,
+    "counts_strict": {
+      "tp": 387,
+      "fp": 1,
+      "fn": 1
+    },
+    "macro_f1_documents": 1.0,
+    "macro_f1_classes": 1.0,
+    "macro_f1_class_count": 3,
+    "macro_f1_fields": 1.0,
+    "micro_f1_non_null": 0.996742671009772,
+    "per_class_f1": {
+      "odwolanie": 1.0,
+      "pelnomocnictwo": 1.0,
+      "przelew": 1.0
+    },
+    "classification_accuracy": 1.0,
+    "negatives_empty": null,
+    "outputs_complete": 1.0,
+    "counts": {
+      "tp": 309,
+      "fp": 0,
+      "fn": 0,
+      "tn": 79
+    },
+    "routing_by_class": {
+      "odwolanie": {
+        "correct": 10,
+        "total": 10
+      },
+      "pelnomocnictwo": {
+        "correct": 10,
+        "total": 10
+      },
+      "przelew": {
+        "correct": 10,
+        "total": 10
+      },
+      "negatywny": {
+        "correct": 0,
+        "total": 0
+      }
+    }
+  },
+  "holdout_51_60": null,
+  "f1_definition": "UZP #59 with RapidFuzz normalized Levenshtein >= 0.80 on five long fields",
+  "split": "all"
+}

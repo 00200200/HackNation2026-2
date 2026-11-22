@@ -1,0 +1,92 @@
+{
+  "commit": "eb9bfa16d43b1c2fb74715dba6f0da06f673a7a0",
+  "dirty": false,
+  "mode": "corpus",
+  "timestamp": "2026-11-22T01:49:01+00:00",
+  "n_cases": 14,
+  "n_docs": 39,
+  "coverage_ok": false,
+  "overall_pass": true,
+  "run_error": null,
+  "metrics": {
+    "micro_f1": {
+      "value": 0.9243697478991597,
+      "target": 0.9,
+      "pass": true
+    },
+    "outputs_complete": {
+      "value": 1.0,
+      "target": 1.0,
+      "pass": true
+    },
+    "negatives_empty": {
+      "value": 1.0,
+      "target": 1.0,
+      "pass": true
+    },
+    "classification_accuracy": {
+      "value": 1.0,
+      "target": 1.0,
+      "pass": true
+    },
+    "seconds_per_doc": {
+      "value": 8.10985592733591,
+      "target": null,
+      "pass": true
+    },
+    "micro_f1_strict": {
+      "value": 0.8951406649616368,
+      "target": null,
+      "pass": null
+    }
+  },
+  "detail": {
+    "micro_f1": 0.9243697478991597,
+    "micro_f1_strict": 0.8951406649616368,
+    "counts_strict": {
+      "tp": 350,
+      "fp": 38,
+      "fn": 44
+    },
+    "macro_f1_documents": 0.9260238856103518,
+    "macro_f1_classes": 0.948527346879887,
+    "macro_f1_class_count": 3,
+    "macro_f1_fields": 0.9147881765249187,
+    "micro_f1_non_null": 0.8470588235294118,
+    "per_class_f1": {
+      "odwolanie": 0.8976897689768977,
+      "pelnomocnictwo": 0.9836065573770492,
+      "przelew": 0.9642857142857143
+    },
+    "classification_accuracy": 1.0,
+    "negatives_empty": 1.0,
+    "outputs_complete": 1.0,
+    "counts": {
+      "tp": 220,
+      "fp": 12,
+      "fn": 24,
+      "tn": 138
+    },
+    "routing_by_class": {
+      "odwolanie": {
+        "correct": 13,
+        "total": 13
+      },
+      "pelnomocnictwo": {
+        "correct": 5,
+        "total": 5
+      },
+      "przelew": {
+        "correct": 10,
+        "total": 10
+      },
+      "negatywny": {
+        "correct": 11,
+        "total": 11
+      }
+    }
+  },
+  "holdout_51_60": null,
+  "f1_definition": "UZP #59 with RapidFuzz normalized Levenshtein >= 0.80 on five long fields",
+  "split": "dev"
+}

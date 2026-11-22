@@ -25,13 +25,17 @@ The evaluation VM kit installs the rules CLI under `/opt/solution`. The VM owner
 
 ## Last eval
 
+On the 240 seeded PDFs, UZP field micro F1 rose from 0.2960 on the #69 baseline to **0.8902**. The control with #78’s account and JSON conventions scored 0.3179. The final classifier routed **170/180** positives, including all 60 appeals, and returned `{}` for all 60 negatives. The baseline missed every appeal.
+
+All ten held-out alternative-format transfers were missed. Two-column forms had the lowest final field F1 (0.6602). The six profiles draw on different samples of synthetic cases. The 196 organizer training outputs matched the control byte for byte, and 29/30 organizer scans matched their references exactly. Private UZP F1 held at 0.9212 on corpus 1 all and 0.9244 on corpus 2 dev. [Profile and gate comparisons](evals/results/variant-robustness.json)
+
 The fixed-seed benchmark re-rendered the facts from all 60 synthetic cases and generated 60 look-alike negatives. The keyless extractor was main at `3eccb41`, scored with the issue #59 metric. The initial `f7f3ee9` run had the same dataset digest and field counts.
 
 | Dataset | PDFs | UZP micro F1 | Strict micro F1 | Appeal F1 | Power F1 | Transfer F1 | Empty negatives |
 |---|---:|---:|---:|---:|---:|---:|---:|
 | Generated layouts | 240 | 0.2960 | 0.2860 | 0.0000 | 0.5529 | 0.6617 | 60/60 |
 
-Weakest positive profiles were label synonyms (0.1693), alternative formats (0.2083) and two columns (0.2089). Appeal F1 was zero in all six profiles. The benchmark uses short, newly authored forms built from the training facts. Profile scores also reflect their different case samples. [Ranked layouts and field scores](evals/results/variants.json)
+Weakest positive profiles were label synonyms (0.1693), alternative formats (0.2083) and two columns (0.2089). Appeal F1 was zero in all six profiles. The benchmark uses short, newly authored forms built from the training facts. Profile scores also reflect their different case samples. [Original baseline and routing-only checkpoint](evals/results/variant-robustness.json)
 
 The empty-object writer preserved all 180 positive training files byte for byte and wrote `{}\n` for all 16 negatives. Keeping printed country codes then changed two fields in each of 48 transfers. The comparison used local rules and two PDF workers. The integrated run includes the UZP scorer and the fix for a printed underline in a recipient account cell.
 
@@ -122,6 +126,8 @@ Two and four grant JSONs matched exactly. The ten organizer grants remained exac
   `/orchestrator`, not to Claude subagents.
 
 ## Log
+
+- 22.11.2026 · Added corroborating Polish filing and payment cues, scoped fields and native two-column reading for issue #63. Re-ran the 240-PDF benchmark and organizer and private gates against the confirmed JSON and account conventions. [Final field counts](evals/results/variants.json)
 
 - 22.11.2026 · Codex · Raised the required page watchdog from 60 to 180 seconds and added one 150-dpi retry within the remaining OCR budget. Regression tests cover timeout recovery, immediate engine errors, budget exhaustion and word-box coordinates after resizing.
 
