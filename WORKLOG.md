@@ -17,6 +17,8 @@ The grant certificate and board-stamp readers share the copy-attestation check s
 Public landing https://doc2json.pl (`frontend/`, static nginx, monochrome) runs on the team VPS as `doc2json-web`
 behind the faktczyfejk Caddy; deploy in `docs/deploy.md`. Its upload calls `kio2json.web_api` (`/api/extract`, rules engine, no keys) in the `doc2json-api` container.
 
+The jury can run the batch CLI and upload UI locally with the root Compose file. [Docker instructions](README.md#run-with-docker-compose)
+
 ## Last eval
 
 Round 3 raised rules-only micro F1 from 0.8607 to 0.8900 on corpus 1 (39 PDFs) and from 0.8789 to 0.8926 on corpus 2 dev (39 PDFs). Four recovered payment receipts brought routing to 78/78, including the 22 negatives. One appeal timed out in the initial corpus 1 run (0.8812) and returned its baseline bytes in an isolated rerun. All 30 organizer scan outputs and 196 synthetic training outputs matched the baseline byte for byte. Organizer scans scored 0.9974 with 29/30 exact, and synthetic F1 was 1.000. [Field counts, intermediate runs and timing](evals/results/round3.json)
@@ -82,6 +84,8 @@ Two and four grant JSONs matched exactly. The ten organizer grants remained exac
 
 - 22.11.2026 · Claude · #39: scanned-appeal party names and lawyer fields become null on stray scanner symbols, a low letter ratio or capitals noise after a lawyer's title; a capitals-noise tail after a legal form is cut unless it names another consortium member; titles are checked for stray symbols only. On the organizer template scan the appellant and law firm names are now null and the authority name ends at its legal form (checked by a direct CLI run; the template is not in the eval). Organizer scans 0.9974 → 0.9974, full training 1.000 → 1.000 (holdout 1.000), both against `4d91600`; the private dev corpora are not on this machine and were not measured · b2121b5
 - 22.11.2026 · Claude · #39: judge PASS on `c4b3d94` after two rounds of P2 fixes; pushed `fix/ocr-plausibility` with a PR to main. Left: a real-corpus check by the corpus owner before merge (dev corpora not on this machine).
+- 22.11.2026 · Codex · Grouped appeal and mandate word boxes by printed role and column. Added regressions for wrapped names, repeated stationery, extra appointees and principal-specific signatures.
+
 - 21.11.2026 · Codex · Added native span output for small models, local source validation and a bounded parallel CLI. Verified the native schema on the quantized local model and both regional API releases.
 
 - 21.11.2026 · Claude · brief, eval harness, judge/eval skills, pre-push hook · f6db304
@@ -180,3 +184,5 @@ These runs used local rules with the three endpoint variables unset. The two loc
 | Wire the doc2json.pl upload to the extraction (serve the GUI backend behind `/api/` or point the page at it) | Open |
 
 - 21.11.2026 · Codex · Round 3 traced 130 field errors on 78 real development PDFs. Recovered identifiers from matching party records, checked damaged company names against declarations and read debit amounts across bank columns. The single-field Ministral whitespace trial lost one correct title in 12 calls and was dropped.
+
+- 22.11.2026 · Codex · Added local jury Compose services and the signed task rules for #60. Compose configuration validated. Docker Desktop did not answer its health probe, so container byte parity is pending.
