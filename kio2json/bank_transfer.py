@@ -140,7 +140,9 @@ LEDGER_DESCRIPTION = r"(?:opis|treść|rodzaj)(?: operacji| transakcji)?"
 LEDGER_AMOUNT = r"(?:kwota(?: obciążenia| operacji)?|obciążenie(?:/uznanie)?|uznanie/obciążenie)"
 LEDGER_COLUMN = re.compile(rf"{LEDGER_DATE}|{LEDGER_DESCRIPTION}|{LEDGER_AMOUNT}", re.IGNORECASE)
 LEDGER_HEADER = re.compile(
-    rf"^(?:{LEDGER_COLUMN.pattern})(?:{LEDGER_GAP}(?:{LEDGER_COLUMN.pattern})){{1,2}}[ \t]*$",
+    # A summary card can also print a date beside an amount. A ledger needs a description column.
+    rf"^(?=[^\n]*\b{LEDGER_DESCRIPTION}\b)(?=[^\n]*\b{LEDGER_AMOUNT}\b)"
+    rf"(?:{LEDGER_COLUMN.pattern})(?:{LEDGER_GAP}(?:{LEDGER_COLUMN.pattern})){{1,2}}[ \t]*$",
     re.IGNORECASE | re.MULTILINE,
 )
 LEDGER_MONEY = re.compile(rf"(?P<sign>[+−-]?)[ \t]*(?P<money>{MONEY})[ \t]*{CURRENCY}\b", re.IGNORECASE)

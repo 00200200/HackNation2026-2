@@ -168,3 +168,8 @@ def test_two_column_history_cannot_ignore_another_amount_cell(row):
 def test_labelled_balance_and_bank_fee_after_the_debit_are_not_other_entries(extra):
     page = "Potwierdzenie przelewu\nData operacji: 08.04.2033\nOpis Kwota\nPrzelew internetowy -92,28 PLN\n" + extra
     assert bank_transfer.extract(page)["przelew_bankowy"]["kwota"] == 92.28
+
+
+@pytest.mark.parametrize("header", ["Rodzaj operacji | Data", "Data operacji | Kwota", "Obciążenie Data księgowania"])
+def test_payment_summary_cells_are_not_a_history_header(header):
+    assert bank_transfer.LEDGER_HEADER.fullmatch(header) is None
