@@ -8,6 +8,32 @@ Without endpoint credentials the jury configuration runs three rule-based extrac
 that selects its routing rules, output fields and extraction engines. New classes can use
 label patterns or an optional language model.
 
+## Run with Docker Compose
+
+Install Docker with Compose v2.24 or later. From the repository root, place case PDFs in
+`input/<case>/` or use the bundled `input/case1/`, then run:
+
+```sh
+docker compose run --rm cli
+```
+
+The first build downloads the Python dependencies and Polish and English OCR data.
+Each input PDF gets a matching file under `output/<case>/`. To upload PDFs in a browser, run:
+
+```sh
+docker compose up gui
+```
+
+Open <http://127.0.0.1:8000> for the upload page or <http://127.0.0.1:8000/api/docs> for
+the API. Press Ctrl+C to stop the server. Both services use local extraction by default.
+To enable a model, copy `.env.example` to `.env`, fill in the three endpoint settings,
+and rerun the service. Keep the key in the ignored `.env` file.
+
+Both services read the host's `config/classes/` directory. See the
+[pipeline architecture](#how-it-works), [class configuration example](#enable-the-fourth-class)
+and [instructions for adding a class](#add-a-class). The handover requirements are in
+[§3.5 of the task rules](docs/task/regulamin.pdf).
+
 ## Run
 
 From the repository root, create a virtual environment with 64-bit CPython 3.13.
@@ -408,6 +434,9 @@ rules. [OCR results](evals/results/ocr-engines.json)
   passes the Polish IBAN checksum, and the confirmation supplies the amount and date. The masked number
   is null. OCR also supports fully masked fields. Digit repairs apply only to OCR text and require a
   single checksum-valid candidate. A number printed in a native text layer keeps its printed digits.
+- On appeals and mandates, side-by-side role headings and a consistent gutter can delimit separate party cards.
+  A signer caption can supply a name when its column identifies the principal. Conflicting identities or
+  an unlabelled signature can leave the signer missing.
 - Grant extraction reads numbered and coordinated appointments, officers in representation clauses,
   and digital approval signatures. Where a name is inflected, rules use a compatible printed form
   or a unique case- and gender-compatible personal-name reading from Morfeusz2. Ambiguous readings
