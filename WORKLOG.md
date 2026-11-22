@@ -8,7 +8,7 @@ The integration branch combines real-layout appeal, grant and transfer rules wit
 OpenAI-compatible model engine. The default CLI and GUI run locally with the three endpoint
 variables unset. Keyed runs can use a second OCR reading and recover a failed document with local rules.
 
-On the jury VM the three regional Mistral settings select Ministral 3B after local routing and rules. One bounded request can fill missing fields using owner-specific source quotes. Populated rule values remain authoritative. Local rules supply the result when the key is absent or inference fails. [Jury runbook](deploy/RUN.md)
+On the jury VM the three regional Mistral settings select Ministral 3B after local routing and rules. One bounded request can fill missing fields using owner-specific source quotes. Populated rule values remain authoritative. Local rules supply the result when the key is absent or inference fails. [Jury runbook](deploy/RUN.md) · [Measured profiles](evals/results/jury-keyed-profile.md)
 
 The batch CLI defaults to up to four PDF workers, with one thread per Tesseract instance and up to three concurrent page reads per PDF. The first OCR pass supplies layout word boxes, and optional OCR has up to 300 seconds per document. A shared batch cutoff stops rereads after 27 minutes for 150 PDFs. Required OCR has a 180-second page watchdog and can retry a stalled page once at 150 dpi.
 

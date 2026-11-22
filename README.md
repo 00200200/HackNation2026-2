@@ -32,6 +32,8 @@ The CLI reads and routes each document locally, then runs the rules for that cla
 
 ## Results
 
+The jury profile report compares local rules and Ministral on the same organizer documents. It includes the original and printed-account scoring conventions, API calls, and batch timings. [Jury profile measurements](evals/results/jury-keyed-profile.md)
+
 These field scores come from the keyless CLI on merged main at `725765b`, with two workers. Both private corpora contain real documents and are not distributed. [Merged-main measurements](evals/results/merged-main-725765b.json)
 
 | Dataset | PDFs | UZP micro F1 | Strict micro F1 |
