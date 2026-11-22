@@ -97,6 +97,10 @@ Two and four grant JSONs matched exactly. The ten organizer grants remained exac
 | Confirm the long-string similarity function with UZP and record the Stage II weights | Open |
 | Promote HackNation2026 PR #48 to `prod` after the faktczyfejk demo, so the doc2json.pl Caddy block survives a redeploy | Open |
 
+<!-- Superseded by the UZP scoring decision below. Previous open item:
+| Confirm the organizer’s F1 formula and Stage II weights with UZP | Open |
+-->
+
 ## Decisions
 
 - 22.11.2026: UZP micro F1 is the primary extraction score. Compare the five long fields at an inclusive 80% threshold using RapidFuzz normalized Levenshtein until UZP names its similarity function. When the reference contains a value, both a wrong guess and a null cost one error. Keep supported OCR text, especially when trimming noise could recover a match. Abstaining helps when the reference is absent. [Organizer rules](https://github.com/00200200/HackNation2026-2/issues/59)
@@ -233,9 +237,17 @@ These runs used local rules with the three endpoint variables unset. The two loc
 - 22.11.2026 · Codex · Added a Python 3.13 jury install and 150-PDF CLI comparison for Windows x64, Linux x64 and macOS in `ab3c8fa`. GitHub blocked all three jobs before checkout due to account billing. The run produced no timings. [Run record](evals/results/jury-batch.json)
 - 22.11.2026 · Codex · Implemented the UZP scorer and retained historical strict micro F1 on `feat/uzp-metric` (#59).
 - 22.11.2026 · Codex · Added local jury Compose services and the signed task rules for #60. Compose configuration validated. Docker Desktop did not answer its health probe, so container byte parity is pending.
-- 22.11.2026 · Claude · PR #53 README: the organizer-scans.json link now says it is the later 29/30 batch, the 0.6312 step is labelled as intermediate, the cold run separates throughput (3.33 s per PDF) from time per scan (9.13 s), and each adaptive OCR timing names its profile and dataset. `origin/main` (#67) merged. The new CodeRabbit thread asking for `latest.json` is answered: every figure is in `adaptive-ocr-budget.json`, which records product `59aa13a`, base `dbda151` and the machine · claude/pr53-docs
+- 22.11.2026 · Codex · The keyless LSTM crop experiment retained 13 correctly printed checksum-invalid accounts on the 240 seeded variants, raising UZP F1 from 0.2960 to 0.3053. It changed no digits on either real cohort or the organizer scans. [Paired measurements](evals/results/ocr-alternatives.json)
+
+- 2026-11-22 · Grounded candidate selection for disputed, populated first-page transfer fields, singleton appeal party names and procurement titles in the rules-first schema profile (`feat/doubtful-values`).
+- 22.11.2026 · Codex · Scored candidate selection after merging #71 at `c13dc3e7f`. Across 91 development PDFs, UZP micro-F1 was 0.9572 keyless and 0.9617 keyed with two workers. All 196 keyless training outputs matched main byte for byte. [Development counts](evals/results/doubtful-values.json)
 - 22.11.2026 · Codex · Prepared the VM installation and offline rehearsal for #66 and refreshed the organizer instructions to `eadffbc`. [Rehearsal measurements](evals/results/vm-2vcpu.json)
+
+- 22.11.2026 · Codex · Synced #72 with main at `4222472`, retaining first-page candidate selection in the keyed profile.
+- 22.11.2026 · Codex · Synced the rule fixes in #75 with main at `b9c2c7f`, preserving the printed account prefix during OCR slash repair.
+- 22.11.2026 · Codex · Integrated the merged #75 rule fixes into #72 at main `257a6af`.
+- 22.11.2026 · Claude · PR #53 README: the organizer-scans.json link now says it is the later 29/30 batch, the 0.6312 step is labelled as intermediate, the cold run separates throughput (3.33 s per PDF) from time per scan (9.13 s), and each adaptive OCR timing names its profile and dataset. `origin/main` (#67) merged. The new CodeRabbit thread asking for `latest.json` is answered: every figure is in `adaptive-ocr-budget.json`, which records product `59aa13a`, base `dbda151` and the machine · claude/pr53-docs
 - 22.11.2026 · Claude · PR #53 merged with main again (#77, #78): README and WORKLOG conflicts resolved with both sides kept (main's "historical measurement counted zero-byte outputs" wording plus the organizer-scans note). Judge nits applied: the `steps["merge upstream power-of-attorney rules"]` locator is a valid key path, and the WORKLOG line on the 0.6312 step now names it as intermediate and gives the later 0.8607 and 0.8789 · docs/paths-and-llm-scoring
 - 22.11.2026 · Claude · PR #53 merged with main again (#79, #54): the new watchdog paragraph of the README now names its keys in `first-pass-watchdog.json` (160.753 s, 266.021 s baseline, 83.758 s, `watchdog_commit` `21f55e0`, load averages) and the earlier runtime-only paragraph says it predates both adaptive-budget and watchdog runs. `requirements.txt` is main's own annotated file again, in sync with the lock · docs/paths-and-llm-scoring
-- 22.11.2026 · Codex · Synced the rule fixes in #75 with main at `b9c2c7f`, preserving the printed account prefix during OCR slash repair.
 - 22.11.2026 · Claude · PR #53 merged with main again (#75): the README no longer describes the content of `evals/results/organizer-scans.json`, because main refreshed it at `d808ee0` (30 of 30 scans routed, UZP micro F1 1.0000, strict 0.9974, `n_cases` 30) and the old note (29 of 30, 0.9869) no longer matches; the paragraph around it is again main's text · docs/paths-and-llm-scoring
+- 22.11.2026 · Claude · PR #53 merged with main again (#72, #82): the README's VM rehearsal figures (399.77 s, about 4 min 25 s) now name their keys in `vm-2vcpu.json` and the extraction revision `7a1c45b` they come from, and the stale "before the kit merges" sentence is gone because `deploy/vm-kit` is an ancestor of main. The WORKLOG conflict kept both sides · docs/paths-and-llm-scoring
