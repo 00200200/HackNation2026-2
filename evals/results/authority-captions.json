@@ -1,0 +1,713 @@
+{
+  "grammar_commit": "ac83bb63b40d97b68d349b251674ce50688db811",
+  "gate_corrections": "The frozen grammar was unchanged. Two subsequent fixes preserve an attachment inventory before explicit party cards and associate an inter-member lead marker with the preceding numbered authority. Both were independently reproduced on dev or organizer scans.",
+  "frozen_dev_c1_before_cover_fix": {
+    "n": 22,
+    "exact": 9,
+    "sec": 210.48,
+    "routing": {
+      "odwolanie": [
+        8,
+        8
+      ],
+      "pelnomocnictwo": [
+        3,
+        3
+      ],
+      "negatywny": [
+        7,
+        7
+      ],
+      "przelew": [
+        4,
+        4
+      ]
+    },
+    "micro_f1": 0.9250814332247557,
+    "micro_f1_strict": 0.8706365503080082,
+    "macro_f1_classes": 0.8996575342465754,
+    "per_class_f1": {
+      "odwolanie": 0.9406392694063926,
+      "pelnomocnictwo": 0.9583333333333334,
+      "przelew": 0.8
+    },
+    "negatives_empty": 1.0
+  },
+  "frozen_scans_before_lead_fix": {
+    "micro_f1": 0.9983792544570502,
+    "micro_f1_strict": 0.9948453608247423,
+    "macro_f1_classes": 0.9990557129367327,
+    "per_class_f1": {
+      "odwolanie": 0.9971671388101983,
+      "pelnomocnictwo": 1.0,
+      "przelew": 1.0
+    },
+    "classification_accuracy": 1.0,
+    "negatives_empty": null,
+    "n": 30,
+    "exact": 28,
+    "context": "30 scans within the normal 150-PDF mixed keyless batch",
+    "routing": {
+      "przelew": [
+        10,
+        10
+      ],
+      "odwolanie": [
+        10,
+        10
+      ],
+      "pelnomocnictwo": [
+        10,
+        10
+      ]
+    }
+  },
+  "training_commit": "3e436ead7fdc6bbb023804bce71bdbf01bde4063",
+  "main_product_baseline": "a7dce92",
+  "source_branch_base": "fa9937e",
+  "benchmark_baseline": "fecdca5",
+  "new_blind": {
+    "commit": "ac83bb63b40d97b68d349b251674ce50688db811",
+    "pairs": [
+      {
+        "item": 1,
+        "captions": {
+          "appellant": "Odwołujący:",
+          "authority": "Zamawiający (strona przeciwna):"
+        },
+        "routed_appeal": true,
+        "appellant_correct": true,
+        "authority_correct": true,
+        "pass": true
+      },
+      {
+        "item": 2,
+        "captions": {
+          "appellant": "Wykonawca wnoszący odwołanie",
+          "authority": "Podmiot zamawiający"
+        },
+        "routed_appeal": true,
+        "appellant_correct": true,
+        "authority_correct": true,
+        "pass": true
+      },
+      {
+        "item": 3,
+        "captions": {
+          "appellant": "Dane odwołującego się wykonawcy",
+          "authority": "Dane instytucji zamawiającej"
+        },
+        "routed_appeal": true,
+        "appellant_correct": false,
+        "authority_correct": true,
+        "pass": false
+      },
+      {
+        "item": 4,
+        "captions": {
+          "appellant": "Strona skarżąca (wykonawca):",
+          "authority": "Gmina jako zamawiający:"
+        },
+        "routed_appeal": true,
+        "appellant_correct": false,
+        "authority_correct": false,
+        "pass": false
+      },
+      {
+        "item": 5,
+        "captions": {
+          "appellant": "Odwołujący",
+          "authority": "Zamawiający wspólnie (pełnomocnik zamawiających):"
+        },
+        "routed_appeal": true,
+        "appellant_correct": true,
+        "authority_correct": false,
+        "pass": false
+      }
+    ],
+    "negatives": [
+      {
+        "item": 1,
+        "captions": "Pełnomocnik zamawiającego:",
+        "routed_appeal": true,
+        "appellant_correct": true,
+        "authority_correct": true,
+        "pass": true
+      },
+      {
+        "item": 2,
+        "captions": "Rachunek bankowy zamawiającego",
+        "routed_appeal": true,
+        "appellant_correct": true,
+        "authority_correct": true,
+        "pass": true
+      },
+      {
+        "item": 3,
+        "captions": "Stanowisko zamawiającego w sprawie",
+        "routed_appeal": true,
+        "appellant_correct": true,
+        "authority_correct": true,
+        "pass": true
+      },
+      {
+        "item": 4,
+        "captions": "Wezwanie zamawiającego z dnia",
+        "routed_appeal": true,
+        "appellant_correct": true,
+        "authority_correct": true,
+        "pass": true
+      },
+      {
+        "item": 5,
+        "captions": "Zamawiający w uzasadnieniu decyzji wskazał, że",
+        "routed_appeal": true,
+        "appellant_correct": true,
+        "authority_correct": true,
+        "pass": true
+      }
+    ]
+  },
+  "blind_method": "One native PDF per item, read once with the keyless pipeline at the frozen commit. Each card printed an invented organization, street and registry number. A positive required the correct name under both roles. Each negative had the same plausible authority value and required an empty authority list.",
+  "previous_controls": {
+    "method": "The same eight organizer appeals and edited first-page captions used for PR #91. Main counts are the published pre-change controls.",
+    "main": {
+      "original": {
+        "uzp_tp": 158,
+        "uzp_fp": 0,
+        "uzp_fn": 0,
+        "strict_tp": 176,
+        "strict_fp": 0,
+        "strict_fn": 0,
+        "routed": 8,
+        "exact": 8,
+        "app": 8,
+        "auth": 8,
+        "owners": 8,
+        "correct_owner": 8,
+        "wrong_counsel": 0,
+        "uzp_f1": 1.0,
+        "strict_f1": 1.0
+      },
+      "sham": {
+        "uzp_tp": 158,
+        "uzp_fp": 0,
+        "uzp_fn": 0,
+        "strict_tp": 176,
+        "strict_fp": 0,
+        "strict_fn": 0,
+        "routed": 8,
+        "exact": 8,
+        "app": 8,
+        "auth": 8,
+        "owners": 8,
+        "correct_owner": 8,
+        "wrong_counsel": 0,
+        "uzp_f1": 1.0,
+        "strict_f1": 1.0
+      },
+      "genitive": {
+        "uzp_tp": 158,
+        "uzp_fp": 0,
+        "uzp_fn": 0,
+        "strict_tp": 176,
+        "strict_fp": 0,
+        "strict_fn": 0,
+        "routed": 8,
+        "exact": 8,
+        "app": 8,
+        "auth": 8,
+        "owners": 8,
+        "correct_owner": 8,
+        "wrong_counsel": 0,
+        "uzp_f1": 1.0,
+        "strict_f1": 1.0
+      },
+      "blind0": {
+        "uzp_tp": 158,
+        "uzp_fp": 0,
+        "uzp_fn": 0,
+        "strict_tp": 176,
+        "strict_fp": 0,
+        "strict_fn": 0,
+        "routed": 8,
+        "exact": 8,
+        "app": 8,
+        "auth": 8,
+        "owners": 8,
+        "correct_owner": 8,
+        "wrong_counsel": 0,
+        "uzp_f1": 1.0,
+        "strict_f1": 1.0
+      },
+      "blind1": {
+        "uzp_tp": 127,
+        "uzp_fp": 0,
+        "uzp_fn": 31,
+        "strict_tp": 136,
+        "strict_fp": 0,
+        "strict_fn": 40,
+        "routed": 8,
+        "exact": 0,
+        "app": 8,
+        "auth": 0,
+        "owners": 8,
+        "correct_owner": 8,
+        "wrong_counsel": 0,
+        "uzp_f1": 0.8912280701754386,
+        "strict_f1": 0.8717948717948718
+      }
+    },
+    "final": {
+      "original": {
+        "uzp_tp": 158,
+        "uzp_fp": 0,
+        "uzp_fn": 0,
+        "strict_tp": 176,
+        "strict_fp": 0,
+        "strict_fn": 0,
+        "routed": 8,
+        "exact": 8,
+        "app": 8,
+        "auth": 8,
+        "owners": 8,
+        "correct_owner": 8,
+        "wrong_counsel": 0,
+        "uzp_f1": 1.0,
+        "strict_f1": 1.0
+      },
+      "sham": {
+        "uzp_tp": 158,
+        "uzp_fp": 0,
+        "uzp_fn": 0,
+        "strict_tp": 176,
+        "strict_fp": 0,
+        "strict_fn": 0,
+        "routed": 8,
+        "exact": 8,
+        "app": 8,
+        "auth": 8,
+        "owners": 8,
+        "correct_owner": 8,
+        "wrong_counsel": 0,
+        "uzp_f1": 1.0,
+        "strict_f1": 1.0
+      },
+      "genitive": {
+        "uzp_tp": 158,
+        "uzp_fp": 0,
+        "uzp_fn": 0,
+        "strict_tp": 176,
+        "strict_fp": 0,
+        "strict_fn": 0,
+        "routed": 8,
+        "exact": 8,
+        "app": 8,
+        "auth": 8,
+        "owners": 8,
+        "correct_owner": 8,
+        "wrong_counsel": 0,
+        "uzp_f1": 1.0,
+        "strict_f1": 1.0
+      },
+      "blind0": {
+        "uzp_tp": 158,
+        "uzp_fp": 0,
+        "uzp_fn": 0,
+        "strict_tp": 176,
+        "strict_fp": 0,
+        "strict_fn": 0,
+        "routed": 8,
+        "exact": 8,
+        "app": 8,
+        "auth": 8,
+        "owners": 8,
+        "correct_owner": 8,
+        "wrong_counsel": 0,
+        "uzp_f1": 1.0,
+        "strict_f1": 1.0
+      },
+      "blind1": {
+        "uzp_tp": 158,
+        "uzp_fp": 0,
+        "uzp_fn": 0,
+        "strict_tp": 176,
+        "strict_fp": 0,
+        "strict_fn": 0,
+        "routed": 8,
+        "exact": 8,
+        "app": 8,
+        "auth": 8,
+        "owners": 8,
+        "correct_owner": 8,
+        "wrong_counsel": 0,
+        "uzp_f1": 1.0,
+        "strict_f1": 1.0
+      }
+    }
+  },
+  "previous_missed_pair_keyed": {
+    "baseline": "fa9937e",
+    "profile": "EU Ministral 3B, rules first, public organizer PDFs only",
+    "main": {
+      "uzp_tp": 158,
+      "uzp_fp": 3,
+      "uzp_fn": 0,
+      "strict_tp": 173,
+      "strict_fp": 3,
+      "strict_fn": 3,
+      "routed": 8,
+      "exact": 6,
+      "app": 8,
+      "auth": 8,
+      "owners": 8,
+      "correct_owner": 8,
+      "wrong_counsel": 0,
+      "uzp_f1": 0.9905956112852664,
+      "strict_f1": 0.9829545454545454
+    },
+    "final": {
+      "uzp_tp": 158,
+      "uzp_fp": 0,
+      "uzp_fn": 0,
+      "strict_tp": 176,
+      "strict_fp": 0,
+      "strict_fn": 0,
+      "routed": 8,
+      "exact": 8,
+      "app": 8,
+      "auth": 8,
+      "owners": 8,
+      "correct_owner": 8,
+      "wrong_counsel": 0,
+      "uzp_f1": 1.0,
+      "strict_f1": 1.0
+    }
+  },
+  "development": {
+    "c1": {
+      "main": {
+        "n": 22,
+        "exact": 10,
+        "sec": 313.21,
+        "routing": {
+          "negatywny": [
+            7,
+            7
+          ],
+          "przelew": [
+            4,
+            4
+          ],
+          "odwolanie": [
+            8,
+            8
+          ],
+          "pelnomocnictwo": [
+            3,
+            3
+          ]
+        },
+        "micro_f1": 0.9255663430420712,
+        "micro_f1_strict": 0.8780487804878049,
+        "macro_f1_classes": 0.8998366013071896,
+        "per_class_f1": {
+          "odwolanie": 0.9411764705882353,
+          "pelnomocnictwo": 0.9583333333333334,
+          "przelew": 0.8
+        },
+        "negatives_empty": 1.0
+      },
+      "final": {
+        "n": 22,
+        "exact": 10,
+        "sec": 179.83,
+        "routing": {
+          "przelew": [
+            4,
+            4
+          ],
+          "negatywny": [
+            7,
+            7
+          ],
+          "pelnomocnictwo": [
+            3,
+            3
+          ],
+          "odwolanie": [
+            8,
+            8
+          ]
+        },
+        "micro_f1": 0.9285714285714286,
+        "micro_f1_strict": 0.8821138211382114,
+        "macro_f1_classes": 0.9012626262626263,
+        "per_class_f1": {
+          "odwolanie": 0.9454545454545454,
+          "pelnomocnictwo": 0.9583333333333334,
+          "przelew": 0.8
+        },
+        "negatives_empty": 1.0
+      },
+      "identical_bytes": 21,
+      "identical_to_starting_main": 22,
+      "field_errors": [
+        [
+          "przelew_bankowy.tytul",
+          4
+        ],
+        [
+          "Zamawiajacy.nazwa",
+          4
+        ],
+        [
+          "ZamowieniePubliczne.tytul",
+          3
+        ],
+        [
+          "Odwolujacy.pelnomocnik.imie_nazwisko",
+          2
+        ],
+        [
+          "mocodawca.podpisujacy.imie_nazwisko",
+          2
+        ],
+        [
+          "Odwolujacy.pelnomocnik.nazwa",
+          2
+        ]
+      ]
+    },
+    "c2": {
+      "main": {
+        "n": 39,
+        "exact": 22,
+        "sec": 157.02,
+        "routing": {
+          "negatywny": [
+            11,
+            11
+          ],
+          "przelew": [
+            10,
+            10
+          ],
+          "odwolanie": [
+            13,
+            13
+          ],
+          "pelnomocnictwo": [
+            5,
+            5
+          ]
+        },
+        "micro_f1": 0.9243697478991597,
+        "micro_f1_strict": 0.8951406649616368,
+        "macro_f1_classes": 0.948527346879887,
+        "per_class_f1": {
+          "odwolanie": 0.8976897689768977,
+          "pelnomocnictwo": 0.9836065573770492,
+          "przelew": 0.9642857142857143
+        },
+        "negatives_empty": 1.0
+      },
+      "final": {
+        "n": 39,
+        "exact": 22,
+        "sec": 279.62,
+        "routing": {
+          "przelew": [
+            10,
+            10
+          ],
+          "negatywny": [
+            11,
+            11
+          ],
+          "pelnomocnictwo": [
+            5,
+            5
+          ],
+          "odwolanie": [
+            13,
+            13
+          ]
+        },
+        "micro_f1": 0.9243697478991597,
+        "micro_f1_strict": 0.8951406649616368,
+        "macro_f1_classes": 0.948527346879887,
+        "per_class_f1": {
+          "odwolanie": 0.8976897689768977,
+          "pelnomocnictwo": 0.9836065573770492,
+          "przelew": 0.9642857142857143
+        },
+        "negatives_empty": 1.0
+      },
+      "identical_bytes": 39,
+      "identical_to_starting_main": 39,
+      "field_errors": [
+        [
+          "przelew_bankowy.tytul",
+          5
+        ],
+        [
+          "Odwolujacy.przez-pelnomocnika",
+          5
+        ],
+        [
+          "Odwolujacy.pelnomocnik.imie_nazwisko",
+          5
+        ],
+        [
+          "ZamowieniePubliczne.tytul",
+          5
+        ],
+        [
+          "Odwolujacy.pelnomocnik.nazwa",
+          4
+        ],
+        [
+          "OdwolanieKIO.czynnosc_dzien",
+          4
+        ]
+      ]
+    }
+  },
+  "training": {
+    "pdfs": 196,
+    "exact": 196,
+    "byte_identical_to_starting_main": 196,
+    "empty_json_negatives": 16,
+    "uzp_f1": 1.0,
+    "strict_f1": 1.0,
+    "account_references": "printed-prefix",
+    "byte_baseline": "Starting main fa9937e has the same extractor as the recorded PR #91 training outputs."
+  },
+  "variants": {
+    "main": {
+      "docs": 240,
+      "micro_f1": 0.9124966550709125,
+      "micro_f1_strict": 0.8742997983419225,
+      "classification_accuracy": 1.0,
+      "negatives_empty": 1.0,
+      "dataset_sha256": "53414e5959d93426f1553cc36fcbe86968fca23edb80a959740654790b20dd03",
+      "profile_uzp": {
+        "alternative-formats": 0.9622926093514329,
+        "reordered": 0.9628482972136223,
+        "scan": 0.9526813880126183,
+        "single-column": 0.9847094801223242,
+        "synonyms": 0.8980891719745223,
+        "two-column": 0.66015625
+      }
+    },
+    "concurrent_run": {
+      "docs": 240,
+      "micro_f1": 0.9122055674518201,
+      "micro_f1_strict": 0.8738516692807529,
+      "classification_accuracy": 1.0,
+      "negatives_empty": 1.0,
+      "dataset_sha256": "53414e5959d93426f1553cc36fcbe86968fca23edb80a959740654790b20dd03",
+      "profile_uzp": {
+        "alternative-formats": 0.9622926093514329,
+        "reordered": 0.9628482972136223,
+        "scan": 0.9510268562401264,
+        "single-column": 0.9847094801223242,
+        "synonyms": 0.8980891719745223,
+        "two-column": 0.66015625
+      }
+    },
+    "final": {
+      "docs": 240,
+      "micro_f1": 0.9124966550709125,
+      "micro_f1_strict": 0.8742997983419225,
+      "classification_accuracy": 1.0,
+      "negatives_empty": 1.0,
+      "dataset_sha256": "53414e5959d93426f1553cc36fcbe86968fca23edb80a959740654790b20dd03",
+      "profile_uzp": {
+        "alternative-formats": 0.9622926093514329,
+        "reordered": 0.9628482972136223,
+        "scan": 0.9526813880126183,
+        "single-column": 0.9847094801223242,
+        "synonyms": 0.8980891719745223,
+        "two-column": 0.66015625
+      }
+    }
+  },
+  "mixed_batch": {
+    "docs": 150,
+    "seconds": 338.15414408408105,
+    "jobs": 2,
+    "scans": 30
+  },
+  "organizer_scans": {
+    "micro_f1": 1.0,
+    "micro_f1_strict": 0.9974226804123711,
+    "macro_f1_classes": 1.0,
+    "per_class_f1": {
+      "odwolanie": 1.0,
+      "pelnomocnictwo": 1.0,
+      "przelew": 1.0
+    },
+    "classification_accuracy": 1.0,
+    "negatives_empty": null,
+    "n": 30,
+    "exact": 29,
+    "context": "30 scans within the normal 150-PDF mixed keyless batch",
+    "routing": {
+      "przelew": [
+        10,
+        10
+      ],
+      "odwolanie": [
+        10,
+        10
+      ],
+      "pelnomocnictwo": [
+        10,
+        10
+      ]
+    }
+  },
+  "corpus_1_test": {
+    "n": 17,
+    "exact": 7,
+    "micro_f1": 0.9202898550724637,
+    "micro_f1_strict": 0.9022869022869023,
+    "macro_f1_classes": 0.925964425964426,
+    "per_class_f1": {
+      "odwolanie": 0.918918918918919,
+      "pelnomocnictwo": 0.9743589743589743,
+      "przelew": 0.8846153846153846
+    },
+    "routing_by_class": {
+      "odwolanie": {
+        "correct": 5,
+        "total": 5
+      },
+      "pelnomocnictwo": {
+        "correct": 3,
+        "total": 3
+      },
+      "przelew": {
+        "correct": 5,
+        "total": 5
+      },
+      "negatywny": {
+        "correct": 4,
+        "total": 4
+      }
+    }
+  },
+  "tests_passed": 2128,
+  "launcher_validation": {
+    "main_merge": "ace38bb",
+    "commit": "bb200c6741446147ae6808f754b810a23e6d28f6",
+    "changes": "Main updated the launcher and progress stream encoding. The extraction modules and caption grammar match the feature gates.",
+    "tests_passed": 2129,
+    "training_exact": 196,
+    "byte_identical_to_feature_gate": 196,
+    "uzp": 1.0,
+    "strict": 1.0
+  }
+}

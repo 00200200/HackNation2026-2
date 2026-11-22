@@ -421,7 +421,7 @@
     "byte_identical_to_companion": 196,
     "uzp": 1.0,
     "strict": 1.0,
-    "zero_byte_negatives": 16,
+    "empty_json_negatives": 16,
     "references": "Organizer printed account prefixes."
   },
   "scans": {
