@@ -21,10 +21,9 @@ main { padding: 1.6rem; min-width: 0; }
 .panel-head label { margin: 0; }
 #target { overflow-wrap: anywhere; }
 #preview { height: calc(100vh - 235px); min-height: 15rem; overflow: auto; }
-#result_text, #trace_table { height: calc(50vh - 140px); min-height: 10rem; overflow: auto; }
+#result_json, #trace_table { height: calc(50vh - 160px); min-height: 10rem; overflow: auto; }
 #preview { background: #e4eae8; padding: .7rem; }
 #preview img { width: 100%; height: auto; box-shadow: 0 1px 4px #9caba7; }
-#result_text { margin: 0; border: none; border-radius: 0; padding: 1rem; white-space: pre-wrap; overflow-wrap: anywhere; font-size: .85rem; color: #183d40; background: white; }
 @media (max-width: 900px) { .workspace { grid-template-columns: 1fr; } aside { min-height: 0; } }
 @media (max-width: 630px) { .comparison { grid-template-columns: 1fr; } main { padding: .8rem; } header { flex-wrap: wrap; } }
 .method { margin-top: 1rem; }
@@ -50,3 +49,17 @@ main { padding: 1.6rem; min-width: 0; }
 .page-link { border: none; background: none; padding: 0; color: #183d40; text-decoration: underline; cursor: pointer; }
 .page-link:focus-visible { outline: 2px solid #183d40; outline-offset: 2px; }
 .trace-note { color: #405a60; margin: 0 0 .4rem; }
+/* The JSON as written; a value with a known source is clickable and marks its words on the page. */
+.json-view { margin: 0; border: none; border-radius: 0; padding: 1rem; white-space: pre-wrap; overflow-wrap: anywhere; font-size: .85rem; color: #183d40; background: white; }
+.json-view .leaf { border-radius: 2px; }
+.json-view .leaf.located { cursor: pointer; text-decoration: underline dotted #7c9a96; text-underline-offset: 3px; }
+.json-view .leaf.located:hover { background: #fff3c4; }
+.json-view .leaf.selected { background: #ffe38a; outline: 1px solid #183d40; }
+.json-view .leaf.flagged { text-decoration: underline wavy #9b6b00; }
+.evidence { padding: .5rem .9rem; margin: 0; border-top: 1px solid #cbd7d5; font-size: .85rem; color: #183d40; overflow-wrap: anywhere; }
+.outcome { padding: 1rem; color: #183d40; }
+.outcome details { margin-top: .5rem; font-size: .8rem; color: #405a60; }
+.outcome code { white-space: pre-wrap; overflow-wrap: anywhere; }
+.checks { display: flex; flex-wrap: wrap; gap: .4rem; }
+.badge-warning { display: inline-block; padding: .2rem .55rem; border: 1px solid #9b6b00; border-radius: 1rem; background: #fff8e1; color: #5c4100; font-size: .8rem; overflow-wrap: anywhere; }
+#trace_table th { white-space: nowrap; }

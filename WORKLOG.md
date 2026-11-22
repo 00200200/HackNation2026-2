@@ -28,6 +28,9 @@ classes in the CLI and viewer. A class file can declare weighted routing cues wi
 (`nip`, `regon`, `pesel`, `iban`, `date_range`, `one_of`). `python -m kio2json.classes new` writes a class file from a sample PDF.
 The viewer lists the loaded classes, the cue that chose each class, failed checks and each field's source;
 `--explain DIR` writes the same trace to a folder outside `--output`. Example: `examples/classes/accession.toml`.
+A click on a value in the viewer's JSON marks its words on the page image, from the text layer or OCR word boxes.
+The viewer also accepts a ZIP of case folders, reuses results for files it has read and runs headless with
+`--host`, `--port` and `--no-browser`; off localhost it opens folders only under `--folder-root`.
 
 ## Last eval
 
@@ -253,3 +256,4 @@ These runs used local rules with the three endpoint variables unset. The two loc
 - 22.11.2026 · Codex · Synced the rule fixes in #75 with main at `b9c2c7f`, preserving the printed account prefix during OCR slash repair.
 - 22.11.2026 · Codex · Integrated the merged #75 rule fixes into #72 at main `257a6af`.
 - 22.11.2026 · Claude · #62 classes from one TOML file (`--classes`, `--enable`, weighted cues, named checks, `python -m kio2json.classes new`), and the #40 trace from `feat/explain` (`--explain DIR`, viewer class list, routing cue, field sources). 1960 tests pass. The CLI wrote the same bytes as main `fe2b2fd` for all 226 organizer PDFs (196 training, 30 scans), and the full training eval at `10c4d88` with `--correct-training-accounts` scored 1.000 UZP micro F1 with every target met · branch `claude/config-classes-case-ab8189`
+- 22.11.2026 · Claude · #40 viewer evidence: a click on a JSON value marks its words on the page (text layer or OCR boxes), with page, source line and engine. Also the #15 viewer items: ZIP case upload, cached repeat runs, a task button that blocks a second run, Polish messages for unreadable and unrecognised documents, and headless `--host`/`--port`, with folder mode limited to `--folder-root` off localhost. Case warnings from #74 show as badges. Screenshots in `docs/gui/evidence-*.png` · branch `claude/gui-evidence-40`

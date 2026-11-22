@@ -1,28 +1,59 @@
-"""Local document viewer. Start with python -m kio2json.gui [--classes PATH] [--enable ID]."""
+"""Local document viewer: python -m kio2json.gui [--classes PATH] [--enable ID] [--host H] [--port P] [--no-browser]."""
 
 import argparse
 import asyncio
+import hashlib
+import os
 from concurrent.futures import ThreadPoolExecutor
 from pathlib import Path
 from tempfile import TemporaryDirectory
 
 from shiny import App, Inputs, Outputs, Session, reactive, render, req, run_app, ui
 
+from kio2json.case_repair import case_repair_enabled
 from kio2json.class_config import DocumentClass, add_class_options, class_sources, parse_classes
+from kio2json.gui_explain import (
+    case_badges,
+    display_name,
+    evidence,
+    field_table,
+    json_view,
+    outcome,
+    routing_reason,
+    warning_list,
+)
 from kio2json.gui_explain import class_list as class_panel
-from kio2json.gui_explain import display_name, field_table, routing_reason, warning_list
 from kio2json.gui_files import Document, analyze, archive, folder_sources, page_count, page_image, upload_sources
+from kio2json.model_profile import ProfileSettings
 
 # Class files are read again for every analysis, so a class file added to a --classes directory
 # applies on the next click.
-class_options = argparse.Namespace(classes=[], enable=[])
+options = argparse.Namespace(classes=[], enable=[], host="127.0.0.1", folder_root=None)
+LOOPBACK = {"127.0.0.1", "localhost", "::1"}
 
 
-def load_classes() -> tuple[list[DocumentClass], str | None]:
+def load_classes() -> tuple[list[DocumentClass], str | None, str]:
+    """The class set for one run, an error message, and a cache key.
+
+    The key changes with any class file, the model profile and endpoint, the OCR engine and case repair,
+    so a cached result never outlives the settings it was read with. It never contains the API key.
+    """
     try:
-        return parse_classes(class_sources(extra=class_options.classes, enable=class_options.enable)), None
+        sources = class_sources(extra=options.classes, enable=options.enable)
+        classes = parse_classes(sources)
     except (OSError, ValueError) as error:
-        return [], str(error)
+        return [], str(error), ""
+    settings = ProfileSettings()
+    state = (
+        sorted(sources.files.items()),
+        sorted(sources.enable),
+        [(definition.id, definition.profile) for definition in classes],
+        settings.base_url,
+        settings.model,
+        os.getenv("KIO_OCR_ENGINE", ""),
+        case_repair_enabled(),
+    )
+    return classes, None, hashlib.sha256(repr(state).encode()).hexdigest()
 
 
 # PDFium must never be called simultaneously from multiple threads or sessions.
@@ -41,10 +72,10 @@ app_ui = ui.page_fluid(
                 "input.mode === 'upload'",
                 ui.input_file(
                     "files",
-                    "Pliki PDF",
+                    "Pliki PDF albo archiwum ZIP ze sprawami",
                     multiple=True,
-                    accept=".pdf",
-                    button_label="Wybierz pliki PDF…",
+                    accept=[".pdf", ".zip"],
+                    button_label="Wybierz pliki…",
                     placeholder="Nie wybrano plików",
                 ),
                 ui.output_text("upload_summary"),
@@ -55,7 +86,8 @@ app_ui = ui.page_fluid(
                 ui.input_text("folder", "Ścieżka do folderu", "input"),
                 ui.p("Wskaż folder ze sprawami lub folder jednej sprawy."),
             ),
-            ui.input_action_button("run", "Analizuj dokumenty", class_="btn-primary"),
+            # A task button stays disabled while its run is in progress, so a second click cannot repeat OCR.
+            ui.input_task_button("run", "Analizuj dokumenty", label_busy="Trwa analiza…"),
             ui.div(ui.output_text("notice"), role="status", class_="notice"),
             ui.output_ui("class_list"),
             ui.panel_conditional(
@@ -86,7 +118,8 @@ app_ui = ui.page_fluid(
                     ),
                     ui.tags.section(
                         ui.div(ui.h3("Wynik JSON"), ui.output_text("target"), class_="panel-head"),
-                        ui.output_code("result_text"),
+                        ui.output_ui("result_json"),
+                        ui.output_ui("field_evidence"),
                         ui.output_ui("checks"),
                         ui.h3("Źródła pól", class_="trace-head"),
                         ui.output_ui("trace_table"),
@@ -107,7 +140,8 @@ app_ui = ui.page_fluid(
 def server(input: Inputs, output: Outputs, session: Session):
     documents = reactive.value(list[Document]())
     message = reactive.value("")
-    classes = reactive.value(load_classes())
+    classes = reactive.value(load_classes()[:2])
+    field = reactive.value(None)
     scratch = TemporaryDirectory(prefix="odwolania-")
     session.on_ended(lambda: scratch.cleanup())
 
@@ -118,20 +152,29 @@ def server(input: Inputs, output: Outputs, session: Session):
         documents.set([])
         scratch.cleanup()
         scratch = TemporaryDirectory(prefix="odwolania-")
-        loaded, error = load_classes()
+        loaded, error, class_key = load_classes()
         classes.set((loaded, error))
         if error:
             message.set("Popraw plik klasy i spróbuj ponownie.")
             return
+        loop = asyncio.get_running_loop()
         try:
-            if input.mode() == "folder":
-                sources = folder_sources(input.folder())
-            else:
-                sources = upload_sources(input.case().strip(), input.files() or [])
             with ui.Progress() as progress:
                 progress.set(message="Trwa analiza dokumentów…")
-                results = await asyncio.get_running_loop().run_in_executor(
-                    pdf_worker, analyze, sources, Path(scratch.name), loaded
+                # Listing a folder or unpacking a ZIP can take a while, so it runs off the event loop too.
+                if input.mode() == "folder":
+                    if options.folder_root is None and options.host not in LOOPBACK:
+                        raise ValueError("Na tym serwerze można tylko wgrać pliki PDF albo archiwum ZIP.")
+                    sources = await loop.run_in_executor(
+                        pdf_worker, folder_sources, input.folder(), options.folder_root
+                    )
+                else:
+                    files = input.files() or []
+                    sources = await loop.run_in_executor(
+                        pdf_worker, upload_sources, input.case().strip(), files, Path(scratch.name)
+                    )
+                results = await loop.run_in_executor(
+                    pdf_worker, analyze, sources, Path(scratch.name), loaded, class_key
                 )
         except (ValueError, OSError) as error:
             message.set(str(error))
@@ -169,18 +212,33 @@ def server(input: Inputs, output: Outputs, session: Session):
         index = int(input.document() or 0)
         return items[index if 0 <= index < len(items) else 0]
 
+    @reactive.effect
+    @reactive.event(input.document, documents)
+    def forget_field():
+        field.set(None)
+
+    @reactive.effect
+    @reactive.event(input.field)
+    def choose_field():
+        index = input.field()
+        fields = (selected().result.trace or {}).get("fields") or []
+        field.set(index)
+        if 0 <= index < len(fields) and fields[index]["page"]:
+            ui.update_select("page", selected=str(fields[index]["page"]))
+
     @render.text
     def classification():
         result = selected().result
         names = {definition.id: display_name(definition) for definition in classes()[0]}
         if result.error:
-            return f"Nie udało się odczytać dokumentu. {result.error}"
+            # The reason and the raw error appear beside the JSON, under "Szczegóły techniczne".
+            return "Nie udało się odczytać dokumentu"
         if result.used_recovery:
             if result.label is None:
                 return "Brak wyniku po awaryjnej próbie odczytu regułami"
             return f"{names.get(result.label, result.label)} (reguły awaryjne)"
         if result.label is None:
-            return "Dokument poza obsługiwanymi klasami"
+            return "Nie rozpoznano typu dokumentu"
         return names.get(result.label, result.label.replace("_", " "))
 
     @render.text
@@ -195,33 +253,23 @@ def server(input: Inputs, output: Outputs, session: Session):
     def trace_table():
         return field_table(selected().result.trace)
 
-    @reactive.effect
-    @reactive.event(input.trace_page)
-    def show_trace_page():
-        ui.update_select("page", selected=str(input.trace_page()))
-
     @render.text
     def target():
         return selected().name.with_suffix(".json").as_posix()
 
     @render.ui
     def consistency_warnings():
-        warnings = selected().warnings
-        if warnings:
-            return ui.div(
-                ui.h3("Rozbieżności w dokumentach sprawy"),
-                ui.tags.ul(
-                    *(
-                        ui.tags.li(w.message, " ", ui.tags.small(", ".join(name.as_posix() for name in w.documents)))
-                        for w in warnings
-                    )
-                ),
-                class_="alert alert-warning",
-            )
+        return case_badges(selected().warnings)
 
-    @render.code
-    def result_text():
-        return selected().result.text
+    @render.ui
+    def result_json():
+        result = selected().result
+        return outcome(result) or json_view(result.text, result.trace, field())
+
+    @render.ui
+    def field_evidence():
+        result = selected().result
+        return None if outcome(result) else evidence(result.trace, field())
 
     @reactive.calc
     async def pages():
@@ -242,12 +290,18 @@ def server(input: Inputs, output: Outputs, session: Session):
         total = await pages()
         if total:
             number = max(1, min(int(input.page() or 1), total))
+            fields = (doc.result.trace or {}).get("fields") or []
+            index = field()
+            chosen = fields[index] if index is not None and 0 <= index < len(fields) else None
+            boxes = chosen["boxes"] if chosen and chosen["page"] == number else []
             try:
-                image = await asyncio.get_running_loop().run_in_executor(pdf_worker, page_image, doc.snapshot, number)
+                image = await asyncio.get_running_loop().run_in_executor(
+                    pdf_worker, page_image, doc.snapshot, number, boxes
+                )
                 return ui.img(src=image, alt=f"{doc.name.name}, strona {number}")
             except (OSError, ValueError, RuntimeError):
                 pass
-        return ui.p("Nie udało się wyświetlić strony PDF.")
+        return ui.p("Nie udało się wyświetlić strony PDF. Plik może być uszkodzony.")
 
     @render.download_button(filename="wyniki.zip", media_type="application/zip")
     def download():
@@ -259,5 +313,13 @@ app = App(app_ui, server)
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(prog="python -m kio2json.gui", description="Local document viewer")
     add_class_options(parser)
-    parser.parse_args(namespace=class_options)
-    run_app(app, host="127.0.0.1", launch_browser=True, dev_mode=False)
+    parser.add_argument("--host", default="127.0.0.1", help="address to listen on; 0.0.0.0 serves other machines")
+    parser.add_argument("--port", type=int, default=8000, help="port to listen on (default: 8000)")
+    parser.add_argument("--no-browser", action="store_true", help="do not open a browser, for servers and containers")
+    parser.add_argument(
+        "--folder-root",
+        type=Path,
+        help="folder whose cases the viewer may open; without it, a host other than localhost allows uploads only",
+    )
+    parser.parse_args(namespace=options)
+    run_app(app, host=options.host, port=options.port, launch_browser=not options.no_browser, dev_mode=False)

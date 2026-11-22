@@ -82,7 +82,29 @@ def test_session_reports_failed_document_and_invalid_new_run(tmp_path):
     path.write_bytes(b"broken")
     with shiny_session(gui.app) as session:
         session.set_inputs(mode="folder", folder=str(tmp_path), run=1, document="0", page="1")
-        assert "No /Root object" in session.get_output("classification").value
-        assert session.get_output("result_text").value == "{}\n"
+        assert session.get_output("classification") == "Nie udało się odczytać dokumentu"
+        shown = str(session.get_output("result_json"))
+        assert "Plik może być uszkodzony" in shown
+        assert "Szczegóły techniczne" in shown and "No /Root object" in shown
         session.set_inputs(folder=str(tmp_path / "missing"), run=2)
         assert "folder" in session.get_output("notice").value.lower()
+
+
+def test_public_host_without_folder_root_allows_uploads_only(tmp_path, monkeypatch):
+    (tmp_path / "a.pdf").write_bytes(b"%PDF")
+    monkeypatch.setattr(gui.options, "host", "0.0.0.0")
+    with shiny_session(gui.app) as session:
+        session.set_inputs(mode="folder", folder=str(tmp_path), run=1)
+        assert "tylko wgrać" in session.get_output("notice").value
+
+
+def test_case_warnings_render_as_badges_naming_their_documents():
+    from kio2json.case_checks import CaseWarning
+    from kio2json.gui_explain import case_badges
+
+    warning = CaseWarning(
+        "grantor", (Path("sprawa/odwolanie.pdf"), Path("sprawa/pelnomocnictwo.pdf")), "Mocodawca różni się."
+    )
+    shown = str(case_badges((warning,)))
+    assert 'class="badge-warning"' in shown and "Mocodawca różni się." in shown and "sprawa/pelnomocnictwo.pdf" in shown
+    assert case_badges(()) is None

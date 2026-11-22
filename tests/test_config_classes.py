@@ -514,4 +514,4 @@ def test_the_page_of_a_field_is_a_keyboard_button():
 
     shown = html.unescape(str(field_table(trace)))
     assert "<button" in shown and 'type="button"' in shown and 'class="page-link"' in shown
-    assert "Shiny.setInputValue('trace_page', 2" in shown
+    assert "Shiny.setInputValue('field', 0" in shown  # selects the field: its page and its marked words

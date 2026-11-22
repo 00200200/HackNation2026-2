@@ -106,9 +106,12 @@ def build(label: str | None, record: dict, events: dict) -> dict:
     trace["routing"] = routing
     candidates = events["candidates"]
     declared = events.get("declared_fields") or {}
+    words = {}
+    for box in events.get("boxes", []):
+        words.setdefault(box.page, []).append(box)
     for path, value in leaves(record):
         pattern = declared_pattern(declared, path)
-        trace["fields"].append(field_source(path, value, pages, ocr_pages, candidates, pattern))
+        trace["fields"].append(field_source(path, value, pages, ocr_pages, candidates, pattern, words))
     return trace
 
 
@@ -174,10 +177,19 @@ def declared_pattern(fields: dict, path: str) -> re.Pattern | None:
 
 
 def field_source(
-    path: str, value, pages: list[str], ocr_pages: list[int], candidates, pattern: re.Pattern | None = None
+    path: str,
+    value,
+    pages: list[str],
+    ocr_pages: list[int],
+    candidates,
+    pattern: re.Pattern | None = None,
+    words: dict[int, list] | None = None,
 ) -> dict:
-    """Locate a value by its field's own label pattern when the class declares one, else by its printed forms."""
-    entry = {"field": path, "value": value, "engine": None, "page": None, "snippet": None}
+    """Locate a value by its field's own label pattern when the class declares one, else by its printed forms.
+
+    `boxes` lists the page words that spell the printed value, in PDF points from the top left.
+    """
+    entry = {"field": path, "value": value, "engine": None, "page": None, "snippet": None, "boxes": []}
     if value is None:
         return entry | {"note": "no value extracted"}
     producer = next((engine for engine, candidate in candidates if lookup(candidate, path) == value), None)
@@ -190,6 +202,10 @@ def field_source(
             match = (pattern or value_pattern(value)).search(page)
             if match:
                 entry["page"], entry["snippet"] = number, snippet(page, match)
+                # An optional capture group can be empty; the whole match still shows where the label is.
+                printed = (match[1] if pattern is not None else None) or match[0]
+                spelled = word_span((words or {}).get(number, []), printed)
+                entry["boxes"] = [[round(c, 1) for c in (w.x0, w.y0, w.x1, w.y1)] for w in spelled]
                 break
         else:
             entry["note"] = "value not found verbatim in the text read"
@@ -230,6 +246,32 @@ def value_pattern(value) -> re.Pattern:
         before = r"(?<!\d)" if text.isdigit() else r"(?<!\w)"
         return re.compile(before + r"[ \-]?".join(map(re.escape, text)) + r"(?!\d)", re.IGNORECASE)
     return re.compile(r"\s+".join(map(re.escape, text.split())), re.IGNORECASE)
+
+
+def _token(text: str) -> str:
+    return re.sub(r"^\W+|\W+$", "", text).casefold()
+
+
+def word_span(words: list, printed: str) -> list:
+    """The consecutive words that spell the printed value, ignoring edge punctuation and spacing.
+
+    A value printed inside a longer word, such as "NIP:5260250995", falls back to that one word.
+    """
+    target = "".join(_token(part) for part in printed.split())
+    if not target:
+        return []
+    tokens = [_token(word.text) for word in words]
+    for start, first in enumerate(tokens):
+        if not first or not target.startswith(first):
+            continue
+        joined = ""
+        for end in range(start, len(words)):
+            joined += tokens[end]
+            if joined == target:
+                return words[start : end + 1]
+            if not target.startswith(joined):
+                break
+    return next(([word] for word, token in zip(words, tokens, strict=True) if target in token), [])
 
 
 def snippet(page: str, match: re.Match) -> str:

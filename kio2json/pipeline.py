@@ -353,6 +353,7 @@ def _process(
                 case_readings.extend(printed_readings(definition.id, record, primary, ocr_pages, boxes))
             trace.note("pages", pages)
             trace.note("ocr_pages", ocr_pages)
+            trace.note("boxes", boxes)
             return definition.id, record
         if not ocr_pages:
             break

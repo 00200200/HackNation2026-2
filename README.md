@@ -156,10 +156,17 @@ bank-transfer confirmations get the organizer's structure. Unrelated documents g
 reports `no readable text after OCR`. Blank pages may stand alone or appear beside a readable page.
 
 To open the Polish document viewer, run `python -m kio2json.gui`. It opens a browser on
-`127.0.0.1:8000`. Select PDFs and name the case, or enter a folder containing cases. Click
-**Analizuj dokumenty**, choose a document and compare its pages with the JSON. **Pobierz wyniki (.zip)**
-downloads one JSON per PDF under its case folder. Failed documents show the reason and get `{}` in the ZIP. The viewer keeps temporary copies for the current session. The default configuration
-works offline. Page provenance is used internally and the output follows the organizer’s JSON schema.
+`127.0.0.1:8000`. On a server or in a container, add `--host 0.0.0.0 --port 8080 --no-browser`.
+The viewer has no login, so serve it only on a trusted network. With a host other than localhost it accepts
+uploads only, unless `--folder-root DIR` names the one folder whose cases it may open.
+Select PDFs or a ZIP of case folders, or enter a folder containing cases, and click
+**Analizuj dokumenty**. For each document the viewer shows its class and the heading or cues that chose it.
+Click a value in the JSON to mark its words on the page image. The line below names the page, the source
+line, and whether the rules read the value from the text layer or from OCR. Failed checks appear as badges.
+A document that cannot be read, or whose type is not recognised, gets a plain Polish explanation and `{}` in the ZIP.
+**Pobierz wyniki (.zip)** downloads the same bytes the CLI writes, one JSON per PDF under its case folder.
+Running the same files again reuses their results instead of repeating OCR. The default configuration
+works offline, and the evidence stays in memory: the JSON follows the organizer’s schema.
 
 When a case contains an appeal and a mandate or receipt, the viewer flags differences in party
 identifiers, attorney names and procedure numbers. It also flags unusual appeal fees when the
@@ -176,7 +183,7 @@ corrected only when its NIP checksum fails. Missing fields stay empty.
 | Run the CLI on `input/` and write to `output/` | `.\start.bat` | `./start.sh` |
 | Open the viewer | `.\start.bat gui` | `./start.sh gui` |
 
-[Transfer confirmation in the viewer](docs/gui/transfer.png) · [Appeal in the viewer](docs/gui/appeal.png)
+[Field evidence on a text PDF](docs/gui/evidence-text.png) · [Field evidence on a scan](docs/gui/evidence-scan.png) · [Transfer confirmation in the viewer](docs/gui/transfer.png) · [Appeal in the viewer](docs/gui/appeal.png)
 
 ## How it works
 
@@ -505,6 +512,9 @@ rules. [OCR results](evals/results/ocr-engines.json)
 
 - A receipt that shows only acceptance for future execution can remain unclassified. On damaged scans, a booking date and debit can establish a completed payment even when the account roles are unreadable. The affected account fields stay null.
 - A model can cite the wrong party’s valid source text.
+- The viewer marks a value's words using the page's word positions. On a page whose visible area (CropBox) is
+  smaller than its full sheet (MediaBox), the marks can be shifted. A value the rules derived, such as an action
+  code, or rebuilt from several places has no marks.
 
 - Appeal extraction reads the first three pages. A signature or dated notice later in the PDF can be missed.
   Scanned appeal covers use printed word positions to reconnect party labels with their address blocks.
