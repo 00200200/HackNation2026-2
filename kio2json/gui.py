@@ -149,7 +149,7 @@ def server(input: Inputs, output: Outputs, session: Session):
     def classification():
         result = selected().result
         if result.error:
-            return "Nie udało się odczytać dokumentu"
+            return f"Nie udało się odczytać dokumentu. {result.error}"
         if result.used_recovery:
             if result.label is None:
                 return "Brak wyniku po awaryjnej próbie odczytu regułami"
@@ -179,10 +179,7 @@ def server(input: Inputs, output: Outputs, session: Session):
 
     @render.code
     def result_text():
-        result = selected().result
-        if result.error:
-            return f"Zapisano pusty plik (0 B).\nPrzyczyna: {result.error}"
-        return result.text or "Zapisano pusty plik (0 B)."
+        return selected().result.text
 
     @reactive.calc
     async def pages():

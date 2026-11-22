@@ -6,6 +6,7 @@ from itertools import groupby
 from pathlib import Path
 
 from . import appeal, bank_transfer, ocr_signatures, power_of_attorney
+from .accounts import account_identity
 from .appeal_scan_action import apply_action
 from .appeal_scan_crops import verify_cover
 from .appeal_scan_parties import apply_parties
@@ -46,11 +47,7 @@ def _account_fields(text: str, ocr: bool, receipt: AccountEvidence | None = None
     if ocr:
         evidence = receipt or account_evidence(text)
         values = {"sender": evidence.sender, "recipient": evidence.recipient}
-        return {
-            role: "PL" + value if value and role in evidence.prefixed_roles else value
-            for role, value in values.items()
-            if value is not None or role in evidence.declared
-        }
+        return {role: value for role, value in values.items() if value is not None or role in evidence.declared}
     sender, recipient = bank_transfer._accounts(text)
     lower = text.casefold()
     fields = {}
@@ -90,10 +87,10 @@ def extract_bank_transfer(
             number = next(iter(candidates))
             if (
                 number
-                and number.removeprefix("PL") != (fields.get(opposite) or "").removeprefix("PL")
+                and account_identity(number) != account_identity(fields.get(opposite) or "")
                 and (
                     opposite in fields
-                    or all(number.removeprefix("PL") != (v or "").removeprefix("PL") for v in supplements[opposite])
+                    or all(account_identity(number) != account_identity(v or "") for v in supplements[opposite])
                 )
             ):
                 fields[role] = number

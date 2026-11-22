@@ -37,7 +37,7 @@ def test_fourth_class_cli_and_jury_default(tmp_path, monkeypatch):
     monkeypatch.delenv("KIO_CLASSES_DIR", raising=False)
     monkeypatch.setattr(sys, "argv", ["app", "--input", str(tmp_path), "--output", str(target.parent)])
     assert cli.main() == 0
-    assert target.read_bytes() == b""
+    assert target.read_text() == "{}\n"
 
     config = tmp_path / "classes"
     config.mkdir()

@@ -1,5 +1,5 @@
 id = "bank_transfer"
-span_instructions = "Opisz jedną wykonaną operację. Odróżnij rachunek nadawcy od odbiorcy, datę wykonania od daty wydruku i tytuł przelewu od nazwy dokumentu. Wybierz kwotę operacji wraz ze znakiem i pełny numer każdego rachunku."
+span_instructions = "Opisz jedną wykonaną operację. Odróżnij rachunek nadawcy od odbiorcy, datę wykonania od daty wydruku i tytuł przelewu od nazwy dokumentu. Wybierz kwotę operacji wraz ze znakiem. Skopiuj pełny numer każdego rachunku, w tym kod kraju, jeśli go wydrukowano, oraz wszystkie litery i zera."
 priority = 30
 engines = ["python"]
 extractor = "kio2json.bank_transfer.extract"
@@ -15,7 +15,7 @@ instruction = "Details of this executed transfer. Return null for every unstated
 [fields.przelew_bankowy.fields]
 data_operacji = { type = "string", normalizer = "iso_date", instruction = "Execution date (data operacji, data realizacji) as YYYY-MM-DD. If absent, null." }
 kwota = { type = "number", normalizer = "money", instruction = "Transfer amount (kwota przelewu) as a JSON number with no currency or grouping marks. If absent, null." }
-na_rachunek = { type = "string", normalizer = "account_number", instruction = "Recipient’s account (rachunek odbiorcy, na rachunek), 26 digits preserving leading zeros. If absent, null." }
+na_rachunek = { type = "string", normalizer = "account_number", instruction = "Recipient’s account (rachunek odbiorcy, na rachunek). Copy the complete IBAN or domestic Polish account, removing whitespace. Preserve the printed country code, letters and leading zeros. If absent, null." }
 numer_transakcji = { type = "string", instruction = "Transaction identifier or bank reference. If absent, null." }
 tytul = { type = "string", instruction = "Complete payment title (tytuł przelewu), including continuation lines. If absent, null." }
-z_rachunku = { type = "string", normalizer = "account_number", instruction = "Sender’s account (rachunek nadawcy, z rachunku), 26 digits preserving leading zeros. If absent, null." }
+z_rachunku = { type = "string", normalizer = "account_number", instruction = "Sender’s account (rachunek nadawcy, z rachunku). Copy the complete IBAN or domestic Polish account, removing whitespace. Preserve the printed country code, letters and leading zeros. If absent, null." }
