@@ -269,3 +269,119 @@ def test_worker_processes_read_a_case_and_report_each_file(tmp_path, monkeypatch
     assert [d.result.label for d in documents] == ["accession", "accession"]
     assert all(d.result.trace["fields"] for d in documents)
     assert seen == [(1, Path("sprawa/a.pdf")), (2, Path("sprawa/b.pdf"))]
+
+
+def test_an_expired_ocr_budget_is_recorded_and_not_cached(tmp_path, monkeypatch):
+    from time import monotonic
+
+    from kio2json import trace
+    from kio2json.ocr_budget import document_budget
+
+    with trace.recording() as events, document_budget(monotonic() - 1):
+        pass
+    assert events.get("optional_ocr_expired") is True
+
+    calls = []
+
+    def process(path, **kwargs):
+        calls.append(path)
+        trace.note("optional_ocr_expired", True)
+        return "appeal", {"pole": "treść"}
+
+    monkeypatch.setattr("kio2json.batch.process_pdf", process)
+    monkeypatch.setattr(gui_files, "_results", gui_files.OrderedDict())
+    source = tmp_path / "a.pdf"
+    source.write_bytes(b"%PDF one")
+    for _ in range(2):
+        analyze([(Path("sprawa/a.pdf"), source)], tmp_path, [], "key")
+    assert len(calls) == 2
+
+
+def test_a_damaged_lzma_entry_is_explained(tmp_path):
+    import zipfile
+
+    buffer = BytesIO()
+    with ZipFile(buffer, "w", compression=zipfile.ZIP_LZMA) as bundle:
+        bundle.writestr("s/a.pdf", b"%PDF-1.4 " * 100)
+    raw = bytearray(buffer.getvalue())
+    raw[30 + len("s/a.pdf") + 4] = 0xFF  # damage the first LZMA property byte
+    (tmp_path / "u.zip").write_bytes(raw)
+    with pytest.raises(ValueError, match="rozpakować"):
+        upload_sources("sprawa", [{"name": "u.zip", "datapath": str(tmp_path / "u.zip")}], tmp_path)
+
+
+def test_the_upload_limit_stops_a_second_zip_before_unpacking(tmp_path, monkeypatch):
+    monkeypatch.setattr(gui_files, "ZIP_MAX_FILES", 1)
+    (first := tmp_path / "a").mkdir()
+    (second := tmp_path / "b").mkdir()
+    uploads = [zip_upload(first, {"s1/x.pdf": b"A"}), zip_upload(second, {"s2/y.pdf": b"B"})]
+    with pytest.raises(ValueError, match="za duże"):
+        upload_sources("sprawa", uploads, tmp_path)
+    assert not list(tmp_path.glob("zip1-*.pdf"))
+
+
+def test_the_cache_key_covers_every_kio_setting(monkeypatch):
+    from kio2json import gui
+
+    monkeypatch.delenv("KIO_CLASSES_DIR", raising=False)
+    before = gui.load_classes()[2]
+    monkeypatch.setenv("KIO_LLM_OUTPUT", "spans")
+    assert gui.load_classes()[2] != before
+
+
+def test_an_empty_folder_field_opens_the_folder_root(tmp_path):
+    (tmp_path / "sprawa").mkdir()
+    (tmp_path / "sprawa" / "a.pdf").write_bytes(b"%PDF")
+    assert [name.as_posix() for name, _ in gui_files.folder_sources("", tmp_path)] == ["sprawa/a.pdf"]
+
+
+@pytest.mark.parametrize(
+    ("recovery", "text"),
+    [
+        ("Could not read document. Returning {}.", "Nie udało się odczytać pliku"),
+        ("Used rules after document processing failed.", "reguły nie rozpoznały jego typu"),
+        ("Document processing and rule recovery failed. Returning {}.", "nie powiodły się"),
+    ],
+)
+def test_recovery_messages_follow_what_happened(recovery, text):
+    result = Result(None, used_recovery=True, trace={"class": None, "fields": [], "recovery": recovery})
+    assert text in str(outcome(result))
+
+
+def test_a_nested_label_marks_the_words_inside_its_own_object(tmp_path):
+    from kio2json.class_config import class_sources
+
+    toml = tmp_path / "pair.toml"
+    toml.write_text(
+        r"""id = "pair"
+engines = ["labelled_fields"]
+[routing]
+required = ['^Wniosek$']
+[fields.wnioskodawca]
+type = "object"
+instruction = "Applicant."
+pattern = '(?s)^Wnioskodawca:\n(.*?)^Zamawiający:'
+[fields.wnioskodawca.fields.nip]
+type = "string"
+instruction = "Applicant NIP."
+pattern = '^NIP:[ \t]*(\d+)$'
+[fields.zamawiajacy]
+type = "object"
+instruction = "Contracting authority."
+pattern = '(?s)^Zamawiający:\n(.*)'
+[fields.zamawiajacy.fields.nip]
+type = "string"
+instruction = "Authority NIP."
+pattern = '^NIP:[ \t]*(\d+)$'
+""",
+        encoding="utf-8",
+    )
+    from snapshots.generate_native import write_native_pdf
+
+    pdf = tmp_path / "pair.pdf"
+    write_native_pdf(pdf, ["Wniosek\nWnioskodawca:\nNIP: 111\nZamawiający:\nNIP: 222"])
+    pair = next(c for c in parse_classes(class_sources(extra=[toml])) if c.id == "pair")
+    result = read_document(pdf, [pair], explain=True)
+    assert json.loads(result.text) == {"wnioskodawca": {"nip": "111"}, "zamawiajacy": {"nip": "222"}}
+    fields = {field["field"]: field for field in result.trace["fields"]}
+    assert fields["zamawiajacy.nip"]["snippet"] == "NIP: 222"

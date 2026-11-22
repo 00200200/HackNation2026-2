@@ -98,6 +98,8 @@ def build(label: str | None, record: dict, events: dict) -> dict:
     }
     if "recovery" in events:
         trace["recovery"] = events["recovery"]
+    if events.get("optional_ocr_expired"):
+        trace["optional_ocr_expired"] = True
     if label is None:
         return trace
     routing = dict(events["routes"].get(label) or {"router": None, "rule": None})
@@ -164,11 +166,12 @@ def lookup(record, path: str, missing=None):
 def declared_pattern(fields: dict, path: str) -> re.Pattern | None:
     """The label pattern a class declares for this field, through nested objects but not list rows.
 
-    A list row's pattern searches only inside its parent's capture, so on the whole page it can find another row.
+    A child of a list row, or of an object with its own pattern, is read inside its parent's capture. On the
+    whole page the child's pattern could find another row or object, so such a field is located by its value.
     """
     field = None
     for key, index in PATH_PARTS.findall(path):
-        if index:
+        if index or (field is not None and field.pattern is not None):
             return None
         field = (fields if field is None else field.fields or {}).get(key)
         if field is None:

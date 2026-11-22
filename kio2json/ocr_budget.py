@@ -26,11 +26,17 @@ def batch_deadline(pdf_count: int) -> float:
 @contextmanager
 def document_budget(batch_deadline: float | None = None):
     deadline = monotonic() + REREAD_DEADLINE_SECONDS
-    token = _deadline.set(deadline if batch_deadline is None else min(deadline, batch_deadline))
+    deadline = deadline if batch_deadline is None else min(deadline, batch_deadline)
+    token = _deadline.set(deadline)
     try:
         yield
     finally:
         _deadline.reset(token)
+        if monotonic() >= deadline:
+            from . import trace  # trace imports modules that import this one
+
+            # Optional rereads may have been skipped, so the reading can be incomplete.
+            trace.note("optional_ocr_expired", True)
 
 
 def remaining_ms(limit: int) -> int:

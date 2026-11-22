@@ -11,7 +11,6 @@ from tempfile import TemporaryDirectory
 
 from shiny import App, Inputs, Outputs, Session, reactive, render, req, run_app, ui
 
-from kio2json.case_repair import case_repair_enabled
 from kio2json.class_config import ClassSources, DocumentClass, add_class_options, class_sources, parse_classes
 from kio2json.gui_explain import (
     case_badges,
@@ -25,7 +24,6 @@ from kio2json.gui_explain import (
 )
 from kio2json.gui_explain import class_list as class_panel
 from kio2json.gui_files import Document, analyze, archive, folder_sources, page_count, page_image, upload_sources
-from kio2json.model_profile import ProfileSettings
 
 # Class files are read again for every analysis, so a class file added to a --classes directory
 # applies on the next click.
@@ -36,23 +34,22 @@ LOOPBACK = {"127.0.0.1", "localhost", "::1"}
 def load_classes() -> tuple[list[DocumentClass], str | None, str, ClassSources | None]:
     """The class set for one run, an error message, a cache key, and the class files for workers.
 
-    The key changes with any class file, the model profile and endpoint, the OCR engine and case repair,
-    so a cached result never outlives the settings it was read with. It never contains the API key.
+    The key changes with any class file, every KIO_* setting from the environment or .env and the parsed
+    profiles, so a cached result never outlives the settings it was read with. Being a digest, it does not
+    reveal the API key it covers.
     """
     try:
         sources = class_sources(extra=options.classes, enable=options.enable)
         classes = parse_classes(sources)
     except (OSError, ValueError) as error:
         return [], str(error), "", None
-    settings = ProfileSettings()
+    dotenv = Path(".env")
     state = (
         sorted(sources.files.items()),
         sorted(sources.enable),
         [(definition.id, definition.profile) for definition in classes],
-        settings.base_url,
-        settings.model,
-        os.getenv("KIO_OCR_ENGINE", ""),
-        case_repair_enabled(),
+        sorted((name, value) for name, value in os.environ.items() if name.startswith("KIO_")),
+        dotenv.read_bytes() if dotenv.is_file() else b"",
     )
     return classes, None, hashlib.sha256(repr(state).encode()).hexdigest(), sources
 
@@ -87,7 +84,7 @@ app_ui = ui.page_fluid(
             ui.panel_conditional(
                 "input.mode === 'folder'",
                 ui.input_text("folder", "Ścieżka do folderu", "input"),
-                ui.p("Wskaż folder ze sprawami lub folder jednej sprawy."),
+                ui.output_text("folder_hint", container=ui.p),
             ),
             # A task button stays disabled while its run is in progress, so a second click cannot repeat OCR.
             ui.input_task_button("run", "Analizuj dokumenty", label_busy="Trwa analiza…"),
@@ -197,6 +194,12 @@ def server(input: Inputs, output: Outputs, session: Session):
         message.set(f"Liczba dokumentów: {len(results)}." + (f" Błędy odczytu: {failures}." if failures else ""))
         choices = {str(i): doc.name.as_posix() for i, doc in enumerate(results)}
         ui.update_select("document", choices=choices, selected="0")
+
+    @render.text
+    def folder_hint():
+        if options.folder_root is None:
+            return "Wskaż folder ze sprawami lub folder jednej sprawy."
+        return f"Ścieżka liczy się od folderu {options.folder_root}. Puste pole otwiera cały ten folder."
 
     @render.text
     def upload_summary():

@@ -124,7 +124,13 @@ def outcome(result: Result) -> ui.Tag | None:
             class_="outcome",
         )
     if result.label is None and result.used_recovery:
-        reason = "Przetwarzanie dokumentu i awaryjny odczyt regułami nie powiodły się"
+        recovery = (result.trace or {}).get("recovery", "")
+        if recovery.startswith("Could not read"):
+            reason = "Nie udało się odczytać pliku, więc reguły nie miały czego sprawdzić"
+        elif recovery.startswith("Used rules"):
+            reason = "Model nie przetworzył dokumentu, a reguły nie rozpoznały jego typu"
+        else:
+            reason = "Przetwarzanie dokumentu i awaryjny odczyt regułami nie powiodły się"
         return ui.div(ui.p(f"{reason}, więc zapisano {written}."), class_="outcome")
     if result.label is None:
         return ui.div(ui.p(f"Nie rozpoznano typu dokumentu, więc zapisano {written}."), class_="outcome")

@@ -122,6 +122,8 @@ def test_local_gui_warns_for_selected_document_and_exports_only_organizer_output
         path.write_text(name)
         paths.append((Path(name), path))
     monkeypatch.setattr("kio2json.gui_files.read_document", lambda path, *a, **kw: results[path.read_text()])
+    # The stub replaces in-process reading; worker processes would not see it.
+    monkeypatch.setattr("kio2json.gui.WORKERS", 1)
     documents = analyze(paths, tmp_path)
     with ZipFile(BytesIO(archive(documents))) as bundle:
         assert {name: bundle.read(name).decode() for name in bundle.namelist()} == {

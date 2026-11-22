@@ -2,6 +2,7 @@
 
 import base64
 import hashlib
+import lzma
 import ntpath
 import os
 import shutil
@@ -34,8 +35,8 @@ def validate_name(name: str) -> None:
 
 ZIP_MAX_FILES = 500
 ZIP_MAX_BYTES = 1 << 30
-# Reading an entry can fail on encryption, an unsupported method or damaged data.
-UNREADABLE_ENTRY = (RuntimeError, NotImplementedError, BadZipFile, zlib.error, EOFError)
+# Reading an entry can fail on encryption, an unsupported method or damaged data in any of its codecs.
+UNREADABLE_ENTRY = (RuntimeError, NotImplementedError, BadZipFile, zlib.error, lzma.LZMAError, EOFError, OSError)
 
 
 def entry_name(entry: ZipInfo) -> str:
@@ -49,11 +50,20 @@ def entry_name(entry: ZipInfo) -> str:
         return raw.decode("cp852")
 
 
-def zip_sources(case: str, archive_path: Path, directory: Path, prefix: str) -> list[Source]:
-    """Unpack the PDFs of a ZIP. Its folders become cases; loose PDFs go to the named case."""
+def zip_sources(
+    case: str,
+    archive_path: Path,
+    directory: Path,
+    prefix: str,
+    budget: tuple[int, int] = (ZIP_MAX_FILES, ZIP_MAX_BYTES),
+) -> list[Source]:
+    """Unpack the PDFs of a ZIP. Its folders become cases; loose PDFs go to the named case.
+
+    `budget` is the number of PDFs and bytes the upload may still add.
+    """
     try:
         bundle = ZipFile(archive_path)
-    except BadZipFile:
+    except (BadZipFile, UnicodeDecodeError, OSError):
         raise ValueError("Nie udało się otworzyć archiwum ZIP. Plik może być uszkodzony.") from None
     sources = []
     with bundle:
@@ -66,7 +76,7 @@ def zip_sources(case: str, archive_path: Path, directory: Path, prefix: str) -> 
             if name.lower().endswith(".pdf"):
                 pdfs.append((index, entry, name, parts))
         # zipfile reads no more than an entry's declared size, so checking those sizes first bounds the unpacking.
-        if len(pdfs) > ZIP_MAX_FILES or sum(entry.file_size for _, entry, _, _ in pdfs) > ZIP_MAX_BYTES:
+        if len(pdfs) > budget[0] or sum(entry.file_size for _, entry, _, _ in pdfs) > budget[1]:
             raise ValueError(f"Archiwum jest za duże. Limit to {ZIP_MAX_FILES} plików PDF i 1 GB po rozpakowaniu.")
         for index, entry, name, parts in pdfs:
             for part in parts:
@@ -95,7 +105,8 @@ def upload_sources(case: str, files: list[FileInfo], directory: Path | None = No
         validate_name(name)
         suffix = Path(name).suffix.lower()
         if suffix == ".zip" and directory is not None:
-            found = zip_sources(case, Path(file["datapath"]), directory, f"zip{number}")
+            budget = (ZIP_MAX_FILES - len(sources), ZIP_MAX_BYTES - unpacked)
+            found = zip_sources(case, Path(file["datapath"]), directory, f"zip{number}", budget)
             unpacked += sum(path.stat().st_size for _, path in found)
             sources += found
         elif suffix == ".pdf":
@@ -111,10 +122,11 @@ def upload_sources(case: str, files: list[FileInfo], directory: Path | None = No
 
 def folder_sources(folder: str, allowed: Path | None = None) -> list[Source]:
     """PDFs under a folder; with `allowed`, the folder is read relative to it and must stay inside it."""
-    root = Path(os.path.expanduser(folder)) if allowed is None else allowed / folder
+    root = Path(os.path.expanduser(folder)) if allowed is None else allowed / folder.strip()
     if allowed is not None and not root.resolve().is_relative_to(allowed.resolve()):
         raise ValueError(f"Można otwierać tylko foldery w {allowed}.")
-    if not folder.strip() or not root.is_dir():
+    # With a root, an empty field opens the root itself.
+    if (allowed is None and not folder.strip()) or not root.is_dir():
         raise ValueError("Podaj ścieżkę do istniejącego folderu.")
     sources = []
     for path in sorted(root.rglob("*")):
@@ -195,8 +207,9 @@ def analyze(
         stream = (read_document(path, classes, batch_deadline=deadline, explain=True) for path in paths)
     for (index, key), result in zip(pending, stream, strict=True):
         results[index] = result
-        # Keep only complete readings: no error, no rule fallback, and optional OCR still had time.
-        if class_key and not (result.error or result.used_recovery) and monotonic() < deadline:
+        # Keep only complete readings: no error, no rule fallback, and no optional OCR pass cut short.
+        expired = (result.trace or {}).get("optional_ocr_expired") or monotonic() >= deadline
+        if class_key and not (result.error or result.used_recovery or expired):
             _results[key] = result
             while len(_results) > CACHED_RESULTS:
                 _results.popitem(last=False)
