@@ -23,7 +23,7 @@ SIGNER_ROLE_RE = re.compile(
 
 
 SIGNATURE_HEADING = re.compile(
-    r"(?:Mocodawca|(?:Czytelny )?Podpis(?: (?:mocodawcy|osoby (?:uprawnionej|upoważnionej)"
+    r"(?:Mocodawca|(?:Czytelny )?Podpis(?: (?:(?:przedstawiciela )?mocodawcy|osoby (?:uprawnionej|upoważnionej)"
     r" do (?:reprezentacji|reprezentowania) mocodawcy))?(?: *\(imię i nazwisko\))?)"
     r"(?::?\s+Pełnomocnictwo przyjmuję)?:?",
     re.IGNORECASE,

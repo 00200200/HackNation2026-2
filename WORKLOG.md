@@ -96,7 +96,7 @@ Two and four grant JSONs matched exactly. The ten organizer grants remained exac
 | Improve receipt routing and recover damaged party names on development inputs | Open |
 | Confirm the long-string similarity function with UZP and record the Stage II weights | Open |
 | Promote HackNation2026 PR #48 to `prod` after the faktczyfejk demo, so the doc2json.pl Caddy block survives a redeploy | Open |
-| Re-measure the README Results rows (UZP and strict micro F1) on the submission commit; the training and scan rows are product commit `97dc53e`, the corpus rows `55dc2a1`, and main has since gained #79 and #54 | Open |
+| Re-measure the README Results rows (UZP and strict micro F1) on the submission commit; the training and scan rows are product commit `97dc53e` (refreshed `latest.json` and `organizer-scans.json` at `d808ee0` agree), the corpus rows `55dc2a1`, and main has since gained #79, #54 and #75 | Open |
 
 ## Decisions
 
@@ -205,6 +205,9 @@ Two and four grant JSONs matched exactly. The ten organizer grants remained exac
 - 22.11.2026 · Claude · PR #36 merged with main again (#71, UZP scoring): the README and the results chart show the UZP micro F1 of `evals/results/uzp-metric.json` (extractor `f7f3ee9`) beside the strict score and state the 29/30 organizer-scan routing; the organizer scans are no longer labelled real; both timings name their product commit; `reference.md` gains a current-figures table, relabels Round 3 as the strict metric and carries the #33 citation edits (result file, key, number and commit for every speed and memory figure); the README names the optional model, its parameter count and endpoint and links the pipeline PDF · feat/docs
 - 22.11.2026 · Claude · PR #36 merged with main again (#67, #74): the README results, the chart and the current-figures table of `docs/readme/reference.md` now come from `evals/results/case-siblings.json` (main at `6ff2966`: organizer scans UZP 1.0000, corpus 1 0.9231, corpus 2 dev 0.9244). #74's viewer and repair paragraphs are in `docs/readme/reference.md`. The judge's wording points are applied (EU and EFTA caveat, 402 s run caveat, known-limits link, normalised exact match, no jury laptop) · feat/docs
 - 22.11.2026 · Claude · PR #36 merged with main again (#77, #78, #79, #54): the README Results table, the chart and the current-figures table of `docs/readme/reference.md` now come from `evals/results/p0-conventions.json` (training and scans at product commit `97dc53e`: UZP 1.0000 and 1.0000, strict 1.0000 and 0.9974; corpus 1 all 0.9212 and corpus 2 dev 0.9244 at `55dc2a1`). The intro and the class diagram show `{}` for unrelated documents, the PyPI-only install and vendored OCR data text is in the Quick start and Docker section, the README has a short VM section with the full text in the reference, and the watchdog paragraph cites its keys in `evals/results/first-pass-watchdog.json` · feat/docs
+- 22.11.2026 · Claude · PR #36 merged with main again (#75): the stale note about the earlier 29-of-30 content of `evals/results/organizer-scans.json` is gone from `docs/readme/reference.md`, because main refreshed that file and `evals/results/latest.json` at `d808ee0` (extractor code equal to main at `257a6af`; training UZP 1.0000 and strict 1.0000, scans UZP 1.0000 and strict 0.9974, 30 of 30 routed). The README and the reference name them next to the `p0-conventions.json` rows and say the corpus rows predate #75 · feat/docs
+
+- 22.11.2026 · Codex · Fixed appeal party boundaries at numbered headings, parenthesized page counters over scans, labelled OCR receipt accounts and explicit grantor signature blocks. The remaining round-three routing and role errors are tracked in #1.
 
 ## Frontend branch snapshot before API integration
 
@@ -236,3 +239,5 @@ These runs used local rules with the three endpoint variables unset. The two loc
 - 22.11.2026 · Codex · Added local jury Compose services and the signed task rules for #60. Compose configuration validated. Docker Desktop did not answer its health probe, so container byte parity is pending.
 
 - 22.11.2026 · Codex · Prepared the VM installation and offline rehearsal for #66 and refreshed the organizer instructions to `eadffbc`. [Rehearsal measurements](evals/results/vm-2vcpu.json)
+
+- 22.11.2026 · Codex · Synced the rule fixes in #75 with main at `b9c2c7f`, preserving the printed account prefix during OCR slash repair.

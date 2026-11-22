@@ -91,6 +91,8 @@ def _is_page_counter(line: str) -> bool:
         return False
     if len(numbers) == 2:
         separator = line[numbers[0].end() : numbers[1].start()].strip()
+        if separator.startswith("(") and line[numbers[1].end() :].lstrip().startswith(")"):
+            separator = separator[1:].strip()
         return _COUNTER_SEPARATOR.fullmatch(separator) is not None
     # Without a total, two ordinary words and a number can be a complete statement.
     return label_words < 2 or any(word in _NUMBER_MARKERS for word in before[-1:] + after[:1])

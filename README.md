@@ -59,8 +59,13 @@ Each row is one rules-only CLI run (no API key, two PDF workers) recorded in
 [`evals/results/p0-conventions.json`](evals/results/p0-conventions.json). The training and scan rows are product commit
 `97dc53e` (`final_verification`). The corpus rows are the earlier product commit `55dc2a1` (`integration.corpus1all` and
 `integration.corpus2`, where `micro_f1` is the UZP score and `micro_f1_strict` the strict one), because the private
-corpora were not re-run at `97dc53e`, whose code differs. Since `97dc53e`, main has changed the extractor only through
-the first-pass watchdog (#79) and the vendored OCR data (#54), which that file does not cover.
+corpora were not re-run at `97dc53e`, whose code differs. Since `97dc53e`, main has also merged the first-pass watchdog
+(#79), the vendored OCR data (#54) and rule fixes (#75), which that file does not cover, and the corpus rows predate
+them. [`latest.json`](evals/results/latest.json) and [`organizer-scans.json`](evals/results/organizer-scans.json) were
+refreshed at commit `d808ee0`, whose extractor code equals main at `257a6af`. They record the same training and scan
+scores: UZP 1.0000 and strict 1.0000 on the training cases (`metrics.micro_f1.value`, `metrics.micro_f1_strict.value`),
+UZP 1.0000 and strict 0.9974 on the scans with all 30 routed (`detail.micro_f1`, `detail.micro_f1_strict`,
+`metrics.classification_accuracy.value`).
 
 UZP micro F1 follows the scoring rules UZP gave on the hackathon Discord, as recorded in
 [issue #59](https://github.com/00200200/HackNation2026-2/issues/59) and implemented in `evals/metrics.py`: a field that is

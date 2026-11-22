@@ -192,3 +192,22 @@ def test_authority_to_question_a_witness_preserves_grant_approval(monkeypatch, t
     monkeypatch.setattr(grant_certificates, "signed_names", lambda _: ["Ewa Letnia"])
     grant_certificates.add_certificate_signers(tmp_path / "grant.pdf", record, text)
     assert record["mocodawca"][0]["podpisujacy"] == [{"imie_nazwisko": "Ewa Letnia"}]
+
+
+@pytest.mark.parametrize(
+    ("caption", "expected"),
+    [("Podpis mocodawcy:", ["Mira Jasna"]), ("Podpis świadka:", []), ("Podpis pełnomocnika:", [])],
+)
+def test_printed_name_then_position_belongs_to_the_caption(tmp_path, caption, expected):
+    from kio2json.pipeline import process_pdf
+
+    path = tmp_path / "document.pdf"
+    write_native_pdf(
+        path,
+        [
+            f"PEŁNOMOCNICTWO\nSrebrny Buk S.A. udziela pełnomocnictwa adw. Izie Polnej.\n{caption}\nMira Jasna\nPrezes Zarządu"
+        ],
+    )
+    label, record = process_pdf(path)
+    assert label == "power_of_attorney"
+    assert record["mocodawca"][0]["podpisujacy"] == [{"imie_nazwisko": name} for name in expected]
