@@ -8,13 +8,13 @@ The integration branch combines real-layout appeal, grant and transfer rules wit
 OpenAI-compatible model engine. The default CLI and GUI run locally with the three endpoint
 variables unset. Keyed runs can use a second OCR reading and recover a failed document with local rules.
 
-The opt-in small-model profile uses Mistral’s regional API, compact source spans and bounded PDF workers. [Provider comparison](docs/small-model-providers.md)
+On the jury VM the three regional Mistral settings select Ministral 3B after local routing and rules. One bounded request can fill missing fields using owner-specific source quotes. Populated rule values remain authoritative. Local rules supply the result when the key is absent or inference fails. [Jury runbook](deploy/RUN.md) · [Measured profiles](evals/results/jury-keyed-profile.md)
 
 The batch CLI defaults to up to four PDF workers, with one thread per Tesseract instance and up to three concurrent page reads per PDF. The first OCR pass supplies layout word boxes, and optional OCR has up to 300 seconds per document. A shared batch cutoff stops rereads after 27 minutes for 150 PDFs. Required OCR has a 180-second page watchdog and can retry a stalled page once at 150 dpi.
 
 The local viewer flags disagreements between an appeal, its mandate and its receipt. The CLI and viewer can use independently printed sibling values to repair a damaged reading within one case folder.
 
-The default Tesseract reader checks the orientation of each scanned page. For searchable scans it can verify a suspect identifier, list marker or displaced line against the printed image.
+The default Tesseract reader accepts a rotated reading when OSD identifies a nonzero turn with confidence of at least 15 and the corrected OCR finds substantially more Polish dictionary words. On searchable scans it can verify a suspect identifier, list marker or displaced line against the printed image.
 
 The grant certificate and board-stamp readers share the copy-attestation check so that a certifier cannot be counted as the issuing officer.
 
@@ -318,4 +318,8 @@ These runs used local rules with the three endpoint variables unset. The two loc
 - 22.11.2026 · Codex · Integrated the additional document families and matched native controls from #88 as `make eval-document-variants`. The fixed #69/#93 benchmark still runs with `make eval-variants`. · integrate/pr88
 - 22.11.2026 · Codex · Added grammatical agreement for descriptive appellant and buyer captions and linked printed joint-procurement lead references to numbered member identities on appeal cards.
 - 22.11.2026 · Codex · Added cardinal orientation checks and targeted image verification for searchable scans. The reproducible 39-PDF organizer-derived panel runs with `make eval-rotation-textlayer`.
+
+- 2026-11-22 — Jury profile: use regional Ministral 3B for evidence-checked field completion after local extraction, with shared time and concurrency limits across PDF workers.
 - 22.11.2026 · Refreshed the [jury pipeline diagram](docs/pipeline/pipeline.pdf) and [README results](README.md#results) with the merged-main scorecard at `725765b` and the later receipt-routing results.
+- 22.11.2026 · Codex · The default router rejects all five development transmission forms that main misclassified as grants, in native and scan views. The independent panel matched main on every output. [Delivery-proof measurements](evals/results/delivery-proofs.md)
+- 22.11.2026 · Codex · Rotation and searchable-layer release gates on main `b2fd9c6` preserved 196 training outputs, 30 organizer scans and nine upright development controls byte-for-byte. Five of 39 stress documents improved. The earlier independent acceptance panel missed its thresholds. [Measurements](evals/results/rotation-textlayer.json)

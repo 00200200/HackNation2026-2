@@ -79,9 +79,9 @@
   {\labeltext{Local rules only}Use the fields read from the PDF. Missing scalar values
    remain \texttt{null}.};
 \node[model=12cm,minimum height=2.55cm] (keyed) at ($(local.north west)+(6.6,0)$)
-  {\labeltext{Rules first with Ministral 3B}For missing fields or eligible doubtful values, send source spans to the
-   configured EU endpoint. Accept a proposed value only when its quote supports the field
-   and the correct party. On a model error, retry the document with local rules.};
+  {\labeltext{Rules first with Ministral 3B}For fields the rules left null, send source spans in one request
+   to Mistral's EU endpoint. Accept a value only if a verbatim page quote supports it
+   for the correct party. On error or abstention, keep the rule result.};
 \coordinate (bus) at ($(local.north)+(0,.48)$);
 \foreach \r in {appeal,grant,receipt} \draw[flow] (\r.south) -- (\r.south |- bus);
 \draw[flow] (appeal.south |- bus) -- (receipt.south |- bus);

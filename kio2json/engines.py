@@ -2,6 +2,7 @@
 
 from collections import Counter
 from collections.abc import Callable
+from copy import deepcopy
 from functools import partial
 
 from . import trace
@@ -115,7 +116,32 @@ def extract(
     model_text: str | None = None,
     first_page: str | None = None,
     check_core_fields: bool = False,
+    source_pages: list[str] | None = None,
+    on_recovery: Callable[[str], None] | None = None,
 ) -> dict:
+    if definition.profile.jury:
+        from .endpoint_error import EndpointError
+        from .jury_budget import jury_document
+        from .jury_fields import enrich
+
+        rules = extract(definition.rules_only, text, ocr_python=ocr_python)
+        candidate = deepcopy(rules)
+        try:
+            with jury_document():
+                enrich(definition.id, candidate, source_pages if source_pages is not None else [text], model=model)
+            definition.output_model.model_validate(candidate)
+            # A new handler must preserve every populated scalar, including zero-valued flags.
+            if any(trace.lookup(candidate, path) != value for path, value in trace.leaves(rules) if value is not None):
+                return rules
+        except Exception as error:  # noqa: BLE001 - preserve rules, including on model postprocessing failures
+            status = error.status if isinstance(error, EndpointError) else None
+            message = f"Retained rules after model request (status {status or 'unavailable'})."
+            trace.note("recovery", message)
+            if on_recovery:
+                on_recovery(message)
+            return rules
+        trace.note_candidate("llm", candidate)
+        return candidate
     values = None
     failed = []
     trace.note("declared_fields", definition.fields)
