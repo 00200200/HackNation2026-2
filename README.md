@@ -17,7 +17,8 @@ Install Docker with Compose v2.24 or later. From the repository root, place case
 docker compose run --rm cli
 ```
 
-The first build downloads the Python dependencies and Polish and English OCR data.
+The first build downloads the Python dependencies from PyPI. The Polish and English OCR data ship in the repository
+(`kio2json/tessdata/`), so nothing else is fetched.
 Each input PDF gets a matching file under `output/<case>/`. To upload PDFs in a browser, run:
 
 ```sh
