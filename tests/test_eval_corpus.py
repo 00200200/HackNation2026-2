@@ -539,6 +539,6 @@ def test_organizer_scan_predictions_preserve_nested_paths_and_training_gate(repo
     monkeypatch.setattr(sys, "argv", ["eval", "--organizer-scans", "--data", str(data), "--pred", str(data)])
     assert run.main() == 0
     report = json.loads((repo / "evals/results/organizer-scans.json").read_text())
-    assert report["n_docs"] == 2 and report["detail"]["micro_f1"] == 1
+    assert report["n_docs"] == report["n_cases"] == 2 and report["detail"]["micro_f1"] == 1
     assert report["detail"]["routing_by_class"]["przelew"]["correct"] == 1
     assert "docs" not in report and (repo / ".git/eval-latest.json").read_text() == "gate"
