@@ -1,129 +1,99 @@
-% Odwołania2json: processing pipeline. Compile with: pdflatex pipeline.tex
-\documentclass[tikz,border=10pt]{standalone}
+% Build with pdflatex pipeline.tex
+\documentclass[tikz,border=6mm]{standalone}
 \usepackage[T1]{fontenc}
-\usepackage[utf8]{inputenc}
 \usepackage{lmodern}
-\usetikzlibrary{arrows.meta,positioning,fit,backgrounds,calc}
+\usetikzlibrary{arrows.meta,calc,fit,positioning}
 
-\definecolor{ink}{HTML}{1F2933}
-\definecolor{muted}{HTML}{6B7280}
-\definecolor{flow}{HTML}{1D4ED8}
-\definecolor{flowfill}{HTML}{EFF4FF}
-\definecolor{okfill}{HTML}{ECFDF3}
-\definecolor{ok}{HTML}{15803D}
-\definecolor{warn}{HTML}{B45309}
-\definecolor{warnfill}{HTML}{FFF7ED}
-\definecolor{plan}{HTML}{6B7280}
-\definecolor{planfill}{HTML}{F9FAFB}
-
-\newcommand{\fname}[1]{{\ttfamily\footnotesize\color{muted}#1}}
+\definecolor{ink}{HTML}{192D39}
+\definecolor{blue}{HTML}{20547B}
+\definecolor{pale}{HTML}{F1F6FA}
+\definecolor{green}{HTML}{216554}
+\definecolor{mint}{HTML}{EFF8F4}
+\definecolor{amber}{HTML}{885314}
+\definecolor{cream}{HTML}{FFF6E6}
+\newcommand{\labeltext}[1]{{\bfseries\color{blue}#1}\par\smallskip}
 \begin{document}
 \begin{tikzpicture}[
     font=\sffamily\small, text=ink,
-    >={Stealth[length=2.2mm,width=1.8mm]},
-    every node/.append style={execute at begin node={\hyphenpenalty=10000 \exhyphenpenalty=10000 }},
-    base/.style={rounded corners=3pt, align=left, inner sep=6pt},
-    box/.style={base, draw=flow, fill=flowfill, line width=0.7pt, text width=#1},
-    io/.style={base, draw=ok, fill=okfill, line width=0.7pt, text width=#1},
-    fail/.style={base, draw=warn, fill=warnfill, line width=0.7pt, text width=#1},
-    planned/.style={base, draw=plan, fill=planfill, dashed, line width=0.6pt, text width=#1},
-    arrow/.style={->, line width=0.8pt, draw=flow},
-    review/.style={base, draw=violet!75!black, fill=violet!4, double, double distance=1pt, text width=#1},
-    plannedarrow/.style={->, line width=0.6pt, draw=plan, dashed},
-    failarrow/.style={->, line width=0.7pt, draw=warn},
-    note/.style={font=\sffamily\footnotesize, text=muted, align=left},
+    card/.style={anchor=north west, align=left, text width=#1,
+      inner xsep=3mm, inner ysep=2.5mm, rounded corners=2pt,
+      draw=blue!65, fill=pale, line width=.6pt},
+    terminal/.style={card=#1,draw=green,fill=mint},
+    model/.style={card=#1,draw=amber,fill=cream},
+    flow/.style={draw=blue,line width=.8pt},
+    arrow/.style={flow,-{Stealth[length=1.8mm]}},
+    endpoint/.style={draw=amber,line width=.8pt,-{Stealth[length=1.8mm]}},
+    group/.style={inner sep=0pt,outer sep=0pt},
+    every node/.append style={outer sep=0pt,execute at begin node={\hyphenpenalty=10000 }},
 ]
+\node[anchor=south west,inner sep=0pt,font=\sffamily\bfseries\LARGE] at (0,.3)
+  {Odwołania2json};
+\node[anchor=south east,inner sep=0pt,font=\sffamily\large,text=blue] at (19.2,.34)
+  {From case PDFs to organizer JSON};
 
-% The CLI and viewer both call batch.read_document.
-\node[io=7.5cm, minimum height=1.5cm, anchor=north west] (cli) at (0,0)
-  {\textbf{Batch CLI}\hfill\fname{\_\_main\_\_.py}\\[2pt]
-   Read PDFs recursively from the input folder.};
-\node[io=7.5cm, minimum height=1.5cm, right=6mm of cli] (gui)
-  {\textbf{Shiny GUI}\hfill\fname{gui.py}\\[2pt]
-   Upload PDFs, inspect page and JSON, download a ZIP.};
-\coordinate (middle) at ($(cli.south)!0.5!(gui.south)$);
-\node[box=16.0cm, below=6mm of middle] (pages)
-  {\textbf{Read each page}\hfill\fname{batch.py / pipeline.py / pdf\_text.py / ocr\_grant\_register.py}\\[2pt]
-   Read usable text with pdfplumber. On pages without usable text, run local Tesseract via tesserocr
-   with Polish data installed by the requirements. Track page numbers and which pages needed OCR.
-   Keep word boxes for layout and reread cropped grant identifiers when digits are ambiguous.};
-\foreach \entry in {cli,gui}
-  \draw[arrow] (\entry.south) -- (\entry.south |- pages.north);
+\node[terminal=18.6cm] (input) at (0,0)
+  {\labeltext{Case folder}The batch CLI reads each PDF under \texttt{input/<case>/}.
+   The local viewer sends uploaded PDFs through the same document reader.};
 
-\node[box=16.0cm, below=6mm of pages] (route)
-  {\textbf{Classify by document content}\hfill\fname{classify.py / class\_config.py}\\[2pt]
-   Inspect the opening pages for an appeal heading with party or filing language, a power-of-attorney
-   heading or an operative notarial grant. A transfer needs confirmation or execution evidence,
-   transaction details and account evidence. Reject unrelated headings and pending payments.};
-\draw[arrow] (pages) -- (route);
+\node[card=8.7cm,minimum height=2.4cm] (native) at ($(input.south west)+(0,-.65)$)
+  {\labeltext{Usable text layer}Read text and word positions with pdfplumber.
+   Keep page boundaries and the positions of labels and values in the original layout.};
+\node[card=8.7cm,minimum height=2.4cm] (scan) at ($(native.north west)+(9.9,0)$)
+  {\labeltext{Scanned or unreadable page}Render in the PDF's declared orientation.
+   Local Tesseract reads Polish text and word boxes. Crop rereads share the document's time budget.};
+\coordinate (readfork) at ($(input.south)+(0,-.32)$);
+\draw[flow] (input.south) -- (readfork);
+\foreach \r in {native,scan} \draw[arrow] (readfork) -| (\r.north);
 
-% Each class arrow terminates at the corresponding extractor or rejection outcome.
-\node[box=3.65cm, below=10mm of route.south west, anchor=north west] (appeal)
-  {\textbf{Appeal}\\\fname{appeal.py}\\\fname{appeal\_charges.py}\\[3pt]
-   Read the appellant, counsel and authority from party blocks. Link the first charge to the challenged act and its date.};
-\node[box=3.65cm, anchor=north west] (poa) at ($(appeal.north east)+(3mm,0)$)
-  {\textbf{Power of attorney}\\\fname{power\_of\_attorney.py}\\\fname{ocr\_signatures.py}\\[3pt]
-   Read the grant and signature blocks. Bind signers to their grantors and identify the attorneys receiving authority.};
-\node[box=3.65cm, anchor=north west] (transfer) at ($(poa.north east)+(3mm,0)$)
-  {\textbf{Transfer confirmation}\\\fname{bank\_transfer.py}\\\fname{receipt\_layout.py}\\[3pt]
-   Bind receipt cells to sender and recipient accounts. Read amount, execution date, title and transaction reference.};
-\node[fail=2.8cm, anchor=north west] (other) at ($(transfer.north east)+(3mm,0)$)
-  {\textbf{Unrelated}\\\fname{batch.py}\\[3pt]
-   No accepted route after any enabled fallback.};
-\coordinate (fork) at ($(route.south)+(0,-5mm)$);
-\draw[draw=flow,line width=0.8pt] (route.south) -- (fork);
-\foreach \cls in {appeal,poa,transfer}
-  \draw[arrow] (fork) -| (\cls.north);
-\draw[failarrow] (other.north |- route.south) -- (other.north);
+\node[card=12.25cm,minimum height=2.15cm] (route) at ($(native.south west)+(0,-.65)$)
+  {\labeltext{Route by content}Class definitions in TOML select the router. It looks for a filing, a grant of authority or
+   evidence of a settled payment. In the supported model-routing profile, an unresolved
+   page needs local evidence for the class the model proposes.};
+\node[terminal=4.9cm,minimum height=2.15cm] (reject) at ($(route.north west)+(13.7,0)$)
+  {\labeltext{No accepted class}Write \texttt{\{\}} at the matching JSON path.
+   Delivery proofs and pending payment orders belong here.};
+\coordinate (join) at ($(scan.south)+(0,-.28)$);
+\draw[flow] (native.south) |- (join);
+\draw[flow] (scan.south) -- (join);
+\draw[arrow] (route.north |- join) -- (route.north);
+\draw[arrow] (route.east) -- (reject.west);
 
-\node[fit=(appeal)(poa)(transfer), inner sep=0pt] (rules) {};
-\node[io=12.25cm, anchor=north west] (json) at ($(appeal.west |- rules.south)+(0,-6mm)$)
-  {\textbf{Write organizer JSON}\hfill\fname{batch.py / \_\_main\_\_.py}\\[2pt]
-   Keep the relative directory and stem. Missing scalar fields can be \texttt{null}.\\
-   \texttt{input/<case>/a.pdf} $\to$
-   \texttt{output/<case>/a.json}};
-\foreach \cls in {appeal,poa,transfer}
-  \draw[arrow] (\cls.south) -- (\cls.south |- json.north);
-\node[fail=2.8cm, anchor=north] (empty) at (other.center |- json.north)
-  {\textbf{Empty file}\\Zero bytes at the matching JSON path.};
-\draw[failarrow] (other) -- (empty);
+\node[card=5.4cm,minimum height=3.1cm] (appeal) at ($(route.south west)+(0,-.7)$)
+  {\labeltext{Appeal}Read two-column forms in order. Link party captions to the
+   appellant, counsel and authority. Read the procurement and the challenged act
+   from the filing and its charges.};
+\node[card=5.4cm,minimum height=3.1cm] (grant) at ($(appeal.north west)+(6.6,0)$)
+  {\labeltext{Power of attorney}Identify each grantor and attorney. Read sole traders
+   from declarations, registry details or proprietor signatures. Associate each signer
+   with the grantor they represent.};
+\node[card=5.4cm,minimum height=3.1cm] (receipt) at ($(grant.north west)+(6.6,0)$)
+  {\labeltext{Transfer confirmation}Read bank letters, posted history entries and
+   settled operation or order details. Bind the amount, date, accounts, reference
+   and payment title to one transaction.};
+\coordinate (fork) at ($(route.south)+(0,-.34)$);
+\draw[flow] (route.south) -- (fork);
+\foreach \r in {appeal,grant,receipt} \draw[arrow] (fork) -| (\r.north);
 
-% Side panels describe configuration, optional behavior and its review status.
-\node[box=7.1cm, anchor=north west] (config) at ($(gui.north east)+(8mm,0)$)
-  {\textbf{Class configuration}\hfill\fname{config/classes/*.toml}\\[2pt]
-   Add a class with one TOML file defining routing cues, fields, types and engine order.
-   \fname{engines.py} runs \texttt{python}, \texttt{labelled\_fields} or \texttt{llm}.};
-\node[planned=7.1cm, below=4mm of config] (model)
-  {\textbf{Optional model engine on main}\\
-   \fname{llm.py / model\_profile.py / output\_schema.py}\\[2pt]
-   Set \texttt{KIO\_LLM\_BASE\_URL}, \texttt{KIO\_LLM\_MODEL} and
-   \texttt{KIO\_LLM\_API\_KEY} for an OpenAI-compatible EU endpoint supporting structured JSON.\\[3pt]
-   After rule rejection, route from the first page. By default the model extracts first and rules fill gaps.
-   Scans can supply a second RapidOCR reading. Accept a model value only with a supporting source quote.
-   On error, retry that document with local rules.};
-\draw[plannedarrow,<->] (route.east) -- (route.east -| model.west);
-\node[review=7.1cm, below=4mm of model] (changes)
-  {\textbf{In review}\\[2pt]
-   \textbf{\#26}\quad Rules extract first. Ministral 3B (3.85B parameters) fills null fields and can route a
-   rejected PDF only with evidence from that document.\\[3pt]
-   \textbf{\#24}\quad Scanned transfer confirmations, round two.\\
-   \textbf{\#28}\quad Recovery of fields on scanned appeals.\\
-   \textbf{Runtime}\quad Parallel PDF processing and bounded OCR rereads.};
-\node[box=7.1cm, draw=ink, fill=white, below=4mm of changes] (eval)
-  {\textbf{Measured}\hfill\fname{evals/run.py / evals/field\_report.py}\\[2pt]
-   Synthetic training PDFs and negatives, 30 organizer scans\textsuperscript{*}, and private real-document corpora.
-   Compare routing, field-level F1 and empty outputs with the references.\\[3pt]
-   {\scriptsize\textsuperscript{*}\texttt{evals/results/organizer-scans.json} (\texttt{n\_docs})}};
+\node[group,fit=(appeal)(grant)(receipt)] (readers) {};
+\node[card=5.4cm,minimum height=2.55cm] (local) at ($(readers.south west)+(0,-.8)$)
+  {\labeltext{Local rules only}Use the fields read from the PDF. Missing scalar values
+   remain \texttt{null}.};
+\node[model=12cm,minimum height=2.55cm] (keyed) at ($(local.north west)+(6.6,0)$)
+  {\labeltext{Rules first with Ministral 3B}For missing fields or eligible doubtful values, send source spans to the
+   configured EU endpoint. Accept a proposed value only when its quote supports the field
+   and the correct party. On a model error, retry the document with local rules.};
+\coordinate (bus) at ($(local.north)+(0,.48)$);
+\foreach \r in {appeal,grant,receipt} \draw[flow] (\r.south) -- (\r.south |- bus);
+\draw[flow] (appeal.south |- bus) -- (receipt.south |- bus);
+\draw[arrow] (local.north |- bus) -- (local.north);
+\draw[endpoint] (keyed.north |- bus) -- (keyed.north);
 
-\node[anchor=south west, inner sep=0pt, font=\sffamily\bfseries\large] at ($(cli.north west)+(0,4mm)$)
-  {Odwołania2json: from PDF to organizer JSON};
-\node[fit=(json)(empty)(eval),inner sep=0pt] (bottom) {};
-\newcommand{\swatch}[1]{\tikz[baseline=-0.6ex]{\draw[#1,rounded corners=1.5pt] (0,-0.12) rectangle (0.42,0.12);}}
-\node[note, anchor=north west, inner sep=0pt] at ($(cli.west |- bottom.south)+(0,-4mm)$)
-  {\swatch{draw=flow,fill=flowfill}\ Local processing\qquad
-   \swatch{draw=ok,fill=okfill}\ Input and output\qquad
-   \swatch{draw=warn,fill=warnfill}\ Rejected document\qquad
-   \swatch{draw=plan,fill=planfill,dashed}\ Optional endpoint\qquad
-   \swatch{draw=violet!75!black,fill=violet!4,double}\ In review};
+\node[terminal=18.6cm] (out) at ($(local.south west)+(0,-.6)$)
+  {\labeltext{Write one JSON per PDF}When enabled, case repair can resolve a disputed value
+   using an independent reading from a sibling document. Write the organizer schema to
+   \texttt{output/<case>/<stem>.json}.};
+\foreach \r in {local,keyed} \draw[arrow] (\r.south) -- (\r.south |- out.north);
+\node[anchor=north west,align=left,text width=19.2cm,inner sep=0pt,font=\sffamily\footnotesize] at ($(out.south west)+(0,-.32)$)
+  {At main \texttt{48586e6}, pixel rotation recovery and a guard for delivery proofs with class-like attachment titles are in development.};
 \end{tikzpicture}
 \end{document}
