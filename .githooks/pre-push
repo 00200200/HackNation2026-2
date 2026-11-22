@@ -42,12 +42,13 @@ check_eval() {
     fi
     return
   fi
-  IFS='|' read -r e_commit e_dirty e_mode e_pass e_failing <<EOF_EVAL
+  IFS='|' read -r e_commit e_dirty e_mode e_pass e_failing e_uzp <<EOF_EVAL
 $(python3 -I -c 'import json,sys
 r=json.load(open(sys.argv[1]))
-bad=[k for k,m in r.get("metrics",{}).items() if m.get("pass") is not True]
+metrics=r.get("metrics",{})
+bad=[k for k,m in metrics.items() if k != "micro_f1_strict" and m.get("pass") is not True]
 bad+=[] if r.get("coverage_ok",True) else ["coverage(%s cases, need all 60 + negatives)" % r.get("n_cases")]
-print("|".join([r.get("commit",""),str(r.get("dirty")),r.get("mode",""),str(r.get("overall_pass")),",".join(bad) or "-"]))' "$EVAL" 2>/dev/null)
+print("|".join([r.get("commit",""),str(r.get("dirty")),r.get("mode",""),str(r.get("overall_pass")),",".join(bad) or "-", str("micro_f1_strict" in metrics and "micro_f1" in metrics)]))' "$EVAL" 2>/dev/null)
 EOF_EVAL
   if [ -n "${e_commit:-}" ] && git cat-file -e "$e_commit^{commit}" 2>/dev/null; then
     since=$(git diff --name-only "$e_commit" "$sha" | grep -vE "$NON_PRODUCT_RE" | head -n 1)
@@ -56,6 +57,8 @@ EOF_EVAL
   fi
   if [ -n "$since" ]; then
     block "eval results are for ${e_commit:0:9}; product code changed since ($since). Run: uv run python -m evals.run --quick"
+  elif [ "$e_uzp" != "True" ]; then
+    block "eval predates UZP scoring; rerun with uv run python -m evals.run --quick"
   elif [ "$e_dirty" = "True" ]; then
     block "last eval ran with uncommitted product changes; commit, then rerun it"
   elif [ "$FINAL" = "1" ] && { [ "$e_mode" != "full" ] || [ "$e_pass" != "True" ]; }; then

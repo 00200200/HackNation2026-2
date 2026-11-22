@@ -177,15 +177,17 @@ def load_organizer_scans(data: Path) -> dict[str, dict[str, dict]]:
     if not pdfs or found != expected or found != references | set(pdfs):
         raise ValueError("organizer scan pairs differ from the committed inventory")
     groups = {"odwolania": "odwolanie", "pelnomocnictwa": "pelnomocnictwo", "potwierdzenia": "przelew"}
-    docs = {}
+    cases = {}
     for name in pdfs:
         check_pdf(folder / name)
         gold = load_reference((folder / name).with_suffix(".json"))
         label = groups.get(Path(name).parts[0])
         if label is None or gold.keys() & CLASSES.values() != {CLASSES[label]} or not flatten(gold[CLASSES[label]]):
             raise ValueError("organizer scan reference must contain fields for its expected class")
-        docs[name] = gold
-    return {"skany": docs}
+        # Files in different scan folders are independent examples, even when their stems match.
+        relative = Path("skany", name)
+        cases.setdefault(relative.parent.as_posix(), {})[relative.name] = gold
+    return cases
 
 
 def corpus_partition(root: Path, split: str, folders: set[str]) -> set[str]:
@@ -294,6 +296,7 @@ def build_results(docs: list[DocResult], mode: str, seconds_per_doc: float | Non
     n_cases = len(cases) if mode == "corpus" else sum(1 for c in cases if c != "negatywne")
     coverage_ok = mode == "full" and cases.keys() == FULL
     required = [m for m in metrics.values() if mode in {"quick", "full"} or m["value"] is not None]
+    metrics["micro_f1_strict"] = metric(summary["micro_f1_strict"], None)
     return {
         "commit": commit,
         "dirty": dirty,
@@ -307,7 +310,7 @@ def build_results(docs: list[DocResult], mode: str, seconds_per_doc: float | Non
         "metrics": metrics,
         "detail": summary,
         "holdout_51_60": holdout,
-        "f1_definition": "evals/metrics.py docstring (organizer formula UNCONFIRMED)",
+        "f1_definition": "UZP #59 with RapidFuzz normalized Levenshtein >= 0.80 on five long fields",
     }
 
 
@@ -319,7 +322,8 @@ def document_rows(docs: list[DocResult]) -> list[dict]:
             "gold_class": d.gold_class,
             "pred_class": d.pred_class,
             "counts": asdict(d.counts),
-            "counts_non_null": asdict(d.counts_non_null),
+            "counts_strict": {k: v for k, v in asdict(d.counts_strict).items() if k != "tn"},
+            "counts_non_null": {k: v for k, v in asdict(d.counts_non_null).items() if k != "tn"},
             "errors": d.errors,
         }
         for d in docs
@@ -479,6 +483,9 @@ def evaluate(args: argparse.Namespace, parser: argparse.ArgumentParser) -> int:
     )
     for name, m in results["metrics"].items():
         value = "unknown" if m["value"] is None else f"{m['value']:.3f}"
+        if name == "micro_f1_strict":
+            print(f"  {name:24} {value:>8}  historical comparison")
+            continue
         print(f"  {name:24} {value:>8}  target={m['target']}  pass={m['pass']}")
         if name == "micro_f1":
             for macro in ("macro_f1_documents", "macro_f1_classes", "macro_f1_fields"):
