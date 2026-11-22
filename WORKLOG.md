@@ -23,7 +23,17 @@ The jury can run the batch CLI and upload UI locally with the root Compose file.
 
 The evaluation VM kit installs the rules CLI under `/opt/solution`. The VM owner still needs to run the Ubuntu offline and reboot checks. [Deployment steps](README.md#deploy-on-the-evaluation-vm)
 
+A new document class needs one TOML file. `--classes PATH` and `--enable ID` add classes to the three organizer
+classes in the CLI and viewer. A class file can declare weighted routing cues with a threshold and named checks
+(`nip`, `regon`, `pesel`, `iban`, `date_range`, `one_of`). `python -m kio2json.classes new` writes a class file from a sample PDF.
+The viewer lists the loaded classes, the cue that chose each class, failed checks and each field's source;
+`--explain DIR` writes the same trace to a folder outside `--output`. Example: `examples/classes/accession.toml`.
+
 ## Last eval
+
+On the 240 seeded PDFs, UZP field micro F1 rose from 0.2960 on #69 to **0.8948** on the robustness checkpoint. The classifier routed 170/180 positives, including all 60 appeals, and returned `{}` on all 60 negatives. The control with #78’s account and JSON conventions scored 0.3179. The ten remaining routing misses were alternative-format transfers.
+
+Main incorporated this classifier and the separate transfer-format fix in #89. The integrated rerun scored **0.9125** and routed **180/180** positives. Two-column appeals scored 0.4064 field F1 despite all ten routing correctly. All 196 organizer training outputs matched the control byte for byte and 29/30 organizer scans matched their references exactly. Private UZP F1 was 0.9247 on corpus 1 all and 0.9244 on corpus 2 dev. [Profile and gate comparisons](evals/results/variant-robustness.json)
 
 The fixed-seed benchmark re-rendered the facts from all 60 synthetic cases and generated 60 look-alike negatives. The keyless extractor was main at `3eccb41`, scored with the issue #59 metric. The initial `f7f3ee9` run had the same dataset digest and field counts.
 
@@ -31,7 +41,7 @@ The fixed-seed benchmark re-rendered the facts from all 60 synthetic cases and g
 |---|---:|---:|---:|---:|---:|---:|---:|
 | Generated layouts | 240 | 0.2960 | 0.2860 | 0.0000 | 0.5529 | 0.6617 | 60/60 |
 
-Weakest positive profiles were label synonyms (0.1693), alternative formats (0.2083) and two columns (0.2089). Appeal F1 was zero in all six profiles. The benchmark uses short, newly authored forms built from the training facts. Profile scores also reflect their different case samples. [Ranked layouts and field scores](evals/results/variants.json)
+Weakest positive profiles were label synonyms (0.1693), alternative formats (0.2083) and two columns (0.2089). Appeal F1 was zero in all six profiles. The benchmark uses short, newly authored forms built from the training facts. Profile scores also reflect their different case samples. [Original baseline and routing-only checkpoint](evals/results/variant-robustness.json)
 
 The empty-object writer preserved all 180 positive training files byte for byte and wrote `{}\n` for all 16 negatives. Keeping printed country codes then changed two fields in each of 48 transfers. The comparison used local rules and two PDF workers. The integrated run includes the UZP scorer and the fix for a printed underline in a recipient account cell.
 
@@ -105,7 +115,6 @@ Two and four grant JSONs matched exactly. The ten organizer grants remained exac
 | Score corpus 2 test once after the class rules and small-model profile are integrated | Coordinator |
 | Improve receipt routing and recover damaged party names on development inputs | Open |
 | Confirm the unresolved VM, model hosting and scoring details listed in [the task brief](docs/task/BRIEF.md). | Open |
-| Class-config flag, TOML validators, weighted routing and a scaffold for new classes (#62) | 00200200 (`claude/config-classes-case-ab8189`) |
 | Promote HackNation2026 PR #48 to `prod` after the faktczyfejk demo, so the doc2json.pl Caddy block survives a redeploy | Open |
 | Run `docker compose run --rm cli` and `docker compose up gui` once on an amd64 Docker host and compare the CLI output with `python -m kio2json` (no Docker on the dev Macs; hosted Actions are blocked by billing, #67) | Open |
 
@@ -131,8 +140,11 @@ Two and four grant JSONs matched exactly. The ten organizer grants remained exac
 
 ## Log
 
+- 22.11.2026 · Codex · Recovered role-labelled appeal cards with inflected captions and nearby party evidence. The paired PDF controls cover names, registry IDs and counsel attached to each appellant. [Development measurements](evals/results/appeal-party-headings.json)
+
 - 22.11.2026 · Claude · Brought `docs/task/BRIEF.md` up to UZP's Discord answers (#64), the Regulamin (`docs/task/regulamin.pdf`) and the organizer's `VM.md`; refreshed `data/uzp` to `eadffbc` (adds `VM.md` only). In WORKLOG: recorded the `{}` and account-number decisions, put the VM row first, scoped the Ministral row to #38, split the UZP-answer issues into per-issue rows with their owners, flagged the eval's `negatives_empty` check and merged main and dropped the rows it finished (#60, #59, #61) · docs/brief-update
 
+- 22.11.2026 · Claude · #62 classes from one TOML file (`--classes`, `--enable`, weighted cues, named checks, `python -m kio2json.classes new`), and the #40 trace from `feat/explain` (`--explain DIR`, viewer class list, routing cue, field sources). 1826 tests pass. The CLI wrote the same bytes as main `328f705` for all 226 organizer PDFs (196 training, 30 scans), and the full training eval at `853b230` scored 1.000 micro F1 with every target met · branch `claude/config-classes-case-ab8189`
 - 22.11.2026 · Codex · Integrated the signed judging criteria, VM instructions and UZP clarifications from #49 and refreshed the README visuals from #36 against recorded results.
 - 21.11.2026 · Claude · presentation-style README with monochrome visuals in `docs/readme/`; previous README moved to `docs/readme/reference.md` · feat/docs
 
@@ -232,6 +244,8 @@ Two and four grant JSONs matched exactly. The ten organizer grants remained exac
 
 - 22.11.2026 · Codex · Fixed appeal party boundaries at numbered headings, parenthesized page counters over scans, labelled OCR receipt accounts and explicit grantor signature blocks. The remaining round-three routing and role errors are tracked in #1.
 
+- 22.11.2026 · Added corroborating Polish filing and payment cues, scoped fields and native two-column reading for issue #63. Re-ran the 240-PDF benchmark and organizer and private gates against the confirmed JSON and account conventions. [Final field counts](evals/results/variants.json)
+
 ## Frontend branch snapshot before API integration
 
 Public landing https://doc2json.pl (`frontend/`, static nginx, monochrome) runs on the team VPS as `doc2json-web`
@@ -280,4 +294,4 @@ These runs used local rules with the three endpoint variables unset. The two loc
 - 22.11.2026 · Claude · PR #53 merged with main again (#72, #82): the README's VM rehearsal figures (399.77 s, about 4 min 25 s) now name their keys in `vm-2vcpu.json` and the extraction revision `7a1c45b` they come from, and the stale "before the kit merges" sentence is gone because `deploy/vm-kit` is an ancestor of main. The WORKLOG conflict kept both sides · docs/paths-and-llm-scoring
 - 22.11.2026 · Claude · PR #53 merged with main again (#83) and the judge's citation findings fixed: the Round 2 wall-time column, the optional-OCR calibration times and the cold Ministral run now name their file and keys, the Round 2 section is labelled as older strict-metric history with a pointer to the UZP figures in `p0-conventions.json`, the Ministral section is labelled older strict-metric history too (without the pointer), and the Docker section says no container run has been compared with the CLI yet · docs/paths-and-llm-scoring
 - 22.11.2026 · Claude · PR #53 judge notes on `7716064` applied: the Round 2 note says the later UZP runs are local rules, no model and development data only (strict 0.9974 on the scans), the DeepSeek Flash plan is marked superseded with the key that still records it, the VM Docker Compose fallback carries the same not-yet-run note as the Docker section, the per-pool read counts show their sums, and a Next row asks the team to align the `latest.json` wording of the two skills with the practice of naming a result file, key, value and commit · docs/paths-and-llm-scoring
-- 22.11.2026 · Claude · PR #53 rebuilt on main after #90 (`f98dc56`) as a small change on top of the README split: the README is main's, and what this PR said in the README now sits in `docs/readme/reference.md` (VM rehearsal, Round 2, optional OCR, watchdog, batch runtime and cold Ministral citations with file, key, number and commit; Round 2 labelled as strict-metric history with a pointer to the README results table and the Ministral section labelled the same way without the pointer; the Compose fallback marked not run end to end; the pipeline PDF called older than the README diagram; the 8B wording follows the organizer's "smaller model scores more"; DeepSeek Flash marked superseded). `HN_REAL_CORPUS` stays empty by default in the Makefile and the skill, because main's Makefile has the personal path again · docs/paths-and-llm-scoring
+- 22.11.2026 · Claude · PR #53 rebuilt on main after #90 (`f98dc56`), then merged with #91, #93 and #95 (`a7dce92`) without conflicts, as a small change on top of the README split: the README is main's, and what this PR said in the README now sits in `docs/readme/reference.md` (VM rehearsal, Round 2, optional OCR, watchdog, batch runtime and cold Ministral citations with file, key, number and commit; Round 2 labelled as strict-metric history with a pointer to the README results table and the Ministral section labelled the same way without the pointer; the Compose fallback marked not run end to end; the pipeline PDF called older than the README diagram; the 8B wording follows the organizer's "smaller model scores more"; DeepSeek Flash marked superseded). `HN_REAL_CORPUS` stays empty by default in the Makefile and the skill, because main's Makefile has the personal path again · docs/paths-and-llm-scoring
