@@ -295,7 +295,12 @@ def _account_below_party(rows, height):
         # beneath it, even when the first party's account cell is empty.
         right = header[2].x0 - height if len(header) > 2 else float("inf")
         words = " ".join(w.text for w in cells if w.x1 <= right)
-        account = re.match(rf"(?i)^nr\.? rachunku[;:]\s+[_ ]*{ACCOUNT_RE.pattern}(?! \d{{4}}\b)", words)
+        label = re.match(r"(?i)^nr\.? rachunku[;:]\s+[_ ]*", words)
+        if not label:
+            continue
+        # OCR can attach a printed underline to the first digit. Only remove
+        # it within the labelled account cell beneath its verified party column.
+        account = re.match(rf"{ACCOUNT_RE.pattern}(?! \d{{4}}\b)", words[label.end() :])
         if account:
             number = "".join(account[1].split())
             if valid_account(number):
