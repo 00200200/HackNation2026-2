@@ -74,7 +74,7 @@ def account_evidence(text: str) -> AccountEvidence:
     text = ACCOUNT_RE.sub(compact, text)
     # Preserve inline columns and the two explicit account clauses in bank letters.
     text = re.sub(rf"(?:(?<=[\d*:—–-])|(?<=XXX))[ \t]+(?={ACCOUNT_LABEL.pattern})", "\n", text, flags=re.IGNORECASE)
-    text = re.sub(rf"(?i)\b(z rachunku|na rachunek) nr (?={ACCOUNT_RE.pattern})", r"\n\1 ", text)
+    text = re.sub(rf"(?i)(?:\n[ \t]*)?\b(z rachunku|na rachunek) nr\.?\s+(?={ACCOUNT_RE.pattern})", r"\n\1 ", text)
     values = {"sender": set(), "recipient": set(), "generic": set()}
     for role, cells in table_roles.items():
         values[role].update(cells)

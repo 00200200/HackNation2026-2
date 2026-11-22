@@ -368,8 +368,9 @@ def _text_layer(page, force_ocr: bool, repair_image_text: bool) -> str | None:
     if page.page_number == 1:
         # The layout reader also consumes WordBox, so import after this module is initialized.
         from .appeal_layout import restore_overprinted_card
+        from .receipt_reading import restore_receipt_spacing
 
-        return restore_overprinted_card(page, text)
+        return restore_overprinted_card(page, restore_receipt_spacing(page, text))
     return text
 
 
