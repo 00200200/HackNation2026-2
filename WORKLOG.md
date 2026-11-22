@@ -25,6 +25,14 @@ The evaluation VM kit installs the rules CLI under `/opt/solution`. The VM owner
 
 ## Last eval
 
+The fixed-seed benchmark re-rendered the facts from all 60 synthetic cases and generated 60 look-alike negatives. The keyless extractor was main at `3eccb41`, scored with the issue #59 metric. The initial `f7f3ee9` run had the same dataset digest and field counts.
+
+| Dataset | PDFs | UZP micro F1 | Strict micro F1 | Appeal F1 | Power F1 | Transfer F1 | Empty negatives |
+|---|---:|---:|---:|---:|---:|---:|---:|
+| Generated layouts | 240 | 0.2960 | 0.2860 | 0.0000 | 0.5529 | 0.6617 | 60/60 |
+
+Weakest positive profiles were label synonyms (0.1693), alternative formats (0.2083) and two columns (0.2089). Appeal F1 was zero in all six profiles. The benchmark uses short, newly authored forms built from the training facts. Profile scores also reflect their different case samples. [Ranked layouts and field scores](evals/results/variants.json)
+
 The empty-object writer preserved all 180 positive training files byte for byte and wrote `{}\n` for all 16 negatives. Keeping printed country codes then changed two fields in each of 48 transfers. The comparison used local rules and two PDF workers. The integrated run includes the UZP scorer and the fix for a printed underline in a recipient account cell.
 
 | Dataset | Main strict `f7f3ee9` | Candidate strict `41903d1` | Integrated strict | Integrated UZP |
@@ -81,7 +89,7 @@ Exact counts compare the complete JSON, including list order. A/P/T denotes appe
 
 The scanned-transfer rules routed 5/5 organizer dev transfers and 3/5 on the single organizer holdout, along with 4/4 and 9/10 transfers on the two private dev partitions. The synthetic regression still matched all 196 outputs byte for byte. [Per-step and holdout aggregates](evals/results/scanned-transfers.json)
 
-On all 30 organizer development scans, the rules routed 10/10 transfer confirmations. Nine matched every field literally (59/60 fields, transfer F1 0.9833). The outstanding title contains a severely degraded name and abbreviation. Across all three classes the run averaged 9.23 s/PDF on the shared Apple M1, with a maximum of 19.02 s. At the intermediate step that merged the upstream power-of-attorney rules, micro F1 reached 0.6312 on corpus 1 all, 0.7160 on its dev subset and 0.6816 on corpus 2 dev. The later integrated rules reached 0.8607 on corpus 1 all and 0.8789 on corpus 2 dev ([`round2-integration.json`](evals/results/round2-integration.json), `datasets.corpus1.keyless.micro_f1` and `datasets.corpus2.keyless.micro_f1`). [Round 2 measurements](evals/results/scanned-transfers-round2.json)
+On all 30 organizer development scans, the rules routed 10/10 transfer confirmations. Nine matched every field literally (59/60 fields, transfer F1 0.9833). The outstanding title contains a severely degraded name and abbreviation. Across all three classes the run averaged 9.23 s/PDF on the shared Apple M1, with a maximum of 19.02 s. With the integrated power-of-attorney rules, micro F1 reached 0.6312 on corpus 1 all, 0.7160 on its dev subset and 0.6816 on corpus 2 dev. [Round 2 measurements](evals/results/scanned-transfers-round2.json)
 
 The subsequent real-grant round found six labelled grants in corpus 1 and five in corpus 2 dev.
 On these development documents, grant field F1 rose to 0.9558 and 0.9895 respectively.
@@ -91,14 +99,16 @@ Two and four grant JSONs matched exactly. The ten organizer grants remained exac
 
 | Item | Owner |
 |---|---|
-| Obtain an EU/EEA-only processing commitment for Mistral or deploy the same weights within the EEA | Deployment |
+| Rehearse the installed solution on the organizer VM before access ends at 11:00 on 22 November. Check the offline run, reboot, and two-vCPU timing using [the VM instructions](data/uzp/VM.md). | VM owner |
+| If the team keeps the Ministral profile (#38): obtain an EU/EEA-only processing commitment for Mistral or deploy the same weights within the EEA. UZP said no private hosting; UNCONFIRMED whether that rules out the second option, since upstream `VM.md` allows models and containers on the evaluation VM | Deployment |
 | Score corpus 2 test once after the class rules and small-model profile are integrated | Coordinator |
 | Improve receipt routing and recover damaged party names on development inputs | Open |
-| Confirm the long-string similarity function with UZP and record the Stage II weights | Open |
+| Confirm the unresolved VM, model hosting and scoring details listed in [the task brief](docs/task/BRIEF.md). | Open |
+| Class-config flag, TOML validators, weighted routing and a scaffold for new classes (#62) | 00200200 (`claude/config-classes-case-ab8189`) |
 | Promote HackNation2026 PR #48 to `prod` after the faktczyfejk demo, so the doc2json.pl Caddy block survives a redeploy | Open |
-| Re-measure the README Results rows (UZP and strict micro F1) on the submission commit; the training and scan rows are product commit `97dc53e` (`latest.json` and `organizer-scans.json`, refreshed at `17fae15`, agree), the corpus rows `55dc2a1`, and main has since gained #79, #54, #75, #72, #82 and #87 | Open |
-| Rebuild `docs/pipeline/pipeline.pdf` from `docs/pipeline/pipeline.tex` with a LaTeX engine (only the empty-output node of the `.tex` is fixed; the PDF still shows it as zero bytes, and the `.tex` and the PDF still show #24, #26 and #28 as in review; the README uses a Mermaid diagram instead) | Open |
-| Run a scan stress evaluation on fresh renders and skewed copies of the 30 organizer scans and commit its script ([#81](https://github.com/00200200/HackNation2026-2/issues/81) reports about 0.92 to 0.95 UZP F1, and 0.87 at 1.5 degrees of skew, from an uncommitted script); the README says no held-out score exists | Open |
+| Re-measure the README Results rows on the submission commit: the training row is `latest.json` (product commit `23b58dd`), the scan row is `organizer-scans.json` (`17fae15`), and the corpus rows are the `fast` arm of `ocr-alternatives.json` on frozen main `7a1c45b` (`frozen_main`), which predates the first-pass watchdog (#79), the OCR plausibility gate (#87) and the layout benchmark (#89) | Open |
+| Rebuild `docs/pipeline/pipeline.pdf` from `docs/pipeline/pipeline.tex` with a LaTeX engine (only the empty-output node of the `.tex` is fixed; the PDF still shows it as zero bytes, and the `.tex` and the PDF still show #24, #26 and #28 as in review; the README uses `docs/readme/pipeline.png` instead) | Open |
+| Run a scan stress evaluation on fresh renders and skewed copies of the 30 organizer scans and commit its script: [#81](https://github.com/00200200/HackNation2026-2/issues/81) reports about 0.92 to 0.95 UZP F1, and 0.87 at 1.5 degrees of skew, from an uncommitted script, and the repository owner announced `evals/scan_stress.py` there; the README says no held-out score exists | 00200200 (#81) |
 | Run `docker compose run --rm cli` and `docker compose up gui` once on an amd64 Docker host and compare the CLI output with `python -m kio2json` (no Docker on the dev Macs; hosted Actions are blocked by billing, #67) | Open |
 
 <!-- Superseded by the UZP scoring decision below. Previous open item:
@@ -123,6 +133,11 @@ Two and four grant JSONs matched exactly. The ten organizer grants remained exac
 
 ## Log
 
+- 22.11.2026 · Claude · Brought `docs/task/BRIEF.md` up to UZP's Discord answers (#64), the Regulamin (`docs/task/regulamin.pdf`) and the organizer's `VM.md`; refreshed `data/uzp` to `eadffbc` (adds `VM.md` only). In WORKLOG: recorded the `{}` and account-number decisions, put the VM row first, scoped the Ministral row to #38, split the UZP-answer issues into per-issue rows with their owners, flagged the eval's `negatives_empty` check and merged main and dropped the rows it finished (#60, #59, #61) · docs/brief-update
+
+- 22.11.2026 · Codex · Integrated the signed judging criteria, VM instructions and UZP clarifications from #49 and refreshed the README visuals from #36 against recorded results.
+- 21.11.2026 · Claude · presentation-style README with monochrome visuals in `docs/readme/`; previous README moved to `docs/readme/reference.md` · feat/docs
+
 - 22.11.2026 · Codex · Raised the required page watchdog from 60 to 180 seconds and added one 150-dpi retry within the remaining OCR budget. Regression tests cover timeout recovery, immediate engine errors, budget exhaustion and word-box coordinates after resizing.
 
 - 22.11.2026 · Codex · Added case warnings and opt-in sibling OCR repair for #61. All 304 keyless outputs matched main byte for byte. UZP F1 stayed at 0.9231 on corpus 1 all, 0.9221 on corpus 1 dev and 0.9244 on corpus 2 dev. Training scored 1.000 with 196 exact outputs. The 30 singleton scans had 29 exact outputs and UZP F1 of 1.000. [Paired case measurements](evals/results/case-siblings.json)
@@ -135,6 +150,9 @@ Two and four grant JSONs matched exactly. The ten organizer grants remained exac
 - 22.11.2026 · Claude · Handoff fix/install-deps (#44/#45): code done at de49710; fresh py3.13 venv `pip install -r requirements.txt` from another directory rc=0, 80 pkgs, site-packages 642 → 519 MiB (main: raw.githubusercontent.com timeout, 133 pkgs); make check 1704+2 passed; eval-quick 1.000 clean; CLI identical on cases 01/13/27/38/50. Left: judge PASS, stamp, push, PR.
 - 21.11.2026 · Claude · #44/#45: vendored the pinned pol/eng tessdata in `kio2json/tessdata/` (SHA-256 checked at first OCR use), dropped the local `packaging/` wheel so pip needs only PyPI from any directory; `pydantic-ai-slim[openai]` replaces `pydantic-ai`, requirements.txt 134 → 81 packages without anthropic, google-genai, logfire or pydantic-evals.
 
+- 22.11.2026 · Codex · Integrated #55 on `integrate/pr55`. The filter preserves technical titles and native text in mixed PDFs. A lawyer’s name in a firm field needs two weak OCR words and a conflicting crop reading before the field is cleared.
+- 22.11.2026 · Claude · #39: scanned-appeal party names and lawyer fields become null on stray scanner symbols, a low letter ratio or capitals noise after a lawyer's title; a capitals-noise tail after a legal form is cut unless it names another consortium member; titles are checked for stray symbols only. On the organizer template scan the appellant and law firm names are now null and the authority name ends at its legal form (checked by a direct CLI run; the template is not in the eval). Organizer scans 0.9974 → 0.9974, full training 1.000 → 1.000 (holdout 1.000), both against `4d91600`; the private dev corpora are not on this machine and were not measured · b2121b5
+- 22.11.2026 · Claude · #39: judge PASS on `c4b3d94` after two rounds of P2 fixes; pushed `fix/ocr-plausibility` with a PR to main. Left: a real-corpus check by the corpus owner before merge (dev corpora not on this machine).
 - 21.11.2026 · Codex · Added native span output for small models, local source validation and a bounded parallel CLI. Verified the native schema on the quantized local model and both regional API releases.
 
 - 21.11.2026 · Claude · brief, eval harness, judge/eval skills, pre-push hook · f6db304
@@ -204,18 +222,12 @@ Two and four grant JSONs matched exactly. The ten organizer grants remained exac
 - 21.11.2026 · Codex · In the integrated Ministral profile, preserve the required null personal name for a corporate grantor after filling model gaps. The previous profile filled it on three organizer scans and one corpus 1 grant.
 - 21.11.2026 · Codex · Restored issuer declarations above grant titles, printed signers beside email addresses, and scanned sole-trader names. Certificate attribution now checks the signer's role. Eight invented CLI cases compare the affected records with the pre-PR #25 base.
 - 21.11.2026 · Codex · Measured the integrated accuracy and runtime PRs at `ca2975392`. Both profiles matched all 196 training outputs from main byte for byte. On the shared 16 GB Apple M1, the integrated CLI processed 30 organizer scans in 36.12 s with four rules workers and 44.91 s with three Ministral workers. The 150-PDF batch took 57.54 s and 70.38 s respectively. It used two copies of the 30 scans and 90 training PDFs. [Combined measurements](evals/results/round2-integration.json)
+- 21.11.2026 · Claude · Updated `docs/task/BRIEF.md` to organizer README `0b360a9`: evaluation method and hardware UNCONFIRMED, 150 PDFs in 45 min, OCR by API scored like an LLM, API provider privacy policy and EU/EEA, LLM scoring under revision, 30 labelled scans, FAQ 10 vs PDF 30/20, mixed transfer file names. Closes #43.
 - 21.11.2026 · Claude · landing/upload UI in `frontend/`, prod compose on the shared `edge` network, deploy notes · feat/frontend
 - 21.11.2026 · Claude · doc2json.pl live over HTTPS (DNS A records, Caddy block on the server), landing reduced to the dark tool screen · feat/frontend
 - 21.11.2026 · Claude · `kio2json.web_api` (health + extract, index-matched results) behind doc2json.pl, API container, frontend wired · feat/web-extraction
 
 - 21.11.2026 · Integrated #27 and #34 with streamed upload limits and a disposable OCR process per document. The request deadline includes upload and queue time.
-- 21.11.2026 · Claude · presentation-style README with monochrome visuals in `docs/readme/`; previous README moved to `docs/readme/reference.md` · feat/docs
-- 22.11.2026 · Claude · PR #36 merged with main: the README, results chart and `docs/readme/reference.md` now quote the rules-only figures from `evals/results/round3.json`, main's README changes are carried into the reference, and the reference gains a section on the bundled class TOML files · feat/docs
-- 22.11.2026 · Claude · PR #36 merged with main again (#71, UZP scoring): the README and the results chart show the UZP micro F1 of `evals/results/uzp-metric.json` (extractor `f7f3ee9`) beside the strict score and state the 29/30 organizer-scan routing; the organizer scans are no longer labelled real; both timings name their product commit; `reference.md` gains a current-figures table, relabels Round 3 as the strict metric and carries the #33 citation edits (result file, key, number and commit for every speed and memory figure); the README names the optional model, its parameter count and endpoint and links the pipeline PDF · feat/docs
-- 22.11.2026 · Claude · PR #36 merged with main again (#67, #74): the README results, the chart and the current-figures table of `docs/readme/reference.md` now come from `evals/results/case-siblings.json` (main at `6ff2966`: organizer scans UZP 1.0000, corpus 1 0.9231, corpus 2 dev 0.9244). #74's viewer and repair paragraphs are in `docs/readme/reference.md`. The judge's wording points are applied (EU and EFTA caveat, 402 s run caveat, known-limits link, normalised exact match, no jury laptop) · feat/docs
-- 22.11.2026 · Claude · PR #36 merged with main again (#77, #78, #79, #54): the README Results table, the chart and the current-figures table of `docs/readme/reference.md` now come from `evals/results/p0-conventions.json` (training and scans at product commit `97dc53e`: UZP 1.0000 and 1.0000, strict 1.0000 and 0.9974; corpus 1 all 0.9212 and corpus 2 dev 0.9244 at `55dc2a1`). The intro and the class diagram show `{}` for unrelated documents, the PyPI-only install and vendored OCR data text is in the Quick start and Docker section, the README has a short VM section with the full text in the reference, and the watchdog paragraph cites its keys in `evals/results/first-pass-watchdog.json` · feat/docs
-- 22.11.2026 · Claude · PR #36 merged with main again (#75): the stale note about the earlier 29-of-30 content of `evals/results/organizer-scans.json` is gone from `docs/readme/reference.md`, because main refreshed that file and `evals/results/latest.json` at `d808ee0` (extractor code equal to main at `257a6af`; training UZP 1.0000 and strict 1.0000, scans UZP 1.0000 and strict 0.9974, 30 of 30 routed). The README and the reference name them next to the `p0-conventions.json` rows and say the corpus rows predate #75 · feat/docs
-- 22.11.2026 · Claude · PR #36 merged with main again (#72, #82, #83): the Docker section follows #83 (base image pull, x86-64 note), the Known limits bullet of #72 is carried into `docs/readme/reference.md`, and `latest.json` and `organizer-scans.json` are described by the commit they record (`17fae15`, same scores) instead of a claim about main's code, which #82 has since changed. The VM text in the reference names the keys and the extraction revision `7a1c45b` behind its 399.77 s and 4 min 25 s figures and drops the stale "before the kit merges" sentence · feat/docs
 
 - 22.11.2026 · Codex · Fixed appeal party boundaries at numbered headings, parenthesized page counters over scans, labelled OCR receipt accounts and explicit grantor signature blocks. The remaining round-three routing and role errors are tracked in #1.
 
@@ -246,6 +258,9 @@ These runs used local rules with the three endpoint variables unset. The two loc
 
 - 22.11.2026 · Codex · Added a Python 3.13 jury install and 150-PDF CLI comparison for Windows x64, Linux x64 and macOS in `ab3c8fa`. GitHub blocked all three jobs before checkout due to account billing. The run produced no timings. [Run record](evals/results/jury-batch.json)
 - 22.11.2026 · Codex · Implemented the UZP scorer and retained historical strict micro F1 on `feat/uzp-metric` (#59).
+
+- 22.11.2026 · Codex · Added the seeded layout regression gate and measured main at `f7f3ee9` and `3eccb41` on the same 240 generated PDFs for issue #63.
+
 - 22.11.2026 · Codex · Added local jury Compose services and the signed task rules for #60. Compose configuration validated. Docker Desktop did not answer its health probe, so container byte parity is pending.
 - 22.11.2026 · Codex · The keyless LSTM crop experiment retained 13 correctly printed checksum-invalid accounts on the 240 seeded variants, raising UZP F1 from 0.2960 to 0.3053. It changed no digits on either real cohort or the organizer scans. [Paired measurements](evals/results/ocr-alternatives.json)
 
@@ -256,4 +271,5 @@ These runs used local rules with the three endpoint variables unset. The two loc
 - 22.11.2026 · Codex · Synced #72 with main at `4222472`, retaining first-page candidate selection in the keyed profile.
 - 22.11.2026 · Codex · Synced the rule fixes in #75 with main at `b9c2c7f`, preserving the printed account prefix during OCR slash repair.
 - 22.11.2026 · Codex · Integrated the merged #75 rule fixes into #72 at main `257a6af`.
-- 22.11.2026 · Claude · PR #36 follow-up on the README: UZP micro F1 is the headline with strict micro F1 beside it, all four rows are named development sets with no held-out score (corpus 2 test unscored, scan stress evaluation open in #81), the pipeline is a Mermaid diagram with a module map instead of `pipeline.png`, short REST API, data handling and licence sections are added, the old rounds in `docs/readme/reference.md` carry history labels and the same three timing citations as #53, and `docs/pipeline/pipeline.tex` writes `{}` for unrelated PDFs (the PDF needs a LaTeX rebuild) · feat/docs
+- 2026-11-22 · Transfer confirmations can bind a split execution heading to a single dated amount and two explicitly owned accounts. Receipt dates also accept Roman months and labelled whole amounts can place the currency first.
+- 22.11.2026 · Claude · PR #36 rebuilt on main after #90 (`f98dc56`) as a small change on top of the README split: the README keeps main's layout and adds a module map, a limits paragraph (all four rows are development sets, no held-out score, corpus 2 test unscored, scan stress evaluation open in #81), the two timings with their result file, key and commit, short REST API, data handling and licence sections, and the VM and Docker notes; `docs/pipeline/pipeline.tex` now writes `{}` for unrelated PDFs (the PDF needs a LaTeX rebuild) · feat/docs

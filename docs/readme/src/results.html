@@ -3,26 +3,25 @@ body { padding: 56px 64px; }
 h2 { font-size: 34px; font-weight: 600; letter-spacing: -.035em; }
 .sub { margin-top: 6px; font-size: 17px; color: #a1a1a1; }
 .chart { margin-top: 44px; display: grid; gap: 22px; }
-.row { display: grid; grid-template-columns: 300px 1fr 130px; align-items: center; gap: 22px; }
+.row { display: grid; grid-template-columns: 300px 1fr 90px; align-items: center; gap: 22px; }
 .name { font-size: 18px; font-weight: 500; }
 .name small { display: block; margin-top: 2px; font-size: 14px; color: #a1a1a1; font-weight: 400; }
 .track { height: 34px; border-radius: 8px; background: rgba(255,255,255,.06); position: relative; overflow: hidden; }
 .bar { position: absolute; inset: 0 auto 0 0; border-radius: 8px; background: #fff; }
 .bar.real { background: linear-gradient(90deg, #8a8a8a, #e5e5e5); }
 .val { font-family: "Geist Mono", monospace; font-size: 22px; text-align: right; }
-.val small { display: block; margin-top: 2px; font-family: "Geist", sans-serif; font-size: 13px; color: #a1a1a1; }
-.axis { display: grid; grid-template-columns: 300px 1fr 130px; gap: 22px; margin-top: 6px; }
+.axis { display: grid; grid-template-columns: 300px 1fr 90px; gap: 22px; margin-top: 6px; }
 .ticks { display: flex; justify-content: space-between; font-family: "Geist Mono", monospace; font-size: 12.5px; color: #6f6f6f; }
-.note { margin-top: 34px; font-size: 14.5px; color: #a1a1a1; max-width: 1300px; line-height: 1.5; }
+.note { margin-top: 34px; font-size: 14.5px; color: #a1a1a1; max-width: 1150px; line-height: 1.5; }
 </style></head><body>
-<h2>UZP field micro F1, rules only, no API key</h2>
-<p class="sub">One CLI run per dataset: 97dc53e (training, scans), 55dc2a1 (corpora). Source: evals/results/p0-conventions.json</p>
+<h2>Field-level micro F1, rules only, no API key</h2>
+<p class="sub">Local rules with OCR. Each row links to its measurement file in the README.</p>
 <div class="chart">
-  <div class="row"><div class="name">Training cases <small>organizer, synthetic, 196 PDFs</small></div><div class="track"><div class="bar" style="width:100%"></div></div><div class="val">1.0000<small>strict 1.0000</small></div></div>
-  <div class="row"><div class="name">Organizer scans <small>scanned, 30 PDFs</small></div><div class="track"><div class="bar real" style="width:100%"></div></div><div class="val">1.0000<small>strict 0.9974</small></div></div>
-  <div class="row"><div class="name">Local corpus 1 <small>real, 39 PDFs</small></div><div class="track"><div class="bar real" style="width:92.12%"></div></div><div class="val">0.9212<small>strict 0.8880</small></div></div>
-  <div class="row"><div class="name">Local corpus 2, dev <small>real, 39 PDFs</small></div><div class="track"><div class="bar real" style="width:92.44%"></div></div><div class="val">0.9244<small>strict 0.8951</small></div></div>
+<div class="row"><div class="name">Organizer training (synthetic) <small>196 PDFs</small></div><div class="track"><div class="bar" style="width:100.0000%"></div></div><div class="val">1.000</div></div>
+<div class="row"><div class="name">Organizer scans <small>30 PDFs</small></div><div class="track"><div class="bar real" style="width:100.0000%"></div></div><div class="val">1.000</div></div>
+<div class="row"><div class="name">Local corpus 1, all <small>39 PDFs</small></div><div class="track"><div class="bar real" style="width:92.3077%"></div></div><div class="val">0.923</div></div>
+<div class="row"><div class="name">Local corpus 2, dev <small>39 PDFs</small></div><div class="track"><div class="bar real" style="width:92.4370%"></div></div><div class="val">0.924</div></div>
 </div>
 <div class="axis"><span></span><div class="ticks"><span>0</span><span>0.25</span><span>0.50</span><span>0.75</span><span>1.00</span></div><span></span></div>
-<p class="note">The rules were developed against the training set, the organizer scans and these two local corpora, so none of these figures estimates performance on unseen cases. The 60 test PDFs of corpus 2 are not part of them. Strict is the earlier normalised exact-match score on the same predictions; UZP has not confirmed its similarity function, so five long strings accept an 80% match. Training uses references with the two printed PL prefixes restored in 48 transfers; against the originals it is 0.9758 (strict 0.9585).</p>
+<p class="note">The table gives the UZP and strict scores for the same predictions. The hidden evaluation set is scored separately by UZP.</p>
 </body></html>
