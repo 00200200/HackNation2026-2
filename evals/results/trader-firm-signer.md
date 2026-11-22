@@ -78,6 +78,6 @@ The paired builds produced byte-identical output across all 196 training PDFs, a
 
 ## Release integration
 
-Release product `2c44f26` merged main `50d0419`. The four mandate extraction files are byte-identical to the panel freeze. The official training run on the clean merge was 196/196 exact, UZP and strict F1 1.0000, with every output byte-identical to both members of the earlier pair. The ordered 196-file SHA-256 digest `27ce5adb70df47f1961fc2ec316b6536f864ee1e305252ad97ae657184ce4f54` also matches the published delivery-proof branch measurement at `e35c57e`, whose product, data and evaluator match `50d0419`. [Full release training results](latest.json)
+Release product `2c44f26` merged main `50d0419`. The four mandate extraction files are byte-identical to the panel freeze. The official training run on the clean merge was 196/196 exact, UZP and strict F1 1.0000, with every output byte-identical to both members of the earlier pair. The ordered 196-file SHA-256 digest `27ce5adb70df47f1961fc2ec316b6536f864ee1e305252ad97ae657184ce4f54` also matches the published delivery-proof branch measurement at `e35c57e`, whose product, data and evaluator match `50d0419`. [Full release training results](trader-firm-signer-training.json)
 
 `make check` passed on this merge. Ruff lint and format, dependency synchronization and all 2,668 tests passed. Pytest reported three SWIG deprecation warnings.
