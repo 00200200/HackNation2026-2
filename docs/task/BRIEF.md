@@ -34,7 +34,7 @@ Classes and schemas (`data/uzp/oczekiwane-json/`):
 | appeal (odwołanie do KIO) | `odwolanie.json` | `OdwolanieKIO` (date, place, challenged action date, `czynnosc_powod_id` 1–12 + canonical `czynnosc_opis`, both from the **first** charge only), `Odwolujacy[]` (KRS/NIP/REGON, consortium leader, `przez-pelnomocnika`, attorney name, firm, e-mail), `Zamawiajacy[]` (+ `prowadzacy_postepowanie` null/0/1), `ZamowieniePubliczne` (BZP no. `YYYY/BZP########`, internal no., TED no. `NNNNNN-YYYY`, title) |
 | power of attorney (pełnomocnictwo) | `pelnomocnictwo.json` | `mocodawca[]` (`data`: name/KRS/NIP/`typ` osoba_prawna/osoba_fizyczna, `podpisujacy[]`), `pelnomocnicy[]` (name in nominative, PESEL) |
 | transfer confirmation (potwierdzenie przelewu) | `przelew.json` | `przelew_bankowy`: `data_operacji`, `kwota`, `na_rachunek`, `z_rachunku`, `numer_transakcji`, `tytul` |
-| anything else (negative) | none | a JSON file containing only `{}`, no class (Discord, #57; the README says "empty `.json` file") |
+| anything else (negative) | none | a JSON file containing only `{}`, no class (Discord, #57; the organizer README still says "pusty plik `.json`", see Negatives below) |
 
 `czynnosc_powod_id` dictionary: `data/uzp/oczekiwane-json/czynnosc_powod_id_dict.md`. The schema files contain
 `//` comments with the extraction rules for each field; treat them as the spec.
@@ -51,9 +51,18 @@ Value conventions (Discord):
 
 - `input/` and `output/` folders in the app root. The jury drops cases into `input/<case>/*.pdf`.
 - Output: `output/<case>/<input stem>.json`, one per input PDF, same tree (README, "Wynik działania"). The Discord
-  answer in #64 gives the example `potwierdzenie_przelewu.pdf` → `potwierdzenie_przelewu.json`.
-- Negatives: the README says "empty `.json` file". UZP clarified on Discord that the file must contain only `{}`,
-  not zero bytes (#57).
+  answer in #64 gives the example `potwierdzenie_przelewu.pdf` → `potwierdzenie_przelewu.json`. The implementation
+  also writes `{}` when it cannot process a PDF. In the default keyless profile the CLI prints the reason to stderr
+  and exits with status 1, and the GUI shows the reason and puts `{}` in its ZIP. The keyed organizer profile retries
+  the PDF with rules after a model or secondary OCR error, and an unreadable PDF yields `{}` (this repo's
+  `docs/readme/reference.md`).
+- Negatives: the organizer README still says "pusty plik `.json`", an empty `.json` file (`data/uzp/README.md:143`).
+  UZP answered on Discord four times on 21.11.2026 (13:27, 13:50, 22:19 and 22:32, relayed in #57). The first answer
+  says an empty JSON with the original file name. The three later ones give `{}`; at 13:50 UZP was asked whether that
+  meant a zero-byte file and answered "Zawierający tylko {}". We follow the explicit Discord answer. PR #78 implements
+  it in the CLI, GUI and eval and closed #57. The README line was not corrected, so re-confirm this at the UZP stand.
+  UNCONFIRMED: which form the scorer accepts (we write `{}` plus a newline), since the README and the Discord answers
+  differ.
 - A CLI with instructions is **required** (FAQ 12a); a wrapper script (e.g. `start.bat`) is fine.
 - GUI is optional and scores extra: upload PDF, run, see JSON, ideally side by side with the source (FAQ 12b).
 
@@ -72,7 +81,8 @@ Value conventions (Discord):
   into `/opt/solution/input`, run the command from `/opt/solution/RUN.md` in `/opt/solution` with `sudo` (no
   interaction; it must end on its own) and read `/opt/solution/output`. The project and its config belong in
   `/opt/solution`; models, Docker images and dependencies must already be on the VM, because `VM.md` says not to count
-  on downloads during the evaluation. Deployment is tracked in #66. UNCONFIRMED: whether a team without a VM is
+  on downloads during the evaluation. The install kit is `deploy/` (PR #77, README "Deploy on the evaluation VM");
+  its Ubuntu offline run, 2-vCPU timing and reboot check are unverified. UNCONFIRMED: whether a team without a VM is
   evaluated from its GitHub link, whether the 45-minute limit is measured on this VM, and the format of `RUN.md`
   (`VM.md` points to a template that the file does not contain). FAQ 11 still calls the test machine an "office"
   computer without GPU.
@@ -110,7 +120,7 @@ Value conventions (Discord):
   (FAQ says "at least 39"; 60 in the repo on 21.11.2026.)
 - 48 of the 60 training transfers print `PL` before an account number, yet all 60 gold files hold bare digits
   (counted 21.11.2026, #58). UZP called the missing `PL` an error in the references and said the hidden set will not
-  repeat it.
+  repeat it. The eval restores the prefix from each transfer PDF with `--correct-training-accounts` (PR #78).
 - Negatives: 12 PDFs in `data/uzp/dane/negatywne/` (plus a `readme.md`) and one extra PDF each in `przyklad_04`, `_10`,
   `_24`, `_37`: 16 in all.
 - `data/uzp/dane/skany/`: 30 labelled scans (10 each in `odwolania`, `pelnomocnictwa`, `potwierdzenia`, one
@@ -121,10 +131,11 @@ Value conventions (Discord):
   does not show the `{}` convention.
 - Hidden test set: not published. The task PDF (section 6) says it contains real appeal cases prepared by the
   organizer, and README section 6 calls it complete cases, scored against references written by subject experts. The
-  #63 relay of UZP's Discord answers (two Discord speakers, roles not recorded) says the documents are **synthetic, generated
-  from real cases**, include both text PDFs and scans, and contain no PDF that merges a document with an attachment;
-  we follow that later answer. Regulamin § 2.4a: at least
-  10 appeal cases. The UZP stand can show it (FAQ 9).
+  #63 relay of UZP's Discord answers (two Discord speakers, roles not recorded) says the documents are **synthetic,
+  generated from real cases**, include both text PDFs and scans, and contain no PDF that merges a document with an
+  attachment. We follow that later answer. UNCONFIRMED: the relay is second-hand, its speakers' roles are not
+  recorded, and the task PDF says real cases. Regulamin § 2.4a: at least 10 appeal cases. The UZP stand can show it
+  (FAQ 9).
 
 ## Judging
 
@@ -177,7 +188,7 @@ F1 and keeps the older strict score for comparison; its definition is in `.claud
 - Required: project title, GitHub link to a working prototype (upload documents, read the extraction result).
 - Optional: technical documentation incl. the LLM used, own quality test results.
 - Delivery for evaluation (`VM.md`): the project in `/opt/solution` on the team VM, with `RUN.md`, `input/` and
-  `output/`, ready before 22.11.2026 at 11:00 (#66).
+  `output/`, ready before 22.11.2026 at 11:00 (#66; the install kit is PR #77).
 - API key of an LLM solution: `/opt/solution/.env` (`VM.md`) or a field of the HackNation submission form, not the repo
   (Discord). UNCONFIRMED which applies.
 - Finalists (at most three): an architecture description, the source code and a presentation (Regulamin § 2.4b).
