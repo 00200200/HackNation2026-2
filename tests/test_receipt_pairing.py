@@ -135,3 +135,17 @@ def test_previous_owner_indent_is_not_a_neighbouring_column():
     fields = {"tytul": "Zakup sprzętu technicznego", "kwota": None, "data_operacji": None}
     apply_receipt_cards(fields, words)
     assert fields["tytul"] == "Zakup sprzętu technicznego"
+
+
+def test_reference_like_words_at_start_of_a_wrapped_purpose_line():
+    lines = ["Tytuł operacji", "Zwrot za dostawę", "nr REF-85 z marca", "Numer transakcji", "T-509"]
+    assert (
+        read_card(lines, "operacji Zwrot za dostawę nr REF-85 z marca")["tytul"] == "Zwrot za dostawę nr REF-85 z marca"
+    )
+
+
+def test_reference_caption_with_inline_identifier_ends_purpose():
+    assert (
+        read_card(["Tytuł operacji", "Dostawa", "Numer transakcji AB-354", "Data wydruku"], "Dostawa")["tytul"]
+        == "Dostawa"
+    )

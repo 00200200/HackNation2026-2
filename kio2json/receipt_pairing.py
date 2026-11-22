@@ -12,6 +12,7 @@ from .bank_transfer import (
     DIRECT_ROLE,
     MONEY,
     REFERENCE_LABEL,
+    REFERENCE_RE,
     REMITTANCE_WITH_REFERENCE,
     TITLE_LABEL,
     _amount,
@@ -43,20 +44,27 @@ _KNOWN = {phrase for phrases in LABELS.values() for phrase in phrases}
 
 
 def _caption(text):
-    head, _, inline = text.partition(":")
+    head, colon, inline = text.partition(":")
     label = head.strip().casefold()
     for field, pattern in (("tytul", _TITLE), ("kwota", _AMOUNT), ("data_operacji", _DATE)):
         if pattern.fullmatch(label):
             return field, head, inline.strip()
     if (
         label in _KNOWN
+        or REFERENCE_RE.fullmatch(text)
         or DIRECT_ROLE.fullmatch(label)
         or _STOP.fullmatch(label)
         or re.fullmatch(
             r"(?:(?:nr\.?|numer) )?(?:kont[oa]|rachun(?:ek|ku)) (?:adresata|płatnika|nadawcy|odbiorcy|zleceniodawcy|beneficjenta)",
             label,
         )
-        or (BOUNDARY_RE.match(text) and not REMITTANCE_WITH_REFERENCE.match(text))
+        # A reference prefix may also begin a wrapped purpose line. Only a
+        # complete caption, explicit colon or document footer ends that value.
+        or (
+            (colon or label.startswith(("bank ", "dokument ", "signature ", "potwierdzenie ")))
+            and BOUNDARY_RE.match(text)
+            and not REMITTANCE_WITH_REFERENCE.match(text)
+        )
     ):
         return "", head, inline.strip()
     return None
