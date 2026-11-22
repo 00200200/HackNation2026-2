@@ -53,8 +53,8 @@ Value conventions (Discord):
 - Output: `output/<case>/<input stem>.json`, one per input PDF, same tree (README, "Wynik działania"). The Discord
   answer in #64 gives the example `potwierdzenie_przelewu.pdf` → `potwierdzenie_przelewu.json`. The implementation
   also writes `{}` when it cannot process a PDF. In the default keyless profile the CLI prints the reason to stderr
-  and exits with status 1, and the GUI shows the reason and puts `{}` in its ZIP. The keyed organizer profile first
-  retries such a PDF with rules (README).
+  and exits with status 1, and the GUI shows the reason and puts `{}` in its ZIP. The keyed organizer profile retries
+  the PDF with rules after a model or secondary OCR error, and an unreadable PDF yields `{}` (README).
 - Negatives: the README says "empty `.json` file". UZP clarified on Discord that the file must contain only `{}`,
   not zero bytes (#57). PR #78 implements it in the CLI, GUI and eval and closed #57.
 - A CLI with instructions is **required** (FAQ 12a); a wrapper script (e.g. `start.bat`) is fine.
