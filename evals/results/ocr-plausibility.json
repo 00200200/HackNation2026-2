@@ -1,0 +1,232 @@
+{
+  "question": "Does the null gate of PR #55 (issue #39) survive the organizer's F1 rules (issue #59)? Policy chosen: trim noise, never null.",
+  "date": "2026-11-22",
+  "product_commit": "959fa1f",
+  "baseline_commit": "6ff2966",
+  "variants": {
+    "main": "origin/main 6ff2966 (origin/main later advanced to 3eccb41, which changes only kio2json/jury_web.py, outside the extraction path)",
+    "pr_as_opened": "fix/ocr-plausibility fe66789 on top of 6ff2966: null on a stray symbol, letter ratio below 0.6 or a lawyer name ending in capitals noise; cut after the legal form",
+    "this_branch": "trim only: cut a noise tail after a corporate legal form, strip trailing stray symbols, never null a present value (a value of stray symbols only is the one exception), skip values printed on native pages"
+  },
+  "metrics": {
+    "strict": "evals.metrics at 6ff2966 (null = null is a hit, wrong value = FP + FN, exact strings)",
+    "fuzzy_five": "strict plus residual non-null matches of the five long-string paths credited at normalised Levenshtein similarity >= 0.8 (definition in small-model.json)",
+    "organizer": "interim scorer for issue #59: TN dropped, wrong value = FP only, five long strings match at similarity >= 0.8 (rapidfuzz normalised Levenshtein, greedy one-to-one), lists by content; replaced by evals.metrics once #59 lands"
+  },
+  "organizer_scans_30": {
+    "outputs_byte_identical_across_variants": true,
+    "main": {
+      "strict": {
+        "micro_f1": 0.9974,
+        "tp": 387,
+        "fp": 1,
+        "fn": 1
+      },
+      "fuzzy_five": {
+        "micro_f1": 1.0,
+        "tp": 388,
+        "fp": 0,
+        "fn": 0
+      },
+      "organizer": {
+        "micro_f1": 1.0,
+        "tp": 309,
+        "fp": 0,
+        "fn": 0
+      }
+    },
+    "pr_as_opened": {
+      "strict": {
+        "micro_f1": 0.9974,
+        "tp": 387,
+        "fp": 1,
+        "fn": 1
+      },
+      "fuzzy_five": {
+        "micro_f1": 1.0,
+        "tp": 388,
+        "fp": 0,
+        "fn": 0
+      },
+      "organizer": {
+        "micro_f1": 1.0,
+        "tp": 309,
+        "fp": 0,
+        "fn": 0
+      }
+    },
+    "this_branch": {
+      "strict": {
+        "micro_f1": 0.9974,
+        "tp": 387,
+        "fp": 1,
+        "fn": 1
+      },
+      "fuzzy_five": {
+        "micro_f1": 1.0,
+        "tp": 388,
+        "fp": 0,
+        "fn": 0
+      },
+      "organizer": {
+        "micro_f1": 1.0,
+        "tp": 309,
+        "fp": 0,
+        "fn": 0
+      }
+    }
+  },
+  "template_scan": {
+    "note": "input/case1/przyklad odwolanie.pdf; the organizer's expected file is empty, so the reference was read from the page: the appellant name is under a black box and was taken from the body text (UNCONFIRMED), the law firm name is redacted and not scored",
+    "main": {
+      "fields": {
+        "appellant": {
+          "similarity": 0.125,
+          "outcome": "FP"
+        },
+        "authority": {
+          "similarity": 0.688,
+          "outcome": "FP"
+        },
+        "title": {
+          "similarity": 0.99,
+          "outcome": "TP"
+        }
+      },
+      "tp": 1,
+      "fp": 2,
+      "fn": 0,
+      "organizer_f1": 0.5
+    },
+    "pr_as_opened": {
+      "fields": {
+        "appellant": {
+          "similarity": null,
+          "outcome": "FN"
+        },
+        "authority": {
+          "similarity": 1.0,
+          "outcome": "TP"
+        },
+        "title": {
+          "similarity": 0.99,
+          "outcome": "TP"
+        }
+      },
+      "tp": 2,
+      "fp": 0,
+      "fn": 1,
+      "organizer_f1": 0.8
+    },
+    "this_branch": {
+      "fields": {
+        "appellant": {
+          "similarity": 0.146,
+          "outcome": "FP"
+        },
+        "authority": {
+          "similarity": 1.0,
+          "outcome": "TP"
+        },
+        "title": {
+          "similarity": 0.99,
+          "outcome": "TP"
+        }
+      },
+      "tp": 2,
+      "fp": 1,
+      "fn": 0,
+      "organizer_f1": 0.8
+    }
+  },
+  "injected_damage": {
+    "note": "stress test of the rules on the organizer's 70 appeal references, not a rate of real OCR damage; each long-string value is damaged, then scored with the organizer rule",
+    "values": 283,
+    "stray_symbol_inside_value": {
+      "main": {
+        "tp": 283,
+        "fp": 0,
+        "fn": 0,
+        "organizer_f1": 1.0
+      },
+      "pr_as_opened": {
+        "tp": 0,
+        "fp": 0,
+        "fn": 283,
+        "organizer_f1": 0.0
+      },
+      "this_branch": {
+        "tp": 283,
+        "fp": 0,
+        "fn": 0,
+        "organizer_f1": 1.0
+      }
+    },
+    "short_tail_appended": {
+      "main": {
+        "tp": 248,
+        "fp": 35,
+        "fn": 0,
+        "organizer_f1": 0.934
+      },
+      "pr_as_opened": {
+        "tp": 150,
+        "fp": 0,
+        "fn": 133,
+        "organizer_f1": 0.693
+      },
+      "this_branch": {
+        "tp": 281,
+        "fp": 2,
+        "fn": 0,
+        "organizer_f1": 0.996
+      }
+    },
+    "template_style_tail_appended": {
+      "main": {
+        "tp": 0,
+        "fp": 283,
+        "fn": 0,
+        "organizer_f1": 0.0
+      },
+      "pr_as_opened": {
+        "tp": 150,
+        "fp": 119,
+        "fn": 14,
+        "organizer_f1": 0.693
+      },
+      "this_branch": {
+        "tp": 150,
+        "fp": 133,
+        "fn": 0,
+        "organizer_f1": 0.693
+      }
+    },
+    "lookalike_letters": {
+      "main": {
+        "tp": 283,
+        "fp": 0,
+        "fn": 0,
+        "organizer_f1": 1.0
+      },
+      "pr_as_opened": {
+        "tp": 283,
+        "fp": 0,
+        "fn": 0,
+        "organizer_f1": 1.0
+      },
+      "this_branch": {
+        "tp": 283,
+        "fp": 0,
+        "fn": 0,
+        "organizer_f1": 1.0
+      }
+    }
+  },
+  "clean_reference_values": {
+    "checked": 352,
+    "changed_by_pr_as_opened": 0,
+    "changed_by_this_branch": 0
+  },
+  "not_measured": "private dev corpora 1 and 2 (not on this machine)"
+}

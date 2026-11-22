@@ -79,11 +79,17 @@ Two and four grant JSONs matched exactly. The ten organizer grants remained exac
 - 21.11.2026: file, module and identifier names are English; the jury GUI, organizer's JSON keys and original file stems use Polish.
 - 21.11.2026: delegated work and reviews (pre-commit review, pre-push judge) go to Codex workers through
   `/orchestrator`, not to Claude subagents.
+- 22.11.2026: scanned-appeal party names, law-firm and lawyer names and the procurement title lose OCR noise at their end
+  (a tail after a corporate legal form, trailing stray symbols) and are never replaced with null; only a value made of stray
+  symbols alone becomes null. Under the organizer's F1 (#59) a wrong value costs one FP, a missing one one FN, and a long
+  string matches from 80 % similarity, so null never beats a damaged value that is still close. This replaces the null gate of
+  the two #39 log lines of this date. Evidence: `evals/results/ocr-plausibility.json`.
 
 ## Log
 
 - 22.11.2026 · Claude · #39: scanned-appeal party names and lawyer fields become null on stray scanner symbols, a low letter ratio or capitals noise after a lawyer's title; a capitals-noise tail after a legal form is cut unless it names another consortium member; titles are checked for stray symbols only. On the organizer template scan the appellant and law firm names are now null and the authority name ends at its legal form (checked by a direct CLI run; the template is not in the eval). Organizer scans 0.9974 → 0.9974, full training 1.000 → 1.000 (holdout 1.000), both against `4d91600`; the private dev corpora are not on this machine and were not measured · b2121b5
 - 22.11.2026 · Claude · #39: judge PASS on `c4b3d94` after two rounds of P2 fixes; pushed `fix/ocr-plausibility` with a PR to main. Left: a real-corpus check by the corpus owner before merge (dev corpora not on this machine).
+- 22.11.2026 · Claude · #39, PR #55: replaced the null gate with a trim (decision of this date; supersedes the two #39 lines above). All 30 organizer scan outputs are byte-identical to main (strict 0.9974, organizer rule 1.0000). On the template scan, three long strings under the organizer rule: main 0.500, null gate 0.800, trim 0.800. Injected damage, a stray `|` inside a value: main 1.000, null gate 0.000, trim 1.000. Full training 1.000 → 1.000 (holdout 1.000) and organizer scans 0.9974 → 0.9974 against `6ff2966`; the private dev corpora are not on this machine and were not measured · 959fa1f
 - 22.11.2026 · Codex · Grouped appeal and mandate word boxes by printed role and column. Added regressions for wrapped names, repeated stationery, extra appointees and principal-specific signatures.
 
 - 21.11.2026 · Codex · Added native span output for small models, local source validation and a bounded parallel CLI. Verified the native schema on the quantized local model and both regional API releases.
