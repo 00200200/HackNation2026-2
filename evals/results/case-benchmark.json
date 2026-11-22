@@ -4499,5 +4499,50 @@
     "classification_accuracy": 1.0,
     "negatives_empty": 1.0,
     "docs": 17
+  },
+  "organizer_scan_repeat": {
+    "batch": {
+      "micro_f1": 1.0,
+      "micro_f1_strict": 0.9974226804123711,
+      "classification_accuracy": 1.0,
+      "exact": 29,
+      "docs": 30
+    },
+    "isolated_rechecks": 1,
+    "after_one_recheck_per_difference": {
+      "micro_f1": 1.0,
+      "micro_f1_strict": 0.9974226804123711,
+      "classification_accuracy": 1.0,
+      "exact": 29,
+      "docs": 30
+    }
+  },
+  "publication_check": {
+    "training_commit": "3b730195ff780b508825495e9dd66fa4620e7bce",
+    "full_training_uzp": 1.0,
+    "full_training_strict": 1.0,
+    "docs": 196,
+    "byte_identical": 196,
+    "one_case_smoke": {
+      "commit": "3b730195ff780b508825495e9dd66fa4620e7bce",
+      "dataset_sha256": "558e59d9f55b62c851703774d0f17ecec4a9c3023722d8a1535b3abbfcf52434",
+      "overall": {
+        "cases": 1,
+        "docs": 8,
+        "uzp_f1": 0.7916666666666666,
+        "strict_f1": 0.7407407407407407,
+        "uzp_ci95": null,
+        "counts": {
+          "tp": 38,
+          "fp": 0,
+          "fn": 20,
+          "tn": 14
+        },
+        "exact": 4,
+        "routed": 8,
+        "rejected": 2,
+        "negatives": 2
+      }
+    }
   }
 }
