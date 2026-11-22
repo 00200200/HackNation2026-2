@@ -1,13 +1,14 @@
 {
   "question": "Which part of the OCR plausibility gate of PR #55 (issue #39) survives the UZP counting rules (issue #59)?",
-  "decision": "Trim: cut a scanner-noise tail and strip trailing stray symbols, so a value that is still close keeps its match. Null: only a value that is mostly scanner noise, which cannot match anyway (FP -> FN is neutral, FP -> TN when the reference is absent is a gain). Titles are trim-only.",
+  "decision": "Trim: cut a scanner-noise tail and strip trailing stray symbols, so a value that is still close keeps its match. Null: only a value that is scanner noise throughout and is unlikely to match anyway (FP -> FN is neutral, FP -> TN when the reference is absent is a gain). Titles are trim-only. A titled law-firm name is never nulled for its ending: capitals after a full name leave it a match.",
   "date": "2026-11-22",
-  "product_commit": "621d2ba",
-  "baseline_commit": "328f705",
+  "product_commit": "d857521",
+  "baseline_commit": "4222472",
+  "measured_commit": "087c272",
   "variants": {
-    "main": "origin/main 328f705 (merge of PR #74)",
-    "pr_as_opened": "origin/main 328f705 with the ocr_plausibility.py and ocr_extract.py call site of fix/ocr-plausibility fe66789: null on any stray symbol, on a letter ratio below 0.6, or on a lawyer name ending in capitals noise; cut after the legal form",
-    "this_branch": "the product commit 621d2ba merged with origin/main 328f705: trim a noise tail after a corporate legal form and trailing stray symbols; null a value that is scanner noise throughout (stray symbols and no letters; mixed-case text with two or more stray-symbol tokens among mostly noise tokens; a law-firm name ending in a misread lawyer surname); titles are trim-only; values printed verbatim on native pages are skipped"
+    "main": "origin/main 4222472",
+    "pr_as_opened": "origin/main 4222472 with the ocr_plausibility.py and ocr_extract.py call site of fix/ocr-plausibility fe66789: null on any stray symbol, on a letter ratio below 0.6, or on a lawyer name ending in capitals noise; cut after the legal form",
+    "this_branch": "the product commit d857521 merged with origin/main 4222472: trim a noise tail after a corporate legal form and trailing stray symbols; null a value that is scanner noise throughout (stray symbols and no letters; mixed-case text with three or more stray-symbol tokens among mostly noise tokens); titles are trim-only; values printed verbatim on native pages are skipped"
   },
   "metrics": {
     "strict": "evals.metrics.compare_strict (null = null is a hit, a wrong value is FP and FN, exact strings after whitespace and case normalisation)",
@@ -127,6 +128,13 @@
   "injected_damage": {
     "note": "stress test of the rules on the organizer's 70 appeal references, not a rate of real OCR damage; each long-string value is damaged, then scored with evals.metrics.matches",
     "values": 283,
+    "recipes": {
+      "stray_symbol_inside_value": "insert ' | ' after the first half of the words (after the first word for a one-word value)",
+      "short_tail_appended": "append ' | EBX'",
+      "short_capitals_appended": "append ' EBX' (capitals without a rule, the shape a lawyer-title rule once nulled)",
+      "template_style_tail_appended": "append ' M KENZI NJ EMME Warszawa W LDLT BE LILII ZM'",
+      "lookalike_letters": "replace one character in twenty by a look-alike (o 0, l 1, i l, e c, a o, n u, m rn, s 5), random.Random(7)"
+    },
     "stray_symbol_inside_value": {
       "main": {
         "tp": 283,
@@ -165,6 +173,26 @@
         "fp": 2,
         "fn": 0,
         "uzp_f1": 0.9965
+      }
+    },
+    "short_capitals_appended": {
+      "main": {
+        "tp": 283,
+        "fp": 0,
+        "fn": 0,
+        "uzp_f1": 1.0
+      },
+      "pr_as_opened": {
+        "tp": 270,
+        "fp": 0,
+        "fn": 13,
+        "uzp_f1": 0.9765
+      },
+      "this_branch": {
+        "tp": 283,
+        "fp": 0,
+        "fn": 0,
+        "uzp_f1": 1.0
       }
     },
     "template_style_tail_appended": {

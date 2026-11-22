@@ -1,16 +1,16 @@
 {
-  "commit": "621d2ba8f7b857c2338f0767c37e4f2ba26acc8a",
+  "commit": "6b34bc53d0f56dbabf7c752136f87c25ca5bf758",
   "dirty": false,
   "mode": "organizer-scans",
-  "timestamp": "2026-11-22T00:56:22+00:00",
-  "n_cases": 30,
+  "timestamp": "2026-11-21T23:52:47+00:00",
+  "n_cases": 1,
   "n_docs": 30,
   "coverage_ok": false,
-  "overall_pass": true,
+  "overall_pass": false,
   "run_error": null,
   "metrics": {
     "micro_f1": {
-      "value": 1.0,
+      "value": 0.9868852459016394,
       "target": 0.9,
       "pass": true
     },
@@ -25,46 +25,46 @@
       "pass": null
     },
     "classification_accuracy": {
-      "value": 1.0,
+      "value": 0.9666666666666667,
       "target": 1.0,
-      "pass": true
+      "pass": false
     },
     "seconds_per_doc": {
-      "value": 0.8570068208333396,
+      "value": null,
       "target": null,
       "pass": true
     },
     "micro_f1_strict": {
-      "value": 0.9974226804123711,
+      "value": 0.974025974025974,
       "target": null,
       "pass": null
     }
   },
   "detail": {
-    "micro_f1": 1.0,
-    "micro_f1_strict": 0.9974226804123711,
+    "micro_f1": 0.9868852459016394,
+    "micro_f1_strict": 0.974025974025974,
     "counts_strict": {
-      "tp": 387,
-      "fp": 1,
-      "fn": 1
+      "tp": 375,
+      "fp": 7,
+      "fn": 13
     },
-    "macro_f1_documents": 1.0,
-    "macro_f1_classes": 1.0,
+    "macro_f1_documents": 0.96060113328406,
+    "macro_f1_classes": 0.9772973321650692,
     "macro_f1_class_count": 3,
-    "macro_f1_fields": 1.0,
-    "micro_f1_non_null": 0.996742671009772,
+    "macro_f1_fields": 0.987625927564008,
+    "micro_f1_non_null": 0.9688013136288999,
     "per_class_f1": {
-      "odwolanie": 1.0,
-      "pelnomocnictwo": 1.0,
-      "przelew": 1.0
+      "odwolanie": 0.9971671388101983,
+      "pelnomocnictwo": 0.9935483870967742,
+      "przelew": 0.9411764705882353
     },
-    "classification_accuracy": 1.0,
+    "classification_accuracy": 0.9666666666666667,
     "negatives_empty": null,
     "outputs_complete": 1.0,
     "counts": {
-      "tp": 309,
-      "fp": 0,
-      "fn": 0,
+      "tp": 301,
+      "fp": 2,
+      "fn": 6,
       "tn": 79
     },
     "routing_by_class": {
@@ -77,7 +77,7 @@
         "total": 10
       },
       "przelew": {
-        "correct": 10,
+        "correct": 9,
         "total": 10
       },
       "negatywny": {

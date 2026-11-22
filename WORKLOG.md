@@ -46,7 +46,7 @@ Main `f7f3ee9` ran with local rules and two PDF workers. Both scores below use t
 | Corpus 1 all | 39 | 0.9212 | 0.8889 | +0.0323 |
 | Corpus 2 dev | 39 | 0.9221 | 0.8926 | +0.0295 |
 
-PR #55 changed two corpus 1 appeals, trimming one field and setting three to null. Its UZP F1 rose from 0.9212 to 0.9247. The other three sets kept identical predictions.
+PR #55 as opened (before its null gate was narrowed) changed two corpus 1 appeals, trimming one field and setting three to null. Its UZP F1 rose from 0.9212 to 0.9247. The other three sets kept identical predictions.
 
 The fresh scan batch routed 29/30 documents, including nine of ten transfers. The earlier strict score of 0.9974 below used a batch with all 30 routed correctly.
 
@@ -94,7 +94,7 @@ Two and four grant JSONs matched exactly. The ten organizer grants remained exac
 | Obtain an EU/EEA-only processing commitment for Mistral or deploy the same weights within the EEA | Deployment |
 | Score corpus 2 test once after the class rules and small-model profile are integrated | Coordinator |
 | Improve receipt routing and recover damaged party names on development inputs | Open |
-| Run PR #55's `trim_appeal` over the stored corpus 1 and corpus 2 predictions (the `pr55_method` recipe in `evals/results/uzp-metric.json`), then merge or close the PR | Corpus owner |
+| Before merging PR #55, run its `trim_appeal` over the stored corpus 1 and corpus 2 predictions (the `pr55_method` recipe in `evals/results/uzp-metric.json`); merge only if UZP F1 does not drop on either corpus, else close the PR | Corpus owner |
 | Confirm the long-string similarity function with UZP and record the Stage II weights | Open |
 | Promote HackNation2026 PR #48 to `prod` after the faktczyfejk demo, so the doc2json.pl Caddy block survives a redeploy | Open |
 
@@ -116,10 +116,12 @@ Two and four grant JSONs matched exactly. The ten organizer grants remained exac
 - 22.11.2026: scanned-appeal party names, law-firm and lawyer names and the procurement title lose OCR noise at their end
   (a tail after a corporate legal form, trailing stray symbols), so a value that is still close keeps its 80 % match under
   the organizer's F1 (#59). A name becomes null only when it is scanner noise throughout (stray symbols and no letters;
-  mixed-case text with two or more stray-symbol tokens among mostly noise tokens; a law-firm name ending in a misread
-  lawyer surname): such a value cannot match, so null costs nothing when the reference holds a value (FP → FN) and gains
-  when it holds none (FP → TN). Titles are trim-only. This narrows the null gate of the two #39 log lines of this date,
-  which nulled any value with a stray symbol. Evidence: `evals/results/ocr-plausibility.json`.
+  mixed-case text with three or more stray-symbol tokens among mostly noise tokens): such a value is unlikely to match
+  anyway, so null usually costs nothing when the reference holds a value (FP → FN) and gains when it holds none
+  (FP → TN). Titles are trim-only. This narrows the null gate of the two #39 log lines of this date, which nulled any
+  value with a stray symbol or a lawyer name ending in capitals. The step runs only on the rules-first path (no model
+  key, or `KIO_LLM_MODE=RL`); with a model key in mode L, LR or V the appeal is not trimmed. Evidence:
+  `evals/results/ocr-plausibility.json`.
 
 ## Log
 
@@ -128,7 +130,7 @@ Two and four grant JSONs matched exactly. The ten organizer grants remained exac
 - 22.11.2026 · Codex · Added case warnings and opt-in sibling OCR repair for #61. All 304 keyless outputs matched main byte for byte. UZP F1 stayed at 0.9231 on corpus 1 all, 0.9221 on corpus 1 dev and 0.9244 on corpus 2 dev. Training scored 1.000 with 196 exact outputs. The 30 singleton scans had 29 exact outputs and UZP F1 of 1.000. [Paired case measurements](evals/results/case-siblings.json)
 - 22.11.2026 · Claude · #39: scanned-appeal party names and lawyer fields become null on stray scanner symbols, a low letter ratio or capitals noise after a lawyer's title; a capitals-noise tail after a legal form is cut unless it names another consortium member; titles are checked for stray symbols only. On the organizer template scan the appellant and law firm names are now null and the authority name ends at its legal form (checked by a direct CLI run; the template is not in the eval). Organizer scans 0.9974 → 0.9974, full training 1.000 → 1.000 (holdout 1.000), both against `4d91600`; the private dev corpora are not on this machine and were not measured · b2121b5
 - 22.11.2026 · Claude · #39: judge PASS on `c4b3d94` after two rounds of P2 fixes; pushed `fix/ocr-plausibility` with a PR to main. Left: a real-corpus check by the corpus owner before merge (dev corpora not on this machine).
-- 22.11.2026 · Claude · #39, PR #55: narrowed the null gate to trim first and null only names that are scanner noise throughout (decision of this date; supersedes the two #39 lines above). All 30 organizer scan outputs are byte-identical to main `328f705` (strict 0.9974, UZP 1.0000). On the template scan, three long strings under the UZP counting: main 0.500, null gate 0.800, this branch 0.800. Injected damage, a stray `|` inside a value: main 1.000, null gate 0.000, this branch 1.000. Full training UZP 1.000 (holdout 1.000, 196 documents) and organizer scans UZP 1.000, strict 0.997; the private dev corpora are not on this machine and were not measured, so the corpus owner's check is in Next · 621d2ba
+- 22.11.2026 · Claude · #39, PR #55: narrowed the null gate to trim first and null only names that are scanner noise throughout (decision of this date; supersedes the two #39 lines above). Review and judge rounds removed the lawyer-surname null and raised the stray-token threshold to three. Merged with main `4222472`: all 30 organizer scan outputs are byte-identical to main (strict 0.9974, UZP 1.0000), and the full eval equals main on both reference sets (UZP 0.9758 on the original training references, 1.0000 with `--correct-training-accounts`). On the template scan, three long strings under the UZP counting: main 0.500, null gate 0.800, this branch 0.800. Injected damage, a stray `|` inside a value: main 1.000, null gate 0.000, this branch 1.000; capitals appended after a full name: 1.000, 0.977, 1.000. The private dev corpora are not on this machine and were not measured; the corpus owner's check is a merge gate in Next · d857521
 - 22.11.2026 · Codex · Grouped appeal and mandate word boxes by printed role and column. Added regressions for wrapped names, repeated stationery, extra appointees and principal-specific signatures.
 - 22.11.2026 · Claude · #54 review follow-ups: the README names both PyPI hosts (`pypi.org`, `files.pythonhosted.org`) instead of "no other host"; `tests/test_batch_runtime.py` writes its fixture files as UTF-8, because a CP1252 Windows locale cannot encode the Polish literal in the worker fixture. `kio2json/` has no text-mode `open`, `read_text` or `write_text` without an encoding. 59 sites in `tests/` and 7 in `evals/` still use the locale default; they only matter for a Windows run of the tests, not for the Linux evaluation VM. `.gitattributes` marks the vendored `.traineddata` files binary so no checkout can rewrite them, and the stale `packaging/**` path filter is gone from `jury-batch.yml`. Merged `main` again (#74, `pdf_text.py` conflict: kept `OCRWord` and the tessdata constants).
 - 22.11.2026 · Claude · Took over #54: merged `main` (`3eccb41`, with the Compose files from #68; `api.Dockerfile` has no `COPY packaging` line any more), reworded the README install sentence after CodeRabbit, fixed the Docker section's claim that the build downloads OCR data, rechecked at `d14da55` (ruff clean, 1738 tests, eval-quick 1.000). Fresh py3.13 venv: `pip install -r requirements.txt` from another directory rc=0, 80 packages, 520 MiB; its CLI and `uv run` wrote byte-identical JSON for `input/case1` and three organizer scans. Every pin has a manylinux x86_64 wheel; `libsass` has no Linux aarch64 wheel, so `docker compose build` on an arm64 host needs a compiler or `platform: linux/amd64` (#60). No Docker on this machine and GitHub Actions is blocked by billing, so container byte parity is still unchecked.
