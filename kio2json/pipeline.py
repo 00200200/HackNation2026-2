@@ -17,6 +17,7 @@ from .appeal_layout import (
     read_role_columns,
     restore_party_columns,
 )
+from .appeal_subject import unlabelled_title
 from .case_repair import Reading, printed_readings
 from .class_config import DocumentClass, load_classes, route
 from .classify import incomplete_booking_scan, resembles_appeal_heading
@@ -172,6 +173,9 @@ def _document_rules(definition, pdf_path, pages, ocr_pages, all_boxes, engine, s
             record = ocr_extract.extract_appeal(pages, ocr_pages)
         else:
             record = appeal.extract(join_pages(pages))
+        procurement = record["ZamowieniePubliczne"]
+        if procurement["tytul"] is None and (reference := procurement["numer_postepowania"]):
+            procurement["tytul"] = unlabelled_title([box.layout_box for box in all_boxes], reference)
         apply_appeal_blocks(record, blocks)
         if not ocr_pages and len(pages) == MAX_PAGES:
             appeal.complete_signed_filing(record, pdf_path, len(pages))
