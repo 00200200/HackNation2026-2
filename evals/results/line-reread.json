@@ -1,0 +1,323 @@
+{
+  "paired_feature": "556a201",
+  "paired_base": "f7f3ee9",
+  "merged_product": "d367224",
+  "merged_main": "3eccb41",
+  "profile": "Rules only with and without KIO_OCR_DISPUTED_LINES=1. No endpoint or model key.",
+  "method": [
+    "Compare each arm on identical saved primary page text, OCR provenance and word boxes. Replay routing and local extraction, including the original grant and receipt crop readers. The paired run isolates adjudication from variation in primary OCR under host load.",
+    "Corpus 1 dev supplied discovery evidence. The initial reading policy was set before the corpus 2 dev comparison. Independent synthetic review then tightened column and mask boundaries. Both revisions left every corpus 2 dev output unchanged. No PDF SHA-256 digest was shared across these two sets. The bootstrap samples whole case folders, not individual fields.",
+    "Exact and null-inclusive F1 use evals.metrics. Fuzzy five is a secondary proxy allowing one-to-one residual string matches at normalized Levenshtein similarity >= 0.80 on the five eligible long-string paths.",
+    "The document and batch OCR limits are shared. Public scan and training checks use the normal CLI and organizer harness. Private case names, text, inputs and prediction details are excluded.",
+    "The remaining_status and remaining_top_fields counts use strict, record-aligned evals.field_report.compare. They differ from the normalized flattened leaf counts used for F1."
+  ],
+  "pre_adaptive_exploration": {
+    "1": {
+      "base": 0.8618556701030928,
+      "trial": 0.865979381443299
+    },
+    "2": {
+      "base": 0.8925831202046036,
+      "trial": 0.8925831202046036
+    }
+  },
+  "paired_development": {
+    "1": {
+      "base": {
+        "n": 22,
+        "counts": {
+          "tp": 215,
+          "fp": 30,
+          "fn": 32
+        },
+        "micro_f1": 0.8739837398373984,
+        "micro_f1_non_null": 0.8195718654434251,
+        "macro_f1_classes": 0.8064469215034998,
+        "per_class_f1": {
+          "odwolanie": 0.900523560209424,
+          "pelnomocnictwo": 0.9354838709677419,
+          "przelew": 0.5833333333333334
+        },
+        "fuzzy_five": 0.9024390243902439,
+        "routing": {
+          "odwolanie": [
+            8,
+            8
+          ],
+          "pelnomocnictwo": [
+            3,
+            3
+          ],
+          "przelew": [
+            4,
+            4
+          ],
+          "negatywny": [
+            7,
+            7
+          ]
+        },
+        "exact": 10
+      },
+      "trial": {
+        "n": 22,
+        "counts": {
+          "tp": 216,
+          "fp": 29,
+          "fn": 31
+        },
+        "micro_f1": 0.8780487804878049,
+        "micro_f1_non_null": 0.8256880733944955,
+        "macro_f1_classes": 0.8081921222015801,
+        "per_class_f1": {
+          "odwolanie": 0.9057591623036649,
+          "pelnomocnictwo": 0.9354838709677419,
+          "przelew": 0.5833333333333334
+        },
+        "fuzzy_five": 0.9065040650406504,
+        "routing": {
+          "odwolanie": [
+            8,
+            8
+          ],
+          "pelnomocnictwo": [
+            3,
+            3
+          ],
+          "przelew": [
+            4,
+            4
+          ],
+          "negatywny": [
+            7,
+            7
+          ]
+        },
+        "exact": 10
+      },
+      "same_output_bytes": 21,
+      "fixes": 1,
+      "regressions": 0,
+      "remaining_status": {
+        "wrong": 29,
+        "missing": 2
+      },
+      "remaining_top_fields": {
+        "Zamawiajacy.nazwa": 5,
+        "przelew_bankowy.tytul": 4,
+        "ZamowieniePubliczne.tytul": 3,
+        "Odwolujacy.pelnomocnik.nazwa": 3,
+        "Odwolujacy.pelnomocnik.imie_nazwisko": 2
+      }
+    },
+    "2": {
+      "base": {
+        "n": 39,
+        "counts": {
+          "tp": 349,
+          "fp": 39,
+          "fn": 45
+        },
+        "micro_f1": 0.8925831202046036,
+        "micro_f1_non_null": 0.8431372549019608,
+        "macro_f1_classes": 0.9170379652835793,
+        "per_class_f1": {
+          "odwolanie": 0.8783068783068783,
+          "pelnomocnictwo": 0.9894736842105263,
+          "przelew": 0.8833333333333333
+        },
+        "fuzzy_five": 0.9028132992327366,
+        "routing": {
+          "odwolanie": [
+            13,
+            13
+          ],
+          "pelnomocnictwo": [
+            5,
+            5
+          ],
+          "przelew": [
+            10,
+            10
+          ],
+          "negatywny": [
+            11,
+            11
+          ]
+        },
+        "exact": 23
+      },
+      "trial": {
+        "n": 39,
+        "counts": {
+          "tp": 349,
+          "fp": 39,
+          "fn": 45
+        },
+        "micro_f1": 0.8925831202046036,
+        "micro_f1_non_null": 0.8431372549019608,
+        "macro_f1_classes": 0.9170379652835793,
+        "per_class_f1": {
+          "odwolanie": 0.8783068783068783,
+          "pelnomocnictwo": 0.9894736842105263,
+          "przelew": 0.8833333333333333
+        },
+        "fuzzy_five": 0.9028132992327366,
+        "routing": {
+          "odwolanie": [
+            13,
+            13
+          ],
+          "pelnomocnictwo": [
+            5,
+            5
+          ],
+          "przelew": [
+            10,
+            10
+          ],
+          "negatywny": [
+            11,
+            11
+          ]
+        },
+        "exact": 23
+      },
+      "same_output_bytes": 39,
+      "fixes": 0,
+      "regressions": 0,
+      "remaining_status": {
+        "wrong": 41,
+        "missing": 6
+      },
+      "remaining_top_fields": {
+        "przelew_bankowy.tytul": 5,
+        "Odwolujacy.przez-pelnomocnika": 5,
+        "Odwolujacy.pelnomocnik.imie_nazwisko": 5,
+        "Odwolujacy.pelnomocnik.nazwa": 5,
+        "ZamowieniePubliczne.tytul": 5
+      }
+    }
+  },
+  "pooled": {
+    "case_folders": 28,
+    "documents": 61,
+    "baseline_f1": 0.8854003139717426,
+    "trial_f1": 0.8869701726844584,
+    "bootstrap_95pct_delta": [
+      0,
+      0.005272523660915052
+    ],
+    "bootstrap_draws": 4000,
+    "seed": 71
+  },
+  "release": "Keep the experiment opt-in. One corrected development REGON was supported by a matching NIP on the same printed register row. The independent development corpus showed no field gain.",
+  "synthetic": {
+    "documents": 196,
+    "exact": 196,
+    "matching_baseline_bytes": 196,
+    "micro_f1": 1,
+    "tp": 2316,
+    "fp": 0,
+    "fn": 0
+  },
+  "throughput": "The shared-host 150-PDF run was stopped at 49 outputs after three primary OCR timeouts. No representative 150-PDF timing is claimed; the coordinator deferred that run to a quiet host.",
+  "trial_activity": {
+    "corpus_1_dev": {
+      "Tesseract_crops": {
+        "REGON": 2,
+        "NIP": 3,
+        "KRS": 3
+      },
+      "RapidOCR_disagreements": {
+        "KRS": 1
+      },
+      "accepted_transcript_edits": {
+        "REGON": 2,
+        "NIP": 1
+      }
+    },
+    "corpus_2_dev": {
+      "Tesseract_crops": {},
+      "RapidOCR_disagreements": {},
+      "accepted_transcript_edits": {}
+    }
+  },
+  "organizer_scans": {
+    "first_batch": {
+      "n": 30,
+      "counts": {
+        "tp": 260,
+        "fp": 7,
+        "fn": 128
+      },
+      "micro_f1": 0.7938931297709924,
+      "micro_f1_non_null": 0.7852998065764023,
+      "macro_f1_classes": 0.833562217866552,
+      "per_class_f1": {
+        "odwolanie": 0.6507462686567164,
+        "pelnomocnictwo": 0.9902912621359223,
+        "przelew": 0.8596491228070176
+      },
+      "fuzzy_five": 0.8061068702290076,
+      "routing": {
+        "odwolanie": [
+          5,
+          10
+        ],
+        "pelnomocnictwo": [
+          10,
+          10
+        ],
+        "przelew": [
+          9,
+          10
+        ],
+        "negatywny": [
+          0,
+          0
+        ]
+      },
+      "exact": 17
+    },
+    "after_serial_retries": {
+      "n": 30,
+      "counts": {
+        "tp": 387,
+        "fp": 1,
+        "fn": 1
+      },
+      "micro_f1": 0.9974226804123711,
+      "micro_f1_non_null": 0.996742671009772,
+      "macro_f1_classes": 0.9944444444444445,
+      "per_class_f1": {
+        "odwolanie": 1.0,
+        "pelnomocnictwo": 1.0,
+        "przelew": 0.9833333333333333
+      },
+      "fuzzy_five": 1.0,
+      "routing": {
+        "odwolanie": [
+          10,
+          10
+        ],
+        "pelnomocnictwo": [
+          10,
+          10
+        ],
+        "przelew": [
+          10,
+          10
+        ],
+        "negatywny": [
+          0,
+          0
+        ]
+      },
+      "exact": 29
+    },
+    "rerun_documents": 13,
+    "retry_exit": 0,
+    "note": "All 13 non-exact outputs were replaced by their one-worker retry outputs. Initial primary OCR timeouts are included in the first batch."
+  }
+}
