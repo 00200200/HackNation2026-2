@@ -353,8 +353,10 @@ def test_bare_grantor_does_not_take_attorneys_business():
     "body",
     [
         "Udzielam pełnomocnictwa do odebrania pisma.\nPełnomocniczka:\nPodpis przedsiębiorcy: Anna Nowak",
-        "Dane osoby upoważnionej:\nImię i nazwisko: Anna Nowak\nNIP 0000000111\n"
-        "Udzielam pełnomocnictwa do odebrania pisma.",
+        (
+            "Dane osoby upoważnionej:\nImię i nazwisko: Anna Nowak\nNIP 0000000111\n"
+            "Udzielam pełnomocnictwa do odebrania pisma."
+        ),
     ],
 )
 def test_appointed_woman_cannot_supply_the_proprietor_identity(body):
