@@ -255,8 +255,7 @@ For a case-level split, put `{"dev": [...], "test": [...]}` in `SPLIT.json` at t
 contains case folder names. The default `--split all` scores the whole corpus, including corpora without a split.
 Inspect field errors on dev. Use aggregate scores to evaluate test. The organizer scan mode validates the committed PDF/reference pairs in `data/uzp/dane/skany` and writes `evals/results/organizer-scans.json`. The synthetic training and scan scores have separate result files.
 
-`evals.run` reports pooled micro F1 and macro F1 by document, class and field path.
-The working definitions are in `evals/metrics.py`. The organizer's formula is UNCONFIRMED.
+`evals.run` reports UZP micro F1 and macro F1 by document, class and field path. Empty reference and prediction values contribute zero to F1. A wrong value contributes one FP. Five long strings accept an 80% match, measured here with RapidFuzz normalized Levenshtein. UZP has yet to specify the similarity function. The historical score appears as `micro_f1_strict`. [UZP scoring rules](https://github.com/00200200/HackNation2026-2/issues/59)
 
 ## Results on the training data (synthetic)
 
