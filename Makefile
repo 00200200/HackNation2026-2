@@ -52,3 +52,11 @@ eval-variants: ## Gate rule changes on the fixed 60-case robustness baseline
 .PHONY: eval-cases
 eval-cases: ## Score paired native and scanned documents generated from linked case records
 	uv run python -m evals.cases $(CASE_ARGS)
+
+.PHONY: eval-document-variants
+eval-document-variants: ## Measure document families and matched controls on public synthetic cases
+	uv run python -m evals.document_variants
+
+.PHONY: eval-rotation-textlayer
+eval-rotation-textlayer: ## Score frozen organizer rotation and misleading text-layer variants
+	uv run python -m evals.rotation_textlayer $(ROTATION_ARGS)

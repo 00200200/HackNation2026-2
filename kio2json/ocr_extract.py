@@ -11,7 +11,7 @@ from .appeal_scan_action import apply_action
 from .appeal_scan_crops import verify_cover
 from .appeal_scan_parties import apply_parties
 from .appeal_scan_procurement import apply_procurement
-from .grant_declarations import complete_represented_company, read_declaration
+from .grant_declarations import check_ocr_trade_names, complete_represented_company, read_declaration
 from .ocr_accounts import AccountEvidence, account_evidence
 from .ocr_normalize import MAIL_TOKEN_RE
 from .ocr_plausibility import gate_appeal
@@ -118,7 +118,10 @@ def extract_power_of_attorney(pages: list[str], ocr_pages: Collection[int]) -> d
     # Drawn signature lines on scans terminate the appointment section just like dots.
     appointment = "\n".join(re.sub(r"_{5,}|[─━—]{4,}", "." * 10, line) if ocr else line for ocr, line in lines)
     attorneys = power_of_attorney._attorneys(appointment)
-    principal_names = [p["nazwa"] for p in principals]
+    signature_text = power_of_attorney.issuer_signature_text(text, principals, power_of_attorney.ISSUANCE.search(text))
+    if signature_text != text:
+        lines = list(zip((ocr for ocr, _ in lines), (signature_text + "\n").splitlines(), strict=True))
+    principal_names = [power_of_attorney.principal_name(p) for p in principals]
     attorney_names = {attorney["imie_nazwisko"] for attorney in attorneys}
     signers = [[] for _ in principals]
     prefix = []
@@ -134,9 +137,14 @@ def extract_power_of_attorney(pages: list[str], ocr_pages: Collection[int]) -> d
         prefix.extend(run)
         for owner, found in zip(signers, names, strict=True):
             owner.extend(name for name in found if name not in owner)
-    record = power_of_attorney.finish_record(text, principals, officers, attorneys, signers)
+    record = power_of_attorney.finish_record(signature_text, principals, officers, attorneys, signers)
     if pages and 1 in ocr_pages and not any(power_of_attorney.GRANT.search(page) for page in pages[1:]):
         read_declaration(pages[0], record)
         complete_represented_company(pages[0], record)
-        ocr_signatures.confirmed_scan_signer(pages[0], record)
+        signing_page = power_of_attorney.issuer_signature_text(
+            pages[0], principals, power_of_attorney.ISSUANCE.search(pages[0])
+        )
+        ocr_signatures.confirmed_scan_signer(signing_page, record)
+    if ocr_pages:
+        check_ocr_trade_names(record, pages, ocr_pages)
     return record

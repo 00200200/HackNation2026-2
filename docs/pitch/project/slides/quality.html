@@ -1,0 +1,16 @@
+<section id="quality" data-transition="fade">
+<div class="glow"></div>
+<div class="hdr"><p>Zadanie UZP: Odwołania2json</p><p class="r">HackNation 2026</p></div>
+<h2 class="in" style="--i:0;">Jak dokładnie odczytujemy pola?</h2>
+<div style="flex:1; display:flex; flex-direction:column; justify-content:center; gap:48px;">
+<div class="row" style="gap:48px; width:100%;">
+<div class="metric in" style="--i:1;"><p class="val" style="font-size:112px; letter-spacing:-4px;">1,000</p><p class="lbl">F1 według reguł UZP, 196&nbsp;PDF-ów treningowych<br>wzorce z&nbsp;drukowanym prefiksem PL</p></div>
+<div class="metric in" style="--i:2;"><p class="val" style="font-size:112px; letter-spacing:-4px;">1,000</p><p class="lbl">F1 według reguł UZP, 30 skanów UZP<br>ścisłe 0,9974 · 29/30 identycznych JSON-ów</p></div>
+<div class="metric in" style="--i:3;"><p class="val" style="font-size:112px; letter-spacing:-4px;">0,92</p><p class="lbl">F1 według reguł UZP, 78&nbsp;PDF-ów z&nbsp;prawdziwych spraw<br>0,9247 i&nbsp;0,9244 · ścisłe 0,8921 i&nbsp;0,8951</p></div>
+<div class="metric in" style="--i:4;"><p class="val" style="font-size:112px; letter-spacing:-4px;">78/78</p><p class="lbl">trafiona klasa<br>w&nbsp;tym 22&nbsp;PDF-y spoza klas</p></div>
+</div>
+<p class="body in" style="--i:5; font-size:26px;">Na 240 wygenerowanych wariantach układu F1 wyniosło 0,9125. To pomiary rozwojowe. Wynik na ukrytym zbiorze zna tylko jury.</p>
+</div>
+<div class="ftr"><div class="brand"><svg aria-label="Logo doc2json" width="40" height="40" viewBox="0 0 64 64" style="width:40px; height:40px;"><rect x="0.5" y="0.5" width="63" height="63" rx="15" fill="#0a0a0a" stroke="#4a4a4a" stroke-width="1"/><g fill="none" stroke="#fff" stroke-width="4.5" stroke-linecap="round" stroke-linejoin="round"><path d="M24 15c-4.5 0-5.5 2-5.5 6v6c0 3-1.5 5-4.5 5 3 0 4.5 2 4.5 5v6c0 4 1 6 5.5 6"/><path d="M40 15c4.5 0 5.5 2 5.5 6v6c0 3 1.5 5 4.5 5-3 0-4.5 2-4.5 5v6c0 4-1 6-5.5 6"/><path d="M28 27h8M28 37h5"/></g></svg><p>doc2json</p></div><p class="src">evals/results/variant-robustness.json · wersja 2c00fbb</p><p class="pg">06 / 12</p></div>
+<aside>Każdy JSON rozkładamy na pary ścieżka i wartość i porównujemy ze wzorcem, dwiema miarami na tych samych wynikach, same reguły bez klucza API. Wzór UZP opisany w #59: wartość brakująca po obu stronach nie wchodzi do F1, błędna wartość to jeden błąd, a dla pięciu długich pól stosujemy próg 80% podobieństwa. W naszym scorerze łączymy pola ze wszystkich dokumentów i stosujemy znormalizowaną odległość Levenshteina. UZP nie potwierdził sposobu agregacji ani funkcji podobieństwa. Miara ścisła wymaga dokładnej zgodności pola. Wyniki pochodzą z pomiaru wersji 2c00fbb. Pierwszy zbiór lokalny obejmuje wszystkie 39 dokumentów, drugi 39 dokumentów części rozwojowej. Na 30 skanach rozpoznaliśmy wszystkie klasy. W 48 opublikowanych wzorcach przelewów prefiksu PL nie ma, więc we wcześniejszym porównaniu (p0-conventions.json) F1 wyniosło 0,9758 na opublikowanych wzorcach i 1,000 po uwzględnieniu prefiksu z dokumentu. Skany i 78 dokumentów z prawdziwych spraw to dane, na których szukaliśmy błędów, więc żadna liczba nie przewiduje wyniku na ukrytym zbiorze. W jednym przebiegu jeden skan wymagał ponownego odczytu po przekroczeniu limitu OCR, a w innym jeden skan przelewu trafił do złej klasy (uzp-metric.json).</aside>
+</section>
