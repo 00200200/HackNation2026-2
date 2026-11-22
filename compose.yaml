@@ -5,8 +5,8 @@ x-jury: &jury
     platforms: [linux/amd64]
   image: kio2json-jury:local
   pull_policy: build
-  # libsass and morfeusz2 have no Linux ARM wheels on PyPI (morfeusz2 has no sdist either), so the image is x86-64.
-  # Docker Desktop on Apple Silicon runs it under emulation, which is slower.
+  # libsass and morfeusz2 have no Linux ARM wheels on PyPI, and morfeusz2 has no source distribution either, so the
+  # image is x86-64. Docker Desktop on Apple Silicon runs it under emulation, which is slower.
   platform: linux/amd64
   env_file:
     - path: .env
