@@ -10,6 +10,7 @@ from pathlib import Path
 from . import appeal, bank_transfer, ocr_extract, power_of_attorney, trace
 from .accounts import normalize_account
 from .appeal_layout import apply_appeal_blocks, form_columns, party_inventory, read_role_columns, restore_party_columns
+from .appeal_subject import unlabelled_title
 from .case_repair import Reading, printed_readings
 from .class_config import DocumentClass, load_classes, route
 from .classify import incomplete_booking_scan, resembles_appeal_heading
@@ -129,8 +130,9 @@ def _grant_signers(pdf_path, record, pages, ocr_pages, engine):
         recover_board_stamp(pdf_path, record, pages[0])
 
 
-def _document_rules(definition, pdf_path, pages, ocr_pages, boxes, engine, selected, accounts, blocks):
+def _document_rules(definition, pdf_path, pages, ocr_pages, source_boxes, engine, selected, accounts, blocks):
     """Build the local candidate, including PDF evidence, before optional model gap filling."""
+    boxes = [box for box in source_boxes if box.page in ocr_pages]
     rules_first = definition.profile.rules_first
     if definition.extractor is bank_transfer.extract and ocr_pages:
         record = ocr_extract.extract_bank_transfer(pages, ocr_pages, accounts=accounts)
@@ -150,6 +152,9 @@ def _document_rules(definition, pdf_path, pages, ocr_pages, boxes, engine, selec
             record = ocr_extract.extract_appeal(pages, ocr_pages)
         else:
             record = appeal.extract(join_pages(pages))
+        procurement = record["ZamowieniePubliczne"]
+        if procurement["tytul"] is None and (reference := procurement["numer_postepowania"]):
+            procurement["tytul"] = unlabelled_title(source_boxes, reference)
         apply_appeal_blocks(record, blocks)
         if rules_first and boxes:
             verify_cells(pdf_path, disputed_register_cells, record, boxes)
@@ -336,9 +341,8 @@ def _process(
             pages = read_role_columns(pages, blocks)
             if definition.id == "appeal":
                 pages = restore_party_columns(pages, boxes)
-            scan_boxes = [box for box in boxes if box.page in ocr_pages]
             python_rules = partial(
-                _document_rules, definition, pdf_path, pages, ocr_pages, scan_boxes, engine, selected, accounts, blocks
+                _document_rules, definition, pdf_path, pages, ocr_pages, boxes, engine, selected, accounts, blocks
             )
             record = extract(
                 definition,
