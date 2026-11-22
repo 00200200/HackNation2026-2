@@ -1,0 +1,4432 @@
+{
+  "date": "2026-11-21",
+  "rule_revision": "eabbb317cc2f258b6288df065b08ead7025b0822",
+  "product_revision": "f1d19d2d92fbf4fbce90bae250676bdc16928271",
+  "organizer_revision": "0b360a9",
+  "primary_metric": "Repository normalized field-value multiset micro F1. Nulls count as values. Macro is an unweighted average of class-level field F1.",
+  "metric_fuzzy_five": "Secondary proxy credits residual non-null string matches within the same field at normalized Levenshtein similarity >= 0.8, one-to-one. Paths: Odwolujacy[].pelnomocnik.nazwa, przelew_bankowy.tytul, Odwolujacy[].nazwa, Zamawiajacy[].nazwa, ZamowieniePubliczne.tytul.",
+  "datasets": "All 30 public organizer scans are development examples. C1 dev (22) is included in C1 all (39). The 91-PDF pooled set contains C1 dev, C2 dev (39), and the organizer scans (30). C2 test is reserved for final integration.",
+  "profile": {
+    "host": "api.eu.mistral.ai",
+    "model": "ministral-3b-2512",
+    "total_parameters": 3849090048,
+    "comparison_model": "ministral-8b-2512",
+    "comparison_parameters": 8918026240,
+    "mode": "RL",
+    "routing": "supported",
+    "output": "spans",
+    "gap_scope": "incomplete",
+    "charge_focus": true,
+    "dual_ocr": false,
+    "OCR": "Local Tesseract",
+    "workers": 3
+  },
+  "timing_note": "The screening matrix used primary OCR reuse and exact API response reuse when a document, URL and full JSON request matched. HTTP counts in this matrix count requests required by the profile, including replayed successful requests. Cold CLI figures are reported separately.",
+  "matrix": {
+    "rules": {
+      "c1_dev": {
+        "pdfs": 22,
+        "strict": {
+          "micro_f1": 0.697286012526096,
+          "macro_f1_classes": 0.6627995248684905,
+          "per_class_f1": {
+            "odwolanie": 0.7055702917771883,
+            "pelnomocnictwo": 0.7272727272727273,
+            "przelew": 0.5555555555555556
+          },
+          "counts": {
+            "tp": 167,
+            "fp": 65,
+            "fn": 80
+          }
+        },
+        "fuzzy_five": {
+          "micro_f1": 0.7265135699373695,
+          "macro_f1_classes": 0.6919281229626058,
+          "per_class_f1": {
+            "odwolanie": 0.7374005305039788,
+            "pelnomocnictwo": 0.7272727272727273,
+            "przelew": 0.6111111111111112
+          },
+          "counts": {
+            "tp": 174,
+            "fp": 58,
+            "fn": 73
+          }
+        },
+        "exact_field_sets": 7,
+        "exact_json": 7,
+        "exact_positive_documents": 0,
+        "matched_leaves_added": 0,
+        "matched_leaves_lost": 0,
+        "delta_true_positives": 0,
+        "delta_false_positives": 0,
+        "http_requests": 0,
+        "routing_requests": 0,
+        "general_extraction_requests": 0,
+        "first_charge_requests": 0,
+        "net_true_positives_per_request": null,
+        "http_seconds_sum": 0,
+        "response_replays": 0,
+        "document_recoveries": 0
+      },
+      "c2_dev": {
+        "pdfs": 39,
+        "strict": {
+          "micro_f1": 0.5248447204968945,
+          "macro_f1_classes": 0.3618796662274923,
+          "per_class_f1": {
+            "odwolanie": 0.6007905138339921,
+            "pelnomocnictwo": 0.3333333333333333,
+            "przelew": 0.15151515151515152
+          },
+          "counts": {
+            "tp": 169,
+            "fp": 81,
+            "fn": 225
+          }
+        },
+        "fuzzy_five": {
+          "micro_f1": 0.5279503105590062,
+          "macro_f1_classes": 0.36319718928414574,
+          "per_class_f1": {
+            "odwolanie": 0.6047430830039525,
+            "pelnomocnictwo": 0.3333333333333333,
+            "przelew": 0.15151515151515152
+          },
+          "counts": {
+            "tp": 170,
+            "fp": 80,
+            "fn": 224
+          }
+        },
+        "exact_field_sets": 11,
+        "exact_json": 11,
+        "exact_positive_documents": 0,
+        "matched_leaves_added": 0,
+        "matched_leaves_lost": 0,
+        "delta_true_positives": 0,
+        "delta_false_positives": 0,
+        "http_requests": 0,
+        "routing_requests": 0,
+        "general_extraction_requests": 0,
+        "first_charge_requests": 0,
+        "net_true_positives_per_request": null,
+        "http_seconds_sum": 0,
+        "response_replays": 0,
+        "document_recoveries": 0
+      },
+      "organizer_scans": {
+        "pdfs": 30,
+        "strict": {
+          "micro_f1": 0.5632911392405063,
+          "macro_f1_classes": 0.47108057878667203,
+          "per_class_f1": {
+            "odwolanie": 0.6123456790123457,
+            "pelnomocnictwo": 0.6064516129032258,
+            "przelew": 0.19444444444444445
+          },
+          "counts": {
+            "tp": 178,
+            "fp": 66,
+            "fn": 210
+          }
+        },
+        "fuzzy_five": {
+          "micro_f1": 0.5791139240506329,
+          "macro_f1_classes": 0.4793110314615691,
+          "per_class_f1": {
+            "odwolanie": 0.6370370370370371,
+            "pelnomocnictwo": 0.6064516129032258,
+            "przelew": 0.19444444444444445
+          },
+          "counts": {
+            "tp": 183,
+            "fp": 61,
+            "fn": 205
+          }
+        },
+        "exact_field_sets": 0,
+        "exact_json": 0,
+        "exact_positive_documents": 0,
+        "matched_leaves_added": 0,
+        "matched_leaves_lost": 0,
+        "delta_true_positives": 0,
+        "delta_false_positives": 0,
+        "http_requests": 0,
+        "routing_requests": 0,
+        "general_extraction_requests": 0,
+        "first_charge_requests": 0,
+        "net_true_positives_per_request": null,
+        "http_seconds_sum": 0,
+        "response_replays": 0,
+        "document_recoveries": 0
+      },
+      "c1_all": {
+        "pdfs": 39,
+        "strict": {
+          "micro_f1": 0.5872442839951865,
+          "macro_f1_classes": 0.5518938139093178,
+          "per_class_f1": {
+            "odwolanie": 0.6015503875968993,
+            "pelnomocnictwo": 0.5925925925925926,
+            "przelew": 0.46153846153846156
+          },
+          "counts": {
+            "tp": 244,
+            "fp": 99,
+            "fn": 244
+          }
+        },
+        "fuzzy_five": {
+          "micro_f1": 0.6064981949458483,
+          "macro_f1_classes": 0.5751893813909318,
+          "per_class_f1": {
+            "odwolanie": 0.6201550387596899,
+            "pelnomocnictwo": 0.5925925925925926,
+            "przelew": 0.5128205128205128
+          },
+          "counts": {
+            "tp": 252,
+            "fp": 91,
+            "fn": 236
+          }
+        },
+        "exact_field_sets": 11,
+        "exact_json": 11,
+        "exact_positive_documents": 0,
+        "matched_leaves_added": 0,
+        "matched_leaves_lost": 0,
+        "delta_true_positives": 0,
+        "delta_false_positives": 0,
+        "http_requests": 0,
+        "routing_requests": 0,
+        "general_extraction_requests": 0,
+        "first_charge_requests": 0,
+        "net_true_positives_per_request": null,
+        "http_seconds_sum": 0,
+        "response_replays": 0,
+        "document_recoveries": 0
+      },
+      "pooled_91": {
+        "pdfs": 91,
+        "strict": {
+          "micro_f1": 0.5857549857549857,
+          "macro_f1_classes": 0.48483987731471495,
+          "per_class_f1": {
+            "odwolanie": 0.6350931677018633,
+            "pelnomocnictwo": 0.5665529010238908,
+            "przelew": 0.25287356321839083
+          },
+          "counts": {
+            "tp": 514,
+            "fp": 212,
+            "fn": 515
+          }
+        },
+        "fuzzy_five": {
+          "micro_f1": 0.6005698005698006,
+          "macro_f1_classes": 0.49488247506345967,
+          "per_class_f1": {
+            "odwolanie": 0.6537267080745341,
+            "pelnomocnictwo": 0.5665529010238908,
+            "przelew": 0.26436781609195403
+          },
+          "counts": {
+            "tp": 527,
+            "fp": 199,
+            "fn": 502
+          }
+        },
+        "exact_field_sets": 18,
+        "exact_json": 18,
+        "exact_positive_documents": 0,
+        "matched_leaves_added": 0,
+        "matched_leaves_lost": 0,
+        "delta_true_positives": 0,
+        "delta_false_positives": 0,
+        "http_requests": 0,
+        "routing_requests": 0,
+        "general_extraction_requests": 0,
+        "first_charge_requests": 0,
+        "net_true_positives_per_request": null,
+        "http_seconds_sum": 0,
+        "response_replays": 0,
+        "document_recoveries": 0
+      }
+    },
+    "model_first_fallback": {
+      "c1_dev": {
+        "pdfs": 22,
+        "strict": {
+          "micro_f1": 0.5252173913043479,
+          "macro_f1_classes": 0.49774252740354435,
+          "per_class_f1": {
+            "odwolanie": 0.5341880341880342,
+            "pelnomocnictwo": 0.5423728813559322,
+            "przelew": 0.4166666666666667
+          },
+          "counts": {
+            "tp": 151,
+            "fp": 177,
+            "fn": 96
+          }
+        },
+        "fuzzy_five": {
+          "micro_f1": 0.5391304347826087,
+          "macro_f1_classes": 0.5159049205659375,
+          "per_class_f1": {
+            "odwolanie": 0.5470085470085471,
+            "pelnomocnictwo": 0.5423728813559322,
+            "przelew": 0.4583333333333333
+          },
+          "counts": {
+            "tp": 155,
+            "fp": 173,
+            "fn": 92
+          }
+        },
+        "exact_field_sets": 3,
+        "exact_json": 3,
+        "exact_positive_documents": 0,
+        "matched_leaves_added": 19,
+        "matched_leaves_lost": 35,
+        "delta_true_positives": -16,
+        "delta_false_positives": 112,
+        "http_requests": 28,
+        "routing_requests": 9,
+        "general_extraction_requests": 19,
+        "first_charge_requests": 0,
+        "net_true_positives_per_request": -0.5714285714285714,
+        "http_seconds_sum": 61.98623688146472,
+        "response_replays": 28,
+        "document_recoveries": 0
+      },
+      "c2_dev": {
+        "pdfs": 39,
+        "strict": {
+          "micro_f1": 0.5625,
+          "macro_f1_classes": 0.5552943225357018,
+          "per_class_f1": {
+            "odwolanie": 0.5681818181818182,
+            "pelnomocnictwo": 0.43103448275862066,
+            "przelew": 0.6666666666666666
+          },
+          "counts": {
+            "tp": 261,
+            "fp": 273,
+            "fn": 133
+          }
+        },
+        "fuzzy_five": {
+          "micro_f1": 0.5646551724137931,
+          "macro_f1_classes": 0.5562412922326715,
+          "per_class_f1": {
+            "odwolanie": 0.5710227272727273,
+            "pelnomocnictwo": 0.43103448275862066,
+            "przelew": 0.6666666666666666
+          },
+          "counts": {
+            "tp": 262,
+            "fp": 272,
+            "fn": 132
+          }
+        },
+        "exact_field_sets": 6,
+        "exact_json": 5,
+        "exact_positive_documents": 2,
+        "matched_leaves_added": 104,
+        "matched_leaves_lost": 12,
+        "delta_true_positives": 92,
+        "delta_false_positives": 192,
+        "http_requests": 57,
+        "routing_requests": 22,
+        "general_extraction_requests": 35,
+        "first_charge_requests": 0,
+        "net_true_positives_per_request": 1.6140350877192982,
+        "http_seconds_sum": 95.07027295511216,
+        "response_replays": 57,
+        "document_recoveries": 0
+      },
+      "organizer_scans": {
+        "pdfs": 30,
+        "strict": {
+          "micro_f1": 0.7547649301143583,
+          "macro_f1_classes": 0.7368592090564586,
+          "per_class_f1": {
+            "odwolanie": 0.7510917030567685,
+            "pelnomocnictwo": 0.827906976744186,
+            "przelew": 0.631578947368421
+          },
+          "counts": {
+            "tp": 297,
+            "fp": 102,
+            "fn": 91
+          }
+        },
+        "fuzzy_five": {
+          "micro_f1": 0.7674714104193139,
+          "macro_f1_classes": 0.7529219277162813,
+          "per_class_f1": {
+            "odwolanie": 0.7641921397379913,
+            "pelnomocnictwo": 0.827906976744186,
+            "przelew": 0.6666666666666666
+          },
+          "counts": {
+            "tp": 302,
+            "fp": 97,
+            "fn": 86
+          }
+        },
+        "exact_field_sets": 4,
+        "exact_json": 2,
+        "exact_positive_documents": 4,
+        "matched_leaves_added": 132,
+        "matched_leaves_lost": 13,
+        "delta_true_positives": 119,
+        "delta_false_positives": 36,
+        "http_requests": 39,
+        "routing_requests": 9,
+        "general_extraction_requests": 30,
+        "first_charge_requests": 0,
+        "net_true_positives_per_request": 3.051282051282051,
+        "http_seconds_sum": 49.22488425113261,
+        "response_replays": 39,
+        "document_recoveries": 0
+      },
+      "c1_all": {
+        "pdfs": 39,
+        "strict": {
+          "micro_f1": 0.49616858237547895,
+          "macro_f1_classes": 0.5214536148721013,
+          "per_class_f1": {
+            "odwolanie": 0.48492159227985526,
+            "pelnomocnictwo": 0.5794392523364486,
+            "przelew": 0.5
+          },
+          "counts": {
+            "tp": 259,
+            "fp": 297,
+            "fn": 229
+          }
+        },
+        "fuzzy_five": {
+          "micro_f1": 0.5057471264367817,
+          "macro_f1_classes": 0.5362118391196701,
+          "per_class_f1": {
+            "odwolanie": 0.49215922798552475,
+            "pelnomocnictwo": 0.5794392523364486,
+            "przelew": 0.5370370370370371
+          },
+          "counts": {
+            "tp": 264,
+            "fp": 292,
+            "fn": 224
+          }
+        },
+        "exact_field_sets": 4,
+        "exact_json": 4,
+        "exact_positive_documents": 0,
+        "matched_leaves_added": 62,
+        "matched_leaves_lost": 47,
+        "delta_true_positives": 15,
+        "delta_false_positives": 198,
+        "http_requests": 52,
+        "routing_requests": 17,
+        "general_extraction_requests": 35,
+        "first_charge_requests": 0,
+        "net_true_positives_per_request": 0.28846153846153844,
+        "http_seconds_sum": 91.21452921628952,
+        "response_replays": 52,
+        "document_recoveries": 0
+      },
+      "pooled_91": {
+        "pdfs": 91,
+        "strict": {
+          "micro_f1": 0.6192139737991267,
+          "macro_f1_classes": 0.6279633416647732,
+          "per_class_f1": {
+            "odwolanie": 0.6098159509202454,
+            "pelnomocnictwo": 0.6666666666666666,
+            "przelew": 0.6074074074074074
+          },
+          "counts": {
+            "tp": 709,
+            "fp": 552,
+            "fn": 320
+          }
+        },
+        "fuzzy_five": {
+          "micro_f1": 0.6279475982532751,
+          "macro_f1_classes": 0.6382337347572521,
+          "per_class_f1": {
+            "odwolanie": 0.6184049079754601,
+            "pelnomocnictwo": 0.6666666666666666,
+            "przelew": 0.6296296296296297
+          },
+          "counts": {
+            "tp": 719,
+            "fp": 542,
+            "fn": 310
+          }
+        },
+        "exact_field_sets": 13,
+        "exact_json": 10,
+        "exact_positive_documents": 6,
+        "matched_leaves_added": 255,
+        "matched_leaves_lost": 60,
+        "delta_true_positives": 195,
+        "delta_false_positives": 340,
+        "http_requests": 124,
+        "routing_requests": 40,
+        "general_extraction_requests": 84,
+        "first_charge_requests": 0,
+        "net_true_positives_per_request": 1.5725806451612903,
+        "http_seconds_sum": 206.2813940877095,
+        "response_replays": 124,
+        "document_recoveries": 0
+      }
+    },
+    "rules_first_fallback": {
+      "c1_dev": {
+        "pdfs": 22,
+        "strict": {
+          "micro_f1": 0.5809682804674458,
+          "macro_f1_classes": 0.6037201916067895,
+          "per_class_f1": {
+            "odwolanie": 0.5649484536082474,
+            "pelnomocnictwo": 0.7878787878787878,
+            "przelew": 0.4583333333333333
+          },
+          "counts": {
+            "tp": 174,
+            "fp": 178,
+            "fn": 73
+          }
+        },
+        "fuzzy_five": {
+          "micro_f1": 0.6043405676126878,
+          "macro_f1_classes": 0.6258565031760908,
+          "per_class_f1": {
+            "odwolanie": 0.5896907216494846,
+            "pelnomocnictwo": 0.7878787878787878,
+            "przelew": 0.5
+          },
+          "counts": {
+            "tp": 181,
+            "fp": 171,
+            "fn": 66
+          }
+        },
+        "exact_field_sets": 3,
+        "exact_json": 3,
+        "exact_positive_documents": 0,
+        "matched_leaves_added": 10,
+        "matched_leaves_lost": 3,
+        "delta_true_positives": 7,
+        "delta_false_positives": 113,
+        "http_requests": 26,
+        "routing_requests": 9,
+        "general_extraction_requests": 17,
+        "first_charge_requests": 0,
+        "net_true_positives_per_request": 0.2692307692307692,
+        "http_seconds_sum": 58.75305550545454,
+        "response_replays": 26,
+        "document_recoveries": 0
+      },
+      "c2_dev": {
+        "pdfs": 39,
+        "strict": {
+          "micro_f1": 0.5600882028665931,
+          "macro_f1_classes": 0.5289989602005106,
+          "per_class_f1": {
+            "odwolanie": 0.5784883720930233,
+            "pelnomocnictwo": 0.36036036036036034,
+            "przelew": 0.6481481481481481
+          },
+          "counts": {
+            "tp": 254,
+            "fp": 259,
+            "fn": 140
+          }
+        },
+        "fuzzy_five": {
+          "micro_f1": 0.5622932745314223,
+          "macro_f1_classes": 0.5299679524485726,
+          "per_class_f1": {
+            "odwolanie": 0.5813953488372093,
+            "pelnomocnictwo": 0.36036036036036034,
+            "przelew": 0.6481481481481481
+          },
+          "counts": {
+            "tp": 255,
+            "fp": 258,
+            "fn": 139
+          }
+        },
+        "exact_field_sets": 6,
+        "exact_json": 6,
+        "exact_positive_documents": 2,
+        "matched_leaves_added": 90,
+        "matched_leaves_lost": 5,
+        "delta_true_positives": 85,
+        "delta_false_positives": 178,
+        "http_requests": 55,
+        "routing_requests": 22,
+        "general_extraction_requests": 33,
+        "first_charge_requests": 0,
+        "net_true_positives_per_request": 1.5454545454545454,
+        "http_seconds_sum": 92.13854041323066,
+        "response_replays": 55,
+        "document_recoveries": 0
+      },
+      "organizer_scans": {
+        "pdfs": 30,
+        "strict": {
+          "micro_f1": 0.741424802110818,
+          "macro_f1_classes": 0.7244765981391049,
+          "per_class_f1": {
+            "odwolanie": 0.7511111111111111,
+            "pelnomocnictwo": 0.7731958762886598,
+            "przelew": 0.6491228070175439
+          },
+          "counts": {
+            "tp": 281,
+            "fp": 89,
+            "fn": 107
+          }
+        },
+        "fuzzy_five": {
+          "micro_f1": 0.7651715039577837,
+          "macro_f1_classes": 0.7465428749422238,
+          "per_class_f1": {
+            "odwolanie": 0.7822222222222223,
+            "pelnomocnictwo": 0.7731958762886598,
+            "przelew": 0.6842105263157895
+          },
+          "counts": {
+            "tp": 290,
+            "fp": 80,
+            "fn": 98
+          }
+        },
+        "exact_field_sets": 3,
+        "exact_json": 2,
+        "exact_positive_documents": 3,
+        "matched_leaves_added": 104,
+        "matched_leaves_lost": 1,
+        "delta_true_positives": 103,
+        "delta_false_positives": 23,
+        "http_requests": 39,
+        "routing_requests": 9,
+        "general_extraction_requests": 30,
+        "first_charge_requests": 0,
+        "net_true_positives_per_request": 2.641025641025641,
+        "http_seconds_sum": 49.22488425113261,
+        "response_replays": 39,
+        "document_recoveries": 0
+      },
+      "c1_all": {
+        "pdfs": 39,
+        "strict": {
+          "micro_f1": 0.5463049579045838,
+          "macro_f1_classes": 0.5923858795582508,
+          "per_class_f1": {
+            "odwolanie": 0.524822695035461,
+            "pelnomocnictwo": 0.6782608695652174,
+            "przelew": 0.5740740740740741
+          },
+          "counts": {
+            "tp": 292,
+            "fp": 289,
+            "fn": 196
+          }
+        },
+        "fuzzy_five": {
+          "micro_f1": 0.5612722170252572,
+          "macro_f1_classes": 0.6094596909583033,
+          "per_class_f1": {
+            "odwolanie": 0.5390070921985816,
+            "pelnomocnictwo": 0.6782608695652174,
+            "przelew": 0.6111111111111112
+          },
+          "counts": {
+            "tp": 300,
+            "fp": 281,
+            "fn": 188
+          }
+        },
+        "exact_field_sets": 5,
+        "exact_json": 5,
+        "exact_positive_documents": 1,
+        "matched_leaves_added": 51,
+        "matched_leaves_lost": 3,
+        "delta_true_positives": 48,
+        "delta_false_positives": 190,
+        "http_requests": 50,
+        "routing_requests": 17,
+        "general_extraction_requests": 33,
+        "first_charge_requests": 0,
+        "net_true_positives_per_request": 0.96,
+        "http_seconds_sum": 87.98134784027934,
+        "response_replays": 50,
+        "document_recoveries": 0
+      },
+      "pooled_91": {
+        "pdfs": 91,
+        "strict": {
+          "micro_f1": 0.6263250883392226,
+          "macro_f1_classes": 0.6298034315170065,
+          "per_class_f1": {
+            "odwolanie": 0.6223043746149106,
+            "pelnomocnictwo": 0.6522911051212938,
+            "przelew": 0.6148148148148148
+          },
+          "counts": {
+            "tp": 709,
+            "fp": 526,
+            "fn": 320
+          }
+        },
+        "fuzzy_five": {
+          "micro_f1": 0.6413427561837456,
+          "macro_f1_classes": 0.6429615064126044,
+          "per_class_f1": {
+            "odwolanie": 0.6395563770794824,
+            "pelnomocnictwo": 0.6522911051212938,
+            "przelew": 0.6370370370370371
+          },
+          "counts": {
+            "tp": 726,
+            "fp": 509,
+            "fn": 303
+          }
+        },
+        "exact_field_sets": 12,
+        "exact_json": 11,
+        "exact_positive_documents": 5,
+        "matched_leaves_added": 204,
+        "matched_leaves_lost": 9,
+        "delta_true_positives": 195,
+        "delta_false_positives": 314,
+        "http_requests": 120,
+        "routing_requests": 40,
+        "general_extraction_requests": 80,
+        "first_charge_requests": 0,
+        "net_true_positives_per_request": 1.625,
+        "http_seconds_sum": 200.1164801698178,
+        "response_replays": 120,
+        "document_recoveries": 0
+      }
+    },
+    "evidence_routing_all_native_gaps": {
+      "c1_dev": {
+        "pdfs": 22,
+        "strict": {
+          "micro_f1": 0.7016129032258065,
+          "macro_f1_classes": 0.6544965360410386,
+          "per_class_f1": {
+            "odwolanie": 0.7172774869109948,
+            "pelnomocnictwo": 0.7878787878787878,
+            "przelew": 0.4583333333333333
+          },
+          "counts": {
+            "tp": 174,
+            "fp": 75,
+            "fn": 73
+          }
+        },
+        "fuzzy_five": {
+          "micro_f1": 0.7298387096774194,
+          "macro_f1_classes": 0.6788566291184092,
+          "per_class_f1": {
+            "odwolanie": 0.7486910994764397,
+            "pelnomocnictwo": 0.7878787878787878,
+            "przelew": 0.5
+          },
+          "counts": {
+            "tp": 181,
+            "fp": 68,
+            "fn": 66
+          }
+        },
+        "exact_field_sets": 7,
+        "exact_json": 7,
+        "exact_positive_documents": 0,
+        "matched_leaves_added": 10,
+        "matched_leaves_lost": 3,
+        "delta_true_positives": 7,
+        "delta_false_positives": 10,
+        "http_requests": 15,
+        "routing_requests": 2,
+        "general_extraction_requests": 13,
+        "first_charge_requests": 0,
+        "net_true_positives_per_request": 0.4666666666666667,
+        "http_seconds_sum": 39.94150750292465,
+        "response_replays": 15,
+        "document_recoveries": 0
+      },
+      "c2_dev": {
+        "pdfs": 39,
+        "strict": {
+          "micro_f1": 0.6898326898326899,
+          "macro_f1_classes": 0.6610196992549934,
+          "per_class_f1": {
+            "odwolanie": 0.6958041958041958,
+            "pelnomocnictwo": 0.47058823529411764,
+            "przelew": 0.8166666666666667
+          },
+          "counts": {
+            "tp": 268,
+            "fp": 115,
+            "fn": 126
+          }
+        },
+        "fuzzy_five": {
+          "micro_f1": 0.694980694980695,
+          "macro_f1_classes": 0.6677407559760501,
+          "per_class_f1": {
+            "odwolanie": 0.6993006993006993,
+            "pelnomocnictwo": 0.47058823529411764,
+            "przelew": 0.8333333333333334
+          },
+          "counts": {
+            "tp": 270,
+            "fp": 113,
+            "fn": 124
+          }
+        },
+        "exact_field_sets": 14,
+        "exact_json": 14,
+        "exact_positive_documents": 3,
+        "matched_leaves_added": 104,
+        "matched_leaves_lost": 5,
+        "delta_true_positives": 99,
+        "delta_false_positives": 34,
+        "http_requests": 37,
+        "routing_requests": 11,
+        "general_extraction_requests": 26,
+        "first_charge_requests": 0,
+        "net_true_positives_per_request": 2.675675675675676,
+        "http_seconds_sum": 69.56942499894649,
+        "response_replays": 37,
+        "document_recoveries": 0
+      },
+      "organizer_scans": {
+        "pdfs": 30,
+        "strict": {
+          "micro_f1": 0.7359781121751026,
+          "macro_f1_classes": 0.6942517517517518,
+          "per_class_f1": {
+            "odwolanie": 0.7511111111111111,
+            "pelnomocnictwo": 0.8108108108108109,
+            "przelew": 0.5208333333333334
+          },
+          "counts": {
+            "tp": 269,
+            "fp": 74,
+            "fn": 119
+          }
+        },
+        "fuzzy_five": {
+          "micro_f1": 0.7606019151846786,
+          "macro_f1_classes": 0.7185110110110111,
+          "per_class_f1": {
+            "odwolanie": 0.7822222222222223,
+            "pelnomocnictwo": 0.8108108108108109,
+            "przelew": 0.5625
+          },
+          "counts": {
+            "tp": 278,
+            "fp": 65,
+            "fn": 110
+          }
+        },
+        "exact_field_sets": 3,
+        "exact_json": 2,
+        "exact_positive_documents": 3,
+        "matched_leaves_added": 92,
+        "matched_leaves_lost": 1,
+        "delta_true_positives": 91,
+        "delta_false_positives": 8,
+        "http_requests": 31,
+        "routing_requests": 5,
+        "general_extraction_requests": 26,
+        "first_charge_requests": 0,
+        "net_true_positives_per_request": 2.935483870967742,
+        "http_seconds_sum": 43.88592295907438,
+        "response_replays": 31,
+        "document_recoveries": 0
+      },
+      "c1_all": {
+        "pdfs": 39,
+        "strict": {
+          "micro_f1": 0.6309794988610479,
+          "macro_f1_classes": 0.6281320041138605,
+          "per_class_f1": {
+            "odwolanie": 0.6320610687022901,
+            "pelnomocnictwo": 0.6782608695652174,
+            "przelew": 0.5740740740740741
+          },
+          "counts": {
+            "tp": 277,
+            "fp": 113,
+            "fn": 211
+          }
+        },
+        "fuzzy_five": {
+          "micro_f1": 0.6492027334851936,
+          "macro_f1_classes": 0.6465845533552138,
+          "per_class_f1": {
+            "odwolanie": 0.650381679389313,
+            "pelnomocnictwo": 0.6782608695652174,
+            "przelew": 0.6111111111111112
+          },
+          "counts": {
+            "tp": 285,
+            "fp": 105,
+            "fn": 203
+          }
+        },
+        "exact_field_sets": 12,
+        "exact_json": 12,
+        "exact_positive_documents": 1,
+        "matched_leaves_added": 36,
+        "matched_leaves_lost": 3,
+        "delta_true_positives": 33,
+        "delta_false_positives": 14,
+        "http_requests": 30,
+        "routing_requests": 5,
+        "general_extraction_requests": 25,
+        "first_charge_requests": 0,
+        "net_true_positives_per_request": 1.1,
+        "http_seconds_sum": 57.843903256580234,
+        "response_replays": 30,
+        "document_recoveries": 0
+      },
+      "pooled_91": {
+        "pdfs": 91,
+        "strict": {
+          "micro_f1": 0.7095808383233533,
+          "macro_f1_classes": 0.6945169028502362,
+          "per_class_f1": {
+            "odwolanie": 0.7193732193732194,
+            "pelnomocnictwo": 0.7202380952380952,
+            "przelew": 0.6439393939393939
+          },
+          "counts": {
+            "tp": 711,
+            "fp": 264,
+            "fn": 318
+          }
+        },
+        "fuzzy_five": {
+          "micro_f1": 0.7275449101796407,
+          "macro_f1_classes": 0.7112655862655863,
+          "per_class_f1": {
+            "odwolanie": 0.7393162393162394,
+            "pelnomocnictwo": 0.7202380952380952,
+            "przelew": 0.6742424242424242
+          },
+          "counts": {
+            "tp": 729,
+            "fp": 246,
+            "fn": 300
+          }
+        },
+        "exact_field_sets": 24,
+        "exact_json": 23,
+        "exact_positive_documents": 6,
+        "matched_leaves_added": 206,
+        "matched_leaves_lost": 9,
+        "delta_true_positives": 197,
+        "delta_false_positives": 52,
+        "http_requests": 83,
+        "routing_requests": 18,
+        "general_extraction_requests": 65,
+        "first_charge_requests": 0,
+        "net_true_positives_per_request": 2.3734939759036147,
+        "http_seconds_sum": 153.39685546094552,
+        "response_replays": 83,
+        "document_recoveries": 0
+      }
+    },
+    "incomplete_without_specialist": {
+      "c1_dev": {
+        "pdfs": 22,
+        "strict": {
+          "micro_f1": 0.7016129032258065,
+          "macro_f1_classes": 0.6544965360410386,
+          "per_class_f1": {
+            "odwolanie": 0.7172774869109948,
+            "pelnomocnictwo": 0.7878787878787878,
+            "przelew": 0.4583333333333333
+          },
+          "counts": {
+            "tp": 174,
+            "fp": 75,
+            "fn": 73
+          }
+        },
+        "fuzzy_five": {
+          "micro_f1": 0.7298387096774194,
+          "macro_f1_classes": 0.6788566291184092,
+          "per_class_f1": {
+            "odwolanie": 0.7486910994764397,
+            "pelnomocnictwo": 0.7878787878787878,
+            "przelew": 0.5
+          },
+          "counts": {
+            "tp": 181,
+            "fp": 68,
+            "fn": 66
+          }
+        },
+        "exact_field_sets": 7,
+        "exact_json": 7,
+        "exact_positive_documents": 0,
+        "matched_leaves_added": 10,
+        "matched_leaves_lost": 3,
+        "delta_true_positives": 7,
+        "delta_false_positives": 10,
+        "http_requests": 14,
+        "routing_requests": 2,
+        "general_extraction_requests": 12,
+        "first_charge_requests": 0,
+        "net_true_positives_per_request": 0.5,
+        "http_seconds_sum": 36.35808708705008,
+        "response_replays": 14,
+        "document_recoveries": 0
+      },
+      "c2_dev": {
+        "pdfs": 39,
+        "strict": {
+          "micro_f1": 0.6924066924066924,
+          "macro_f1_classes": 0.6621852004204946,
+          "per_class_f1": {
+            "odwolanie": 0.6993006993006993,
+            "pelnomocnictwo": 0.47058823529411764,
+            "przelew": 0.8166666666666667
+          },
+          "counts": {
+            "tp": 269,
+            "fp": 114,
+            "fn": 125
+          }
+        },
+        "fuzzy_five": {
+          "micro_f1": 0.6975546975546976,
+          "macro_f1_classes": 0.6689062571415513,
+          "per_class_f1": {
+            "odwolanie": 0.7027972027972028,
+            "pelnomocnictwo": 0.47058823529411764,
+            "przelew": 0.8333333333333334
+          },
+          "counts": {
+            "tp": 271,
+            "fp": 112,
+            "fn": 123
+          }
+        },
+        "exact_field_sets": 14,
+        "exact_json": 14,
+        "exact_positive_documents": 3,
+        "matched_leaves_added": 101,
+        "matched_leaves_lost": 1,
+        "delta_true_positives": 100,
+        "delta_false_positives": 33,
+        "http_requests": 30,
+        "routing_requests": 11,
+        "general_extraction_requests": 19,
+        "first_charge_requests": 0,
+        "net_true_positives_per_request": 3.3333333333333335,
+        "http_seconds_sum": 51.52815629169345,
+        "response_replays": 30,
+        "document_recoveries": 0
+      },
+      "organizer_scans": {
+        "pdfs": 30,
+        "strict": {
+          "micro_f1": 0.7359781121751026,
+          "macro_f1_classes": 0.6942517517517518,
+          "per_class_f1": {
+            "odwolanie": 0.7511111111111111,
+            "pelnomocnictwo": 0.8108108108108109,
+            "przelew": 0.5208333333333334
+          },
+          "counts": {
+            "tp": 269,
+            "fp": 74,
+            "fn": 119
+          }
+        },
+        "fuzzy_five": {
+          "micro_f1": 0.7606019151846786,
+          "macro_f1_classes": 0.7185110110110111,
+          "per_class_f1": {
+            "odwolanie": 0.7822222222222223,
+            "pelnomocnictwo": 0.8108108108108109,
+            "przelew": 0.5625
+          },
+          "counts": {
+            "tp": 278,
+            "fp": 65,
+            "fn": 110
+          }
+        },
+        "exact_field_sets": 3,
+        "exact_json": 2,
+        "exact_positive_documents": 3,
+        "matched_leaves_added": 92,
+        "matched_leaves_lost": 1,
+        "delta_true_positives": 91,
+        "delta_false_positives": 8,
+        "http_requests": 31,
+        "routing_requests": 5,
+        "general_extraction_requests": 26,
+        "first_charge_requests": 0,
+        "net_true_positives_per_request": 2.935483870967742,
+        "http_seconds_sum": 43.88592295907438,
+        "response_replays": 31,
+        "document_recoveries": 0
+      },
+      "c1_all": {
+        "pdfs": 39,
+        "strict": {
+          "micro_f1": 0.6195899772209568,
+          "macro_f1_classes": 0.6230429455896874,
+          "per_class_f1": {
+            "odwolanie": 0.616793893129771,
+            "pelnomocnictwo": 0.6782608695652174,
+            "przelew": 0.5740740740740741
+          },
+          "counts": {
+            "tp": 272,
+            "fp": 118,
+            "fn": 216
+          }
+        },
+        "fuzzy_five": {
+          "micro_f1": 0.6378132118451025,
+          "macro_f1_classes": 0.6414954948310408,
+          "per_class_f1": {
+            "odwolanie": 0.6351145038167939,
+            "pelnomocnictwo": 0.6782608695652174,
+            "przelew": 0.6111111111111112
+          },
+          "counts": {
+            "tp": 280,
+            "fp": 110,
+            "fn": 208
+          }
+        },
+        "exact_field_sets": 12,
+        "exact_json": 12,
+        "exact_positive_documents": 1,
+        "matched_leaves_added": 31,
+        "matched_leaves_lost": 3,
+        "delta_true_positives": 28,
+        "delta_false_positives": 19,
+        "http_requests": 26,
+        "routing_requests": 5,
+        "general_extraction_requests": 21,
+        "first_charge_requests": 0,
+        "net_true_positives_per_request": 1.0769230769230769,
+        "http_seconds_sum": 47.4608443393372,
+        "response_replays": 26,
+        "document_recoveries": 0
+      },
+      "pooled_91": {
+        "pdfs": 91,
+        "strict": {
+          "micro_f1": 0.7105788423153693,
+          "macro_f1_classes": 0.6949917366584032,
+          "per_class_f1": {
+            "odwolanie": 0.7207977207977208,
+            "pelnomocnictwo": 0.7202380952380952,
+            "przelew": 0.6439393939393939
+          },
+          "counts": {
+            "tp": 712,
+            "fp": 263,
+            "fn": 317
+          }
+        },
+        "fuzzy_five": {
+          "micro_f1": 0.7285429141716567,
+          "macro_f1_classes": 0.7117404200737534,
+          "per_class_f1": {
+            "odwolanie": 0.7407407407407407,
+            "pelnomocnictwo": 0.7202380952380952,
+            "przelew": 0.6742424242424242
+          },
+          "counts": {
+            "tp": 730,
+            "fp": 245,
+            "fn": 299
+          }
+        },
+        "exact_field_sets": 24,
+        "exact_json": 23,
+        "exact_positive_documents": 6,
+        "matched_leaves_added": 203,
+        "matched_leaves_lost": 5,
+        "delta_true_positives": 198,
+        "delta_false_positives": 51,
+        "http_requests": 75,
+        "routing_requests": 18,
+        "general_extraction_requests": 57,
+        "first_charge_requests": 0,
+        "net_true_positives_per_request": 2.64,
+        "http_seconds_sum": 131.7721663378179,
+        "response_replays": 75,
+        "document_recoveries": 0
+      }
+    },
+    "selected_3b": {
+      "c1_dev": {
+        "pdfs": 22,
+        "strict": {
+          "micro_f1": 0.7016129032258065,
+          "macro_f1_classes": 0.6544965360410386,
+          "per_class_f1": {
+            "odwolanie": 0.7172774869109948,
+            "pelnomocnictwo": 0.7878787878787878,
+            "przelew": 0.4583333333333333
+          },
+          "counts": {
+            "tp": 174,
+            "fp": 75,
+            "fn": 73
+          }
+        },
+        "fuzzy_five": {
+          "micro_f1": 0.7298387096774194,
+          "macro_f1_classes": 0.6788566291184092,
+          "per_class_f1": {
+            "odwolanie": 0.7486910994764397,
+            "pelnomocnictwo": 0.7878787878787878,
+            "przelew": 0.5
+          },
+          "counts": {
+            "tp": 181,
+            "fp": 68,
+            "fn": 66
+          }
+        },
+        "exact_field_sets": 7,
+        "exact_json": 7,
+        "exact_positive_documents": 0,
+        "matched_leaves_added": 10,
+        "matched_leaves_lost": 3,
+        "delta_true_positives": 7,
+        "delta_false_positives": 10,
+        "http_requests": 19,
+        "routing_requests": 2,
+        "general_extraction_requests": 12,
+        "first_charge_requests": 5,
+        "net_true_positives_per_request": 0.3684210526315789,
+        "http_seconds_sum": 40.18739412818104,
+        "response_replays": 19,
+        "document_recoveries": 0,
+        "routing_by_gold_class": {
+          "odwolanie": {
+            "correct": 8,
+            "total": 8
+          },
+          "negatywny": {
+            "correct": 7,
+            "total": 7
+          },
+          "pelnomocnictwo": {
+            "correct": 3,
+            "total": 3
+          },
+          "przelew": {
+            "correct": 4,
+            "total": 4
+          }
+        }
+      },
+      "c2_dev": {
+        "pdfs": 39,
+        "strict": {
+          "micro_f1": 0.7027027027027027,
+          "macro_f1_classes": 0.6668472050824992,
+          "per_class_f1": {
+            "odwolanie": 0.7132867132867133,
+            "pelnomocnictwo": 0.47058823529411764,
+            "przelew": 0.8166666666666667
+          },
+          "counts": {
+            "tp": 273,
+            "fp": 110,
+            "fn": 121
+          }
+        },
+        "fuzzy_five": {
+          "micro_f1": 0.7078507078507078,
+          "macro_f1_classes": 0.673568261803556,
+          "per_class_f1": {
+            "odwolanie": 0.7167832167832168,
+            "pelnomocnictwo": 0.47058823529411764,
+            "przelew": 0.8333333333333334
+          },
+          "counts": {
+            "tp": 275,
+            "fp": 108,
+            "fn": 119
+          }
+        },
+        "exact_field_sets": 14,
+        "exact_json": 14,
+        "exact_positive_documents": 3,
+        "matched_leaves_added": 105,
+        "matched_leaves_lost": 1,
+        "delta_true_positives": 104,
+        "delta_false_positives": 29,
+        "http_requests": 38,
+        "routing_requests": 11,
+        "general_extraction_requests": 19,
+        "first_charge_requests": 8,
+        "net_true_positives_per_request": 2.736842105263158,
+        "http_seconds_sum": 58.88112146034837,
+        "response_replays": 38,
+        "document_recoveries": 0,
+        "routing_by_gold_class": {
+          "odwolanie": {
+            "correct": 13,
+            "total": 13
+          },
+          "pelnomocnictwo": {
+            "correct": 5,
+            "total": 5
+          },
+          "przelew": {
+            "correct": 10,
+            "total": 10
+          },
+          "negatywny": {
+            "correct": 11,
+            "total": 11
+          }
+        }
+      },
+      "organizer_scans": {
+        "pdfs": 30,
+        "strict": {
+          "micro_f1": 0.7359781121751026,
+          "macro_f1_classes": 0.6942517517517518,
+          "per_class_f1": {
+            "odwolanie": 0.7511111111111111,
+            "pelnomocnictwo": 0.8108108108108109,
+            "przelew": 0.5208333333333334
+          },
+          "counts": {
+            "tp": 269,
+            "fp": 74,
+            "fn": 119
+          }
+        },
+        "fuzzy_five": {
+          "micro_f1": 0.7606019151846786,
+          "macro_f1_classes": 0.7185110110110111,
+          "per_class_f1": {
+            "odwolanie": 0.7822222222222223,
+            "pelnomocnictwo": 0.8108108108108109,
+            "przelew": 0.5625
+          },
+          "counts": {
+            "tp": 278,
+            "fp": 65,
+            "fn": 110
+          }
+        },
+        "exact_field_sets": 3,
+        "exact_json": 2,
+        "exact_positive_documents": 3,
+        "matched_leaves_added": 92,
+        "matched_leaves_lost": 1,
+        "delta_true_positives": 91,
+        "delta_false_positives": 8,
+        "http_requests": 35,
+        "routing_requests": 5,
+        "general_extraction_requests": 26,
+        "first_charge_requests": 4,
+        "net_true_positives_per_request": 2.6,
+        "http_seconds_sum": 46.05540675017983,
+        "response_replays": 35,
+        "document_recoveries": 0,
+        "routing_by_gold_class": {
+          "odwolanie": {
+            "correct": 10,
+            "total": 10
+          },
+          "pelnomocnictwo": {
+            "correct": 10,
+            "total": 10
+          },
+          "przelew": {
+            "correct": 6,
+            "total": 10
+          }
+        }
+      },
+      "c1_all": {
+        "pdfs": 39,
+        "strict": {
+          "micro_f1": 0.6195899772209568,
+          "macro_f1_classes": 0.6230429455896874,
+          "per_class_f1": {
+            "odwolanie": 0.616793893129771,
+            "pelnomocnictwo": 0.6782608695652174,
+            "przelew": 0.5740740740740741
+          },
+          "counts": {
+            "tp": 272,
+            "fp": 118,
+            "fn": 216
+          }
+        },
+        "fuzzy_five": {
+          "micro_f1": 0.6378132118451025,
+          "macro_f1_classes": 0.6414954948310408,
+          "per_class_f1": {
+            "odwolanie": 0.6351145038167939,
+            "pelnomocnictwo": 0.6782608695652174,
+            "przelew": 0.6111111111111112
+          },
+          "counts": {
+            "tp": 280,
+            "fp": 110,
+            "fn": 208
+          }
+        },
+        "exact_field_sets": 12,
+        "exact_json": 12,
+        "exact_positive_documents": 1,
+        "matched_leaves_added": 31,
+        "matched_leaves_lost": 3,
+        "delta_true_positives": 28,
+        "delta_false_positives": 19,
+        "http_requests": 33,
+        "routing_requests": 5,
+        "general_extraction_requests": 21,
+        "first_charge_requests": 7,
+        "net_true_positives_per_request": 0.8484848484848485,
+        "http_seconds_sum": 52.8761508804746,
+        "response_replays": 33,
+        "document_recoveries": 0,
+        "routing_by_gold_class": {
+          "odwolanie": {
+            "correct": 12,
+            "total": 13
+          },
+          "negatywny": {
+            "correct": 11,
+            "total": 11
+          },
+          "pelnomocnictwo": {
+            "correct": 6,
+            "total": 6
+          },
+          "przelew": {
+            "correct": 9,
+            "total": 9
+          }
+        }
+      },
+      "pooled_91": {
+        "pdfs": 91,
+        "strict": {
+          "micro_f1": 0.7145708582834331,
+          "macro_f1_classes": 0.6968910718910718,
+          "per_class_f1": {
+            "odwolanie": 0.7264957264957265,
+            "pelnomocnictwo": 0.7202380952380952,
+            "przelew": 0.6439393939393939
+          },
+          "counts": {
+            "tp": 716,
+            "fp": 259,
+            "fn": 313
+          }
+        },
+        "fuzzy_five": {
+          "micro_f1": 0.7325349301397206,
+          "macro_f1_classes": 0.713639755306422,
+          "per_class_f1": {
+            "odwolanie": 0.7464387464387464,
+            "pelnomocnictwo": 0.7202380952380952,
+            "przelew": 0.6742424242424242
+          },
+          "counts": {
+            "tp": 734,
+            "fp": 241,
+            "fn": 295
+          }
+        },
+        "exact_field_sets": 24,
+        "exact_json": 23,
+        "exact_positive_documents": 6,
+        "matched_leaves_added": 207,
+        "matched_leaves_lost": 5,
+        "delta_true_positives": 202,
+        "delta_false_positives": 47,
+        "http_requests": 92,
+        "routing_requests": 18,
+        "general_extraction_requests": 57,
+        "first_charge_requests": 17,
+        "net_true_positives_per_request": 2.1956521739130435,
+        "http_seconds_sum": 145.12392233870924,
+        "response_replays": 92,
+        "document_recoveries": 0,
+        "routing_by_gold_class": {
+          "odwolanie": {
+            "correct": 31,
+            "total": 31
+          },
+          "negatywny": {
+            "correct": 18,
+            "total": 18
+          },
+          "pelnomocnictwo": {
+            "correct": 18,
+            "total": 18
+          },
+          "przelew": {
+            "correct": 20,
+            "total": 24
+          }
+        }
+      }
+    },
+    "above_cap_8b": {
+      "c1_dev": {
+        "pdfs": 22,
+        "strict": {
+          "micro_f1": 0.7128309572301426,
+          "macro_f1_classes": 0.6741473385999447,
+          "per_class_f1": {
+            "odwolanie": 0.7225130890052356,
+            "pelnomocnictwo": 0.7761194029850746,
+            "przelew": 0.5238095238095238
+          },
+          "counts": {
+            "tp": 175,
+            "fp": 69,
+            "fn": 72
+          }
+        },
+        "fuzzy_five": {
+          "micro_f1": 0.7494908350305499,
+          "macro_f1_classes": 0.7181097752325384,
+          "per_class_f1": {
+            "odwolanie": 0.7591623036649214,
+            "pelnomocnictwo": 0.7761194029850746,
+            "przelew": 0.6190476190476191
+          },
+          "counts": {
+            "tp": 184,
+            "fp": 60,
+            "fn": 63
+          }
+        },
+        "exact_field_sets": 7,
+        "exact_json": 7,
+        "exact_positive_documents": 0,
+        "matched_leaves_added": 10,
+        "matched_leaves_lost": 2,
+        "delta_true_positives": 8,
+        "delta_false_positives": 4,
+        "http_requests": 18,
+        "routing_requests": 2,
+        "general_extraction_requests": 11,
+        "first_charge_requests": 5,
+        "net_true_positives_per_request": 0.4444444444444444,
+        "http_seconds_sum": 47.18141183396801,
+        "response_replays": 18,
+        "document_recoveries": 0
+      },
+      "c2_dev": {
+        "pdfs": 39,
+        "strict": {
+          "micro_f1": 0.6529492455418381,
+          "macro_f1_classes": 0.48378582202111614,
+          "per_class_f1": {
+            "odwolanie": 0.7307692307692307,
+            "pelnomocnictwo": 0.47058823529411764,
+            "przelew": 0.25
+          },
+          "counts": {
+            "tp": 238,
+            "fp": 97,
+            "fn": 156
+          }
+        },
+        "fuzzy_five": {
+          "micro_f1": 0.6611796982167353,
+          "macro_f1_classes": 0.4953760836113778,
+          "per_class_f1": {
+            "odwolanie": 0.7377622377622378,
+            "pelnomocnictwo": 0.47058823529411764,
+            "przelew": 0.2777777777777778
+          },
+          "counts": {
+            "tp": 241,
+            "fp": 94,
+            "fn": 153
+          }
+        },
+        "exact_field_sets": 11,
+        "exact_json": 11,
+        "exact_positive_documents": 0,
+        "matched_leaves_added": 69,
+        "matched_leaves_lost": 0,
+        "delta_true_positives": 69,
+        "delta_false_positives": 16,
+        "http_requests": 31,
+        "routing_requests": 11,
+        "general_extraction_requests": 12,
+        "first_charge_requests": 8,
+        "net_true_positives_per_request": 2.225806451612903,
+        "http_seconds_sum": 60.53460016613826,
+        "response_replays": 31,
+        "document_recoveries": 0
+      },
+      "organizer_scans": {
+        "pdfs": 30,
+        "strict": {
+          "micro_f1": 0.7146814404432132,
+          "macro_f1_classes": 0.6553236519193966,
+          "per_class_f1": {
+            "odwolanie": 0.7288888888888889,
+            "pelnomocnictwo": 0.8085106382978723,
+            "przelew": 0.42857142857142855
+          },
+          "counts": {
+            "tp": 258,
+            "fp": 76,
+            "fn": 130
+          }
+        },
+        "fuzzy_five": {
+          "micro_f1": 0.739612188365651,
+          "macro_f1_classes": 0.6815670381627829,
+          "per_class_f1": {
+            "odwolanie": 0.76,
+            "pelnomocnictwo": 0.8085106382978723,
+            "przelew": 0.47619047619047616
+          },
+          "counts": {
+            "tp": 267,
+            "fp": 67,
+            "fn": 121
+          }
+        },
+        "exact_field_sets": 4,
+        "exact_json": 3,
+        "exact_positive_documents": 4,
+        "matched_leaves_added": 80,
+        "matched_leaves_lost": 0,
+        "delta_true_positives": 80,
+        "delta_false_positives": 10,
+        "http_requests": 33,
+        "routing_requests": 5,
+        "general_extraction_requests": 24,
+        "first_charge_requests": 4,
+        "net_true_positives_per_request": 2.4242424242424243,
+        "http_seconds_sum": 76.01742874644697,
+        "response_replays": 33,
+        "document_recoveries": 0
+      },
+      "c1_all": {
+        "pdfs": 39,
+        "strict": {
+          "micro_f1": 0.6237054085155351,
+          "macro_f1_classes": 0.6211222883512313,
+          "per_class_f1": {
+            "odwolanie": 0.6229007633587786,
+            "pelnomocnictwo": 0.6779661016949152,
+            "przelew": 0.5625
+          },
+          "counts": {
+            "tp": 271,
+            "fp": 110,
+            "fn": 217
+          }
+        },
+        "fuzzy_five": {
+          "micro_f1": 0.6467203682393556,
+          "macro_f1_classes": 0.6490803036184069,
+          "per_class_f1": {
+            "odwolanie": 0.6442748091603053,
+            "pelnomocnictwo": 0.6779661016949152,
+            "przelew": 0.625
+          },
+          "counts": {
+            "tp": 281,
+            "fp": 100,
+            "fn": 207
+          }
+        },
+        "exact_field_sets": 12,
+        "exact_json": 12,
+        "exact_positive_documents": 1,
+        "matched_leaves_added": 29,
+        "matched_leaves_lost": 2,
+        "delta_true_positives": 27,
+        "delta_false_positives": 11,
+        "http_requests": 31,
+        "routing_requests": 5,
+        "general_extraction_requests": 19,
+        "first_charge_requests": 7,
+        "net_true_positives_per_request": 0.8709677419354839,
+        "http_seconds_sum": 67.26640504132956,
+        "response_replays": 31,
+        "document_recoveries": 0
+      },
+      "pooled_91": {
+        "pdfs": 91,
+        "strict": {
+          "micro_f1": 0.6910401647785788,
+          "macro_f1_classes": 0.6098018901940471,
+          "per_class_f1": {
+            "odwolanie": 0.7279202279202279,
+            "pelnomocnictwo": 0.7176470588235294,
+            "przelew": 0.3838383838383838
+          },
+          "counts": {
+            "tp": 671,
+            "fp": 242,
+            "fn": 358
+          }
+        },
+        "fuzzy_five": {
+          "micro_f1": 0.7126673532440783,
+          "macro_f1_classes": 0.6342342479597382,
+          "per_class_f1": {
+            "odwolanie": 0.7507122507122507,
+            "pelnomocnictwo": 0.7176470588235294,
+            "przelew": 0.43434343434343436
+          },
+          "counts": {
+            "tp": 692,
+            "fp": 221,
+            "fn": 337
+          }
+        },
+        "exact_field_sets": 22,
+        "exact_json": 21,
+        "exact_positive_documents": 4,
+        "matched_leaves_added": 159,
+        "matched_leaves_lost": 2,
+        "delta_true_positives": 157,
+        "delta_false_positives": 30,
+        "http_requests": 82,
+        "routing_requests": 18,
+        "general_extraction_requests": 47,
+        "first_charge_requests": 17,
+        "net_true_positives_per_request": 1.9146341463414633,
+        "http_seconds_sum": 183.73344074655324,
+        "response_replays": 82,
+        "document_recoveries": 0
+      }
+    }
+  },
+  "per_field_vs_rules": {
+    "c1_dev": {
+      "Odwolujacy[].przez-pelnomocnika": {
+        "tp": 5,
+        "fp": 3,
+        "fn": 3,
+        "delta_tp": 0,
+        "delta_fp": 0,
+        "delta_fn": 0,
+        "micro_f1": 0.625,
+        "net_tp_per_model_call": 0.0
+      },
+      "Odwolujacy[].regon": {
+        "tp": 6,
+        "fp": 2,
+        "fn": 2,
+        "delta_tp": 1,
+        "delta_fp": -1,
+        "delta_fn": -1,
+        "added": 1,
+        "added_nonnull": 1,
+        "micro_f1": 0.75,
+        "net_tp_per_model_call": 0.05263157894736842
+      },
+      "ZamowieniePubliczne.numer_postepowania": {
+        "tp": 6,
+        "fp": 2,
+        "fn": 2,
+        "delta_tp": -1,
+        "delta_fp": 1,
+        "delta_fn": 1,
+        "lost": 1,
+        "lost_nonnull": 0,
+        "micro_f1": 0.75,
+        "net_tp_per_model_call": -0.05263157894736842
+      },
+      "Zamawiajacy[].nazwa": {
+        "tp": 6,
+        "fp": 5,
+        "fn": 5,
+        "delta_tp": 1,
+        "delta_fp": 0,
+        "delta_fn": -1,
+        "added": 1,
+        "added_nonnull": 1,
+        "micro_f1": 0.5454545454545454,
+        "net_tp_per_model_call": 0.05263157894736842
+      },
+      "ZamowieniePubliczne.tytul": {
+        "tp": 2,
+        "fp": 6,
+        "fn": 6,
+        "delta_tp": 0,
+        "delta_fp": 0,
+        "delta_fn": 0,
+        "micro_f1": 0.25,
+        "net_tp_per_model_call": 0.0
+      },
+      "Odwolujacy[].pelnomocnik.imie_nazwisko": {
+        "tp": 3,
+        "fp": 5,
+        "fn": 5,
+        "delta_tp": 1,
+        "delta_fp": -1,
+        "delta_fn": -1,
+        "added": 1,
+        "added_nonnull": 1,
+        "micro_f1": 0.375,
+        "net_tp_per_model_call": 0.05263157894736842
+      },
+      "OdwolanieKIO.data": {
+        "tp": 7,
+        "fp": 1,
+        "fn": 1,
+        "delta_tp": 0,
+        "delta_fp": 0,
+        "delta_fn": 0,
+        "micro_f1": 0.875,
+        "net_tp_per_model_call": 0.0
+      },
+      "ZamowieniePubliczne.numer_ted": {
+        "tp": 7,
+        "fp": 1,
+        "fn": 1,
+        "delta_tp": 0,
+        "delta_fp": 0,
+        "delta_fn": 0,
+        "micro_f1": 0.875,
+        "net_tp_per_model_call": 0.0
+      },
+      "ZamowieniePubliczne.numer_bzp": {
+        "tp": 8,
+        "fp": 0,
+        "fn": 0,
+        "delta_tp": 0,
+        "delta_fp": 0,
+        "delta_fn": 0,
+        "micro_f1": 1.0,
+        "net_tp_per_model_call": 0.0
+      },
+      "Zamawiajacy[].krs": {
+        "tp": 11,
+        "fp": 0,
+        "fn": 0,
+        "delta_tp": 1,
+        "delta_fp": 0,
+        "delta_fn": -1,
+        "added": 1,
+        "added_nonnull": 0,
+        "micro_f1": 1.0,
+        "net_tp_per_model_call": 0.05263157894736842
+      },
+      "Zamawiajacy[].prowadzacy_postepowanie": {
+        "tp": 11,
+        "fp": 0,
+        "fn": 0,
+        "delta_tp": 1,
+        "delta_fp": 0,
+        "delta_fn": -1,
+        "added": 1,
+        "added_nonnull": 0,
+        "micro_f1": 1.0,
+        "net_tp_per_model_call": 0.05263157894736842
+      },
+      "Odwolujacy[].pelnomocnik.mail": {
+        "tp": 5,
+        "fp": 3,
+        "fn": 3,
+        "delta_tp": -1,
+        "delta_fp": 1,
+        "delta_fn": 1,
+        "lost": 1,
+        "lost_nonnull": 0,
+        "micro_f1": 0.625,
+        "net_tp_per_model_call": -0.05263157894736842
+      },
+      "Zamawiajacy[].nip": {
+        "tp": 11,
+        "fp": 0,
+        "fn": 0,
+        "delta_tp": 1,
+        "delta_fp": 0,
+        "delta_fn": -1,
+        "added": 1,
+        "added_nonnull": 0,
+        "micro_f1": 1.0,
+        "net_tp_per_model_call": 0.05263157894736842
+      },
+      "OdwolanieKIO.czynnosc_powod_id": {
+        "tp": 6,
+        "fp": 2,
+        "fn": 2,
+        "delta_tp": 0,
+        "delta_fp": 0,
+        "delta_fn": 0,
+        "micro_f1": 0.75,
+        "net_tp_per_model_call": 0.0
+      },
+      "Odwolujacy[].krs": {
+        "tp": 5,
+        "fp": 3,
+        "fn": 3,
+        "delta_tp": 0,
+        "delta_fp": 0,
+        "delta_fn": 0,
+        "micro_f1": 0.625,
+        "net_tp_per_model_call": 0.0
+      },
+      "Zamawiajacy[].regon": {
+        "tp": 11,
+        "fp": 0,
+        "fn": 0,
+        "delta_tp": 1,
+        "delta_fp": 0,
+        "delta_fn": -1,
+        "added": 1,
+        "added_nonnull": 0,
+        "micro_f1": 1.0,
+        "net_tp_per_model_call": 0.05263157894736842
+      },
+      "Odwolujacy[].nip": {
+        "tp": 6,
+        "fp": 2,
+        "fn": 2,
+        "delta_tp": 0,
+        "delta_fp": 0,
+        "delta_fn": 0,
+        "micro_f1": 0.75,
+        "net_tp_per_model_call": 0.0
+      },
+      "Odwolujacy[].pelnomocnik.nazwa": {
+        "tp": 2,
+        "fp": 6,
+        "fn": 6,
+        "delta_tp": -1,
+        "delta_fp": 1,
+        "delta_fn": 1,
+        "lost": 1,
+        "lost_nonnull": 0,
+        "micro_f1": 0.25,
+        "net_tp_per_model_call": -0.05263157894736842
+      },
+      "Odwolujacy[].nazwa": {
+        "tp": 5,
+        "fp": 3,
+        "fn": 3,
+        "delta_tp": 0,
+        "delta_fp": 0,
+        "delta_fn": 0,
+        "micro_f1": 0.625,
+        "net_tp_per_model_call": 0.0
+      },
+      "OdwolanieKIO.czynnosc_opis": {
+        "tp": 6,
+        "fp": 2,
+        "fn": 2,
+        "delta_tp": 0,
+        "delta_fp": 0,
+        "delta_fn": 0,
+        "micro_f1": 0.75,
+        "net_tp_per_model_call": 0.0
+      },
+      "OdwolanieKIO.czynnosc_dzien": {
+        "tp": 0,
+        "fp": 8,
+        "fn": 8,
+        "delta_tp": 0,
+        "delta_fp": 0,
+        "delta_fn": 0,
+        "micro_f1": 0.0,
+        "net_tp_per_model_call": 0.0
+      },
+      "OdwolanieKIO.miejscowosc": {
+        "tp": 8,
+        "fp": 0,
+        "fn": 0,
+        "delta_tp": 0,
+        "delta_fp": 0,
+        "delta_fn": 0,
+        "micro_f1": 1.0,
+        "net_tp_per_model_call": 0.0
+      },
+      "pelnomocnicy[].imie_nazwisko": {
+        "tp": 0,
+        "fp": 3,
+        "fn": 3,
+        "delta_tp": 0,
+        "delta_fp": 0,
+        "delta_fn": 0,
+        "micro_f1": 0.0,
+        "net_tp_per_model_call": 0.0
+      },
+      "pelnomocnicy[].pesel": {
+        "tp": 3,
+        "fp": 0,
+        "fn": 0,
+        "delta_tp": 0,
+        "delta_fp": 0,
+        "delta_fn": 0,
+        "micro_f1": 1.0,
+        "net_tp_per_model_call": 0.0
+      },
+      "mocodawca[].data.krs": {
+        "tp": 4,
+        "fp": 1,
+        "fn": 0,
+        "delta_tp": 0,
+        "delta_fp": 0,
+        "delta_fn": 0,
+        "micro_f1": 0.8888888888888888,
+        "net_tp_per_model_call": 0.0
+      },
+      "mocodawca[].data.nazwa": {
+        "tp": 4,
+        "fp": 1,
+        "fn": 0,
+        "delta_tp": 0,
+        "delta_fp": 0,
+        "delta_fn": 0,
+        "micro_f1": 0.8888888888888888,
+        "net_tp_per_model_call": 0.0
+      },
+      "mocodawca[].data.typ": {
+        "tp": 4,
+        "fp": 1,
+        "fn": 0,
+        "delta_tp": 0,
+        "delta_fp": 0,
+        "delta_fn": 0,
+        "micro_f1": 0.8888888888888888,
+        "net_tp_per_model_call": 0.0
+      },
+      "mocodawca[].podpisujacy[].imie_nazwisko": {
+        "tp": 3,
+        "fp": 0,
+        "fn": 3,
+        "delta_tp": 0,
+        "delta_fp": 0,
+        "delta_fn": 0,
+        "micro_f1": 0.6666666666666666,
+        "net_tp_per_model_call": 0.0
+      },
+      "mocodawca[].data.nip": {
+        "tp": 4,
+        "fp": 1,
+        "fn": 0,
+        "delta_tp": 2,
+        "delta_fp": -2,
+        "delta_fn": -2,
+        "added": 2,
+        "added_nonnull": 2,
+        "micro_f1": 0.8888888888888888,
+        "net_tp_per_model_call": 0.10526315789473684
+      },
+      "mocodawca[].data.imie_nazwisko": {
+        "tp": 4,
+        "fp": 1,
+        "fn": 0,
+        "delta_tp": 0,
+        "delta_fp": 0,
+        "delta_fn": 0,
+        "micro_f1": 0.8888888888888888,
+        "net_tp_per_model_call": 0.0
+      },
+      "przelew_bankowy.data_operacji": {
+        "tp": 3,
+        "fp": 1,
+        "fn": 1,
+        "delta_tp": 1,
+        "delta_fp": 1,
+        "delta_fn": -1,
+        "added": 1,
+        "added_nonnull": 1,
+        "micro_f1": 0.75,
+        "net_tp_per_model_call": 0.05263157894736842
+      },
+      "przelew_bankowy.tytul": {
+        "tp": 0,
+        "fp": 4,
+        "fn": 4,
+        "delta_tp": 0,
+        "delta_fp": 2,
+        "delta_fn": 0,
+        "micro_f1": 0.0,
+        "net_tp_per_model_call": 0.0
+      },
+      "przelew_bankowy.kwota": {
+        "tp": 2,
+        "fp": 2,
+        "fn": 2,
+        "delta_tp": 0,
+        "delta_fp": 2,
+        "delta_fn": 0,
+        "micro_f1": 0.5,
+        "net_tp_per_model_call": 0.0
+      },
+      "przelew_bankowy.z_rachunku": {
+        "tp": 2,
+        "fp": 2,
+        "fn": 2,
+        "delta_tp": 0,
+        "delta_fp": 2,
+        "delta_fn": 0,
+        "micro_f1": 0.5,
+        "net_tp_per_model_call": 0.0
+      },
+      "przelew_bankowy.na_rachunek": {
+        "tp": 2,
+        "fp": 2,
+        "fn": 2,
+        "delta_tp": 0,
+        "delta_fp": 2,
+        "delta_fn": 0,
+        "micro_f1": 0.5,
+        "net_tp_per_model_call": 0.0
+      },
+      "przelew_bankowy.numer_transakcji": {
+        "tp": 2,
+        "fp": 2,
+        "fn": 2,
+        "delta_tp": 0,
+        "delta_fp": 2,
+        "delta_fn": 0,
+        "micro_f1": 0.5,
+        "net_tp_per_model_call": 0.0
+      }
+    },
+    "c2_dev": {
+      "Odwolujacy[].regon": {
+        "tp": 10,
+        "fp": 3,
+        "fn": 3,
+        "delta_tp": 2,
+        "delta_fp": 2,
+        "delta_fn": -2,
+        "added": 2,
+        "added_nonnull": 0,
+        "micro_f1": 0.7692307692307693,
+        "net_tp_per_model_call": 0.05263157894736842
+      },
+      "Odwolujacy[].przez-pelnomocnika": {
+        "tp": 5,
+        "fp": 8,
+        "fn": 8,
+        "delta_tp": 1,
+        "delta_fp": 3,
+        "delta_fn": -1,
+        "added": 1,
+        "added_nonnull": 1,
+        "micro_f1": 0.38461538461538464,
+        "net_tp_per_model_call": 0.02631578947368421
+      },
+      "ZamowieniePubliczne.numer_postepowania": {
+        "tp": 12,
+        "fp": 1,
+        "fn": 1,
+        "delta_tp": 0,
+        "delta_fp": 1,
+        "delta_fn": 0,
+        "lost": 1,
+        "lost_nonnull": 0,
+        "added": 1,
+        "added_nonnull": 1,
+        "micro_f1": 0.9230769230769231,
+        "net_tp_per_model_call": 0.0
+      },
+      "Zamawiajacy[].nazwa": {
+        "tp": 12,
+        "fp": 1,
+        "fn": 1,
+        "delta_tp": 4,
+        "delta_fp": 1,
+        "delta_fn": -4,
+        "added": 4,
+        "added_nonnull": 4,
+        "micro_f1": 0.9230769230769231,
+        "net_tp_per_model_call": 0.10526315789473684
+      },
+      "ZamowieniePubliczne.tytul": {
+        "tp": 5,
+        "fp": 8,
+        "fn": 8,
+        "delta_tp": 2,
+        "delta_fp": -1,
+        "delta_fn": -2,
+        "added": 2,
+        "added_nonnull": 2,
+        "micro_f1": 0.38461538461538464,
+        "net_tp_per_model_call": 0.05263157894736842
+      },
+      "Odwolujacy[].pelnomocnik.imie_nazwisko": {
+        "tp": 1,
+        "fp": 12,
+        "fn": 12,
+        "delta_tp": 0,
+        "delta_fp": 4,
+        "delta_fn": 0,
+        "micro_f1": 0.07692307692307693,
+        "net_tp_per_model_call": 0.0
+      },
+      "OdwolanieKIO.data": {
+        "tp": 13,
+        "fp": 0,
+        "fn": 0,
+        "delta_tp": 2,
+        "delta_fp": -1,
+        "delta_fn": -2,
+        "added": 2,
+        "added_nonnull": 2,
+        "micro_f1": 1.0,
+        "net_tp_per_model_call": 0.05263157894736842
+      },
+      "ZamowieniePubliczne.numer_ted": {
+        "tp": 10,
+        "fp": 3,
+        "fn": 3,
+        "delta_tp": 0,
+        "delta_fp": 1,
+        "delta_fn": 0,
+        "micro_f1": 0.7692307692307693,
+        "net_tp_per_model_call": 0.0
+      },
+      "ZamowieniePubliczne.numer_bzp": {
+        "tp": 13,
+        "fp": 0,
+        "fn": 0,
+        "delta_tp": 1,
+        "delta_fp": 0,
+        "delta_fn": -1,
+        "added": 1,
+        "added_nonnull": 0,
+        "micro_f1": 1.0,
+        "net_tp_per_model_call": 0.02631578947368421
+      },
+      "Zamawiajacy[].krs": {
+        "tp": 13,
+        "fp": 0,
+        "fn": 0,
+        "delta_tp": 5,
+        "delta_fp": 0,
+        "delta_fn": -5,
+        "added": 5,
+        "added_nonnull": 0,
+        "micro_f1": 1.0,
+        "net_tp_per_model_call": 0.13157894736842105
+      },
+      "Zamawiajacy[].prowadzacy_postepowanie": {
+        "tp": 13,
+        "fp": 0,
+        "fn": 0,
+        "delta_tp": 5,
+        "delta_fp": 0,
+        "delta_fn": -5,
+        "added": 5,
+        "added_nonnull": 0,
+        "micro_f1": 1.0,
+        "net_tp_per_model_call": 0.13157894736842105
+      },
+      "Odwolujacy[].pelnomocnik.mail": {
+        "tp": 7,
+        "fp": 6,
+        "fn": 6,
+        "delta_tp": 2,
+        "delta_fp": 2,
+        "delta_fn": -2,
+        "added": 2,
+        "added_nonnull": 1,
+        "micro_f1": 0.5384615384615384,
+        "net_tp_per_model_call": 0.05263157894736842
+      },
+      "Zamawiajacy[].nip": {
+        "tp": 13,
+        "fp": 0,
+        "fn": 0,
+        "delta_tp": 5,
+        "delta_fp": 0,
+        "delta_fn": -5,
+        "added": 5,
+        "added_nonnull": 0,
+        "micro_f1": 1.0,
+        "net_tp_per_model_call": 0.13157894736842105
+      },
+      "OdwolanieKIO.czynnosc_powod_id": {
+        "tp": 7,
+        "fp": 6,
+        "fn": 6,
+        "delta_tp": 3,
+        "delta_fp": -2,
+        "delta_fn": -3,
+        "added": 3,
+        "added_nonnull": 3,
+        "micro_f1": 0.5384615384615384,
+        "net_tp_per_model_call": 0.07894736842105263
+      },
+      "Odwolujacy[].nazwa": {
+        "tp": 9,
+        "fp": 4,
+        "fn": 4,
+        "delta_tp": 3,
+        "delta_fp": 1,
+        "delta_fn": -3,
+        "added": 3,
+        "added_nonnull": 3,
+        "micro_f1": 0.6923076923076923,
+        "net_tp_per_model_call": 0.07894736842105263
+      },
+      "Zamawiajacy[].regon": {
+        "tp": 13,
+        "fp": 0,
+        "fn": 0,
+        "delta_tp": 5,
+        "delta_fp": 0,
+        "delta_fn": -5,
+        "added": 5,
+        "added_nonnull": 0,
+        "micro_f1": 1.0,
+        "net_tp_per_model_call": 0.13157894736842105
+      },
+      "Odwolujacy[].nip": {
+        "tp": 10,
+        "fp": 3,
+        "fn": 3,
+        "delta_tp": 2,
+        "delta_fp": 2,
+        "delta_fn": -2,
+        "added": 2,
+        "added_nonnull": 0,
+        "micro_f1": 0.7692307692307693,
+        "net_tp_per_model_call": 0.05263157894736842
+      },
+      "Odwolujacy[].pelnomocnik.nazwa": {
+        "tp": 6,
+        "fp": 7,
+        "fn": 7,
+        "delta_tp": 2,
+        "delta_fp": 2,
+        "delta_fn": -2,
+        "added": 2,
+        "added_nonnull": 1,
+        "micro_f1": 0.46153846153846156,
+        "net_tp_per_model_call": 0.05263157894736842
+      },
+      "Odwolujacy[].krs": {
+        "tp": 12,
+        "fp": 1,
+        "fn": 1,
+        "delta_tp": 3,
+        "delta_fp": 1,
+        "delta_fn": -3,
+        "added": 3,
+        "added_nonnull": 0,
+        "micro_f1": 0.9230769230769231,
+        "net_tp_per_model_call": 0.07894736842105263
+      },
+      "OdwolanieKIO.czynnosc_opis": {
+        "tp": 7,
+        "fp": 6,
+        "fn": 6,
+        "delta_tp": 3,
+        "delta_fp": -2,
+        "delta_fn": -3,
+        "added": 3,
+        "added_nonnull": 3,
+        "micro_f1": 0.5384615384615384,
+        "net_tp_per_model_call": 0.07894736842105263
+      },
+      "OdwolanieKIO.czynnosc_dzien": {
+        "tp": 0,
+        "fp": 13,
+        "fn": 13,
+        "delta_tp": 0,
+        "delta_fp": 1,
+        "delta_fn": 0,
+        "micro_f1": 0.0,
+        "net_tp_per_model_call": 0.0
+      },
+      "OdwolanieKIO.miejscowosc": {
+        "tp": 13,
+        "fp": 0,
+        "fn": 0,
+        "delta_tp": 2,
+        "delta_fp": -1,
+        "delta_fn": -2,
+        "added": 2,
+        "added_nonnull": 2,
+        "micro_f1": 1.0,
+        "net_tp_per_model_call": 0.05263157894736842
+      },
+      "pelnomocnicy[].imie_nazwisko": {
+        "tp": 0,
+        "fp": 5,
+        "fn": 6,
+        "delta_tp": 0,
+        "delta_fp": 1,
+        "delta_fn": 0,
+        "micro_f1": 0.0,
+        "net_tp_per_model_call": 0.0
+      },
+      "pelnomocnicy[].pesel": {
+        "tp": 5,
+        "fp": 0,
+        "fn": 1,
+        "delta_tp": 1,
+        "delta_fp": 0,
+        "delta_fn": -1,
+        "added": 1,
+        "added_nonnull": 0,
+        "micro_f1": 0.9090909090909091,
+        "net_tp_per_model_call": 0.02631578947368421
+      },
+      "mocodawca[].data.krs": {
+        "tp": 3,
+        "fp": 2,
+        "fn": 3,
+        "delta_tp": 1,
+        "delta_fp": 1,
+        "delta_fn": -1,
+        "added": 1,
+        "added_nonnull": 0,
+        "micro_f1": 0.5454545454545454,
+        "net_tp_per_model_call": 0.02631578947368421
+      },
+      "mocodawca[].data.nazwa": {
+        "tp": 1,
+        "fp": 4,
+        "fn": 5,
+        "delta_tp": 1,
+        "delta_fp": 1,
+        "delta_fn": -1,
+        "added": 1,
+        "added_nonnull": 1,
+        "micro_f1": 0.18181818181818182,
+        "net_tp_per_model_call": 0.02631578947368421
+      },
+      "mocodawca[].data.typ": {
+        "tp": 3,
+        "fp": 2,
+        "fn": 3,
+        "delta_tp": 1,
+        "delta_fp": 1,
+        "delta_fn": -1,
+        "added": 1,
+        "added_nonnull": 1,
+        "micro_f1": 0.5454545454545454,
+        "net_tp_per_model_call": 0.02631578947368421
+      },
+      "mocodawca[].podpisujacy[].imie_nazwisko": {
+        "tp": 1,
+        "fp": 1,
+        "fn": 5,
+        "delta_tp": 1,
+        "delta_fp": 0,
+        "delta_fn": -1,
+        "added": 1,
+        "added_nonnull": 1,
+        "micro_f1": 0.25,
+        "net_tp_per_model_call": 0.02631578947368421
+      },
+      "mocodawca[].data.nip": {
+        "tp": 3,
+        "fp": 2,
+        "fn": 3,
+        "delta_tp": 1,
+        "delta_fp": 1,
+        "delta_fn": -1,
+        "added": 1,
+        "added_nonnull": 0,
+        "micro_f1": 0.5454545454545454,
+        "net_tp_per_model_call": 0.02631578947368421
+      },
+      "mocodawca[].data.imie_nazwisko": {
+        "tp": 4,
+        "fp": 1,
+        "fn": 2,
+        "delta_tp": 2,
+        "delta_fp": 0,
+        "delta_fn": -2,
+        "added": 2,
+        "added_nonnull": 0,
+        "micro_f1": 0.7272727272727273,
+        "net_tp_per_model_call": 0.05263157894736842
+      },
+      "przelew_bankowy.data_operacji": {
+        "tp": 10,
+        "fp": 0,
+        "fn": 0,
+        "delta_tp": 9,
+        "delta_fp": 0,
+        "delta_fn": -9,
+        "added": 9,
+        "added_nonnull": 9,
+        "micro_f1": 1.0,
+        "net_tp_per_model_call": 0.23684210526315788
+      },
+      "przelew_bankowy.tytul": {
+        "tp": 5,
+        "fp": 5,
+        "fn": 5,
+        "delta_tp": 5,
+        "delta_fp": 4,
+        "delta_fn": -5,
+        "added": 5,
+        "added_nonnull": 5,
+        "micro_f1": 0.5,
+        "net_tp_per_model_call": 0.13157894736842105
+      },
+      "przelew_bankowy.z_rachunku": {
+        "tp": 10,
+        "fp": 0,
+        "fn": 0,
+        "delta_tp": 9,
+        "delta_fp": 0,
+        "delta_fn": -9,
+        "added": 9,
+        "added_nonnull": 9,
+        "micro_f1": 1.0,
+        "net_tp_per_model_call": 0.23684210526315788
+      },
+      "przelew_bankowy.kwota": {
+        "tp": 8,
+        "fp": 2,
+        "fn": 2,
+        "delta_tp": 7,
+        "delta_fp": 2,
+        "delta_fn": -7,
+        "added": 7,
+        "added_nonnull": 7,
+        "micro_f1": 0.8,
+        "net_tp_per_model_call": 0.18421052631578946
+      },
+      "przelew_bankowy.na_rachunek": {
+        "tp": 9,
+        "fp": 1,
+        "fn": 1,
+        "delta_tp": 8,
+        "delta_fp": 1,
+        "delta_fn": -8,
+        "added": 8,
+        "added_nonnull": 8,
+        "micro_f1": 0.9,
+        "net_tp_per_model_call": 0.21052631578947367
+      },
+      "przelew_bankowy.numer_transakcji": {
+        "tp": 7,
+        "fp": 3,
+        "fn": 3,
+        "delta_tp": 6,
+        "delta_fp": 3,
+        "delta_fn": -6,
+        "added": 6,
+        "added_nonnull": 4,
+        "micro_f1": 0.7,
+        "net_tp_per_model_call": 0.15789473684210525
+      }
+    },
+    "organizer_scans": {
+      "Odwolujacy[].regon": {
+        "tp": 10,
+        "fp": 0,
+        "fn": 0,
+        "delta_tp": 2,
+        "delta_fp": 0,
+        "delta_fn": -2,
+        "added": 2,
+        "added_nonnull": 1,
+        "micro_f1": 1.0,
+        "net_tp_per_model_call": 0.05714285714285714
+      },
+      "Odwolujacy[].przez-pelnomocnika": {
+        "tp": 8,
+        "fp": 2,
+        "fn": 2,
+        "delta_tp": 1,
+        "delta_fp": 1,
+        "delta_fn": -1,
+        "added": 1,
+        "added_nonnull": 1,
+        "micro_f1": 0.8,
+        "net_tp_per_model_call": 0.02857142857142857
+      },
+      "ZamowieniePubliczne.numer_postepowania": {
+        "tp": 8,
+        "fp": 2,
+        "fn": 2,
+        "delta_tp": 1,
+        "delta_fp": 0,
+        "delta_fn": -1,
+        "added": 1,
+        "added_nonnull": 1,
+        "micro_f1": 0.8,
+        "net_tp_per_model_call": 0.02857142857142857
+      },
+      "Zamawiajacy[].nazwa": {
+        "tp": 6,
+        "fp": 5,
+        "fn": 5,
+        "delta_tp": 3,
+        "delta_fp": 1,
+        "delta_fn": -3,
+        "added": 3,
+        "added_nonnull": 3,
+        "micro_f1": 0.5454545454545454,
+        "net_tp_per_model_call": 0.08571428571428572
+      },
+      "ZamowieniePubliczne.tytul": {
+        "tp": 8,
+        "fp": 2,
+        "fn": 2,
+        "delta_tp": 3,
+        "delta_fp": -2,
+        "delta_fn": -3,
+        "added": 3,
+        "added_nonnull": 3,
+        "micro_f1": 0.8,
+        "net_tp_per_model_call": 0.08571428571428572
+      },
+      "Odwolujacy[].pelnomocnik.imie_nazwisko": {
+        "tp": 9,
+        "fp": 1,
+        "fn": 1,
+        "delta_tp": 8,
+        "delta_fp": -6,
+        "delta_fn": -8,
+        "added": 8,
+        "added_nonnull": 8,
+        "micro_f1": 0.9,
+        "net_tp_per_model_call": 0.22857142857142856
+      },
+      "ZamowieniePubliczne.numer_ted": {
+        "tp": 7,
+        "fp": 3,
+        "fn": 3,
+        "delta_tp": 1,
+        "delta_fp": 0,
+        "delta_fn": -1,
+        "added": 1,
+        "added_nonnull": 0,
+        "micro_f1": 0.7,
+        "net_tp_per_model_call": 0.02857142857142857
+      },
+      "ZamowieniePubliczne.numer_bzp": {
+        "tp": 10,
+        "fp": 0,
+        "fn": 0,
+        "delta_tp": 1,
+        "delta_fp": 0,
+        "delta_fn": -1,
+        "added": 1,
+        "added_nonnull": 1,
+        "micro_f1": 1.0,
+        "net_tp_per_model_call": 0.02857142857142857
+      },
+      "Zamawiajacy[].krs": {
+        "tp": 11,
+        "fp": 0,
+        "fn": 0,
+        "delta_tp": 4,
+        "delta_fp": 0,
+        "delta_fn": -4,
+        "added": 4,
+        "added_nonnull": 0,
+        "micro_f1": 1.0,
+        "net_tp_per_model_call": 0.11428571428571428
+      },
+      "Zamawiajacy[].prowadzacy_postepowanie": {
+        "tp": 10,
+        "fp": 1,
+        "fn": 1,
+        "delta_tp": 3,
+        "delta_fp": 1,
+        "delta_fn": -3,
+        "added": 3,
+        "added_nonnull": 1,
+        "micro_f1": 0.9090909090909091,
+        "net_tp_per_model_call": 0.08571428571428572
+      },
+      "Odwolujacy[].pelnomocnik.mail": {
+        "tp": 2,
+        "fp": 8,
+        "fn": 8,
+        "delta_tp": -1,
+        "delta_fp": 3,
+        "delta_fn": 1,
+        "lost": 1,
+        "lost_nonnull": 0,
+        "micro_f1": 0.2,
+        "net_tp_per_model_call": -0.02857142857142857
+      },
+      "Zamawiajacy[].nip": {
+        "tp": 11,
+        "fp": 0,
+        "fn": 0,
+        "delta_tp": 4,
+        "delta_fp": 0,
+        "delta_fn": -4,
+        "added": 4,
+        "added_nonnull": 3,
+        "micro_f1": 1.0,
+        "net_tp_per_model_call": 0.11428571428571428
+      },
+      "OdwolanieKIO.czynnosc_powod_id": {
+        "tp": 1,
+        "fp": 9,
+        "fn": 9,
+        "delta_tp": 0,
+        "delta_fp": 1,
+        "delta_fn": 0,
+        "micro_f1": 0.1,
+        "net_tp_per_model_call": 0.0
+      },
+      "Odwolujacy[].krs": {
+        "tp": 10,
+        "fp": 0,
+        "fn": 0,
+        "delta_tp": 2,
+        "delta_fp": 0,
+        "delta_fn": -2,
+        "added": 2,
+        "added_nonnull": 2,
+        "micro_f1": 1.0,
+        "net_tp_per_model_call": 0.05714285714285714
+      },
+      "Zamawiajacy[].regon": {
+        "tp": 11,
+        "fp": 0,
+        "fn": 0,
+        "delta_tp": 4,
+        "delta_fp": 0,
+        "delta_fn": -4,
+        "added": 4,
+        "added_nonnull": 1,
+        "micro_f1": 1.0,
+        "net_tp_per_model_call": 0.11428571428571428
+      },
+      "OdwolanieKIO.data": {
+        "tp": 10,
+        "fp": 0,
+        "fn": 0,
+        "delta_tp": 1,
+        "delta_fp": 0,
+        "delta_fn": -1,
+        "added": 1,
+        "added_nonnull": 1,
+        "micro_f1": 1.0,
+        "net_tp_per_model_call": 0.02857142857142857
+      },
+      "Odwolujacy[].nazwa": {
+        "tp": 9,
+        "fp": 1,
+        "fn": 1,
+        "delta_tp": 2,
+        "delta_fp": 0,
+        "delta_fn": -2,
+        "added": 2,
+        "added_nonnull": 2,
+        "micro_f1": 0.9,
+        "net_tp_per_model_call": 0.05714285714285714
+      },
+      "Odwolujacy[].pelnomocnik.nazwa": {
+        "tp": 7,
+        "fp": 3,
+        "fn": 3,
+        "delta_tp": 3,
+        "delta_fp": -1,
+        "delta_fn": -3,
+        "added": 3,
+        "added_nonnull": 3,
+        "micro_f1": 0.7,
+        "net_tp_per_model_call": 0.08571428571428572
+      },
+      "OdwolanieKIO.czynnosc_opis": {
+        "tp": 1,
+        "fp": 9,
+        "fn": 9,
+        "delta_tp": 0,
+        "delta_fp": 1,
+        "delta_fn": 0,
+        "micro_f1": 0.1,
+        "net_tp_per_model_call": 0.0
+      },
+      "Odwolujacy[].nip": {
+        "tp": 10,
+        "fp": 0,
+        "fn": 0,
+        "delta_tp": 2,
+        "delta_fp": 0,
+        "delta_fn": -2,
+        "added": 2,
+        "added_nonnull": 2,
+        "micro_f1": 1.0,
+        "net_tp_per_model_call": 0.05714285714285714
+      },
+      "OdwolanieKIO.czynnosc_dzien": {
+        "tp": 0,
+        "fp": 10,
+        "fn": 10,
+        "delta_tp": 0,
+        "delta_fp": 1,
+        "delta_fn": 0,
+        "micro_f1": 0.0,
+        "net_tp_per_model_call": 0.0
+      },
+      "OdwolanieKIO.miejscowosc": {
+        "tp": 10,
+        "fp": 0,
+        "fn": 0,
+        "delta_tp": 1,
+        "delta_fp": 0,
+        "delta_fn": -1,
+        "added": 1,
+        "added_nonnull": 1,
+        "micro_f1": 1.0,
+        "net_tp_per_model_call": 0.02857142857142857
+      },
+      "pelnomocnicy[].imie_nazwisko": {
+        "tp": 11,
+        "fp": 1,
+        "fn": 6,
+        "delta_tp": 6,
+        "delta_fp": 0,
+        "delta_fn": -6,
+        "added": 6,
+        "added_nonnull": 6,
+        "micro_f1": 0.7586206896551724,
+        "net_tp_per_model_call": 0.17142857142857143
+      },
+      "pelnomocnicy[].pesel": {
+        "tp": 12,
+        "fp": 0,
+        "fn": 5,
+        "delta_tp": 6,
+        "delta_fp": 0,
+        "delta_fn": -6,
+        "added": 6,
+        "added_nonnull": 1,
+        "micro_f1": 0.8275862068965517,
+        "net_tp_per_model_call": 0.17142857142857143
+      },
+      "mocodawca[].data.krs": {
+        "tp": 8,
+        "fp": 2,
+        "fn": 3,
+        "delta_tp": 2,
+        "delta_fp": 0,
+        "delta_fn": -2,
+        "added": 2,
+        "added_nonnull": 1,
+        "micro_f1": 0.7619047619047619,
+        "net_tp_per_model_call": 0.05714285714285714
+      },
+      "mocodawca[].data.nazwa": {
+        "tp": 9,
+        "fp": 1,
+        "fn": 2,
+        "delta_tp": 2,
+        "delta_fp": 0,
+        "delta_fn": -2,
+        "added": 2,
+        "added_nonnull": 1,
+        "micro_f1": 0.8571428571428571,
+        "net_tp_per_model_call": 0.05714285714285714
+      },
+      "mocodawca[].data.typ": {
+        "tp": 8,
+        "fp": 2,
+        "fn": 3,
+        "delta_tp": 0,
+        "delta_fp": 2,
+        "delta_fn": 0,
+        "micro_f1": 0.7619047619047619,
+        "net_tp_per_model_call": 0.0
+      },
+      "mocodawca[].podpisujacy[].imie_nazwisko": {
+        "tp": 8,
+        "fp": 0,
+        "fn": 6,
+        "delta_tp": 8,
+        "delta_fp": 0,
+        "delta_fn": -8,
+        "added": 8,
+        "added_nonnull": 8,
+        "micro_f1": 0.7272727272727273,
+        "net_tp_per_model_call": 0.22857142857142856
+      },
+      "mocodawca[].data.nip": {
+        "tp": 9,
+        "fp": 1,
+        "fn": 2,
+        "delta_tp": 2,
+        "delta_fp": 0,
+        "delta_fn": -2,
+        "added": 2,
+        "added_nonnull": 2,
+        "micro_f1": 0.8571428571428571,
+        "net_tp_per_model_call": 0.05714285714285714
+      },
+      "mocodawca[].data.imie_nazwisko": {
+        "tp": 10,
+        "fp": 0,
+        "fn": 1,
+        "delta_tp": 2,
+        "delta_fp": 0,
+        "delta_fn": -2,
+        "added": 2,
+        "added_nonnull": 1,
+        "micro_f1": 0.9523809523809523,
+        "net_tp_per_model_call": 0.05714285714285714
+      },
+      "przelew_bankowy.data_operacji": {
+        "tp": 6,
+        "fp": 0,
+        "fn": 4,
+        "delta_tp": 6,
+        "delta_fp": -2,
+        "delta_fn": -6,
+        "added": 6,
+        "added_nonnull": 6,
+        "micro_f1": 0.75,
+        "net_tp_per_model_call": 0.17142857142857143
+      },
+      "przelew_bankowy.tytul": {
+        "tp": 1,
+        "fp": 5,
+        "fn": 9,
+        "delta_tp": 0,
+        "delta_fp": 4,
+        "delta_fn": 0,
+        "micro_f1": 0.125,
+        "net_tp_per_model_call": 0.0
+      },
+      "przelew_bankowy.kwota": {
+        "tp": 6,
+        "fp": 0,
+        "fn": 4,
+        "delta_tp": 4,
+        "delta_fp": 0,
+        "delta_fn": -4,
+        "added": 4,
+        "added_nonnull": 4,
+        "micro_f1": 0.75,
+        "net_tp_per_model_call": 0.11428571428571428
+      },
+      "przelew_bankowy.z_rachunku": {
+        "tp": 4,
+        "fp": 2,
+        "fn": 6,
+        "delta_tp": 2,
+        "delta_fp": 2,
+        "delta_fn": -2,
+        "added": 2,
+        "added_nonnull": 2,
+        "micro_f1": 0.5,
+        "net_tp_per_model_call": 0.05714285714285714
+      },
+      "przelew_bankowy.na_rachunek": {
+        "tp": 4,
+        "fp": 2,
+        "fn": 6,
+        "delta_tp": 2,
+        "delta_fp": 2,
+        "delta_fn": -2,
+        "added": 2,
+        "added_nonnull": 2,
+        "micro_f1": 0.5,
+        "net_tp_per_model_call": 0.05714285714285714
+      },
+      "przelew_bankowy.numer_transakcji": {
+        "tp": 4,
+        "fp": 2,
+        "fn": 6,
+        "delta_tp": 4,
+        "delta_fp": 0,
+        "delta_fn": -4,
+        "added": 4,
+        "added_nonnull": 4,
+        "micro_f1": 0.5,
+        "net_tp_per_model_call": 0.11428571428571428
+      }
+    },
+    "c1_all": {
+      "Odwolujacy[].przez-pelnomocnika": {
+        "tp": 7,
+        "fp": 5,
+        "fn": 6,
+        "delta_tp": 0,
+        "delta_fp": 0,
+        "delta_fn": 0,
+        "micro_f1": 0.56,
+        "net_tp_per_model_call": 0.0
+      },
+      "Odwolujacy[].regon": {
+        "tp": 9,
+        "fp": 3,
+        "fn": 4,
+        "delta_tp": 1,
+        "delta_fp": -1,
+        "delta_fn": -1,
+        "added": 1,
+        "added_nonnull": 1,
+        "micro_f1": 0.72,
+        "net_tp_per_model_call": 0.030303030303030304
+      },
+      "ZamowieniePubliczne.numer_postepowania": {
+        "tp": 9,
+        "fp": 3,
+        "fn": 4,
+        "delta_tp": -1,
+        "delta_fp": 1,
+        "delta_fn": 1,
+        "lost": 1,
+        "lost_nonnull": 0,
+        "micro_f1": 0.72,
+        "net_tp_per_model_call": -0.030303030303030304
+      },
+      "Zamawiajacy[].nazwa": {
+        "tp": 9,
+        "fp": 6,
+        "fn": 22,
+        "delta_tp": 1,
+        "delta_fp": 1,
+        "delta_fn": -1,
+        "added": 1,
+        "added_nonnull": 1,
+        "micro_f1": 0.391304347826087,
+        "net_tp_per_model_call": 0.030303030303030304
+      },
+      "ZamowieniePubliczne.tytul": {
+        "tp": 6,
+        "fp": 6,
+        "fn": 7,
+        "delta_tp": 0,
+        "delta_fp": 0,
+        "delta_fn": 0,
+        "micro_f1": 0.48,
+        "net_tp_per_model_call": 0.0
+      },
+      "Odwolujacy[].pelnomocnik.imie_nazwisko": {
+        "tp": 4,
+        "fp": 8,
+        "fn": 9,
+        "delta_tp": 1,
+        "delta_fp": -1,
+        "delta_fn": -1,
+        "added": 1,
+        "added_nonnull": 1,
+        "micro_f1": 0.32,
+        "net_tp_per_model_call": 0.030303030303030304
+      },
+      "OdwolanieKIO.data": {
+        "tp": 11,
+        "fp": 1,
+        "fn": 2,
+        "delta_tp": 0,
+        "delta_fp": 0,
+        "delta_fn": 0,
+        "micro_f1": 0.88,
+        "net_tp_per_model_call": 0.0
+      },
+      "ZamowieniePubliczne.numer_ted": {
+        "tp": 10,
+        "fp": 2,
+        "fn": 3,
+        "delta_tp": 0,
+        "delta_fp": 0,
+        "delta_fn": 0,
+        "micro_f1": 0.8,
+        "net_tp_per_model_call": 0.0
+      },
+      "ZamowieniePubliczne.numer_bzp": {
+        "tp": 12,
+        "fp": 0,
+        "fn": 1,
+        "delta_tp": 0,
+        "delta_fp": 0,
+        "delta_fn": 0,
+        "micro_f1": 0.96,
+        "net_tp_per_model_call": 0.0
+      },
+      "Zamawiajacy[].krs": {
+        "tp": 15,
+        "fp": 0,
+        "fn": 16,
+        "delta_tp": 2,
+        "delta_fp": 0,
+        "delta_fn": -2,
+        "added": 2,
+        "added_nonnull": 0,
+        "micro_f1": 0.6521739130434783,
+        "net_tp_per_model_call": 0.06060606060606061
+      },
+      "Zamawiajacy[].prowadzacy_postepowanie": {
+        "tp": 14,
+        "fp": 1,
+        "fn": 17,
+        "delta_tp": 2,
+        "delta_fp": 0,
+        "delta_fn": -2,
+        "added": 2,
+        "added_nonnull": 0,
+        "micro_f1": 0.6086956521739131,
+        "net_tp_per_model_call": 0.06060606060606061
+      },
+      "Odwolujacy[].pelnomocnik.mail": {
+        "tp": 8,
+        "fp": 4,
+        "fn": 5,
+        "delta_tp": -1,
+        "delta_fp": 1,
+        "delta_fn": 1,
+        "lost": 1,
+        "lost_nonnull": 0,
+        "micro_f1": 0.64,
+        "net_tp_per_model_call": -0.030303030303030304
+      },
+      "Zamawiajacy[].nip": {
+        "tp": 15,
+        "fp": 0,
+        "fn": 16,
+        "delta_tp": 2,
+        "delta_fp": 0,
+        "delta_fn": -2,
+        "added": 2,
+        "added_nonnull": 0,
+        "micro_f1": 0.6521739130434783,
+        "net_tp_per_model_call": 0.06060606060606061
+      },
+      "OdwolanieKIO.czynnosc_powod_id": {
+        "tp": 8,
+        "fp": 4,
+        "fn": 5,
+        "delta_tp": 0,
+        "delta_fp": 0,
+        "delta_fn": 0,
+        "micro_f1": 0.64,
+        "net_tp_per_model_call": 0.0
+      },
+      "Odwolujacy[].krs": {
+        "tp": 9,
+        "fp": 3,
+        "fn": 4,
+        "delta_tp": 0,
+        "delta_fp": 0,
+        "delta_fn": 0,
+        "micro_f1": 0.72,
+        "net_tp_per_model_call": 0.0
+      },
+      "Zamawiajacy[].regon": {
+        "tp": 15,
+        "fp": 0,
+        "fn": 16,
+        "delta_tp": 2,
+        "delta_fp": 0,
+        "delta_fn": -2,
+        "added": 2,
+        "added_nonnull": 1,
+        "micro_f1": 0.6521739130434783,
+        "net_tp_per_model_call": 0.06060606060606061
+      },
+      "Odwolujacy[].nip": {
+        "tp": 9,
+        "fp": 3,
+        "fn": 4,
+        "delta_tp": 0,
+        "delta_fp": 0,
+        "delta_fn": 0,
+        "micro_f1": 0.72,
+        "net_tp_per_model_call": 0.0
+      },
+      "Odwolujacy[].pelnomocnik.nazwa": {
+        "tp": 4,
+        "fp": 8,
+        "fn": 9,
+        "delta_tp": -1,
+        "delta_fp": 1,
+        "delta_fn": 1,
+        "lost": 1,
+        "lost_nonnull": 0,
+        "micro_f1": 0.32,
+        "net_tp_per_model_call": -0.030303030303030304
+      },
+      "Odwolujacy[].nazwa": {
+        "tp": 8,
+        "fp": 4,
+        "fn": 5,
+        "delta_tp": 0,
+        "delta_fp": 0,
+        "delta_fn": 0,
+        "micro_f1": 0.64,
+        "net_tp_per_model_call": 0.0
+      },
+      "OdwolanieKIO.czynnosc_opis": {
+        "tp": 8,
+        "fp": 4,
+        "fn": 5,
+        "delta_tp": 0,
+        "delta_fp": 0,
+        "delta_fn": 0,
+        "micro_f1": 0.64,
+        "net_tp_per_model_call": 0.0
+      },
+      "OdwolanieKIO.czynnosc_dzien": {
+        "tp": 0,
+        "fp": 12,
+        "fn": 13,
+        "delta_tp": 0,
+        "delta_fp": 0,
+        "delta_fn": 0,
+        "micro_f1": 0.0,
+        "net_tp_per_model_call": 0.0
+      },
+      "OdwolanieKIO.miejscowosc": {
+        "tp": 12,
+        "fp": 0,
+        "fn": 1,
+        "delta_tp": 0,
+        "delta_fp": 0,
+        "delta_fn": 0,
+        "micro_f1": 0.96,
+        "net_tp_per_model_call": 0.0
+      },
+      "pelnomocnicy[].imie_nazwisko": {
+        "tp": 0,
+        "fp": 6,
+        "fn": 6,
+        "delta_tp": 0,
+        "delta_fp": 1,
+        "delta_fn": 0,
+        "micro_f1": 0.0,
+        "net_tp_per_model_call": 0.0
+      },
+      "pelnomocnicy[].pesel": {
+        "tp": 6,
+        "fp": 0,
+        "fn": 0,
+        "delta_tp": 1,
+        "delta_fp": 0,
+        "delta_fn": -1,
+        "added": 1,
+        "added_nonnull": 0,
+        "micro_f1": 1.0,
+        "net_tp_per_model_call": 0.030303030303030304
+      },
+      "mocodawca[].data.krs": {
+        "tp": 6,
+        "fp": 2,
+        "fn": 1,
+        "delta_tp": 2,
+        "delta_fp": -1,
+        "delta_fn": -2,
+        "added": 2,
+        "added_nonnull": 2,
+        "micro_f1": 0.8,
+        "net_tp_per_model_call": 0.06060606060606061
+      },
+      "mocodawca[].data.nazwa": {
+        "tp": 5,
+        "fp": 3,
+        "fn": 2,
+        "delta_tp": 0,
+        "delta_fp": 1,
+        "delta_fn": 0,
+        "micro_f1": 0.6666666666666666,
+        "net_tp_per_model_call": 0.0
+      },
+      "mocodawca[].data.typ": {
+        "tp": 6,
+        "fp": 2,
+        "fn": 1,
+        "delta_tp": 0,
+        "delta_fp": 1,
+        "delta_fn": 0,
+        "micro_f1": 0.8,
+        "net_tp_per_model_call": 0.0
+      },
+      "mocodawca[].podpisujacy[].imie_nazwisko": {
+        "tp": 3,
+        "fp": 2,
+        "fn": 8,
+        "delta_tp": 0,
+        "delta_fp": 0,
+        "delta_fn": 0,
+        "micro_f1": 0.375,
+        "net_tp_per_model_call": 0.0
+      },
+      "mocodawca[].data.nip": {
+        "tp": 6,
+        "fp": 2,
+        "fn": 1,
+        "delta_tp": 3,
+        "delta_fp": -2,
+        "delta_fn": -3,
+        "added": 3,
+        "added_nonnull": 3,
+        "micro_f1": 0.8,
+        "net_tp_per_model_call": 0.09090909090909091
+      },
+      "mocodawca[].data.imie_nazwisko": {
+        "tp": 7,
+        "fp": 1,
+        "fn": 0,
+        "delta_tp": 1,
+        "delta_fp": 0,
+        "delta_fn": -1,
+        "added": 1,
+        "added_nonnull": 0,
+        "micro_f1": 0.9333333333333333,
+        "net_tp_per_model_call": 0.030303030303030304
+      },
+      "przelew_bankowy.data_operacji": {
+        "tp": 6,
+        "fp": 3,
+        "fn": 3,
+        "delta_tp": 2,
+        "delta_fp": 3,
+        "delta_fn": -2,
+        "added": 2,
+        "added_nonnull": 2,
+        "micro_f1": 0.6666666666666666,
+        "net_tp_per_model_call": 0.06060606060606061
+      },
+      "przelew_bankowy.tytul": {
+        "tp": 1,
+        "fp": 8,
+        "fn": 8,
+        "delta_tp": 1,
+        "delta_fp": 4,
+        "delta_fn": -1,
+        "added": 1,
+        "added_nonnull": 1,
+        "micro_f1": 0.1111111111111111,
+        "net_tp_per_model_call": 0.030303030303030304
+      },
+      "przelew_bankowy.kwota": {
+        "tp": 6,
+        "fp": 3,
+        "fn": 3,
+        "delta_tp": 3,
+        "delta_fp": 2,
+        "delta_fn": -3,
+        "added": 3,
+        "added_nonnull": 3,
+        "micro_f1": 0.6666666666666666,
+        "net_tp_per_model_call": 0.09090909090909091
+      },
+      "przelew_bankowy.z_rachunku": {
+        "tp": 5,
+        "fp": 4,
+        "fn": 4,
+        "delta_tp": 1,
+        "delta_fp": 4,
+        "delta_fn": -1,
+        "added": 1,
+        "added_nonnull": 1,
+        "micro_f1": 0.5555555555555556,
+        "net_tp_per_model_call": 0.030303030303030304
+      },
+      "przelew_bankowy.na_rachunek": {
+        "tp": 6,
+        "fp": 3,
+        "fn": 3,
+        "delta_tp": 2,
+        "delta_fp": 3,
+        "delta_fn": -2,
+        "added": 2,
+        "added_nonnull": 2,
+        "micro_f1": 0.6666666666666666,
+        "net_tp_per_model_call": 0.06060606060606061
+      },
+      "przelew_bankowy.numer_transakcji": {
+        "tp": 7,
+        "fp": 2,
+        "fn": 2,
+        "delta_tp": 4,
+        "delta_fp": 1,
+        "delta_fn": -4,
+        "added": 4,
+        "added_nonnull": 3,
+        "micro_f1": 0.7777777777777778,
+        "net_tp_per_model_call": 0.12121212121212122
+      }
+    },
+    "pooled_91": {
+      "Odwolujacy[].przez-pelnomocnika": {
+        "tp": 18,
+        "fp": 13,
+        "fn": 13,
+        "delta_tp": 2,
+        "delta_fp": 4,
+        "delta_fn": -2,
+        "added": 2,
+        "added_nonnull": 2,
+        "micro_f1": 0.5806451612903226,
+        "net_tp_per_model_call": 0.021739130434782608
+      },
+      "Odwolujacy[].regon": {
+        "tp": 26,
+        "fp": 5,
+        "fn": 5,
+        "delta_tp": 5,
+        "delta_fp": 1,
+        "delta_fn": -5,
+        "added": 5,
+        "added_nonnull": 2,
+        "micro_f1": 0.8387096774193549,
+        "net_tp_per_model_call": 0.05434782608695652
+      },
+      "ZamowieniePubliczne.numer_postepowania": {
+        "tp": 26,
+        "fp": 5,
+        "fn": 5,
+        "delta_tp": 0,
+        "delta_fp": 2,
+        "delta_fn": 0,
+        "lost": 2,
+        "lost_nonnull": 0,
+        "added": 2,
+        "added_nonnull": 2,
+        "micro_f1": 0.8387096774193549,
+        "net_tp_per_model_call": 0.0
+      },
+      "Zamawiajacy[].nazwa": {
+        "tp": 24,
+        "fp": 11,
+        "fn": 11,
+        "delta_tp": 8,
+        "delta_fp": 2,
+        "delta_fn": -8,
+        "added": 8,
+        "added_nonnull": 8,
+        "micro_f1": 0.6857142857142857,
+        "net_tp_per_model_call": 0.08695652173913043
+      },
+      "ZamowieniePubliczne.tytul": {
+        "tp": 15,
+        "fp": 16,
+        "fn": 16,
+        "delta_tp": 5,
+        "delta_fp": -3,
+        "delta_fn": -5,
+        "added": 5,
+        "added_nonnull": 5,
+        "micro_f1": 0.4838709677419355,
+        "net_tp_per_model_call": 0.05434782608695652
+      },
+      "Odwolujacy[].pelnomocnik.imie_nazwisko": {
+        "tp": 13,
+        "fp": 18,
+        "fn": 18,
+        "delta_tp": 9,
+        "delta_fp": -3,
+        "delta_fn": -9,
+        "added": 9,
+        "added_nonnull": 9,
+        "micro_f1": 0.41935483870967744,
+        "net_tp_per_model_call": 0.09782608695652174
+      },
+      "OdwolanieKIO.data": {
+        "tp": 30,
+        "fp": 1,
+        "fn": 1,
+        "delta_tp": 3,
+        "delta_fp": -1,
+        "delta_fn": -3,
+        "added": 3,
+        "added_nonnull": 3,
+        "micro_f1": 0.967741935483871,
+        "net_tp_per_model_call": 0.03260869565217391
+      },
+      "ZamowieniePubliczne.numer_ted": {
+        "tp": 24,
+        "fp": 7,
+        "fn": 7,
+        "delta_tp": 1,
+        "delta_fp": 1,
+        "delta_fn": -1,
+        "added": 1,
+        "added_nonnull": 0,
+        "micro_f1": 0.7741935483870968,
+        "net_tp_per_model_call": 0.010869565217391304
+      },
+      "ZamowieniePubliczne.numer_bzp": {
+        "tp": 31,
+        "fp": 0,
+        "fn": 0,
+        "delta_tp": 2,
+        "delta_fp": 0,
+        "delta_fn": -2,
+        "added": 2,
+        "added_nonnull": 1,
+        "micro_f1": 1.0,
+        "net_tp_per_model_call": 0.021739130434782608
+      },
+      "Zamawiajacy[].krs": {
+        "tp": 35,
+        "fp": 0,
+        "fn": 0,
+        "delta_tp": 10,
+        "delta_fp": 0,
+        "delta_fn": -10,
+        "added": 10,
+        "added_nonnull": 0,
+        "micro_f1": 1.0,
+        "net_tp_per_model_call": 0.10869565217391304
+      },
+      "Zamawiajacy[].prowadzacy_postepowanie": {
+        "tp": 34,
+        "fp": 1,
+        "fn": 1,
+        "delta_tp": 9,
+        "delta_fp": 1,
+        "delta_fn": -9,
+        "added": 9,
+        "added_nonnull": 1,
+        "micro_f1": 0.9714285714285714,
+        "net_tp_per_model_call": 0.09782608695652174
+      },
+      "Odwolujacy[].pelnomocnik.mail": {
+        "tp": 14,
+        "fp": 17,
+        "fn": 17,
+        "delta_tp": 0,
+        "delta_fp": 6,
+        "delta_fn": 0,
+        "lost": 2,
+        "lost_nonnull": 0,
+        "added": 2,
+        "added_nonnull": 1,
+        "micro_f1": 0.45161290322580644,
+        "net_tp_per_model_call": 0.0
+      },
+      "Zamawiajacy[].nip": {
+        "tp": 35,
+        "fp": 0,
+        "fn": 0,
+        "delta_tp": 10,
+        "delta_fp": 0,
+        "delta_fn": -10,
+        "added": 10,
+        "added_nonnull": 3,
+        "micro_f1": 1.0,
+        "net_tp_per_model_call": 0.10869565217391304
+      },
+      "OdwolanieKIO.czynnosc_powod_id": {
+        "tp": 14,
+        "fp": 17,
+        "fn": 17,
+        "delta_tp": 3,
+        "delta_fp": -1,
+        "delta_fn": -3,
+        "added": 3,
+        "added_nonnull": 3,
+        "micro_f1": 0.45161290322580644,
+        "net_tp_per_model_call": 0.03260869565217391
+      },
+      "Odwolujacy[].krs": {
+        "tp": 27,
+        "fp": 4,
+        "fn": 4,
+        "delta_tp": 5,
+        "delta_fp": 1,
+        "delta_fn": -5,
+        "added": 5,
+        "added_nonnull": 2,
+        "micro_f1": 0.8709677419354839,
+        "net_tp_per_model_call": 0.05434782608695652
+      },
+      "Zamawiajacy[].regon": {
+        "tp": 35,
+        "fp": 0,
+        "fn": 0,
+        "delta_tp": 10,
+        "delta_fp": 0,
+        "delta_fn": -10,
+        "added": 10,
+        "added_nonnull": 1,
+        "micro_f1": 1.0,
+        "net_tp_per_model_call": 0.10869565217391304
+      },
+      "Odwolujacy[].nip": {
+        "tp": 26,
+        "fp": 5,
+        "fn": 5,
+        "delta_tp": 4,
+        "delta_fp": 2,
+        "delta_fn": -4,
+        "added": 4,
+        "added_nonnull": 2,
+        "micro_f1": 0.8387096774193549,
+        "net_tp_per_model_call": 0.043478260869565216
+      },
+      "Odwolujacy[].pelnomocnik.nazwa": {
+        "tp": 15,
+        "fp": 16,
+        "fn": 16,
+        "delta_tp": 4,
+        "delta_fp": 2,
+        "delta_fn": -4,
+        "lost": 1,
+        "lost_nonnull": 0,
+        "added": 5,
+        "added_nonnull": 4,
+        "micro_f1": 0.4838709677419355,
+        "net_tp_per_model_call": 0.043478260869565216
+      },
+      "Odwolujacy[].nazwa": {
+        "tp": 23,
+        "fp": 8,
+        "fn": 8,
+        "delta_tp": 5,
+        "delta_fp": 1,
+        "delta_fn": -5,
+        "added": 5,
+        "added_nonnull": 5,
+        "micro_f1": 0.7419354838709677,
+        "net_tp_per_model_call": 0.05434782608695652
+      },
+      "OdwolanieKIO.czynnosc_opis": {
+        "tp": 14,
+        "fp": 17,
+        "fn": 17,
+        "delta_tp": 3,
+        "delta_fp": -1,
+        "delta_fn": -3,
+        "added": 3,
+        "added_nonnull": 3,
+        "micro_f1": 0.45161290322580644,
+        "net_tp_per_model_call": 0.03260869565217391
+      },
+      "OdwolanieKIO.czynnosc_dzien": {
+        "tp": 0,
+        "fp": 31,
+        "fn": 31,
+        "delta_tp": 0,
+        "delta_fp": 2,
+        "delta_fn": 0,
+        "micro_f1": 0.0,
+        "net_tp_per_model_call": 0.0
+      },
+      "OdwolanieKIO.miejscowosc": {
+        "tp": 31,
+        "fp": 0,
+        "fn": 0,
+        "delta_tp": 3,
+        "delta_fp": -1,
+        "delta_fn": -3,
+        "added": 3,
+        "added_nonnull": 3,
+        "micro_f1": 1.0,
+        "net_tp_per_model_call": 0.03260869565217391
+      },
+      "pelnomocnicy[].imie_nazwisko": {
+        "tp": 11,
+        "fp": 9,
+        "fn": 15,
+        "delta_tp": 6,
+        "delta_fp": 1,
+        "delta_fn": -6,
+        "added": 6,
+        "added_nonnull": 6,
+        "micro_f1": 0.4782608695652174,
+        "net_tp_per_model_call": 0.06521739130434782
+      },
+      "pelnomocnicy[].pesel": {
+        "tp": 20,
+        "fp": 0,
+        "fn": 6,
+        "delta_tp": 7,
+        "delta_fp": 0,
+        "delta_fn": -7,
+        "added": 7,
+        "added_nonnull": 1,
+        "micro_f1": 0.8695652173913043,
+        "net_tp_per_model_call": 0.07608695652173914
+      },
+      "mocodawca[].data.krs": {
+        "tp": 15,
+        "fp": 5,
+        "fn": 6,
+        "delta_tp": 3,
+        "delta_fp": 1,
+        "delta_fn": -3,
+        "added": 3,
+        "added_nonnull": 1,
+        "micro_f1": 0.7317073170731707,
+        "net_tp_per_model_call": 0.03260869565217391
+      },
+      "mocodawca[].data.nazwa": {
+        "tp": 14,
+        "fp": 6,
+        "fn": 7,
+        "delta_tp": 3,
+        "delta_fp": 1,
+        "delta_fn": -3,
+        "added": 3,
+        "added_nonnull": 2,
+        "micro_f1": 0.6829268292682927,
+        "net_tp_per_model_call": 0.03260869565217391
+      },
+      "mocodawca[].data.typ": {
+        "tp": 15,
+        "fp": 5,
+        "fn": 6,
+        "delta_tp": 1,
+        "delta_fp": 3,
+        "delta_fn": -1,
+        "added": 1,
+        "added_nonnull": 1,
+        "micro_f1": 0.7317073170731707,
+        "net_tp_per_model_call": 0.010869565217391304
+      },
+      "mocodawca[].podpisujacy[].imie_nazwisko": {
+        "tp": 12,
+        "fp": 1,
+        "fn": 14,
+        "delta_tp": 9,
+        "delta_fp": 0,
+        "delta_fn": -9,
+        "added": 9,
+        "added_nonnull": 9,
+        "micro_f1": 0.6153846153846154,
+        "net_tp_per_model_call": 0.09782608695652174
+      },
+      "mocodawca[].data.nip": {
+        "tp": 16,
+        "fp": 4,
+        "fn": 5,
+        "delta_tp": 5,
+        "delta_fp": -1,
+        "delta_fn": -5,
+        "added": 5,
+        "added_nonnull": 4,
+        "micro_f1": 0.7804878048780488,
+        "net_tp_per_model_call": 0.05434782608695652
+      },
+      "mocodawca[].data.imie_nazwisko": {
+        "tp": 18,
+        "fp": 2,
+        "fn": 3,
+        "delta_tp": 4,
+        "delta_fp": 0,
+        "delta_fn": -4,
+        "added": 4,
+        "added_nonnull": 1,
+        "micro_f1": 0.8780487804878049,
+        "net_tp_per_model_call": 0.043478260869565216
+      },
+      "przelew_bankowy.data_operacji": {
+        "tp": 19,
+        "fp": 1,
+        "fn": 5,
+        "delta_tp": 16,
+        "delta_fp": -1,
+        "delta_fn": -16,
+        "added": 16,
+        "added_nonnull": 16,
+        "micro_f1": 0.8636363636363636,
+        "net_tp_per_model_call": 0.17391304347826086
+      },
+      "przelew_bankowy.tytul": {
+        "tp": 6,
+        "fp": 14,
+        "fn": 18,
+        "delta_tp": 5,
+        "delta_fp": 10,
+        "delta_fn": -5,
+        "added": 5,
+        "added_nonnull": 5,
+        "micro_f1": 0.2727272727272727,
+        "net_tp_per_model_call": 0.05434782608695652
+      },
+      "przelew_bankowy.kwota": {
+        "tp": 16,
+        "fp": 4,
+        "fn": 8,
+        "delta_tp": 11,
+        "delta_fp": 4,
+        "delta_fn": -11,
+        "added": 11,
+        "added_nonnull": 11,
+        "micro_f1": 0.7272727272727273,
+        "net_tp_per_model_call": 0.11956521739130435
+      },
+      "przelew_bankowy.z_rachunku": {
+        "tp": 16,
+        "fp": 4,
+        "fn": 8,
+        "delta_tp": 11,
+        "delta_fp": 4,
+        "delta_fn": -11,
+        "added": 11,
+        "added_nonnull": 11,
+        "micro_f1": 0.7272727272727273,
+        "net_tp_per_model_call": 0.11956521739130435
+      },
+      "przelew_bankowy.na_rachunek": {
+        "tp": 15,
+        "fp": 5,
+        "fn": 9,
+        "delta_tp": 10,
+        "delta_fp": 5,
+        "delta_fn": -10,
+        "added": 10,
+        "added_nonnull": 10,
+        "micro_f1": 0.6818181818181818,
+        "net_tp_per_model_call": 0.10869565217391304
+      },
+      "przelew_bankowy.numer_transakcji": {
+        "tp": 13,
+        "fp": 7,
+        "fn": 11,
+        "delta_tp": 10,
+        "delta_fp": 5,
+        "delta_fn": -10,
+        "added": 10,
+        "added_nonnull": 8,
+        "micro_f1": 0.5909090909090909,
+        "net_tp_per_model_call": 0.10869565217391304
+      }
+    }
+  },
+  "focus_ablation": {
+    "c1_dev": {
+      "extra_calls": 5,
+      "delta_tp": 0,
+      "delta_fp": 0,
+      "delta_micro": 0.0
+    },
+    "c2_dev": {
+      "extra_calls": 8,
+      "delta_tp": 4,
+      "delta_fp": -4,
+      "delta_micro": 0.01029601029601035
+    },
+    "organizer_scans": {
+      "extra_calls": 4,
+      "delta_tp": 0,
+      "delta_fp": 0,
+      "delta_micro": 0.0
+    },
+    "c1_all": {
+      "extra_calls": 7,
+      "delta_tp": 0,
+      "delta_fp": 0,
+      "delta_micro": 0.0
+    },
+    "pooled_91": {
+      "extra_calls": 17,
+      "delta_tp": 4,
+      "delta_fp": -4,
+      "delta_micro": 0.003992015968063867
+    }
+  },
+  "organizer_training": {
+    "pdfs": 196,
+    "strict_micro": 1.0,
+    "exact_field_sets": 196,
+    "keyed_byte_matches_vs_integrated_rules": 196,
+    "keyless_byte_matches_vs_integrated_rules": 196,
+    "keyed_wall_seconds": 32.04861345794052,
+    "keyed_http_requests": 0
+  },
+  "rerun_protocol": {
+    "updated_rules_branch": "integration/final",
+    "date_fix": "eabbb31",
+    "cold_cli_source": "bf575064a0f665f6808ea45721a48c7cf5d5a13e",
+    "same_inputs_same_responses_after_merge": {
+      "pdfs": 108,
+      "rules_byte_differences": 0,
+      "selected_3b_byte_differences": 0,
+      "comparison_8b_byte_differences": 0
+    },
+    "models_live_once": "The 8B comparison used live completions once, with cached OCR; the post-merge score uses the same successful completions. The tested regional 3B configuration was also run with fresh OCR and fresh requests on a 150-PDF batch."
+  },
+  "specialist_measurement": {
+    "pooled_91_requests": 17,
+    "sum_original_http_seconds": 13.35,
+    "delta_tp": 4,
+    "delta_fp": -4,
+    "wire_errors": 0,
+    "sdk_errors": 0
+  },
+  "local_smoke": {
+    "model": "Ministral 3 3B Instruct 2512",
+    "quantization": "Q4_K_M",
+    "size_bytes": 2146497824,
+    "sha256": "fd46fc371ff0509bfa8657ac956b7de8534d7d9baaa4947975c0648c3aa397f4",
+    "llama_cpp": "b12608",
+    "machine": "16 GB Apple M1",
+    "synthetic_transfer_seconds": 14.97,
+    "extracted_date_and_amount_exactly": true
+  },
+  "cold_regional_cli": {
+    "c1": {
+      "n": 22,
+      "active_span_s": 95.63445170875639,
+      "active_span_s_pdf": 4.3470205322162,
+      "mean_doc_s": 12.715408191317692,
+      "p95_doc_s": 31.519356333184987,
+      "http": {
+        "200": 19
+      },
+      "http_by_stage": {
+        "charge": 5,
+        "extract": 12,
+        "route": 2
+      },
+      "logical_by_stage": {
+        "charge": 5,
+        "extract": 12,
+        "route": 2
+      },
+      "retry_attempts": 0,
+      "sdk_errors": {},
+      "transport_errors": {},
+      "recovered": 0,
+      "failures": 0,
+      "http_seconds": 43.29559400072321,
+      "completion_tokens": 5618,
+      "finish": {
+        "stop": 19
+      },
+      "strict": {
+        "micro_f1": 0.7096774193548387,
+        "macro_f1_classes": 0.6701306256280078,
+        "per_class_f1": {
+          "odwolanie": 0.7225130890052356,
+          "pelnomocnictwo": 0.7878787878787878,
+          "przelew": 0.5
+        },
+        "counts": {
+          "tp": 176,
+          "fp": 73,
+          "fn": 71
+        },
+        "classification_accuracy": 1.0,
+        "negatives_empty": 1.0,
+        "outputs_complete": 1.0
+      },
+      "fuzzy_five": {
+        "micro_f1": 0.7379032258064516,
+        "macro_f1_classes": 0.6944907187053784,
+        "per_class_f1": {
+          "odwolanie": 0.7539267015706806,
+          "pelnomocnictwo": 0.7878787878787878,
+          "przelew": 0.5416666666666666
+        },
+        "counts": {
+          "tp": 183,
+          "fp": 66,
+          "fn": 64
+        }
+      },
+      "exact_docs": 7,
+      "delta_tp": 9
+    },
+    "c2": {
+      "n": 39,
+      "active_span_s": 139.65744350012392,
+      "active_span_s_pdf": 3.580960089746767,
+      "mean_doc_s": 10.037405078060543,
+      "p95_doc_s": 35.09089099988341,
+      "http": {
+        "200": 38
+      },
+      "http_by_stage": {
+        "charge": 8,
+        "route": 11,
+        "extract": 19
+      },
+      "logical_by_stage": {
+        "charge": 8,
+        "route": 11,
+        "extract": 19
+      },
+      "retry_attempts": 0,
+      "sdk_errors": {},
+      "transport_errors": {},
+      "recovered": 0,
+      "failures": 0,
+      "http_seconds": 60.716561581008136,
+      "completion_tokens": 6813,
+      "finish": {
+        "stop": 38
+      },
+      "strict": {
+        "micro_f1": 0.7104247104247104,
+        "macro_f1_classes": 0.6747337629690571,
+        "per_class_f1": {
+          "odwolanie": 0.7202797202797203,
+          "pelnomocnictwo": 0.47058823529411764,
+          "przelew": 0.8333333333333334
+        },
+        "counts": {
+          "tp": 276,
+          "fp": 107,
+          "fn": 118
+        },
+        "classification_accuracy": 1.0,
+        "negatives_empty": 1.0,
+        "outputs_complete": 1.0
+      },
+      "fuzzy_five": {
+        "micro_f1": 0.7181467181467182,
+        "macro_f1_classes": 0.682620320855615,
+        "per_class_f1": {
+          "odwolanie": 0.7272727272727273,
+          "pelnomocnictwo": 0.47058823529411764,
+          "przelew": 0.85
+        },
+        "counts": {
+          "tp": 279,
+          "fp": 104,
+          "fn": 115
+        }
+      },
+      "exact_docs": 15,
+      "delta_tp": 107
+    },
+    "scans": {
+      "n": 30,
+      "active_span_s": 99.88208529213443,
+      "active_span_s_pdf": 3.329402843071148,
+      "mean_doc_s": 9.132945851438368,
+      "p95_doc_s": 23.59128091717139,
+      "http": {
+        "200": 35
+      },
+      "http_by_stage": {
+        "extract": 26,
+        "route": 5,
+        "charge": 4
+      },
+      "logical_by_stage": {
+        "extract": 26,
+        "route": 5,
+        "charge": 4
+      },
+      "retry_attempts": 0,
+      "sdk_errors": {},
+      "transport_errors": {},
+      "recovered": 0,
+      "failures": 0,
+      "http_seconds": 52.992337085772306,
+      "completion_tokens": 8989,
+      "finish": {
+        "stop": 35
+      },
+      "strict": {
+        "micro_f1": 0.7394270122783083,
+        "macro_f1_classes": 0.7039542483660131,
+        "per_class_f1": {
+          "odwolanie": 0.7466666666666667,
+          "pelnomocnictwo": 0.8235294117647058,
+          "przelew": 0.5416666666666666
+        },
+        "counts": {
+          "tp": 271,
+          "fp": 74,
+          "fn": 117
+        },
+        "classification_accuracy": 0.8666666666666667,
+        "negatives_empty": null,
+        "outputs_complete": 1.0
+      },
+      "fuzzy_five": {
+        "micro_f1": 0.7639836289222374,
+        "macro_f1_classes": 0.7282135076252724,
+        "per_class_f1": {
+          "odwolanie": 0.7777777777777778,
+          "pelnomocnictwo": 0.8235294117647058,
+          "przelew": 0.5833333333333334
+        },
+        "counts": {
+          "tp": 280,
+          "fp": 65,
+          "fn": 108
+        }
+      },
+      "exact_docs": 4,
+      "delta_tp": 93
+    },
+    "c1spent": {
+      "n": 17,
+      "active_span_s": 21.345732875168324,
+      "active_span_s_pdf": 1.2556313455981367,
+      "mean_doc_s": 2.3085184926988886,
+      "p95_doc_s": 10.129521416965872,
+      "http": {
+        "200": 14
+      },
+      "http_by_stage": {
+        "route": 3,
+        "extract": 9,
+        "charge": 2
+      },
+      "logical_by_stage": {
+        "route": 3,
+        "extract": 9,
+        "charge": 2
+      },
+      "retry_attempts": 0,
+      "sdk_errors": {},
+      "transport_errors": {},
+      "recovered": 0,
+      "failures": 0,
+      "http_seconds": 14.229492873419076,
+      "completion_tokens": 1952,
+      "finish": {
+        "stop": 14
+      },
+      "strict": {
+        "micro_f1": 0.518324607329843,
+        "macro_f1_classes": 0.5602651316937032,
+        "per_class_f1": {
+          "odwolanie": 0.4835164835164835,
+          "pelnomocnictwo": 0.5306122448979592,
+          "przelew": 0.6666666666666666
+        },
+        "counts": {
+          "tp": 99,
+          "fp": 42,
+          "fn": 142
+        },
+        "classification_accuracy": 0.9230769230769231,
+        "negatives_empty": 1.0,
+        "outputs_complete": 1.0
+      },
+      "fuzzy_five": {
+        "micro_f1": 0.5235602094240838,
+        "macro_f1_classes": 0.5713762428048142,
+        "per_class_f1": {
+          "odwolanie": 0.4835164835164835,
+          "pelnomocnictwo": 0.5306122448979592,
+          "przelew": 0.7
+        },
+        "counts": {
+          "tp": 100,
+          "fp": 41,
+          "fn": 141
+        }
+      },
+      "exact_docs": 5,
+      "delta_tp": 22
+    },
+    "public": {
+      "n": 42,
+      "active_span_s": 2.4675094997510314,
+      "active_span_s_pdf": 0.058750226184548365,
+      "mean_doc_s": 0.09949416279171903,
+      "p95_doc_s": 0.23301033396273851,
+      "http": {},
+      "http_by_stage": {},
+      "logical_by_stage": {},
+      "retry_attempts": 0,
+      "sdk_errors": {},
+      "transport_errors": {},
+      "recovered": 0,
+      "failures": 0,
+      "http_seconds": 0,
+      "completion_tokens": 0,
+      "finish": {}
+    },
+    "pooled91": {
+      "n": 91,
+      "active_span_s": 319.842014959082,
+      "active_span_s_pdf": 3.5147474171327695,
+      "mean_doc_s": 10.386661030730785,
+      "p95_doc_s": 33.38543162494898,
+      "http": {
+        "200": 92
+      },
+      "http_by_stage": {
+        "charge": 17,
+        "extract": 57,
+        "route": 18
+      },
+      "logical_by_stage": {
+        "charge": 17,
+        "extract": 57,
+        "route": 18
+      },
+      "retry_attempts": 0,
+      "sdk_errors": {},
+      "transport_errors": {},
+      "recovered": 0,
+      "failures": 0,
+      "http_seconds": 157.00449266750365,
+      "completion_tokens": 21420,
+      "finish": {
+        "stop": 92
+      },
+      "strict": {
+        "micro_f1": 0.7208374875373879,
+        "macro_f1_classes": 0.7079406822996567,
+        "per_class_f1": {
+          "odwolanie": 0.7293447293447294,
+          "pelnomocnictwo": 0.727810650887574,
+          "przelew": 0.6666666666666666
+        },
+        "counts": {
+          "tp": 723,
+          "fp": 254,
+          "fn": 306
+        },
+        "classification_accuracy": 0.9452054794520548,
+        "negatives_empty": 1.0,
+        "outputs_complete": 1.0
+      },
+      "fuzzy_five": {
+        "micro_f1": 0.7397806580259222,
+        "macro_f1_classes": 0.7251641995231739,
+        "per_class_f1": {
+          "odwolanie": 0.7507122507122507,
+          "pelnomocnictwo": 0.727810650887574,
+          "przelew": 0.696969696969697
+        },
+        "counts": {
+          "tp": 742,
+          "fp": 235,
+          "fn": 287
+        }
+      },
+      "exact_docs": 26,
+      "delta_tp": 209
+    },
+    "c1_all": {
+      "n": 39,
+      "active_span_s": 331.520412791986,
+      "active_span_s_pdf": 8.500523404922719,
+      "mean_doc_s": 8.179071656022316,
+      "p95_doc_s": 31.519356333184987,
+      "http": {
+        "200": 33
+      },
+      "http_by_stage": {
+        "charge": 7,
+        "extract": 21,
+        "route": 5
+      },
+      "logical_by_stage": {
+        "charge": 7,
+        "extract": 21,
+        "route": 5
+      },
+      "retry_attempts": 0,
+      "sdk_errors": {},
+      "transport_errors": {},
+      "recovered": 0,
+      "failures": 0,
+      "http_seconds": 57.52508687414229,
+      "completion_tokens": 7570,
+      "finish": {
+        "stop": 33
+      },
+      "strict": {
+        "micro_f1": 0.6264236902050114,
+        "macro_f1_classes": 0.6312514085055295,
+        "per_class_f1": {
+          "odwolanie": 0.6229007633587786,
+          "pelnomocnictwo": 0.6782608695652174,
+          "przelew": 0.5925925925925926
+        },
+        "counts": {
+          "tp": 275,
+          "fp": 115,
+          "fn": 213
+        },
+        "classification_accuracy": 0.9642857142857143,
+        "negatives_empty": 1.0,
+        "outputs_complete": 1.0
+      },
+      "fuzzy_five": {
+        "micro_f1": 0.6446469248291572,
+        "macro_f1_classes": 0.6497039577468828,
+        "per_class_f1": {
+          "odwolanie": 0.6412213740458015,
+          "pelnomocnictwo": 0.6782608695652174,
+          "przelew": 0.6296296296296297
+        },
+        "counts": {
+          "tp": 283,
+          "fp": 107,
+          "fn": 205
+        }
+      },
+      "exact_docs": 12,
+      "delta_tp": 31
+    },
+    "all150": {
+      "n": 150,
+      "active_span_s": 331.520412791986,
+      "active_span_s_pdf": 2.2101360852799066,
+      "mean_doc_s": 6.590731486730898,
+      "p95_doc_s": 28.225687541998923,
+      "http": {
+        "200": 106
+      },
+      "http_by_stage": {
+        "charge": 19,
+        "extract": 66,
+        "route": 21
+      },
+      "logical_by_stage": {
+        "charge": 19,
+        "extract": 66,
+        "route": 21
+      },
+      "retry_attempts": 0,
+      "sdk_errors": {},
+      "transport_errors": {},
+      "recovered": 0,
+      "failures": 0,
+      "http_seconds": 171.23398554092273,
+      "completion_tokens": 23372,
+      "finish": {
+        "stop": 106
+      }
+    },
+    "timing": {
+      "whole_command_s": 335.6417534579523,
+      "pdf_s": 2.237611689719682,
+      "pdf_min": 26.814303963310334,
+      "startup_s": 3.1987356659956276,
+      "teardown_s": 0.9226049999706447,
+      "returncode": 0,
+      "workers": 3,
+      "sum_group_active_spans_s": 358.9872228759341,
+      "method": "one cold CLI invocation; per-group windows may overlap; no OCR or model replay; public timing only"
+    },
+    "development108": {
+      "n": 108,
+      "active_span_s": 331.520412791986,
+      "active_span_s_pdf": 3.0696334517776482,
+      "mean_doc_s": 9.115101557151691,
+      "p95_doc_s": 31.519356333184987,
+      "http": {
+        "200": 106
+      },
+      "http_by_stage": {
+        "charge": 19,
+        "extract": 66,
+        "route": 21
+      },
+      "logical_by_stage": {
+        "charge": 19,
+        "extract": 66,
+        "route": 21
+      },
+      "retry_attempts": 0,
+      "sdk_errors": {},
+      "transport_errors": {},
+      "recovered": 0,
+      "failures": 0,
+      "http_seconds": 171.23398554092273,
+      "completion_tokens": 23372,
+      "finish": {
+        "stop": 106
+      },
+      "strict": {
+        "micro_f1": 0.6884422110552764,
+        "macro_f1_classes": 0.6862784072086398,
+        "per_class_f1": {
+          "odwolanie": 0.6893261776982708,
+          "pelnomocnictwo": 0.7028423772609819,
+          "przelew": 0.6666666666666666
+        },
+        "counts": {
+          "tp": 822,
+          "fp": 296,
+          "fn": 448
+        },
+        "classification_accuracy": 0.9418604651162791,
+        "negatives_empty": 1.0,
+        "outputs_complete": 1.0
+      },
+      "fuzzy_five": {
+        "micro_f1": 0.7051926298157454,
+        "macro_f1_classes": 0.7025295022711043,
+        "per_class_f1": {
+          "odwolanie": 0.7072152653548003,
+          "pelnomocnictwo": 0.7028423772609819,
+          "przelew": 0.6975308641975309
+        },
+        "counts": {
+          "tp": 842,
+          "fp": 276,
+          "fn": 428
+        }
+      },
+      "exact_docs": 31,
+      "delta_tp": 231
+    }
+  },
+  "above_cap_live_timing": {
+    "c1_dev": {
+      "n": 22,
+      "wall_seconds": 23.609824208077043,
+      "seconds_per_pdf": 1.0731738276398657,
+      "requests": 18,
+      "primary_ocr": "cached",
+      "model_responses": "live"
+    },
+    "c2_dev": {
+      "n": 39,
+      "wall_seconds": 27.17586791701615,
+      "seconds_per_pdf": 0.6968171260773371,
+      "requests": 31,
+      "primary_ocr": "cached",
+      "model_responses": "live"
+    },
+    "organizer_scans": {
+      "n": 30,
+      "wall_seconds": 32.50523095810786,
+      "seconds_per_pdf": 1.0835076986035952,
+      "requests": 33,
+      "primary_ocr": "cached",
+      "model_responses": "live"
+    },
+    "c1_all": {
+      "n": 39,
+      "wall_seconds": 34.08578033326194,
+      "seconds_per_pdf": 0.8739943675195369,
+      "requests": 31,
+      "primary_ocr": "cached",
+      "model_responses": "live"
+    },
+    "pooled_91": {
+      "n": 91,
+      "wall_seconds": 83.29092308320105,
+      "seconds_per_pdf": 0.9152848690461654,
+      "requests": 82,
+      "primary_ocr": "cached",
+      "model_responses": "live"
+    }
+  }
+}

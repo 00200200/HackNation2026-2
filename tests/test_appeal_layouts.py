@@ -57,7 +57,7 @@ def test_letterhead_date_and_officer_distinct_from_counsel():
 def test_two_columns_use_printed_rows_for_detached_labels(monkeypatch):
     from pathlib import Path
 
-    from kio2json import appeal_layout, pipeline
+    from kio2json import pipeline
     from kio2json.pdf_text import WordBox
 
     rows = [("Zamawiający:", "Fabryka", "Tęczy"), ("Odwołujący:", "Port", "Mgły")]
@@ -67,14 +67,18 @@ def test_two_columns_use_printed_rows_for_detached_labels(monkeypatch):
         for x, word in zip((65, 200, 244), row, strict=True)
     ]
 
+    reads = []
+
     def read(path, **options):
-        if (out := options.get("word_boxes")) is not None:
+        reads.append(path)
+        options.get("ocr_pages", []).append(1)
+        if (out := options.get("ocr_word_boxes", options.get("word_boxes"))) is not None:
             out.extend(boxes)
         return ["Zamawiający:\nOdwołujący:\nFabryka Tęczy\nPort Mgły\nODWOŁANIE"]
 
     monkeypatch.setattr(pipeline, "read_pages", read)
-    monkeypatch.setattr(appeal_layout, "read_pages", read)
     label, result = pipeline.process_pdf(Path("invented.pdf"))
+    assert len(reads) == 1
     assert label == "appeal"
     assert [a["nazwa"] for a in result["Zamawiajacy"]] == ["Fabryka Tęczy"]
     assert result["Odwolujacy"][0]["nazwa"] == "Port Mgły"
@@ -183,3 +187,66 @@ def test_generic_procedural_charge_keeps_its_introductory_dated_act():
         "Zarzut nr 1 – zaniechanie doprecyzowania wezwania do wyjaśnień."
     )["OdwolanieKIO"]
     assert (result["czynnosc_powod_id"], result["czynnosc_dzien"]) == (1, "2031-05-13")
+
+
+def test_purchasing_list_uses_leads_printed_name_across_a_page_break():
+    result = extract(
+        "Zamawiający:\nNazwa zamawiającego: Biblioteka Miejska w Turkusowie\nul. Obłoków 1\n"
+        "działająca w imieniu własnym oraz na rzecz:\n1) Biblioteki Miejskiej w Granatowie, ul. A 1\n"
+        "12-345 Granatowo\nCertyfikat: dane wystawcy\n1/2\n"
+        "2) Biblioteki Miejskiej w Liliowie, ul. B 2\n3) Muzeum w Umbrowie, ul. C 3\nODWOŁANIE"
+    )
+    assert [(p["nazwa"], p["prowadzacy_postepowanie"]) for p in result["Zamawiajacy"]] == [
+        ("Biblioteka Miejska w Turkusowie", 1),
+        ("Biblioteka Miejska w Granatowie", 0),
+        ("Biblioteka Miejska w Liliowie", 0),
+        ("Muzeum w Umbrowie", 0),
+    ]
+
+
+def test_employee_appointed_by_appellant_and_firms_owning_proprietor():
+    header = "Odwołujący: Stacja Atramentu\nul. Kreda 2\n"
+    employee = extract(header + "zastępowany przez pracownika Panią Alicję Malinowską.\nODWOŁANIE")
+    assert employee["Odwolujacy"][0]["pelnomocnik"] == {
+        "imie_nazwisko": "Alicja Malinowska",
+        "nazwa": "Stacja Atramentu",
+        "mail": None,
+    }
+    owner = extract(header + "reprezentowany przez:\nAlicję Malinowską właściciela firmy\nODWOŁANIE")
+    assert owner["Odwolujacy"][0]["przez-pelnomocnika"] == 0
+
+
+def test_first_charge_and_explicit_filing_period_notice():
+    text = (
+        "ODWOŁANIE\nOdwołujący zarzuca błędne badanie ofert, tj. zaniechanie odrzucenia oferty.\n"
+        "Termin: Zawiadomienie o wyborze oferty zostało przekazane Odwołującemu 14.04.2033 r."
+    )
+    facts = extract(text)["OdwolanieKIO"]
+    assert (facts["czynnosc_powod_id"], facts["czynnosc_dzien"]) == (7, "2033-04-14")
+    deadline = text.replace("Zawiadomienie o wyborze oferty zostało przekazane Odwołującemu", "Termin upływa")
+    assert extract(deadline)["OdwolanieKIO"]["czynnosc_dzien"] is None
+
+
+def test_earlier_other_party_and_later_charge_do_not_supply_first_charges_facts():
+    text = (
+        "Inny wykonawca zarzuca zaniechanie wykluczenia wykonawcy.\n"
+        "Zarzut nr 1 – odrzucenie oferty odwołującego.\nZarzut nr 2 – wykluczenie wykonawcy.\n"
+        "Data uzyskania informacji o podstawie do wniesienia odwołania: 15 maja 2032"
+    )
+    first = extract(text)["OdwolanieKIO"]
+    assert (first["czynnosc_powod_id"], first["czynnosc_dzien"]) == (1, None)
+    prose = text[text.index("Zarzut nr 1") :].replace("Zarzut nr 1 –", "Odwołujący zarzuca")
+    assert extract(prose)["OdwolanieKIO"]["czynnosc_dzien"] is None
+    later_notice = (
+        "Odwołujący zarzuca zaniechanie odrzucenia oferty.\nZarzut nr 2 – wynik innego postępowania.\n"
+        "Termin: Zawiadomienie o wyborze oferty zostało przekazane Odwołującemu 15 maja 2032"
+    )
+    assert extract(later_notice)["OdwolanieKIO"]["czynnosc_dzien"] is None
+
+
+def test_attorney_who_owns_a_law_firm_is_still_appointed():
+    data = extract(
+        "Odwołujący: Dom Kredy\nul. Mchu 8\n"
+        "reprezentowany przez adwokata Adama Malinowskiego, właściciela kancelarii.\nODWOŁANIE"
+    )
+    assert data["Odwolujacy"][0]["pelnomocnik"]["imie_nazwisko"] == "Adam Malinowski"

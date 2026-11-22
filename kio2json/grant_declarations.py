@@ -4,7 +4,7 @@ import re
 
 from .common import LOWER, PERSON, UPPER, registry_ids, squash
 from .personal_names import compatible_names
-from .power_of_attorney import GRANT, LEGAL_FORM, SIGNER_ROLE_RE
+from .power_of_attorney import COMPANY_RE, GRANT, GRANTOR, LEGAL_FORM, SIGNER_ROLE_RE, _identity_clause
 
 HEADING = re.compile(r"(?im)^[ \t]*pełnomocnictwo(?: procesowe)?[ \t]*$")
 APPOINTMENT = re.compile(rf"(?i:{GRANT.pattern}\s+pełnomocnictwa)\s*:")
@@ -121,7 +121,7 @@ def _merge_grantors(previous: list[dict], members: list[dict]) -> bool:
         if len(owners) != 1:
             return False
         owner = owners[0]
-        for key in ("krs", "nip"):
+        for key in ("krs", "nip", "nazwa"):
             owner["data"][key] = owner["data"][key] or old["data"][key]
         owner["podpisujacy"].extend(s for s in old["podpisujacy"] if s not in owner["podpisujacy"])
     return True
@@ -155,3 +155,48 @@ def read_declaration(page: str, record: dict) -> None:
     if scope and (people := _appointees(page[grant.end() : scope.start()])):
         _merge_attorneys(record["pelnomocnicy"], people)
         record["pelnomocnicy"] = people
+
+
+REPRESENTED_COMPANY = re.compile(
+    rf"(?i:\bdo\s+reprezentacji)\s+((?:[{UPPER}][\w-]+\s+|[–—-]\s+){{2,12}}?{LEGAL_FORM})"
+    r"\s+(?i:z\s+siedzibą)\b"
+)
+
+
+def complete_represented_company(page: str, record: dict) -> None:
+    """Restore a cut-off company name from its officer's genitive representation clause."""
+    from .personal_names import _analyser
+
+    grant = GRANT.search(page)
+    if not grant or len(record["mocodawca"]) != 1:
+        return
+    data = record["mocodawca"][0]["data"]
+    if not data["krs"] or not data["nazwa"]:
+        return
+    declaration = page[: grant.start()]
+    matches = [m for m in REPRESENTED_COMPANY.finditer(declaration) if squash(m[1]).endswith(" " + data["nazwa"])]
+    if len(matches) != 1:
+        return
+    match = matches[0]
+    details = declaration[match.end() :]
+    for boundary in (COMPANY_RE, GRANTOR):
+        if new_party := boundary.search(details):
+            details = details[: new_party.start()]
+    if registry_ids(_identity_clause(details))["krs"] != data["krs"]:
+        return
+    head, complement, tail = squash(match[1]).split(" ", 2)
+
+    # A noun with a plural genitive complement changes only its head (e.g. "Zakładu Pomiarów").
+    def nouns(word: str, number: str) -> set[str]:
+        return {
+            lemma.partition(":")[0]
+            for _, _, (surface, lemma, tag, labels, _) in _analyser().analyse(word)
+            if surface == word
+            and tag.startswith(f"subst:{number}:")
+            and "gen" in tag.split(":")[2].split(".")
+            and "nazwa_pospolita" in labels
+        }
+
+    heads = nouns(head, "sg")
+    if len(heads) == 1 and nouns(complement, "pl"):
+        data["nazwa"] = heads.pop().capitalize() + " " + complement + " " + tail.replace(" — ", " – ")

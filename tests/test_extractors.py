@@ -188,7 +188,7 @@ def test_registry_ids_and_dates():
         RuntimeError("OCR timed out"),
     ],
 )
-def test_required_ocr_failure_reports_path_and_continues(tmp_path, monkeypatch, capsys, failure):
+def test_required_ocr_failure_reports_path_and_continues(tmp_path, monkeypatch, capsys, failure, in_process_cli):
     inputs, outputs = tmp_path / "input", tmp_path / "output"
     inputs.mkdir()
     scan = inputs / "first.pdf"

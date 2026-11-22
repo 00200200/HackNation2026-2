@@ -40,7 +40,7 @@ def raw_sentences(text):
             after = text[stop.end() :].lstrip()
             if re.fullmatch(r"\d+|[IVX]+", before.strip()):
                 continue
-            if re.search(r"\b(?:art|ust|pkt|lit|poz|nr|im|ul|św|al|Dz|sygn)$", before, re.IGNORECASE):
+            if re.search(r"\b(?:art|ust|pkt|lit|poz|nr|im|ul|św|al|Dz|sygn|tj|zw|ppkt)$", before, re.IGNORECASE):
                 continue
             if after and after[0].islower() and re.search(r"\b(?:sp|o|j|k|p|a|r)$", before, re.IGNORECASE):
                 continue
@@ -99,6 +99,36 @@ def act_date(text, reason):
     return None
 
 
+def filing_period_start(text, reason):
+    """A filing-period heading must date the decision or notice, never the deadline itself."""
+    first = CHARGE.search(text)
+    cover = text[: first.start()] if first else NEXT_ITEM.split(text, maxsplit=1)[0]
+    label = re.search(
+        rf"(?im)^\s*data (?:powzięcia|podjęcia|uzyskania) (?:wiadomości|informacji) "
+        rf"o podstawie do wniesienia odwołania:\s*({DATE})",
+        cover,
+    )
+    if label:
+        return to_iso(label[1])
+    # Numbered allegations can each contain their own notice or publication date.
+    boundary = NEXT_ITEM.search(text, first.end() if first else 0)
+    if boundary:
+        text = text[: boundary.start()]
+    for heading in re.finditer(r"(?im)^\s*termin(?: (?:na |do )?wniesieni[ae] odwołania)?[.:]\s*", text):
+        section = first_sentence(squash(text[heading.end() :]))[:450]
+        if reason in {4, 11, 12}:
+            link = r"(?:dokumenty zamówienia|opis przedmiotu zamówienia|si?wz).{0,80}?opublikowan\w*"
+        elif reason in {2, 7, 8}:
+            link = r"(?:zawiadomienie|informację) o wyborze (?:najkorzystniejszej )?oferty(?: najkorzystniejszej)?"
+        else:
+            continue
+        if notice := re.search(
+            rf"{link}\s+(?:(?:zostało przekazane odwołującemu|w dniu|dnia)\s+)*({DATE})", section, re.IGNORECASE
+        ):
+            return to_iso(notice[1])
+    return None
+
+
 def prose_action(text):
     first = CHARGE.search(text)
     charge = NEXT_ITEM.split(text[first.start() :], maxsplit=1)[0] if first else ""
@@ -107,7 +137,14 @@ def prose_action(text):
     charge = squash(re.sub(r"(?:^|(?<=:)|(?<=\n))\s*(?:1|I)[.)]\s+", " ", charge))[:1250]
     through = re.search(r"\b(?:poprzez|polegając\w* na)\s+", charge, re.IGNORECASE)
     opening = charge[through.end() :] if through else charge
-    reason = _act_in(first_sentence(opening))
+    opening = first_sentence(opening)
+    # A directly named act precedes references to specifications or grounds later in its justification.
+    reason = next((key for key, cue in ACTS.items() if re.match(cue, opening, re.IGNORECASE)), None)
+    reason = reason or _act_in(opening)
+    if reason is None and re.search(
+        r"\b(?:opis\w*|ukształtowan\w*)\s+warunk(?:u|ów)\s+udziału\s+w\s+postępowaniu", opening, re.IGNORECASE
+    ):
+        reason = 4
     introduction = text[: first.start()] if first else text
     if reason is None:
         for match in reversed(list(CHALLENGE.finditer(introduction))):
@@ -140,4 +177,4 @@ def prose_action(text):
             day = act_date(clause, reason)
             if day:
                 return day, reason
-    return None, reason
+    return filing_period_start(text, reason), reason

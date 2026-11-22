@@ -1,4 +1,5 @@
 id = "appeal"
+span_instructions = "Dzień i miejscowość odwołania pochodzą z nagłówka. Rozróżnij odwołującego, jego pełnomocnika i zamawiającego. Dla pierwszego zarzutu zacytuj czynność, nie numer przepisu. Dla przedstawicielstwa zacytuj słowa o reprezentacji odwołującego."
 priority = 10
 engines = ["python"]
 extractor = "kio2json.appeal.extract"

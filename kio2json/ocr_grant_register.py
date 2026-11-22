@@ -8,6 +8,7 @@ from pathlib import Path
 
 import pdfplumber
 
+from .ocr_budget import CROP_TIMEOUT_MS, remaining_ms
 from .pdf_text import OCR_DPI, WordBox, _language_dir
 
 LABEL = re.compile(r"\bKRS\s*:?\s*(\d{10})(?!\d)", re.IGNORECASE)
@@ -17,7 +18,8 @@ def _agreement(crop, readers, original: str) -> str:
     values = []
     for reader in readers:
         reader.SetImage(crop)
-        if not reader.Recognize(timeout=1000):
+        timeout = remaining_ms(CROP_TIMEOUT_MS)
+        if not timeout or not reader.Recognize(timeout=timeout):
             return original
         result = re.fullmatch(r"(\d{10})[,.;:]?", reader.GetUTF8Text().strip())
         if not result:
@@ -38,7 +40,7 @@ def verified_pages(pdf: Path, pages: list[str], boxes: list[WordBox]) -> list[st
         number = box.text.rstrip(",.;:")
         if number.isascii() and number.isdigit() and len(number) == 10:
             candidates[box.page].append((number, box))
-    if not candidates:
+    if not candidates or not remaining_ms(1):
         return pages
     result = pages.copy()
     try:
@@ -49,10 +51,17 @@ def verified_pages(pdf: Path, pages: list[str], boxes: list[WordBox]) -> list[st
                 for language in ("eng", "pol")
             ]
             for index, items in candidates.items():
+                if not remaining_ms(1):
+                    break
                 page = doc.pages[index - 1]
                 image = page.to_image(resolution=OCR_DPI)
                 verified = defaultdict(set)
-                for number, box in items:
+                for pos, (number, box) in enumerate(items):
+                    if not remaining_ms(1):
+                        # A repeated number with an unverified occurrence keeps its primary value.
+                        for original, _ in items[pos:]:
+                            verified[original].add(original)
+                        break
                     x0, y0, x1, y1 = image._reproject_bbox((box.x0, box.y0, box.x1, box.y1))
                     crop = image.original.crop((x0 - 4, y0 - 4, x1 + 4, y1 + 4))
                     verified[number].add(_agreement(crop, readers, number))

@@ -1,9 +1,16 @@
 """Read signature blocks from OCR lines in a power of attorney."""
 
 import re
+from pathlib import Path
+
+from rapidfuzz.distance import Levenshtein
 
 from . import power_of_attorney
 from .common import ATTORNEY_RE, DATE, PERSON, UPPER, squash
+from .grant_certificates import NON_ISSUER_SIGNATURE
+from .ocr_budget import REREAD_PAGE_TIMEOUT_SECONDS, remaining_ms
+from .pdf_text import WordBox
+from .personal_names import nominative
 from .power_of_attorney import GRANT, GRANTOR
 
 SIGNATURE_LINE_RE = re.compile(r"\.{10,}|_{5,}|[─━—]{4,}")
@@ -217,3 +224,77 @@ def confirmed_scan_signer(page: str, record: dict) -> None:
         signer = {"imie_nazwisko": name}
         if name not in attorneys and signer not in signers:
             signers.append(signer)
+
+
+# Below the last sentence of the mandate, each board stamp has its own column.
+SCOPE_END = re.compile(
+    r"\b(?:odwoławcz|postępowani|zamawiając|wykonawc|pełnomocnictw)\w*\b[^:;.!?]{0,65}\.$", re.IGNORECASE
+)
+STAMP_END = re.compile(r"za zgodność|pełnomocnictwo przyjmuję|do kontaktu|poświadcza|świadek|notariusz", re.IGNORECASE)
+
+
+def board_stamp_names(lines: list[WordBox], attorneys: set[str], company: str) -> list[str]:
+    if NON_ISSUER_SIGNATURE.search("\n".join(line.text for line in lines)):
+        return []
+    ends = [i for i, line in enumerate(lines) if SCOPE_END.search(line.text)]
+    if not ends or not GRANT.search(" ".join(line.text for line in lines[: ends[-1] + 1])):
+        return []
+    closing = lines[ends[-1]]
+    stamps = []
+    for line in lines[ends[-1] + 1 :]:
+        if STAMP_END.search(line.text) or power_of_attorney.FOOTER.search(line.text):
+            break
+        if NAMED_SIGNATURE.match(line.text):
+            owner = NAMED_SIGNATURE.sub("", line.text).strip(" :").casefold()
+            if owner not in {company.casefold(), "spółkę", "spółki", "mocodawcę", "mocodawcy"}:
+                break
+        elif power_of_attorney.OTHER_ROLE.match(line.text) and not SIGNATURE_HEADING.fullmatch(line.text):
+            break
+        if closing.y1 <= line.y0 <= closing.y1 + 135:
+            stamps.append(line)
+
+    names = []
+    for title in stamps:
+        role, _, board = title.text.lower().strip().partition(" ")
+        if (
+            role not in {"prezes", "wiceprezes", "członek"}
+            or Levenshtein.distance(board.replace("ą", "a"), "zarzadu") > 1
+        ):
+            continue
+        people = []
+        for row in stamps:
+            if not (0 <= row.y0 - title.y1 <= 3 * (title.y1 - title.y0)):
+                continue
+            if not title.x0 <= (row.x0 + row.x1) / 2 <= title.x1:
+                continue
+            name = squash(re.sub(r"\s*/\s*", " ", row.text))
+            name = name.title() if name.isupper() else name
+            if re.fullmatch(PERSON, name) and nominative(name, "nom") == name:
+                people.append(name)
+        if len(people) == 1 and people[0] not in attorneys and people[0] not in names:
+            names.append(people[0])
+    return names
+
+
+def recover_board_stamp(path: Path, record: dict, page: str) -> None:
+    from .rapid_worker import recognize
+
+    principals = record["mocodawca"]
+    if len(principals) != 1 or principals[0]["podpisujacy"] or principals[0]["data"]["typ"] != "osoba_prawna":
+        return
+    if not GRANT.search(page) or power_of_attorney.NOTARIAL_HEADING.search(page) or NON_ISSUER_SIGNATURE.search(page):
+        return
+    lines = page.splitlines()
+    closing = next((i for i in reversed(range(len(lines))) if SCOPE_END.search(lines[i])), None)
+    if closing is None or STAMP_END.search("\n".join(lines[closing + 1 :])):
+        return
+    timeout = remaining_ms(1000 * REREAD_PAGE_TIMEOUT_SECONDS)
+    if not timeout:
+        return
+    try:
+        _, boxes = recognize(path, 1, "lines", timeout=timeout / 1000)
+    except (OSError, RuntimeError):
+        return
+    attorneys = {p["imie_nazwisko"] for p in record["pelnomocnicy"]}
+    names = board_stamp_names([WordBox(*box) for box in boxes], attorneys, principals[0]["data"]["nazwa"] or "")
+    principals[0]["podpisujacy"] = [{"imie_nazwisko": name} for name in names]

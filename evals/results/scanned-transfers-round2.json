@@ -1,0 +1,3204 @@
+{
+  "base": "3de23267c28a38e42ad6310e3c663503043bbd77",
+  "rules_commit": "12a5681610119c7b0e1fc7d1343fd7839269cd5a",
+  "profile": "Keyless Python rules with explicit-DPI Polish Tesseract.",
+  "scope": "All 30 organizer scans are development data. Private evaluations cover corpus 1 all, its nested dev subset and corpus 2 dev. Corpus 2 test was excluded.",
+  "staged_measurement": "Per-step development comparisons replay identical first-pass OCR text and real word boxes, and rerun targeted crops from the PDFs. Bounded parallel OCR was exercised uncached on all 30 organizer PDFs and on affected multi-scan private PDFs; single-page or native private inputs reuse the same first pass. Integrated and final uncached organizer outputs matched field-for-field.",
+  "scoring": "evals.metrics.summarise with zero-byte outputs for negatives; exact counts compare every JSON field literally, including case, punctuation, Unicode and null. Absent output fields count as errors even for a null reference.",
+  "steps": {
+    "merged baseline": {
+      "organizer": {
+        "n": {
+          "przelew": 10,
+          "pelnomocnictwo": 10,
+          "odwolanie": 10
+        },
+        "micro_f1": 0.6317365269461078,
+        "per_class_f1": {
+          "odwolanie": 0.6123456790123457,
+          "pelnomocnictwo": 0.6064516129032258,
+          "przelew": 0.7407407407407407
+        },
+        "exact": {
+          "przelew": 1,
+          "pelnomocnictwo": 0,
+          "odwolanie": 0
+        },
+        "routing": {
+          "przelew": 8,
+          "pelnomocnictwo": 10,
+          "odwolanie": 9
+        },
+        "negatives_empty": null
+      },
+      "c1all": {
+        "n": {
+          "odwolanie": 13,
+          "pelnomocnictwo": 6,
+          "przelew": 9,
+          "negatywny": 11
+        },
+        "micro_f1": 0.5883748517200474,
+        "per_class_f1": {
+          "odwolanie": 0.6015503875968993,
+          "pelnomocnictwo": 0.5925925925925926,
+          "przelew": 0.4888888888888889
+        },
+        "exact": {
+          "odwolanie": 0,
+          "pelnomocnictwo": 0,
+          "przelew": 0,
+          "negatywny": 11
+        },
+        "routing": {
+          "odwolanie": 12,
+          "pelnomocnictwo": 6,
+          "przelew": 6,
+          "negatywny": 11
+        },
+        "negatives_empty": 1.0
+      },
+      "c1dev": {
+        "n": {
+          "odwolanie": 8,
+          "negatywny": 7,
+          "pelnomocnictwo": 3,
+          "przelew": 4
+        },
+        "micro_f1": 0.6965376782077393,
+        "per_class_f1": {
+          "odwolanie": 0.7055702917771883,
+          "pelnomocnictwo": 0.7272727272727273,
+          "przelew": 0.5833333333333334
+        },
+        "exact": {
+          "odwolanie": 0,
+          "negatywny": 7,
+          "pelnomocnictwo": 0,
+          "przelew": 0
+        },
+        "routing": {
+          "odwolanie": 8,
+          "negatywny": 7,
+          "pelnomocnictwo": 3,
+          "przelew": 4
+        },
+        "negatives_empty": 1.0
+      },
+      "c2dev": {
+        "n": {
+          "odwolanie": 13,
+          "pelnomocnictwo": 5,
+          "przelew": 10,
+          "negatywny": 11
+        },
+        "micro_f1": 0.6098265895953757,
+        "per_class_f1": {
+          "odwolanie": 0.6007905138339921,
+          "pelnomocnictwo": 0.3333333333333333,
+          "przelew": 0.8245614035087719
+        },
+        "exact": {
+          "odwolanie": 0,
+          "pelnomocnictwo": 0,
+          "przelew": 4,
+          "negatywny": 11
+        },
+        "routing": {
+          "odwolanie": 12,
+          "pelnomocnictwo": 4,
+          "przelew": 9,
+          "negatywny": 11
+        },
+        "negatives_empty": 1.0
+      }
+    },
+    "reuse the primary OCR word boxes": {
+      "organizer": {
+        "n": {
+          "przelew": 10,
+          "pelnomocnictwo": 10,
+          "odwolanie": 10
+        },
+        "micro_f1": 0.6317365269461078,
+        "per_class_f1": {
+          "odwolanie": 0.6123456790123457,
+          "pelnomocnictwo": 0.6064516129032258,
+          "przelew": 0.7407407407407407
+        },
+        "exact": {
+          "przelew": 1,
+          "pelnomocnictwo": 0,
+          "odwolanie": 0
+        },
+        "routing": {
+          "przelew": 8,
+          "pelnomocnictwo": 10,
+          "odwolanie": 9
+        },
+        "negatives_empty": null
+      },
+      "c1all": {
+        "n": {
+          "odwolanie": 13,
+          "pelnomocnictwo": 6,
+          "przelew": 9,
+          "negatywny": 11
+        },
+        "micro_f1": 0.5883748517200474,
+        "per_class_f1": {
+          "odwolanie": 0.6015503875968993,
+          "pelnomocnictwo": 0.5925925925925926,
+          "przelew": 0.4888888888888889
+        },
+        "exact": {
+          "odwolanie": 0,
+          "pelnomocnictwo": 0,
+          "przelew": 0,
+          "negatywny": 11
+        },
+        "routing": {
+          "odwolanie": 12,
+          "pelnomocnictwo": 6,
+          "przelew": 6,
+          "negatywny": 11
+        },
+        "negatives_empty": 1.0
+      },
+      "c1dev": {
+        "n": {
+          "odwolanie": 8,
+          "negatywny": 7,
+          "pelnomocnictwo": 3,
+          "przelew": 4
+        },
+        "micro_f1": 0.6965376782077393,
+        "per_class_f1": {
+          "odwolanie": 0.7055702917771883,
+          "pelnomocnictwo": 0.7272727272727273,
+          "przelew": 0.5833333333333334
+        },
+        "exact": {
+          "odwolanie": 0,
+          "negatywny": 7,
+          "pelnomocnictwo": 0,
+          "przelew": 0
+        },
+        "routing": {
+          "odwolanie": 8,
+          "negatywny": 7,
+          "pelnomocnictwo": 3,
+          "przelew": 4
+        },
+        "negatives_empty": 1.0
+      },
+      "c2dev": {
+        "n": {
+          "odwolanie": 13,
+          "pelnomocnictwo": 5,
+          "przelew": 10,
+          "negatywny": 11
+        },
+        "micro_f1": 0.6098265895953757,
+        "per_class_f1": {
+          "odwolanie": 0.6007905138339921,
+          "pelnomocnictwo": 0.3333333333333333,
+          "przelew": 0.8245614035087719
+        },
+        "exact": {
+          "odwolanie": 0,
+          "pelnomocnictwo": 0,
+          "przelew": 4,
+          "negatywny": 11
+        },
+        "routing": {
+          "odwolanie": 12,
+          "pelnomocnictwo": 4,
+          "przelew": 9,
+          "negatywny": 11
+        },
+        "negatives_empty": 1.0
+      }
+    },
+    "recover booked debit rows and signed orders": {
+      "organizer": {
+        "n": {
+          "przelew": 10,
+          "pelnomocnictwo": 10,
+          "odwolanie": 10
+        },
+        "micro_f1": 0.6377245508982036,
+        "per_class_f1": {
+          "odwolanie": 0.6123456790123457,
+          "pelnomocnictwo": 0.6064516129032258,
+          "przelew": 0.7777777777777778
+        },
+        "exact": {
+          "przelew": 1,
+          "pelnomocnictwo": 0,
+          "odwolanie": 0
+        },
+        "routing": {
+          "przelew": 8,
+          "pelnomocnictwo": 10,
+          "odwolanie": 9
+        },
+        "negatives_empty": null
+      },
+      "c1all": {
+        "n": {
+          "odwolanie": 13,
+          "pelnomocnictwo": 6,
+          "przelew": 9,
+          "negatywny": 11
+        },
+        "micro_f1": 0.5883748517200474,
+        "per_class_f1": {
+          "odwolanie": 0.6015503875968993,
+          "pelnomocnictwo": 0.5925925925925926,
+          "przelew": 0.4888888888888889
+        },
+        "exact": {
+          "odwolanie": 0,
+          "pelnomocnictwo": 0,
+          "przelew": 0,
+          "negatywny": 11
+        },
+        "routing": {
+          "odwolanie": 12,
+          "pelnomocnictwo": 6,
+          "przelew": 6,
+          "negatywny": 11
+        },
+        "negatives_empty": 1.0
+      },
+      "c1dev": {
+        "n": {
+          "odwolanie": 8,
+          "negatywny": 7,
+          "pelnomocnictwo": 3,
+          "przelew": 4
+        },
+        "micro_f1": 0.6965376782077393,
+        "per_class_f1": {
+          "odwolanie": 0.7055702917771883,
+          "pelnomocnictwo": 0.7272727272727273,
+          "przelew": 0.5833333333333334
+        },
+        "exact": {
+          "odwolanie": 0,
+          "negatywny": 7,
+          "pelnomocnictwo": 0,
+          "przelew": 0
+        },
+        "routing": {
+          "odwolanie": 8,
+          "negatywny": 7,
+          "pelnomocnictwo": 3,
+          "przelew": 4
+        },
+        "negatives_empty": 1.0
+      },
+      "c2dev": {
+        "n": {
+          "odwolanie": 13,
+          "pelnomocnictwo": 5,
+          "przelew": 10,
+          "negatywny": 11
+        },
+        "micro_f1": 0.6098265895953757,
+        "per_class_f1": {
+          "odwolanie": 0.6007905138339921,
+          "pelnomocnictwo": 0.3333333333333333,
+          "przelew": 0.8245614035087719
+        },
+        "exact": {
+          "odwolanie": 0,
+          "pelnomocnictwo": 0,
+          "przelew": 4,
+          "negatywny": 11
+        },
+        "routing": {
+          "odwolanie": 12,
+          "pelnomocnictwo": 4,
+          "przelew": 9,
+          "negatywny": 11
+        },
+        "negatives_empty": 1.0
+      }
+    },
+    "reread invalid account fields": {
+      "organizer": {
+        "n": {
+          "przelew": 10,
+          "pelnomocnictwo": 10,
+          "odwolanie": 10
+        },
+        "micro_f1": 0.6558823529411765,
+        "per_class_f1": {
+          "odwolanie": 0.6123456790123457,
+          "pelnomocnictwo": 0.6064516129032258,
+          "przelew": 0.8666666666666667
+        },
+        "exact": {
+          "przelew": 1,
+          "pelnomocnictwo": 0,
+          "odwolanie": 0
+        },
+        "routing": {
+          "przelew": 10,
+          "pelnomocnictwo": 10,
+          "odwolanie": 9
+        },
+        "negatives_empty": null
+      },
+      "c1all": {
+        "n": {
+          "odwolanie": 13,
+          "pelnomocnictwo": 6,
+          "przelew": 9,
+          "negatywny": 11
+        },
+        "micro_f1": 0.5883748517200474,
+        "per_class_f1": {
+          "odwolanie": 0.6015503875968993,
+          "pelnomocnictwo": 0.5925925925925926,
+          "przelew": 0.4888888888888889
+        },
+        "exact": {
+          "odwolanie": 0,
+          "pelnomocnictwo": 0,
+          "przelew": 0,
+          "negatywny": 11
+        },
+        "routing": {
+          "odwolanie": 12,
+          "pelnomocnictwo": 6,
+          "przelew": 6,
+          "negatywny": 11
+        },
+        "negatives_empty": 1.0
+      },
+      "c1dev": {
+        "n": {
+          "odwolanie": 8,
+          "negatywny": 7,
+          "pelnomocnictwo": 3,
+          "przelew": 4
+        },
+        "micro_f1": 0.6965376782077393,
+        "per_class_f1": {
+          "odwolanie": 0.7055702917771883,
+          "pelnomocnictwo": 0.7272727272727273,
+          "przelew": 0.5833333333333334
+        },
+        "exact": {
+          "odwolanie": 0,
+          "negatywny": 7,
+          "pelnomocnictwo": 0,
+          "przelew": 0
+        },
+        "routing": {
+          "odwolanie": 8,
+          "negatywny": 7,
+          "pelnomocnictwo": 3,
+          "przelew": 4
+        },
+        "negatives_empty": 1.0
+      },
+      "c2dev": {
+        "n": {
+          "odwolanie": 13,
+          "pelnomocnictwo": 5,
+          "przelew": 10,
+          "negatywny": 11
+        },
+        "micro_f1": 0.6098265895953757,
+        "per_class_f1": {
+          "odwolanie": 0.6007905138339921,
+          "pelnomocnictwo": 0.3333333333333333,
+          "przelew": 0.8245614035087719
+        },
+        "exact": {
+          "odwolanie": 0,
+          "pelnomocnictwo": 0,
+          "przelew": 4,
+          "negatywny": 11
+        },
+        "routing": {
+          "odwolanie": 12,
+          "pelnomocnictwo": 4,
+          "przelew": 9,
+          "negatywny": 11
+        },
+        "negatives_empty": 1.0
+      }
+    },
+    "reconstruct labelled titles": {
+      "organizer": {
+        "n": {
+          "przelew": 10,
+          "pelnomocnictwo": 10,
+          "odwolanie": 10
+        },
+        "micro_f1": 0.6764705882352942,
+        "per_class_f1": {
+          "odwolanie": 0.6123456790123457,
+          "pelnomocnictwo": 0.6064516129032258,
+          "przelew": 0.9833333333333333
+        },
+        "exact": {
+          "przelew": 9,
+          "pelnomocnictwo": 0,
+          "odwolanie": 0
+        },
+        "routing": {
+          "przelew": 10,
+          "pelnomocnictwo": 10,
+          "odwolanie": 9
+        },
+        "negatives_empty": null
+      },
+      "c1all": {
+        "n": {
+          "odwolanie": 13,
+          "pelnomocnictwo": 6,
+          "przelew": 9,
+          "negatywny": 11
+        },
+        "micro_f1": 0.5883748517200474,
+        "per_class_f1": {
+          "odwolanie": 0.6015503875968993,
+          "pelnomocnictwo": 0.5925925925925926,
+          "przelew": 0.4888888888888889
+        },
+        "exact": {
+          "odwolanie": 0,
+          "pelnomocnictwo": 0,
+          "przelew": 0,
+          "negatywny": 11
+        },
+        "routing": {
+          "odwolanie": 12,
+          "pelnomocnictwo": 6,
+          "przelew": 6,
+          "negatywny": 11
+        },
+        "negatives_empty": 1.0
+      },
+      "c1dev": {
+        "n": {
+          "odwolanie": 8,
+          "negatywny": 7,
+          "pelnomocnictwo": 3,
+          "przelew": 4
+        },
+        "micro_f1": 0.6965376782077393,
+        "per_class_f1": {
+          "odwolanie": 0.7055702917771883,
+          "pelnomocnictwo": 0.7272727272727273,
+          "przelew": 0.5833333333333334
+        },
+        "exact": {
+          "odwolanie": 0,
+          "negatywny": 7,
+          "pelnomocnictwo": 0,
+          "przelew": 0
+        },
+        "routing": {
+          "odwolanie": 8,
+          "negatywny": 7,
+          "pelnomocnictwo": 3,
+          "przelew": 4
+        },
+        "negatives_empty": 1.0
+      },
+      "c2dev": {
+        "n": {
+          "odwolanie": 13,
+          "pelnomocnictwo": 5,
+          "przelew": 10,
+          "negatywny": 11
+        },
+        "micro_f1": 0.6098265895953757,
+        "per_class_f1": {
+          "odwolanie": 0.6007905138339921,
+          "pelnomocnictwo": 0.3333333333333333,
+          "przelew": 0.8245614035087719
+        },
+        "exact": {
+          "odwolanie": 0,
+          "pelnomocnictwo": 0,
+          "przelew": 4,
+          "negatywny": 11
+        },
+        "routing": {
+          "odwolanie": 12,
+          "pelnomocnictwo": 4,
+          "przelew": 9,
+          "negatywny": 11
+        },
+        "negatives_empty": 1.0
+      }
+    },
+    "reviewed receipt rules": {
+      "organizer": {
+        "n": {
+          "przelew": 10,
+          "pelnomocnictwo": 10,
+          "odwolanie": 10
+        },
+        "micro_f1": 0.6764705882352942,
+        "per_class_f1": {
+          "odwolanie": 0.6123456790123457,
+          "pelnomocnictwo": 0.6064516129032258,
+          "przelew": 0.9833333333333333
+        },
+        "exact": {
+          "przelew": 9,
+          "pelnomocnictwo": 0,
+          "odwolanie": 0
+        },
+        "routing": {
+          "przelew": 10,
+          "pelnomocnictwo": 10,
+          "odwolanie": 9
+        },
+        "negatives_empty": null
+      },
+      "c1all": {
+        "n": {
+          "odwolanie": 13,
+          "pelnomocnictwo": 6,
+          "przelew": 9,
+          "negatywny": 11
+        },
+        "micro_f1": 0.5883748517200474,
+        "per_class_f1": {
+          "odwolanie": 0.6015503875968993,
+          "pelnomocnictwo": 0.5925925925925926,
+          "przelew": 0.4888888888888889
+        },
+        "exact": {
+          "odwolanie": 0,
+          "pelnomocnictwo": 0,
+          "przelew": 0,
+          "negatywny": 11
+        },
+        "routing": {
+          "odwolanie": 12,
+          "pelnomocnictwo": 6,
+          "przelew": 6,
+          "negatywny": 11
+        },
+        "negatives_empty": 1.0
+      },
+      "c1dev": {
+        "n": {
+          "odwolanie": 8,
+          "negatywny": 7,
+          "pelnomocnictwo": 3,
+          "przelew": 4
+        },
+        "micro_f1": 0.6965376782077393,
+        "per_class_f1": {
+          "odwolanie": 0.7055702917771883,
+          "pelnomocnictwo": 0.7272727272727273,
+          "przelew": 0.5833333333333334
+        },
+        "exact": {
+          "odwolanie": 0,
+          "negatywny": 7,
+          "pelnomocnictwo": 0,
+          "przelew": 0
+        },
+        "routing": {
+          "odwolanie": 8,
+          "negatywny": 7,
+          "pelnomocnictwo": 3,
+          "przelew": 4
+        },
+        "negatives_empty": 1.0
+      },
+      "c2dev": {
+        "n": {
+          "odwolanie": 13,
+          "pelnomocnictwo": 5,
+          "przelew": 10,
+          "negatywny": 11
+        },
+        "micro_f1": 0.6098265895953757,
+        "per_class_f1": {
+          "odwolanie": 0.6007905138339921,
+          "pelnomocnictwo": 0.3333333333333333,
+          "przelew": 0.8245614035087719
+        },
+        "exact": {
+          "odwolanie": 0,
+          "pelnomocnictwo": 0,
+          "przelew": 4,
+          "negatywny": 11
+        },
+        "routing": {
+          "odwolanie": 12,
+          "pelnomocnictwo": 4,
+          "przelew": 9,
+          "negatywny": 11
+        },
+        "negatives_empty": 1.0
+      }
+    },
+    "bounded concurrent first OCR": {
+      "organizer": {
+        "n": {
+          "odwolanie": 10,
+          "pelnomocnictwo": 10,
+          "przelew": 10
+        },
+        "micro_f1": 0.6764705882352942,
+        "per_class_f1": {
+          "odwolanie": 0.6123456790123457,
+          "pelnomocnictwo": 0.6064516129032258,
+          "przelew": 0.9833333333333333
+        },
+        "exact": {
+          "odwolanie": 0,
+          "pelnomocnictwo": 0,
+          "przelew": 9
+        },
+        "routing": {
+          "odwolanie": 9,
+          "pelnomocnictwo": 10,
+          "przelew": 10
+        },
+        "negatives_empty": null
+      },
+      "c1all": {
+        "n": {
+          "odwolanie": 13,
+          "pelnomocnictwo": 6,
+          "przelew": 9,
+          "negatywny": 11
+        },
+        "micro_f1": 0.5883748517200474,
+        "per_class_f1": {
+          "odwolanie": 0.6015503875968993,
+          "pelnomocnictwo": 0.5925925925925926,
+          "przelew": 0.4888888888888889
+        },
+        "exact": {
+          "odwolanie": 0,
+          "pelnomocnictwo": 0,
+          "przelew": 0,
+          "negatywny": 11
+        },
+        "routing": {
+          "odwolanie": 12,
+          "pelnomocnictwo": 6,
+          "przelew": 6,
+          "negatywny": 11
+        },
+        "negatives_empty": 1.0
+      },
+      "c1dev": {
+        "n": {
+          "odwolanie": 8,
+          "negatywny": 7,
+          "pelnomocnictwo": 3,
+          "przelew": 4
+        },
+        "micro_f1": 0.6965376782077393,
+        "per_class_f1": {
+          "odwolanie": 0.7055702917771883,
+          "pelnomocnictwo": 0.7272727272727273,
+          "przelew": 0.5833333333333334
+        },
+        "exact": {
+          "odwolanie": 0,
+          "negatywny": 7,
+          "pelnomocnictwo": 0,
+          "przelew": 0
+        },
+        "routing": {
+          "odwolanie": 8,
+          "negatywny": 7,
+          "pelnomocnictwo": 3,
+          "przelew": 4
+        },
+        "negatives_empty": 1.0
+      },
+      "c2dev": {
+        "n": {
+          "odwolanie": 13,
+          "pelnomocnictwo": 5,
+          "przelew": 10,
+          "negatywny": 11
+        },
+        "micro_f1": 0.6098265895953757,
+        "per_class_f1": {
+          "odwolanie": 0.6007905138339921,
+          "pelnomocnictwo": 0.3333333333333333,
+          "przelew": 0.8245614035087719
+        },
+        "exact": {
+          "odwolanie": 0,
+          "pelnomocnictwo": 0,
+          "przelew": 4,
+          "negatywny": 11
+        },
+        "routing": {
+          "odwolanie": 12,
+          "pelnomocnictwo": 4,
+          "przelew": 9,
+          "negatywny": 11
+        },
+        "negatives_empty": 1.0
+      }
+    },
+    "merge upstream power-of-attorney rules": {
+      "organizer": {
+        "n": {
+          "przelew": 10,
+          "pelnomocnictwo": 10,
+          "odwolanie": 10
+        },
+        "micro_f1": 0.7824897400820794,
+        "per_class_f1": {
+          "odwolanie": 0.6123456790123457,
+          "pelnomocnictwo": 1.0,
+          "przelew": 0.9833333333333333
+        },
+        "exact": {
+          "przelew": 9,
+          "pelnomocnictwo": 10,
+          "odwolanie": 0
+        },
+        "routing": {
+          "przelew": 10,
+          "pelnomocnictwo": 10,
+          "odwolanie": 9
+        },
+        "negatives_empty": null
+      },
+      "c1all": {
+        "n": {
+          "odwolanie": 13,
+          "pelnomocnictwo": 6,
+          "przelew": 9,
+          "negatywny": 11
+        },
+        "micro_f1": 0.6312056737588653,
+        "per_class_f1": {
+          "odwolanie": 0.6015503875968993,
+          "pelnomocnictwo": 0.918918918918919,
+          "przelew": 0.4888888888888889
+        },
+        "exact": {
+          "odwolanie": 0,
+          "pelnomocnictwo": 1,
+          "przelew": 0,
+          "negatywny": 11
+        },
+        "routing": {
+          "odwolanie": 12,
+          "pelnomocnictwo": 6,
+          "przelew": 6,
+          "negatywny": 11
+        },
+        "negatives_empty": 1.0
+      },
+      "c1dev": {
+        "n": {
+          "odwolanie": 8,
+          "negatywny": 7,
+          "pelnomocnictwo": 3,
+          "przelew": 4
+        },
+        "micro_f1": 0.7160493827160493,
+        "per_class_f1": {
+          "odwolanie": 0.7055702917771883,
+          "pelnomocnictwo": 0.8852459016393442,
+          "przelew": 0.5833333333333334
+        },
+        "exact": {
+          "odwolanie": 0,
+          "negatywny": 7,
+          "pelnomocnictwo": 0,
+          "przelew": 0
+        },
+        "routing": {
+          "odwolanie": 8,
+          "negatywny": 7,
+          "pelnomocnictwo": 3,
+          "przelew": 4
+        },
+        "negatives_empty": 1.0
+      },
+      "c2dev": {
+        "n": {
+          "odwolanie": 13,
+          "pelnomocnictwo": 5,
+          "przelew": 10,
+          "negatywny": 11
+        },
+        "micro_f1": 0.6816269284712483,
+        "per_class_f1": {
+          "odwolanie": 0.6007905138339921,
+          "pelnomocnictwo": 0.946236559139785,
+          "przelew": 0.8245614035087719
+        },
+        "exact": {
+          "odwolanie": 0,
+          "pelnomocnictwo": 3,
+          "przelew": 4,
+          "negatywny": 11
+        },
+        "routing": {
+          "odwolanie": 12,
+          "pelnomocnictwo": 5,
+          "przelew": 9,
+          "negatywny": 11
+        },
+        "negatives_empty": 1.0
+      }
+    },
+    "qualify payment execution dates": {
+      "organizer": {
+        "n": {
+          "przelew": 10,
+          "pelnomocnictwo": 10,
+          "odwolanie": 10
+        },
+        "micro_f1": 0.7824897400820794,
+        "per_class_f1": {
+          "odwolanie": 0.6123456790123457,
+          "pelnomocnictwo": 1.0,
+          "przelew": 0.9833333333333333
+        },
+        "exact": {
+          "przelew": 9,
+          "pelnomocnictwo": 10,
+          "odwolanie": 0
+        },
+        "routing": {
+          "przelew": 10,
+          "pelnomocnictwo": 10,
+          "odwolanie": 9
+        },
+        "negatives_empty": null
+      },
+      "c1all": {
+        "n": {
+          "odwolanie": 13,
+          "pelnomocnictwo": 6,
+          "przelew": 9,
+          "negatywny": 11
+        },
+        "micro_f1": 0.6312056737588653,
+        "per_class_f1": {
+          "odwolanie": 0.6015503875968993,
+          "pelnomocnictwo": 0.918918918918919,
+          "przelew": 0.4888888888888889
+        },
+        "exact": {
+          "odwolanie": 0,
+          "pelnomocnictwo": 1,
+          "przelew": 0,
+          "negatywny": 11
+        },
+        "routing": {
+          "odwolanie": 12,
+          "pelnomocnictwo": 6,
+          "przelew": 6,
+          "negatywny": 11
+        },
+        "negatives_empty": 1.0
+      },
+      "c1dev": {
+        "n": {
+          "odwolanie": 8,
+          "negatywny": 7,
+          "pelnomocnictwo": 3,
+          "przelew": 4
+        },
+        "micro_f1": 0.7160493827160493,
+        "per_class_f1": {
+          "odwolanie": 0.7055702917771883,
+          "pelnomocnictwo": 0.8852459016393442,
+          "przelew": 0.5833333333333334
+        },
+        "exact": {
+          "odwolanie": 0,
+          "negatywny": 7,
+          "pelnomocnictwo": 0,
+          "przelew": 0
+        },
+        "routing": {
+          "odwolanie": 8,
+          "negatywny": 7,
+          "pelnomocnictwo": 3,
+          "przelew": 4
+        },
+        "negatives_empty": 1.0
+      },
+      "c2dev": {
+        "n": {
+          "odwolanie": 13,
+          "pelnomocnictwo": 5,
+          "przelew": 10,
+          "negatywny": 11
+        },
+        "micro_f1": 0.6816269284712483,
+        "per_class_f1": {
+          "odwolanie": 0.6007905138339921,
+          "pelnomocnictwo": 0.946236559139785,
+          "przelew": 0.8245614035087719
+        },
+        "exact": {
+          "odwolanie": 0,
+          "pelnomocnictwo": 3,
+          "przelew": 4,
+          "negatywny": 11
+        },
+        "routing": {
+          "odwolanie": 12,
+          "pelnomocnictwo": 5,
+          "przelew": 9,
+          "negatywny": 11
+        },
+        "negatives_empty": 1.0
+      }
+    }
+  },
+  "organizer_transfer_inexact_fields": {
+    "base": {
+      "0001": [
+        "tytul"
+      ],
+      "0002": [],
+      "0003": [
+        "data_operacji",
+        "tytul"
+      ],
+      "0004": [
+        "tytul"
+      ],
+      "0005": [
+        "tytul"
+      ],
+      "0006": [
+        "data_operacji",
+        "tytul"
+      ],
+      "0007": [
+        "data_operacji",
+        "kwota",
+        "na_rachunek",
+        "numer_transakcji",
+        "tytul",
+        "z_rachunku"
+      ],
+      "0008": [
+        "data_operacji",
+        "kwota",
+        "na_rachunek",
+        "numer_transakcji",
+        "tytul",
+        "z_rachunku"
+      ],
+      "0009": [
+        "tytul"
+      ],
+      "0010": [
+        "tytul"
+      ]
+    },
+    "final": {
+      "0001": [],
+      "0002": [],
+      "0003": [],
+      "0004": [],
+      "0005": [],
+      "0006": [],
+      "0007": [],
+      "0008": [
+        "tytul"
+      ],
+      "0009": [],
+      "0010": []
+    }
+  },
+  "pre_upstream_merge_commit": "051c009673f1d4e0b188a50f943c9dc1afd7f8e4",
+  "power_of_attorney_merge_parent": "69844e1320ca0aae888656c50aa8009e7dffc1d3",
+  "training_output_byte_comparison": {
+    "total": 196,
+    "identical": 196,
+    "baseline": "f357741d598d424ca5b8f9d03732900c067121f2"
+  },
+  "timing": {
+    "method": "One process, serial PDFs, Apple M1 CPU, OMP_THREAD_LIMIT=1, all 30 scans read uncached from PDF. Time includes decoding, recognition, field extraction and JSON serialization. The four stage timers exclude nested work so their sum equals wall time. Within concurrent batches the first-OCR wall envelope includes overlapping e-mail verification. On serial pages it is timed separately under rereads/crops. Targeted rereads count invocations of account/title crop helpers and, on the integrated run, the grant register verification helper including its eligibility check. Process startup and class configuration are outside per-PDF times. The host was shared with other workers and absolute times varied between runs.",
+    "baseline": {
+      "architecture": "arm64",
+      "os": "macOS-15.6.1-arm64-arm-64bit-Mach-O",
+      "by_class": {
+        "all": {
+          "count": 30,
+          "routed": 27,
+          "exact": 1,
+          "mean_s": {
+            "text_layer": 0.01232,
+            "initial_ocr": 7.7332,
+            "rereads_crops": 0.99125,
+            "extraction": 0.0141,
+            "total": 8.75087
+          },
+          "max_s": {
+            "text_layer": 0.08448,
+            "initial_ocr": 20.73053,
+            "rereads_crops": 8.65097,
+            "extraction": 0.048,
+            "total": 21.11896
+          },
+          "max_pdf": "odwolania/0010/0010.pdf",
+          "over_10s": [
+            "odwolania/0002/0002.pdf",
+            "odwolania/0005/0005.pdf",
+            "odwolania/0008/0008.pdf",
+            "odwolania/0009/0009.pdf",
+            "odwolania/0010/0010.pdf",
+            "pelnomocnictwa/0010/0010.pdf",
+            "potwierdzenia/0001/0001.pdf",
+            "potwierdzenia/0002/0002.pdf"
+          ],
+          "counts": {
+            "first_page_ocr": 50,
+            "english_crop_recognitions_outside_parallel_batches": 19,
+            "repeat_page_ocr": 7
+          }
+        },
+        "appeal": {
+          "count": 10,
+          "routed": 9,
+          "exact": 0,
+          "mean_s": {
+            "text_layer": 0.0123,
+            "initial_ocr": 11.9347,
+            "rereads_crops": 0.08967,
+            "extraction": 0.00974,
+            "total": 12.04641
+          },
+          "max_s": {
+            "text_layer": 0.02078,
+            "initial_ocr": 20.73053,
+            "rereads_crops": 0.36639,
+            "extraction": 0.01459,
+            "total": 21.11896
+          },
+          "max_pdf": "odwolania/0010/0010.pdf",
+          "over_10s": [
+            "odwolania/0002/0002.pdf",
+            "odwolania/0005/0005.pdf",
+            "odwolania/0008/0008.pdf",
+            "odwolania/0009/0009.pdf",
+            "odwolania/0010/0010.pdf"
+          ],
+          "counts": {
+            "first_page_ocr": 30,
+            "english_crop_recognitions_outside_parallel_batches": 15
+          }
+        },
+        "power_of_attorney": {
+          "count": 10,
+          "routed": 10,
+          "exact": 0,
+          "mean_s": {
+            "text_layer": 0.02063,
+            "initial_ocr": 7.46959,
+            "rereads_crops": 0,
+            "extraction": 0.02089,
+            "total": 7.51111
+          },
+          "max_s": {
+            "text_layer": 0.08448,
+            "initial_ocr": 12.57394,
+            "rereads_crops": 0,
+            "extraction": 0.048,
+            "total": 12.62091
+          },
+          "max_pdf": "pelnomocnictwa/0010/0010.pdf",
+          "over_10s": [
+            "pelnomocnictwa/0010/0010.pdf"
+          ],
+          "counts": {
+            "first_page_ocr": 10
+          }
+        },
+        "bank_transfer": {
+          "count": 10,
+          "routed": 8,
+          "exact": 1,
+          "mean_s": {
+            "text_layer": 0.00402,
+            "initial_ocr": 3.7953,
+            "rereads_crops": 2.88408,
+            "extraction": 0.01168,
+            "total": 6.69509
+          },
+          "max_s": {
+            "text_layer": 0.00742,
+            "initial_ocr": 8.14162,
+            "rereads_crops": 8.65097,
+            "extraction": 0.02834,
+            "total": 16.82773
+          },
+          "max_pdf": "potwierdzenia/0001/0001.pdf",
+          "over_10s": [
+            "potwierdzenia/0001/0001.pdf",
+            "potwierdzenia/0002/0002.pdf"
+          ],
+          "counts": {
+            "first_page_ocr": 10,
+            "repeat_page_ocr": 7,
+            "english_crop_recognitions_outside_parallel_batches": 4
+          }
+        }
+      },
+      "pdfs": [
+        {
+          "pdf": "odwolania/0001/0001.pdf",
+          "seconds": {
+            "text_layer": 0.00804,
+            "initial_ocr": 8.10849,
+            "rereads_crops": 0.13291,
+            "extraction": 0.01459,
+            "total": 8.26403
+          },
+          "counts": {
+            "first_page_ocr": 3,
+            "english_crop_recognitions_outside_parallel_batches": 4
+          }
+        },
+        {
+          "pdf": "odwolania/0002/0002.pdf",
+          "seconds": {
+            "text_layer": 0.01191,
+            "initial_ocr": 12.04315,
+            "rereads_crops": 0.13527,
+            "extraction": 0.00745,
+            "total": 12.19778
+          },
+          "counts": {
+            "first_page_ocr": 3,
+            "english_crop_recognitions_outside_parallel_batches": 4
+          }
+        },
+        {
+          "pdf": "odwolania/0003/0003.pdf",
+          "seconds": {
+            "text_layer": 0.02078,
+            "initial_ocr": 6.57669,
+            "rereads_crops": 0,
+            "extraction": 0.01042,
+            "total": 6.60789
+          },
+          "counts": {
+            "first_page_ocr": 3
+          }
+        },
+        {
+          "pdf": "odwolania/0004/0004.pdf",
+          "seconds": {
+            "text_layer": 0.00807,
+            "initial_ocr": 9.82187,
+            "rereads_crops": 0.07979,
+            "extraction": 0.00421,
+            "total": 9.91395
+          },
+          "counts": {
+            "first_page_ocr": 3,
+            "english_crop_recognitions_outside_parallel_batches": 1
+          }
+        },
+        {
+          "pdf": "odwolania/0005/0005.pdf",
+          "seconds": {
+            "text_layer": 0.01242,
+            "initial_ocr": 10.55826,
+            "rereads_crops": 0,
+            "extraction": 0.00938,
+            "total": 10.58006
+          },
+          "counts": {
+            "first_page_ocr": 3
+          }
+        },
+        {
+          "pdf": "odwolania/0006/0006.pdf",
+          "seconds": {
+            "text_layer": 0.0089,
+            "initial_ocr": 8.81712,
+            "rereads_crops": 0.18235,
+            "extraction": 0.01029,
+            "total": 9.01867
+          },
+          "counts": {
+            "first_page_ocr": 3,
+            "english_crop_recognitions_outside_parallel_batches": 3
+          }
+        },
+        {
+          "pdf": "odwolania/0007/0007.pdf",
+          "seconds": {
+            "text_layer": 0.00935,
+            "initial_ocr": 7.60074,
+            "rereads_crops": 0,
+            "extraction": 0.01113,
+            "total": 7.62122
+          },
+          "counts": {
+            "first_page_ocr": 3
+          }
+        },
+        {
+          "pdf": "odwolania/0008/0008.pdf",
+          "seconds": {
+            "text_layer": 0.01505,
+            "initial_ocr": 15.84478,
+            "rereads_crops": 0,
+            "extraction": 0.00777,
+            "total": 15.8676
+          },
+          "counts": {
+            "first_page_ocr": 3
+          }
+        },
+        {
+          "pdf": "odwolania/0009/0009.pdf",
+          "seconds": {
+            "text_layer": 0.01411,
+            "initial_ocr": 19.24536,
+            "rereads_crops": 0,
+            "extraction": 0.01451,
+            "total": 19.27399
+          },
+          "counts": {
+            "first_page_ocr": 3
+          }
+        },
+        {
+          "pdf": "odwolania/0010/0010.pdf",
+          "seconds": {
+            "text_layer": 0.01441,
+            "initial_ocr": 20.73053,
+            "rereads_crops": 0.36639,
+            "extraction": 0.00763,
+            "total": 21.11896
+          },
+          "counts": {
+            "first_page_ocr": 3,
+            "english_crop_recognitions_outside_parallel_batches": 3
+          }
+        },
+        {
+          "pdf": "pelnomocnictwa/0001/0001.pdf",
+          "seconds": {
+            "text_layer": 0.01355,
+            "initial_ocr": 4.94798,
+            "rereads_crops": 0,
+            "extraction": 0.03554,
+            "total": 4.99708
+          },
+          "counts": {
+            "first_page_ocr": 1
+          }
+        },
+        {
+          "pdf": "pelnomocnictwa/0002/0002.pdf",
+          "seconds": {
+            "text_layer": 0.08448,
+            "initial_ocr": 5.69832,
+            "rereads_crops": 0,
+            "extraction": 0.01582,
+            "total": 5.79862
+          },
+          "counts": {
+            "first_page_ocr": 1
+          }
+        },
+        {
+          "pdf": "pelnomocnictwa/0003/0003.pdf",
+          "seconds": {
+            "text_layer": 0.0164,
+            "initial_ocr": 9.20559,
+            "rereads_crops": 0,
+            "extraction": 0.00759,
+            "total": 9.22957
+          },
+          "counts": {
+            "first_page_ocr": 1
+          }
+        },
+        {
+          "pdf": "pelnomocnictwa/0004/0004.pdf",
+          "seconds": {
+            "text_layer": 0.02101,
+            "initial_ocr": 6.12333,
+            "rereads_crops": 0,
+            "extraction": 0.02552,
+            "total": 6.16986
+          },
+          "counts": {
+            "first_page_ocr": 1
+          }
+        },
+        {
+          "pdf": "pelnomocnictwa/0005/0005.pdf",
+          "seconds": {
+            "text_layer": 0.01369,
+            "initial_ocr": 3.95305,
+            "rereads_crops": 0,
+            "extraction": 0.00204,
+            "total": 3.96878
+          },
+          "counts": {
+            "first_page_ocr": 1
+          }
+        },
+        {
+          "pdf": "pelnomocnictwa/0006/0006.pdf",
+          "seconds": {
+            "text_layer": 0.02189,
+            "initial_ocr": 6.71282,
+            "rereads_crops": 0,
+            "extraction": 0.011,
+            "total": 6.74571
+          },
+          "counts": {
+            "first_page_ocr": 1
+          }
+        },
+        {
+          "pdf": "pelnomocnictwa/0007/0007.pdf",
+          "seconds": {
+            "text_layer": 0.0145,
+            "initial_ocr": 9.42945,
+            "rereads_crops": 0,
+            "extraction": 0.01755,
+            "total": 9.46149
+          },
+          "counts": {
+            "first_page_ocr": 1
+          }
+        },
+        {
+          "pdf": "pelnomocnictwa/0008/0008.pdf",
+          "seconds": {
+            "text_layer": 0.01191,
+            "initial_ocr": 7.83636,
+            "rereads_crops": 0,
+            "extraction": 0.00304,
+            "total": 7.85131
+          },
+          "counts": {
+            "first_page_ocr": 1
+          }
+        },
+        {
+          "pdf": "pelnomocnictwa/0009/0009.pdf",
+          "seconds": {
+            "text_layer": 0.00472,
+            "initial_ocr": 8.21509,
+            "rereads_crops": 0,
+            "extraction": 0.048,
+            "total": 8.26781
+          },
+          "counts": {
+            "first_page_ocr": 1
+          }
+        },
+        {
+          "pdf": "pelnomocnictwa/0010/0010.pdf",
+          "seconds": {
+            "text_layer": 0.00416,
+            "initial_ocr": 12.57394,
+            "rereads_crops": 0,
+            "extraction": 0.04281,
+            "total": 12.62091
+          },
+          "counts": {
+            "first_page_ocr": 1
+          }
+        },
+        {
+          "pdf": "potwierdzenia/0001/0001.pdf",
+          "seconds": {
+            "text_layer": 0.0068,
+            "initial_ocr": 8.14162,
+            "rereads_crops": 8.65097,
+            "extraction": 0.02834,
+            "total": 16.82773
+          },
+          "counts": {
+            "first_page_ocr": 1,
+            "repeat_page_ocr": 1
+          }
+        },
+        {
+          "pdf": "potwierdzenia/0002/0002.pdf",
+          "seconds": {
+            "text_layer": 0.00542,
+            "initial_ocr": 7.99224,
+            "rereads_crops": 7.37508,
+            "extraction": 0.00946,
+            "total": 15.3822
+          },
+          "counts": {
+            "first_page_ocr": 1,
+            "repeat_page_ocr": 1
+          }
+        },
+        {
+          "pdf": "potwierdzenia/0003/0003.pdf",
+          "seconds": {
+            "text_layer": 0.00444,
+            "initial_ocr": 4.53736,
+            "rereads_crops": 0,
+            "extraction": 0.00917,
+            "total": 4.55097
+          },
+          "counts": {
+            "first_page_ocr": 1
+          }
+        },
+        {
+          "pdf": "potwierdzenia/0004/0004.pdf",
+          "seconds": {
+            "text_layer": 0.00333,
+            "initial_ocr": 2.97577,
+            "rereads_crops": 3.2606,
+            "extraction": 0.00869,
+            "total": 6.2484
+          },
+          "counts": {
+            "first_page_ocr": 1,
+            "repeat_page_ocr": 1
+          }
+        },
+        {
+          "pdf": "potwierdzenia/0005/0005.pdf",
+          "seconds": {
+            "text_layer": 0.00277,
+            "initial_ocr": 2.82819,
+            "rereads_crops": 3.29197,
+            "extraction": 0.0218,
+            "total": 6.14473
+          },
+          "counts": {
+            "first_page_ocr": 1,
+            "repeat_page_ocr": 1
+          }
+        },
+        {
+          "pdf": "potwierdzenia/0006/0006.pdf",
+          "seconds": {
+            "text_layer": 0.00256,
+            "initial_ocr": 2.19483,
+            "rereads_crops": 2.20444,
+            "extraction": 0.01263,
+            "total": 4.41446
+          },
+          "counts": {
+            "first_page_ocr": 1,
+            "repeat_page_ocr": 1
+          }
+        },
+        {
+          "pdf": "potwierdzenia/0007/0007.pdf",
+          "seconds": {
+            "text_layer": 0.00742,
+            "initial_ocr": 2.53999,
+            "rereads_crops": 0,
+            "extraction": 0.00906,
+            "total": 2.55646
+          },
+          "counts": {
+            "first_page_ocr": 1
+          }
+        },
+        {
+          "pdf": "potwierdzenia/0008/0008.pdf",
+          "seconds": {
+            "text_layer": 0.00345,
+            "initial_ocr": 2.94084,
+            "rereads_crops": 0,
+            "extraction": 0.00627,
+            "total": 2.95057
+          },
+          "counts": {
+            "first_page_ocr": 1
+          }
+        },
+        {
+          "pdf": "potwierdzenia/0009/0009.pdf",
+          "seconds": {
+            "text_layer": 0.00212,
+            "initial_ocr": 2.44656,
+            "rereads_crops": 2.64869,
+            "extraction": 0.00595,
+            "total": 5.10332
+          },
+          "counts": {
+            "first_page_ocr": 1,
+            "english_crop_recognitions_outside_parallel_batches": 4,
+            "repeat_page_ocr": 1
+          }
+        },
+        {
+          "pdf": "potwierdzenia/0010/0010.pdf",
+          "seconds": {
+            "text_layer": 0.00185,
+            "initial_ocr": 1.35563,
+            "rereads_crops": 1.40906,
+            "extraction": 0.00548,
+            "total": 2.77202
+          },
+          "counts": {
+            "first_page_ocr": 1,
+            "repeat_page_ocr": 1
+          }
+        }
+      ]
+    },
+    "before_upstream_power_of_attorney_merge": {
+      "architecture": "arm64",
+      "os": "macOS-15.6.1-arm64-arm-64bit-Mach-O",
+      "by_class": {
+        "all": {
+          "count": 30,
+          "routed": 29,
+          "exact": 9,
+          "mean_s": {
+            "text_layer": 0.00809,
+            "initial_ocr": 3.56794,
+            "rereads_crops": 0.14498,
+            "extraction": 0.01121,
+            "total": 3.73222
+          },
+          "max_s": {
+            "text_layer": 0.02809,
+            "initial_ocr": 8.13508,
+            "rereads_crops": 0.63546,
+            "extraction": 0.02856,
+            "total": 8.17044
+          },
+          "max_pdf": "odwolania/0001/0001.pdf",
+          "over_10s": [],
+          "counts": {
+            "first_page_ocr": 50,
+            "parallel_batches": 10,
+            "targeted_helper_calls": 10,
+            "english_crop_recognitions_outside_parallel_batches": 2
+          }
+        },
+        "appeal": {
+          "count": 10,
+          "routed": 9,
+          "exact": 0,
+          "mean_s": {
+            "text_layer": 0.01426,
+            "initial_ocr": 6.01209,
+            "rereads_crops": 0,
+            "extraction": 0.01558,
+            "total": 6.04193
+          },
+          "max_s": {
+            "text_layer": 0.02809,
+            "initial_ocr": 8.13508,
+            "rereads_crops": 0,
+            "extraction": 0.02647,
+            "total": 8.17044
+          },
+          "max_pdf": "odwolania/0001/0001.pdf",
+          "over_10s": [],
+          "counts": {
+            "first_page_ocr": 30,
+            "parallel_batches": 10
+          }
+        },
+        "power_of_attorney": {
+          "count": 10,
+          "routed": 10,
+          "exact": 0,
+          "mean_s": {
+            "text_layer": 0.00467,
+            "initial_ocr": 2.61279,
+            "rereads_crops": 0,
+            "extraction": 0.00536,
+            "total": 2.62283
+          },
+          "max_s": {
+            "text_layer": 0.0085,
+            "initial_ocr": 3.2198,
+            "rereads_crops": 0,
+            "extraction": 0.02045,
+            "total": 3.22994
+          },
+          "max_pdf": "pelnomocnictwa/0010/0010.pdf",
+          "over_10s": [],
+          "counts": {
+            "first_page_ocr": 10
+          }
+        },
+        "bank_transfer": {
+          "count": 10,
+          "routed": 10,
+          "exact": 9,
+          "mean_s": {
+            "text_layer": 0.00534,
+            "initial_ocr": 2.07895,
+            "rereads_crops": 0.43494,
+            "extraction": 0.01268,
+            "total": 2.53191
+          },
+          "max_s": {
+            "text_layer": 0.01041,
+            "initial_ocr": 3.7913,
+            "rereads_crops": 0.63546,
+            "extraction": 0.02856,
+            "total": 4.33943
+          },
+          "max_pdf": "potwierdzenia/0001/0001.pdf",
+          "over_10s": [],
+          "counts": {
+            "first_page_ocr": 10,
+            "targeted_helper_calls": 10,
+            "english_crop_recognitions_outside_parallel_batches": 2
+          }
+        }
+      },
+      "pdfs": [
+        {
+          "pdf": "odwolania/0001/0001.pdf",
+          "seconds": {
+            "text_layer": 0.01214,
+            "initial_ocr": 8.13508,
+            "rereads_crops": 0,
+            "extraction": 0.02322,
+            "total": 8.17044
+          },
+          "counts": {
+            "first_page_ocr": 3,
+            "parallel_batches": 1
+          }
+        },
+        {
+          "pdf": "odwolania/0002/0002.pdf",
+          "seconds": {
+            "text_layer": 0.01081,
+            "initial_ocr": 6.07558,
+            "rereads_crops": 0,
+            "extraction": 0.00906,
+            "total": 6.09546
+          },
+          "counts": {
+            "first_page_ocr": 3,
+            "parallel_batches": 1
+          }
+        },
+        {
+          "pdf": "odwolania/0003/0003.pdf",
+          "seconds": {
+            "text_layer": 0.0183,
+            "initial_ocr": 3.71149,
+            "rereads_crops": 0,
+            "extraction": 0.01206,
+            "total": 3.74185
+          },
+          "counts": {
+            "first_page_ocr": 3,
+            "parallel_batches": 1
+          }
+        },
+        {
+          "pdf": "odwolania/0004/0004.pdf",
+          "seconds": {
+            "text_layer": 0.00966,
+            "initial_ocr": 7.7316,
+            "rereads_crops": 0,
+            "extraction": 0.01258,
+            "total": 7.75384
+          },
+          "counts": {
+            "first_page_ocr": 3,
+            "parallel_batches": 1
+          }
+        },
+        {
+          "pdf": "odwolania/0005/0005.pdf",
+          "seconds": {
+            "text_layer": 0.02655,
+            "initial_ocr": 6.997,
+            "rereads_crops": 0,
+            "extraction": 0.02647,
+            "total": 7.05002
+          },
+          "counts": {
+            "first_page_ocr": 3,
+            "parallel_batches": 1
+          }
+        },
+        {
+          "pdf": "odwolania/0006/0006.pdf",
+          "seconds": {
+            "text_layer": 0.02809,
+            "initial_ocr": 6.40047,
+            "rereads_crops": 0,
+            "extraction": 0.00975,
+            "total": 6.4383
+          },
+          "counts": {
+            "first_page_ocr": 3,
+            "parallel_batches": 1
+          }
+        },
+        {
+          "pdf": "odwolania/0007/0007.pdf",
+          "seconds": {
+            "text_layer": 0.00937,
+            "initial_ocr": 5.37009,
+            "rereads_crops": 0,
+            "extraction": 0.01317,
+            "total": 5.39263
+          },
+          "counts": {
+            "first_page_ocr": 3,
+            "parallel_batches": 1
+          }
+        },
+        {
+          "pdf": "odwolania/0008/0008.pdf",
+          "seconds": {
+            "text_layer": 0.01013,
+            "initial_ocr": 5.42605,
+            "rereads_crops": 0,
+            "extraction": 0.01107,
+            "total": 5.44725
+          },
+          "counts": {
+            "first_page_ocr": 3,
+            "parallel_batches": 1
+          }
+        },
+        {
+          "pdf": "odwolania/0009/0009.pdf",
+          "seconds": {
+            "text_layer": 0.00926,
+            "initial_ocr": 5.76817,
+            "rereads_crops": 0,
+            "extraction": 0.02468,
+            "total": 5.80212
+          },
+          "counts": {
+            "first_page_ocr": 3,
+            "parallel_batches": 1
+          }
+        },
+        {
+          "pdf": "odwolania/0010/0010.pdf",
+          "seconds": {
+            "text_layer": 0.00826,
+            "initial_ocr": 4.50539,
+            "rereads_crops": 0,
+            "extraction": 0.0137,
+            "total": 4.52735
+          },
+          "counts": {
+            "first_page_ocr": 3,
+            "parallel_batches": 1
+          }
+        },
+        {
+          "pdf": "pelnomocnictwa/0001/0001.pdf",
+          "seconds": {
+            "text_layer": 0.00399,
+            "initial_ocr": 2.44586,
+            "rereads_crops": 0,
+            "extraction": 0.02045,
+            "total": 2.4703
+          },
+          "counts": {
+            "first_page_ocr": 1
+          }
+        },
+        {
+          "pdf": "pelnomocnictwa/0002/0002.pdf",
+          "seconds": {
+            "text_layer": 0.00342,
+            "initial_ocr": 2.227,
+            "rereads_crops": 0,
+            "extraction": 0.00237,
+            "total": 2.23279
+          },
+          "counts": {
+            "first_page_ocr": 1
+          }
+        },
+        {
+          "pdf": "pelnomocnictwa/0003/0003.pdf",
+          "seconds": {
+            "text_layer": 0.00466,
+            "initial_ocr": 2.37567,
+            "rereads_crops": 0,
+            "extraction": 0.00217,
+            "total": 2.3825
+          },
+          "counts": {
+            "first_page_ocr": 1
+          }
+        },
+        {
+          "pdf": "pelnomocnictwa/0004/0004.pdf",
+          "seconds": {
+            "text_layer": 0.00244,
+            "initial_ocr": 2.16794,
+            "rereads_crops": 0,
+            "extraction": 0.00288,
+            "total": 2.17326
+          },
+          "counts": {
+            "first_page_ocr": 1
+          }
+        },
+        {
+          "pdf": "pelnomocnictwa/0005/0005.pdf",
+          "seconds": {
+            "text_layer": 0.0034,
+            "initial_ocr": 2.2927,
+            "rereads_crops": 0,
+            "extraction": 0.00212,
+            "total": 2.29822
+          },
+          "counts": {
+            "first_page_ocr": 1
+          }
+        },
+        {
+          "pdf": "pelnomocnictwa/0006/0006.pdf",
+          "seconds": {
+            "text_layer": 0.00491,
+            "initial_ocr": 3.18684,
+            "rereads_crops": 0,
+            "extraction": 0.00456,
+            "total": 3.19631
+          },
+          "counts": {
+            "first_page_ocr": 1
+          }
+        },
+        {
+          "pdf": "pelnomocnictwa/0007/0007.pdf",
+          "seconds": {
+            "text_layer": 0.0085,
+            "initial_ocr": 2.9745,
+            "rereads_crops": 0,
+            "extraction": 0.00581,
+            "total": 2.98881
+          },
+          "counts": {
+            "first_page_ocr": 1
+          }
+        },
+        {
+          "pdf": "pelnomocnictwa/0008/0008.pdf",
+          "seconds": {
+            "text_layer": 0.00484,
+            "initial_ocr": 2.67508,
+            "rereads_crops": 0,
+            "extraction": 0.00444,
+            "total": 2.68435
+          },
+          "counts": {
+            "first_page_ocr": 1
+          }
+        },
+        {
+          "pdf": "pelnomocnictwa/0009/0009.pdf",
+          "seconds": {
+            "text_layer": 0.00441,
+            "initial_ocr": 2.56254,
+            "rereads_crops": 0,
+            "extraction": 0.00487,
+            "total": 2.57182
+          },
+          "counts": {
+            "first_page_ocr": 1
+          }
+        },
+        {
+          "pdf": "pelnomocnictwa/0010/0010.pdf",
+          "seconds": {
+            "text_layer": 0.00616,
+            "initial_ocr": 3.2198,
+            "rereads_crops": 0,
+            "extraction": 0.00397,
+            "total": 3.22994
+          },
+          "counts": {
+            "first_page_ocr": 1
+          }
+        },
+        {
+          "pdf": "potwierdzenia/0001/0001.pdf",
+          "seconds": {
+            "text_layer": 0.00758,
+            "initial_ocr": 3.7913,
+            "rereads_crops": 0.512,
+            "extraction": 0.02856,
+            "total": 4.33943
+          },
+          "counts": {
+            "first_page_ocr": 1,
+            "targeted_helper_calls": 1
+          }
+        },
+        {
+          "pdf": "potwierdzenia/0002/0002.pdf",
+          "seconds": {
+            "text_layer": 0.01041,
+            "initial_ocr": 2.16389,
+            "rereads_crops": 0,
+            "extraction": 0.00872,
+            "total": 2.18301
+          },
+          "counts": {
+            "first_page_ocr": 1
+          }
+        },
+        {
+          "pdf": "potwierdzenia/0003/0003.pdf",
+          "seconds": {
+            "text_layer": 0.00903,
+            "initial_ocr": 2.4387,
+            "rereads_crops": 0.50222,
+            "extraction": 0.01711,
+            "total": 2.96706
+          },
+          "counts": {
+            "first_page_ocr": 1,
+            "targeted_helper_calls": 1
+          }
+        },
+        {
+          "pdf": "potwierdzenia/0004/0004.pdf",
+          "seconds": {
+            "text_layer": 0.00848,
+            "initial_ocr": 1.96959,
+            "rereads_crops": 0.54674,
+            "extraction": 0.0098,
+            "total": 2.53461
+          },
+          "counts": {
+            "first_page_ocr": 1,
+            "targeted_helper_calls": 1
+          }
+        },
+        {
+          "pdf": "potwierdzenia/0005/0005.pdf",
+          "seconds": {
+            "text_layer": 0.00199,
+            "initial_ocr": 1.50503,
+            "rereads_crops": 0.25908,
+            "extraction": 0.00757,
+            "total": 1.77368
+          },
+          "counts": {
+            "first_page_ocr": 1,
+            "targeted_helper_calls": 1
+          }
+        },
+        {
+          "pdf": "potwierdzenia/0006/0006.pdf",
+          "seconds": {
+            "text_layer": 0.00338,
+            "initial_ocr": 1.94839,
+            "rereads_crops": 0.46536,
+            "extraction": 0.01046,
+            "total": 2.42758
+          },
+          "counts": {
+            "first_page_ocr": 1,
+            "targeted_helper_calls": 1
+          }
+        },
+        {
+          "pdf": "potwierdzenia/0007/0007.pdf",
+          "seconds": {
+            "text_layer": 0.00187,
+            "initial_ocr": 1.3916,
+            "rereads_crops": 0.55113,
+            "extraction": 0.00612,
+            "total": 1.95072
+          },
+          "counts": {
+            "first_page_ocr": 1,
+            "targeted_helper_calls": 2
+          }
+        },
+        {
+          "pdf": "potwierdzenia/0008/0008.pdf",
+          "seconds": {
+            "text_layer": 0.00253,
+            "initial_ocr": 1.92201,
+            "rereads_crops": 0.63546,
+            "extraction": 0.00767,
+            "total": 2.56768
+          },
+          "counts": {
+            "first_page_ocr": 1,
+            "targeted_helper_calls": 2
+          }
+        },
+        {
+          "pdf": "potwierdzenia/0009/0009.pdf",
+          "seconds": {
+            "text_layer": 0.00258,
+            "initial_ocr": 1.65485,
+            "rereads_crops": 0.26043,
+            "extraction": 0.0065,
+            "total": 1.92437
+          },
+          "counts": {
+            "first_page_ocr": 1,
+            "english_crop_recognitions_outside_parallel_batches": 2
+          }
+        },
+        {
+          "pdf": "potwierdzenia/0010/0010.pdf",
+          "seconds": {
+            "text_layer": 0.00553,
+            "initial_ocr": 2.00413,
+            "rereads_crops": 0.61702,
+            "extraction": 0.02429,
+            "total": 2.65097
+          },
+          "counts": {
+            "first_page_ocr": 1,
+            "targeted_helper_calls": 1
+          }
+        }
+      ]
+    },
+    "integrated_before_date_guard": {
+      "architecture": "arm64",
+      "os": "macOS-15.6.1-arm64-arm-64bit-Mach-O",
+      "by_class": {
+        "all": {
+          "count": 30,
+          "routed": 29,
+          "exact": 19,
+          "mean_s": {
+            "text_layer": 0.00554,
+            "initial_ocr": 4.25648,
+            "rereads_crops": 0.42602,
+            "extraction": 0.00996,
+            "total": 4.69801
+          },
+          "max_s": {
+            "text_layer": 0.0282,
+            "initial_ocr": 6.36006,
+            "rereads_crops": 1.51801,
+            "extraction": 0.02689,
+            "total": 7.03334
+          },
+          "max_pdf": "potwierdzenia/0006/0006.pdf",
+          "over_10s": [],
+          "counts": {
+            "first_page_ocr": 50,
+            "parallel_batches": 10,
+            "targeted_helper_calls": 20,
+            "english_crop_recognitions_outside_parallel_batches": 12
+          }
+        },
+        "appeal": {
+          "count": 10,
+          "routed": 9,
+          "exact": 0,
+          "mean_s": {
+            "text_layer": 0.01016,
+            "initial_ocr": 5.12372,
+            "rereads_crops": 0,
+            "extraction": 0.01081,
+            "total": 5.1447
+          },
+          "max_s": {
+            "text_layer": 0.0282,
+            "initial_ocr": 6.36006,
+            "rereads_crops": 0,
+            "extraction": 0.02534,
+            "total": 6.39434
+          },
+          "max_pdf": "odwolania/0001/0001.pdf",
+          "over_10s": [],
+          "counts": {
+            "first_page_ocr": 30,
+            "parallel_batches": 10
+          }
+        },
+        "power_of_attorney": {
+          "count": 10,
+          "routed": 10,
+          "exact": 10,
+          "mean_s": {
+            "text_layer": 0.00277,
+            "initial_ocr": 3.04151,
+            "rereads_crops": 0.37281,
+            "extraction": 0.00693,
+            "total": 3.42403
+          },
+          "max_s": {
+            "text_layer": 0.00417,
+            "initial_ocr": 3.99249,
+            "rereads_crops": 0.69888,
+            "extraction": 0.02689,
+            "total": 4.69952
+          },
+          "max_pdf": "pelnomocnictwa/0009/0009.pdf",
+          "over_10s": [],
+          "counts": {
+            "first_page_ocr": 10,
+            "targeted_helper_calls": 10,
+            "english_crop_recognitions_outside_parallel_batches": 10
+          }
+        },
+        "bank_transfer": {
+          "count": 10,
+          "routed": 10,
+          "exact": 9,
+          "mean_s": {
+            "text_layer": 0.0037,
+            "initial_ocr": 4.60421,
+            "rereads_crops": 0.90525,
+            "extraction": 0.01213,
+            "total": 5.52529
+          },
+          "max_s": {
+            "text_layer": 0.00601,
+            "initial_ocr": 5.91153,
+            "rereads_crops": 1.51801,
+            "extraction": 0.02491,
+            "total": 7.03334
+          },
+          "max_pdf": "potwierdzenia/0006/0006.pdf",
+          "over_10s": [],
+          "counts": {
+            "first_page_ocr": 10,
+            "targeted_helper_calls": 10,
+            "english_crop_recognitions_outside_parallel_batches": 2
+          }
+        }
+      },
+      "pdfs": [
+        {
+          "pdf": "odwolania/0001/0001.pdf",
+          "seconds": {
+            "text_layer": 0.00894,
+            "initial_ocr": 6.36006,
+            "rereads_crops": 0,
+            "extraction": 0.02534,
+            "total": 6.39434
+          },
+          "counts": {
+            "first_page_ocr": 3,
+            "parallel_batches": 1
+          }
+        },
+        {
+          "pdf": "odwolania/0002/0002.pdf",
+          "seconds": {
+            "text_layer": 0.0282,
+            "initial_ocr": 5.75101,
+            "rereads_crops": 0,
+            "extraction": 0.00496,
+            "total": 5.78417
+          },
+          "counts": {
+            "first_page_ocr": 3,
+            "parallel_batches": 1
+          }
+        },
+        {
+          "pdf": "odwolania/0003/0003.pdf",
+          "seconds": {
+            "text_layer": 0.01429,
+            "initial_ocr": 3.44151,
+            "rereads_crops": 0,
+            "extraction": 0.00994,
+            "total": 3.46575
+          },
+          "counts": {
+            "first_page_ocr": 3,
+            "parallel_batches": 1
+          }
+        },
+        {
+          "pdf": "odwolania/0004/0004.pdf",
+          "seconds": {
+            "text_layer": 0.00675,
+            "initial_ocr": 5.72631,
+            "rereads_crops": 0,
+            "extraction": 0.00383,
+            "total": 5.7369
+          },
+          "counts": {
+            "first_page_ocr": 3,
+            "parallel_batches": 1
+          }
+        },
+        {
+          "pdf": "odwolania/0005/0005.pdf",
+          "seconds": {
+            "text_layer": 0.00757,
+            "initial_ocr": 4.92594,
+            "rereads_crops": 0,
+            "extraction": 0.01253,
+            "total": 4.94605
+          },
+          "counts": {
+            "first_page_ocr": 3,
+            "parallel_batches": 1
+          }
+        },
+        {
+          "pdf": "odwolania/0006/0006.pdf",
+          "seconds": {
+            "text_layer": 0.00842,
+            "initial_ocr": 4.84331,
+            "rereads_crops": 0,
+            "extraction": 0.0072,
+            "total": 4.85892
+          },
+          "counts": {
+            "first_page_ocr": 3,
+            "parallel_batches": 1
+          }
+        },
+        {
+          "pdf": "odwolania/0007/0007.pdf",
+          "seconds": {
+            "text_layer": 0.0074,
+            "initial_ocr": 4.8263,
+            "rereads_crops": 0,
+            "extraction": 0.01165,
+            "total": 4.84536
+          },
+          "counts": {
+            "first_page_ocr": 3,
+            "parallel_batches": 1
+          }
+        },
+        {
+          "pdf": "odwolania/0008/0008.pdf",
+          "seconds": {
+            "text_layer": 0.00907,
+            "initial_ocr": 5.73868,
+            "rereads_crops": 0,
+            "extraction": 0.01,
+            "total": 5.75775
+          },
+          "counts": {
+            "first_page_ocr": 3,
+            "parallel_batches": 1
+          }
+        },
+        {
+          "pdf": "odwolania/0009/0009.pdf",
+          "seconds": {
+            "text_layer": 0.00564,
+            "initial_ocr": 5.26465,
+            "rereads_crops": 0,
+            "extraction": 0.01327,
+            "total": 5.28356
+          },
+          "counts": {
+            "first_page_ocr": 3,
+            "parallel_batches": 1
+          }
+        },
+        {
+          "pdf": "odwolania/0010/0010.pdf",
+          "seconds": {
+            "text_layer": 0.00534,
+            "initial_ocr": 4.35947,
+            "rereads_crops": 0,
+            "extraction": 0.00934,
+            "total": 4.37415
+          },
+          "counts": {
+            "first_page_ocr": 3,
+            "parallel_batches": 1
+          }
+        },
+        {
+          "pdf": "pelnomocnictwa/0001/0001.pdf",
+          "seconds": {
+            "text_layer": 0.00265,
+            "initial_ocr": 2.47202,
+            "rereads_crops": 0.25401,
+            "extraction": 0.02689,
+            "total": 2.75557
+          },
+          "counts": {
+            "first_page_ocr": 1,
+            "targeted_helper_calls": 1,
+            "english_crop_recognitions_outside_parallel_batches": 1
+          }
+        },
+        {
+          "pdf": "pelnomocnictwa/0002/0002.pdf",
+          "seconds": {
+            "text_layer": 0.00284,
+            "initial_ocr": 1.91194,
+            "rereads_crops": 0.29482,
+            "extraction": 0.00295,
+            "total": 2.21255
+          },
+          "counts": {
+            "first_page_ocr": 1,
+            "targeted_helper_calls": 1,
+            "english_crop_recognitions_outside_parallel_batches": 1
+          }
+        },
+        {
+          "pdf": "pelnomocnictwa/0003/0003.pdf",
+          "seconds": {
+            "text_layer": 0.00214,
+            "initial_ocr": 3.36876,
+            "rereads_crops": 0.47826,
+            "extraction": 0.00355,
+            "total": 3.85271
+          },
+          "counts": {
+            "first_page_ocr": 1,
+            "targeted_helper_calls": 1,
+            "english_crop_recognitions_outside_parallel_batches": 1
+          }
+        },
+        {
+          "pdf": "pelnomocnictwa/0004/0004.pdf",
+          "seconds": {
+            "text_layer": 0.00246,
+            "initial_ocr": 2.92716,
+            "rereads_crops": 0.36331,
+            "extraction": 0.00572,
+            "total": 3.29865
+          },
+          "counts": {
+            "first_page_ocr": 1,
+            "targeted_helper_calls": 1,
+            "english_crop_recognitions_outside_parallel_batches": 1
+          }
+        },
+        {
+          "pdf": "pelnomocnictwa/0005/0005.pdf",
+          "seconds": {
+            "text_layer": 0.00417,
+            "initial_ocr": 2.48073,
+            "rereads_crops": 0.36471,
+            "extraction": 0.0034,
+            "total": 2.85301
+          },
+          "counts": {
+            "first_page_ocr": 1,
+            "targeted_helper_calls": 1,
+            "english_crop_recognitions_outside_parallel_batches": 1
+          }
+        },
+        {
+          "pdf": "pelnomocnictwa/0006/0006.pdf",
+          "seconds": {
+            "text_layer": 0.00251,
+            "initial_ocr": 3.12125,
+            "rereads_crops": 0.35428,
+            "extraction": 0.00418,
+            "total": 3.48223
+          },
+          "counts": {
+            "first_page_ocr": 1,
+            "targeted_helper_calls": 1,
+            "english_crop_recognitions_outside_parallel_batches": 1
+          }
+        },
+        {
+          "pdf": "pelnomocnictwa/0007/0007.pdf",
+          "seconds": {
+            "text_layer": 0.00221,
+            "initial_ocr": 3.3499,
+            "rereads_crops": 0.34719,
+            "extraction": 0.00476,
+            "total": 3.70406
+          },
+          "counts": {
+            "first_page_ocr": 1,
+            "targeted_helper_calls": 1,
+            "english_crop_recognitions_outside_parallel_batches": 2
+          }
+        },
+        {
+          "pdf": "pelnomocnictwa/0008/0008.pdf",
+          "seconds": {
+            "text_layer": 0.00241,
+            "initial_ocr": 3.08526,
+            "rereads_crops": 0.57253,
+            "extraction": 0.00563,
+            "total": 3.66583
+          },
+          "counts": {
+            "first_page_ocr": 1,
+            "targeted_helper_calls": 1,
+            "english_crop_recognitions_outside_parallel_batches": 1
+          }
+        },
+        {
+          "pdf": "pelnomocnictwa/0009/0009.pdf",
+          "seconds": {
+            "text_layer": 0.00323,
+            "initial_ocr": 3.99249,
+            "rereads_crops": 0.69888,
+            "extraction": 0.00491,
+            "total": 4.69952
+          },
+          "counts": {
+            "first_page_ocr": 1,
+            "targeted_helper_calls": 1,
+            "english_crop_recognitions_outside_parallel_batches": 1
+          }
+        },
+        {
+          "pdf": "pelnomocnictwa/0010/0010.pdf",
+          "seconds": {
+            "text_layer": 0.00304,
+            "initial_ocr": 3.70562,
+            "rereads_crops": 0.00012,
+            "extraction": 0.00735,
+            "total": 3.71614
+          },
+          "counts": {
+            "first_page_ocr": 1,
+            "targeted_helper_calls": 1
+          }
+        },
+        {
+          "pdf": "potwierdzenia/0001/0001.pdf",
+          "seconds": {
+            "text_layer": 0.00273,
+            "initial_ocr": 4.09647,
+            "rereads_crops": 0.77771,
+            "extraction": 0.00908,
+            "total": 4.88598
+          },
+          "counts": {
+            "first_page_ocr": 1,
+            "targeted_helper_calls": 1
+          }
+        },
+        {
+          "pdf": "potwierdzenia/0002/0002.pdf",
+          "seconds": {
+            "text_layer": 0.00288,
+            "initial_ocr": 4.85462,
+            "rereads_crops": 0,
+            "extraction": 0.01085,
+            "total": 4.86835
+          },
+          "counts": {
+            "first_page_ocr": 1
+          }
+        },
+        {
+          "pdf": "potwierdzenia/0003/0003.pdf",
+          "seconds": {
+            "text_layer": 0.00395,
+            "initial_ocr": 4.02289,
+            "rereads_crops": 1.51801,
+            "extraction": 0.0071,
+            "total": 5.55195
+          },
+          "counts": {
+            "first_page_ocr": 1,
+            "targeted_helper_calls": 1
+          }
+        },
+        {
+          "pdf": "potwierdzenia/0004/0004.pdf",
+          "seconds": {
+            "text_layer": 0.00345,
+            "initial_ocr": 4.84681,
+            "rereads_crops": 1.16609,
+            "extraction": 0.00847,
+            "total": 6.02482
+          },
+          "counts": {
+            "first_page_ocr": 1,
+            "targeted_helper_calls": 1
+          }
+        },
+        {
+          "pdf": "potwierdzenia/0005/0005.pdf",
+          "seconds": {
+            "text_layer": 0.00366,
+            "initial_ocr": 4.09377,
+            "rereads_crops": 0.57241,
+            "extraction": 0.01147,
+            "total": 4.68131
+          },
+          "counts": {
+            "first_page_ocr": 1,
+            "targeted_helper_calls": 1
+          }
+        },
+        {
+          "pdf": "potwierdzenia/0006/0006.pdf",
+          "seconds": {
+            "text_layer": 0.00601,
+            "initial_ocr": 5.91153,
+            "rereads_crops": 1.09089,
+            "extraction": 0.02491,
+            "total": 7.03334
+          },
+          "counts": {
+            "first_page_ocr": 1,
+            "targeted_helper_calls": 1
+          }
+        },
+        {
+          "pdf": "potwierdzenia/0007/0007.pdf",
+          "seconds": {
+            "text_layer": 0.00195,
+            "initial_ocr": 3.80194,
+            "rereads_crops": 0.95625,
+            "extraction": 0.01563,
+            "total": 4.77577
+          },
+          "counts": {
+            "first_page_ocr": 1,
+            "targeted_helper_calls": 2
+          }
+        },
+        {
+          "pdf": "potwierdzenia/0008/0008.pdf",
+          "seconds": {
+            "text_layer": 0.0036,
+            "initial_ocr": 4.71053,
+            "rereads_crops": 1.14174,
+            "extraction": 0.0071,
+            "total": 5.86298
+          },
+          "counts": {
+            "first_page_ocr": 1,
+            "targeted_helper_calls": 2
+          }
+        },
+        {
+          "pdf": "potwierdzenia/0009/0009.pdf",
+          "seconds": {
+            "text_layer": 0.00355,
+            "initial_ocr": 3.9759,
+            "rereads_crops": 0.61755,
+            "extraction": 0.01394,
+            "total": 4.61094
+          },
+          "counts": {
+            "first_page_ocr": 1,
+            "english_crop_recognitions_outside_parallel_batches": 2
+          }
+        },
+        {
+          "pdf": "potwierdzenia/0010/0010.pdf",
+          "seconds": {
+            "text_layer": 0.00523,
+            "initial_ocr": 5.72762,
+            "rereads_crops": 1.21187,
+            "extraction": 0.01279,
+            "total": 6.95751
+          },
+          "counts": {
+            "first_page_ocr": 1,
+            "targeted_helper_calls": 1
+          }
+        }
+      ]
+    },
+    "final": {
+      "architecture": "arm64",
+      "os": "macOS-15.6.1-arm64-arm-64bit-Mach-O",
+      "by_class": {
+        "all": {
+          "count": 30,
+          "routed": 29,
+          "exact": 19,
+          "mean_s": {
+            "text_layer": 0.01114,
+            "initial_ocr": 8.57117,
+            "rereads_crops": 0.63256,
+            "extraction": 0.01577,
+            "total": 9.23064
+          },
+          "max_s": {
+            "text_layer": 0.06665,
+            "initial_ocr": 18.97287,
+            "rereads_crops": 2.01018,
+            "extraction": 0.05277,
+            "total": 19.0159
+          },
+          "max_pdf": "odwolania/0001/0001.pdf",
+          "over_10s": [
+            "odwolania/0001/0001.pdf",
+            "odwolania/0002/0002.pdf",
+            "odwolania/0003/0003.pdf",
+            "odwolania/0004/0004.pdf",
+            "odwolania/0005/0005.pdf",
+            "odwolania/0006/0006.pdf",
+            "odwolania/0007/0007.pdf",
+            "odwolania/0008/0008.pdf",
+            "odwolania/0009/0009.pdf",
+            "odwolania/0010/0010.pdf",
+            "pelnomocnictwa/0001/0001.pdf"
+          ],
+          "counts": {
+            "first_page_ocr": 50,
+            "parallel_batches": 10,
+            "targeted_helper_calls": 20,
+            "english_crop_recognitions_outside_parallel_batches": 12
+          }
+        },
+        "appeal": {
+          "count": 10,
+          "routed": 9,
+          "exact": 0,
+          "mean_s": {
+            "text_layer": 0.012,
+            "initial_ocr": 14.01807,
+            "rereads_crops": 0,
+            "extraction": 0.01264,
+            "total": 14.04271
+          },
+          "max_s": {
+            "text_layer": 0.02166,
+            "initial_ocr": 18.97287,
+            "rereads_crops": 0,
+            "extraction": 0.025,
+            "total": 19.0159
+          },
+          "max_pdf": "odwolania/0001/0001.pdf",
+          "over_10s": [
+            "odwolania/0001/0001.pdf",
+            "odwolania/0002/0002.pdf",
+            "odwolania/0003/0003.pdf",
+            "odwolania/0004/0004.pdf",
+            "odwolania/0005/0005.pdf",
+            "odwolania/0006/0006.pdf",
+            "odwolania/0007/0007.pdf",
+            "odwolania/0008/0008.pdf",
+            "odwolania/0009/0009.pdf",
+            "odwolania/0010/0010.pdf"
+          ],
+          "counts": {
+            "first_page_ocr": 30,
+            "parallel_batches": 10
+          }
+        },
+        "power_of_attorney": {
+          "count": 10,
+          "routed": 10,
+          "exact": 10,
+          "mean_s": {
+            "text_layer": 0.01765,
+            "initial_ocr": 7.30446,
+            "rereads_crops": 1.04354,
+            "extraction": 0.01465,
+            "total": 8.3803
+          },
+          "max_s": {
+            "text_layer": 0.06665,
+            "initial_ocr": 9.59932,
+            "rereads_crops": 1.98155,
+            "extraction": 0.0498,
+            "total": 10.94952
+          },
+          "max_pdf": "pelnomocnictwa/0001/0001.pdf",
+          "over_10s": [
+            "pelnomocnictwa/0001/0001.pdf"
+          ],
+          "counts": {
+            "first_page_ocr": 10,
+            "targeted_helper_calls": 10,
+            "english_crop_recognitions_outside_parallel_batches": 10
+          }
+        },
+        "bank_transfer": {
+          "count": 10,
+          "routed": 10,
+          "exact": 9,
+          "mean_s": {
+            "text_layer": 0.00377,
+            "initial_ocr": 4.39097,
+            "rereads_crops": 0.85413,
+            "extraction": 0.02003,
+            "total": 5.2689
+          },
+          "max_s": {
+            "text_layer": 0.00512,
+            "initial_ocr": 7.44885,
+            "rereads_crops": 2.01018,
+            "extraction": 0.05277,
+            "total": 8.56698
+          },
+          "max_pdf": "potwierdzenia/0006/0006.pdf",
+          "over_10s": [],
+          "counts": {
+            "first_page_ocr": 10,
+            "targeted_helper_calls": 10,
+            "english_crop_recognitions_outside_parallel_batches": 2
+          }
+        }
+      },
+      "pdfs": [
+        {
+          "pdf": "odwolania/0001/0001.pdf",
+          "seconds": {
+            "text_layer": 0.01803,
+            "initial_ocr": 18.97287,
+            "rereads_crops": 0,
+            "extraction": 0.025,
+            "total": 19.0159
+          },
+          "counts": {
+            "first_page_ocr": 3,
+            "parallel_batches": 1
+          }
+        },
+        {
+          "pdf": "odwolania/0002/0002.pdf",
+          "seconds": {
+            "text_layer": 0.00953,
+            "initial_ocr": 18.6648,
+            "rereads_crops": 0,
+            "extraction": 0.00892,
+            "total": 18.68325
+          },
+          "counts": {
+            "first_page_ocr": 3,
+            "parallel_batches": 1
+          }
+        },
+        {
+          "pdf": "odwolania/0003/0003.pdf",
+          "seconds": {
+            "text_layer": 0.02166,
+            "initial_ocr": 12.10464,
+            "rereads_crops": 0,
+            "extraction": 0.01136,
+            "total": 12.13767
+          },
+          "counts": {
+            "first_page_ocr": 3,
+            "parallel_batches": 1
+          }
+        },
+        {
+          "pdf": "odwolania/0004/0004.pdf",
+          "seconds": {
+            "text_layer": 0.00985,
+            "initial_ocr": 14.5144,
+            "rereads_crops": 0,
+            "extraction": 0.00653,
+            "total": 14.53078
+          },
+          "counts": {
+            "first_page_ocr": 3,
+            "parallel_batches": 1
+          }
+        },
+        {
+          "pdf": "odwolania/0005/0005.pdf",
+          "seconds": {
+            "text_layer": 0.01114,
+            "initial_ocr": 11.67619,
+            "rereads_crops": 0,
+            "extraction": 0.02008,
+            "total": 11.7074
+          },
+          "counts": {
+            "first_page_ocr": 3,
+            "parallel_batches": 1
+          }
+        },
+        {
+          "pdf": "odwolania/0006/0006.pdf",
+          "seconds": {
+            "text_layer": 0.01682,
+            "initial_ocr": 17.08375,
+            "rereads_crops": 0,
+            "extraction": 0.00821,
+            "total": 17.10878
+          },
+          "counts": {
+            "first_page_ocr": 3,
+            "parallel_batches": 1
+          }
+        },
+        {
+          "pdf": "odwolania/0007/0007.pdf",
+          "seconds": {
+            "text_layer": 0.00864,
+            "initial_ocr": 10.36693,
+            "rereads_crops": 0,
+            "extraction": 0.01103,
+            "total": 10.3866
+          },
+          "counts": {
+            "first_page_ocr": 3,
+            "parallel_batches": 1
+          }
+        },
+        {
+          "pdf": "odwolania/0008/0008.pdf",
+          "seconds": {
+            "text_layer": 0.01052,
+            "initial_ocr": 10.70419,
+            "rereads_crops": 0,
+            "extraction": 0.01236,
+            "total": 10.72706
+          },
+          "counts": {
+            "first_page_ocr": 3,
+            "parallel_batches": 1
+          }
+        },
+        {
+          "pdf": "odwolania/0009/0009.pdf",
+          "seconds": {
+            "text_layer": 0.00807,
+            "initial_ocr": 15.29366,
+            "rereads_crops": 0,
+            "extraction": 0.01481,
+            "total": 15.31653
+          },
+          "counts": {
+            "first_page_ocr": 3,
+            "parallel_batches": 1
+          }
+        },
+        {
+          "pdf": "odwolania/0010/0010.pdf",
+          "seconds": {
+            "text_layer": 0.00575,
+            "initial_ocr": 10.7993,
+            "rereads_crops": 0,
+            "extraction": 0.0081,
+            "total": 10.81314
+          },
+          "counts": {
+            "first_page_ocr": 3,
+            "parallel_batches": 1
+          }
+        },
+        {
+          "pdf": "pelnomocnictwa/0001/0001.pdf",
+          "seconds": {
+            "text_layer": 0.06665,
+            "initial_ocr": 9.59932,
+            "rereads_crops": 1.23375,
+            "extraction": 0.0498,
+            "total": 10.94952
+          },
+          "counts": {
+            "first_page_ocr": 1,
+            "targeted_helper_calls": 1,
+            "english_crop_recognitions_outside_parallel_batches": 1
+          }
+        },
+        {
+          "pdf": "pelnomocnictwa/0002/0002.pdf",
+          "seconds": {
+            "text_layer": 0.00452,
+            "initial_ocr": 8.81876,
+            "rereads_crops": 0.98499,
+            "extraction": 0.00419,
+            "total": 9.81246
+          },
+          "counts": {
+            "first_page_ocr": 1,
+            "targeted_helper_calls": 1,
+            "english_crop_recognitions_outside_parallel_batches": 1
+          }
+        },
+        {
+          "pdf": "pelnomocnictwa/0003/0003.pdf",
+          "seconds": {
+            "text_layer": 0.00333,
+            "initial_ocr": 6.00871,
+            "rereads_crops": 1.04416,
+            "extraction": 0.00906,
+            "total": 7.06525
+          },
+          "counts": {
+            "first_page_ocr": 1,
+            "targeted_helper_calls": 1,
+            "english_crop_recognitions_outside_parallel_batches": 1
+          }
+        },
+        {
+          "pdf": "pelnomocnictwa/0004/0004.pdf",
+          "seconds": {
+            "text_layer": 0.01096,
+            "initial_ocr": 6.35924,
+            "rereads_crops": 1.02506,
+            "extraction": 0.00487,
+            "total": 7.40013
+          },
+          "counts": {
+            "first_page_ocr": 1,
+            "targeted_helper_calls": 1,
+            "english_crop_recognitions_outside_parallel_batches": 1
+          }
+        },
+        {
+          "pdf": "pelnomocnictwa/0005/0005.pdf",
+          "seconds": {
+            "text_layer": 0.02281,
+            "initial_ocr": 7.68104,
+            "rereads_crops": 0.70258,
+            "extraction": 0.00432,
+            "total": 8.41075
+          },
+          "counts": {
+            "first_page_ocr": 1,
+            "targeted_helper_calls": 1,
+            "english_crop_recognitions_outside_parallel_batches": 1
+          }
+        },
+        {
+          "pdf": "pelnomocnictwa/0006/0006.pdf",
+          "seconds": {
+            "text_layer": 0.00326,
+            "initial_ocr": 6.3969,
+            "rereads_crops": 1.02669,
+            "extraction": 0.02607,
+            "total": 7.45292
+          },
+          "counts": {
+            "first_page_ocr": 1,
+            "targeted_helper_calls": 1,
+            "english_crop_recognitions_outside_parallel_batches": 1
+          }
+        },
+        {
+          "pdf": "pelnomocnictwa/0007/0007.pdf",
+          "seconds": {
+            "text_layer": 0.00408,
+            "initial_ocr": 6.54217,
+            "rereads_crops": 1.20817,
+            "extraction": 0.00885,
+            "total": 7.76326
+          },
+          "counts": {
+            "first_page_ocr": 1,
+            "targeted_helper_calls": 1,
+            "english_crop_recognitions_outside_parallel_batches": 2
+          }
+        },
+        {
+          "pdf": "pelnomocnictwa/0008/0008.pdf",
+          "seconds": {
+            "text_layer": 0.01545,
+            "initial_ocr": 7.56112,
+            "rereads_crops": 1.98155,
+            "extraction": 0.01603,
+            "total": 9.57414
+          },
+          "counts": {
+            "first_page_ocr": 1,
+            "targeted_helper_calls": 1,
+            "english_crop_recognitions_outside_parallel_batches": 1
+          }
+        },
+        {
+          "pdf": "pelnomocnictwa/0009/0009.pdf",
+          "seconds": {
+            "text_layer": 0.0054,
+            "initial_ocr": 8.74808,
+            "rereads_crops": 1.22821,
+            "extraction": 0.0154,
+            "total": 9.9971
+          },
+          "counts": {
+            "first_page_ocr": 1,
+            "targeted_helper_calls": 1,
+            "english_crop_recognitions_outside_parallel_batches": 1
+          }
+        },
+        {
+          "pdf": "pelnomocnictwa/0010/0010.pdf",
+          "seconds": {
+            "text_layer": 0.04007,
+            "initial_ocr": 5.32924,
+            "rereads_crops": 0.00023,
+            "extraction": 0.00792,
+            "total": 5.37745
+          },
+          "counts": {
+            "first_page_ocr": 1,
+            "targeted_helper_calls": 1
+          }
+        },
+        {
+          "pdf": "potwierdzenia/0001/0001.pdf",
+          "seconds": {
+            "text_layer": 0.00378,
+            "initial_ocr": 3.52629,
+            "rereads_crops": 0.58217,
+            "extraction": 0.01052,
+            "total": 4.12275
+          },
+          "counts": {
+            "first_page_ocr": 1,
+            "targeted_helper_calls": 1
+          }
+        },
+        {
+          "pdf": "potwierdzenia/0002/0002.pdf",
+          "seconds": {
+            "text_layer": 0.00235,
+            "initial_ocr": 3.07712,
+            "rereads_crops": 0,
+            "extraction": 0.00583,
+            "total": 3.0853
+          },
+          "counts": {
+            "first_page_ocr": 1
+          }
+        },
+        {
+          "pdf": "potwierdzenia/0003/0003.pdf",
+          "seconds": {
+            "text_layer": 0.00421,
+            "initial_ocr": 3.09959,
+            "rereads_crops": 0.49823,
+            "extraction": 0.01671,
+            "total": 3.61874
+          },
+          "counts": {
+            "first_page_ocr": 1,
+            "targeted_helper_calls": 1
+          }
+        },
+        {
+          "pdf": "potwierdzenia/0004/0004.pdf",
+          "seconds": {
+            "text_layer": 0.00342,
+            "initial_ocr": 4.84778,
+            "rereads_crops": 0.97854,
+            "extraction": 0.03285,
+            "total": 5.86258
+          },
+          "counts": {
+            "first_page_ocr": 1,
+            "targeted_helper_calls": 1
+          }
+        },
+        {
+          "pdf": "potwierdzenia/0005/0005.pdf",
+          "seconds": {
+            "text_layer": 0.00353,
+            "initial_ocr": 4.96579,
+            "rereads_crops": 0.75816,
+            "extraction": 0.01029,
+            "total": 5.73777
+          },
+          "counts": {
+            "first_page_ocr": 1,
+            "targeted_helper_calls": 1
+          }
+        },
+        {
+          "pdf": "potwierdzenia/0006/0006.pdf",
+          "seconds": {
+            "text_layer": 0.00512,
+            "initial_ocr": 7.44885,
+            "rereads_crops": 1.09527,
+            "extraction": 0.01775,
+            "total": 8.56698
+          },
+          "counts": {
+            "first_page_ocr": 1,
+            "targeted_helper_calls": 1
+          }
+        },
+        {
+          "pdf": "potwierdzenia/0007/0007.pdf",
+          "seconds": {
+            "text_layer": 0.0035,
+            "initial_ocr": 3.49917,
+            "rereads_crops": 2.01018,
+            "extraction": 0.03962,
+            "total": 5.55247
+          },
+          "counts": {
+            "first_page_ocr": 1,
+            "targeted_helper_calls": 2
+          }
+        },
+        {
+          "pdf": "potwierdzenia/0008/0008.pdf",
+          "seconds": {
+            "text_layer": 0.00495,
+            "initial_ocr": 5.74874,
+            "rereads_crops": 1.16693,
+            "extraction": 0.0064,
+            "total": 6.92702
+          },
+          "counts": {
+            "first_page_ocr": 1,
+            "targeted_helper_calls": 2
+          }
+        },
+        {
+          "pdf": "potwierdzenia/0009/0009.pdf",
+          "seconds": {
+            "text_layer": 0.00347,
+            "initial_ocr": 3.78761,
+            "rereads_crops": 0.53328,
+            "extraction": 0.00756,
+            "total": 4.33192
+          },
+          "counts": {
+            "first_page_ocr": 1,
+            "english_crop_recognitions_outside_parallel_batches": 2
+          }
+        },
+        {
+          "pdf": "potwierdzenia/0010/0010.pdf",
+          "seconds": {
+            "text_layer": 0.00335,
+            "initial_ocr": 3.90883,
+            "rereads_crops": 0.91856,
+            "extraction": 0.05277,
+            "total": 4.88351
+          },
+          "counts": {
+            "first_page_ocr": 1,
+            "targeted_helper_calls": 1
+          }
+        }
+      ]
+    },
+    "final_run_load_sample": {
+      "minute_1": 39.17,
+      "minute_5": 29.27,
+      "minute_15": 19.99,
+      "logical_cpu_count": 8,
+      "time_utc": "2026-11-21T20:55:37Z"
+    }
+  }
+}

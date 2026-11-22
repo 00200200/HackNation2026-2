@@ -87,6 +87,20 @@ def bind_engine(
     return partial(extract_llm, definition, model=model)
 
 
+def missing_core_fields(class_id: str, record: dict) -> bool:
+    """A missing party or transaction detail warrants a second reading of a rule-routed document."""
+    if class_id == "appeal":
+        return not all(any(row.get("nazwa") for row in record[key]) for key in ("Odwolujacy", "Zamawiajacy"))
+    if class_id == "power_of_attorney":
+        principals = (row["data"] for row in record["mocodawca"])
+        return not (
+            any(party.get("nazwa") or party.get("imie_nazwisko") for party in principals)
+            and any(person.get("imie_nazwisko") for person in record["pelnomocnicy"])
+        )
+    payment = record["przelew_bankowy"]
+    return any(payment[key] is None for key in ("kwota", "data_operacji", "tytul", "na_rachunek", "z_rachunku"))
+
+
 def extract(
     definition: DocumentClass,
     text: str,
@@ -95,6 +109,7 @@ def extract(
     ocr_python: Callable[[], dict] | None = None,
     alternate: AlternateOCR | None = None,
     model_text: str | None = None,
+    check_core_fields: bool = False,
 ) -> dict:
     values = None
     fill_empty = definition.profile.mode in ("RL", "LR")
@@ -103,10 +118,25 @@ def extract(
             gaps(f, values.get(k), fill_empty=fill_empty) for k, f in definition.fields.items()
         ):
             break
+        source = model_text if engine == "llm" and model_text is not None else text
+        if (
+            engine == "llm"
+            and definition.id == "appeal"
+            and definition.profile.keyed
+            and definition.profile.mode == "RL"
+        ):
+            from .charge_model import ChargeSettings, focus_charge
+
+            charge_focus = ChargeSettings().charge_focus
+            if charge_focus:
+                focus_charge(values["OdwolanieKIO"], source, model=model)
+                if charge_focus == "only":
+                    break
+        if engine == "llm" and check_core_fields and not missing_core_fields(definition.id, values):
+            return values
         if engine == "python" and ocr_python is not None:
             candidate = ocr_python()
         else:
-            source = model_text if engine == "llm" and model_text is not None else text
             candidate = bind_engine(engine, definition, model, alternate=alternate)(source)
         if values is None:
             values = candidate
@@ -114,6 +144,12 @@ def extract(
             values = {
                 k: fill(f, values.get(k), candidate.get(k), fill_empty=fill_empty) for k, f in definition.fields.items()
             }
+    if definition.profile.mode == "RL" and definition.id == "power_of_attorney":
+        for principal in values["mocodawca"]:
+            owner = principal["data"]
+            if owner["typ"] == "osoba_prawna":
+                # A person's name belongs to an individual grantor or signer.
+                owner["imie_nazwisko"] = None
     if definition.engines == ["python"]:
         # Python extractors own their normalization and serialization order.
         return values

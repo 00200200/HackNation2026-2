@@ -27,3 +27,43 @@ def test_only_recognized_account_fields_enable_masked_routing(monkeypatch, sourc
         assert (transfer["z_rachunku"], transfer["na_rachunek"]) == (None, NUMBER)
     else:
         assert record == {}
+
+
+def test_punctuation_on_scanned_appeal_heading_requires_filing_evidence():
+    from kio2json.classify import classify
+    from kio2json.ocr_accounts import account_evidence
+
+    page = "Odwołujący: Studio Papieru\nZamawiający: Gmina Mosty\n* ODWOŁANIE\nDziałając w imieniu spółki, wnoszę odwołanie."
+    assert classify([page]) is None
+    assert classify([page], ocr_accounts=account_evidence(page)) == "appeal"
+    assert classify(["* ODWOŁANIE"], ocr_accounts=account_evidence("")) is None
+
+
+def test_ocr_heading_inside_a_filing_requires_address_and_both_roles():
+    from kio2json.classify import classify
+    from kio2json.ocr_accounts import account_evidence
+
+    page = (
+        "Do Krajowej Izby Odwoławczej\nOdwołujący: Studio Papieru\nZamawiający: Gmina Mosty\n"
+        "ODWQŁANIE\nNa podstawie pełnomocnictwa wnoszę odwołanie."
+    )
+    assert classify([page], ocr_accounts=account_evidence(page)) == "appeal"
+    assert classify([page.replace("Zamawiający:", "Do:")], ocr_accounts=account_evidence(page)) is None
+
+
+@pytest.mark.parametrize("recognized, expected", [(True, "appeal"), (False, None)])
+def test_damaged_searchable_form_requires_an_independent_image_read(monkeypatch, recognized, expected):
+    damaged = "ODWOTANIE\nmiast4we nazw1ska urz2dowe"
+    clear = "Odwołujący: Kopuła\nZamawiający: Stacja\nODWOŁANIE\nWnoszę odwołanie."
+    reads = []
+
+    def read(path, *, ocr_pages, repair_image_text=False, **kwargs):
+        reads.append(repair_image_text)
+        if recognized and repair_image_text:
+            ocr_pages.append(1)
+            return [clear]
+        return [damaged]
+
+    monkeypatch.setattr(pipeline, "read_pages", read)
+    assert pipeline.process_pdf(Path("form.pdf"))[0] == expected
+    assert reads == [False, True]

@@ -1,0 +1,386 @@
+{
+  "base": "6f55ef6039674c0df9331fb2d6e4635861190e63",
+  "product": "6126b6c6dd310e62976a2366bb5f3ed9ab62f282",
+  "profile": "default keyless CLI",
+  "corpus_2_test_scored": false,
+  "steps": {
+    "PR #28 on main": {
+      "all": {
+        "micro_f1": 0.7103694874851013,
+        "macro_f1_classes": 0.6950242550242551,
+        "class_f1": {
+          "odwolanie": 0.7046153846153846,
+          "pelnomocnictwo": 0.918918918918919,
+          "przelew": 0.46153846153846156
+        },
+        "strict_exact": {
+          "pelnomocnictwo": 1,
+          "negatywny": 11,
+          "odwolanie": 3
+        },
+        "correctly_routed": {
+          "odwolanie": 12,
+          "pelnomocnictwo": 6,
+          "przelew": 4,
+          "negatywny": 11
+        }
+      },
+      "dev": {
+        "micro_f1": 0.7713498622589532,
+        "macro_f1_classes": 0.6375221751565837,
+        "class_f1": {
+          "odwolanie": 0.8148148148148148,
+          "pelnomocnictwo": 0.946236559139785,
+          "przelew": 0.15151515151515152
+        },
+        "strict_exact": {
+          "odwolanie": 2,
+          "negatywny": 11,
+          "pelnomocnictwo": 3
+        },
+        "correctly_routed": {
+          "odwolanie": 13,
+          "pelnomocnictwo": 5,
+          "przelew": 1,
+          "negatywny": 11
+        }
+      },
+      "scan": {
+        "micro_f1": 0.9203296703296703,
+        "macro_f1_classes": 0.7314814814814815,
+        "class_f1": {
+          "odwolanie": 1.0,
+          "pelnomocnictwo": 1.0,
+          "przelew": 0.19444444444444445
+        },
+        "strict_exact": {
+          "odwolanie": 10,
+          "pelnomocnictwo": 10
+        },
+        "correctly_routed": {
+          "odwolanie": 10,
+          "pelnomocnictwo": 10,
+          "przelew": 2
+        }
+      }
+    },
+    "Joint purchasing lists and nested authority labels": {
+      "all": {
+        "micro_f1": 0.8226332970620239,
+        "macro_f1_classes": 0.742344240974378,
+        "class_f1": {
+          "odwolanie": 0.8465753424657534,
+          "pelnomocnictwo": 0.918918918918919,
+          "przelew": 0.46153846153846156
+        },
+        "strict_exact": {
+          "pelnomocnictwo": 1,
+          "negatywny": 11,
+          "odwolanie": 3
+        },
+        "correctly_routed": {
+          "odwolanie": 12,
+          "pelnomocnictwo": 6,
+          "przelew": 4,
+          "negatywny": 11
+        }
+      },
+      "dev": {
+        "micro_f1": 0.7713498622589532,
+        "macro_f1_classes": 0.6375221751565837,
+        "class_f1": {
+          "odwolanie": 0.8148148148148148,
+          "pelnomocnictwo": 0.946236559139785,
+          "przelew": 0.15151515151515152
+        },
+        "strict_exact": {
+          "odwolanie": 2,
+          "negatywny": 11,
+          "pelnomocnictwo": 3
+        },
+        "correctly_routed": {
+          "odwolanie": 13,
+          "pelnomocnictwo": 5,
+          "przelew": 1,
+          "negatywny": 11
+        }
+      },
+      "scan": {
+        "micro_f1": 0.9203296703296703,
+        "macro_f1_classes": 0.7314814814814815,
+        "class_f1": {
+          "odwolanie": 1.0,
+          "pelnomocnictwo": 1.0,
+          "przelew": 0.19444444444444445
+        },
+        "strict_exact": {
+          "odwolanie": 10,
+          "pelnomocnictwo": 10
+        },
+        "correctly_routed": {
+          "odwolanie": 10,
+          "pelnomocnictwo": 10,
+          "przelew": 2
+        }
+      }
+    },
+    "Appellant appointments, employers and name inflection": {
+      "all": {
+        "micro_f1": 0.8422198041349293,
+        "macro_f1_classes": 0.7505634190565699,
+        "class_f1": {
+          "odwolanie": 0.8712328767123287,
+          "pelnomocnictwo": 0.918918918918919,
+          "przelew": 0.46153846153846156
+        },
+        "strict_exact": {
+          "pelnomocnictwo": 1,
+          "negatywny": 11,
+          "odwolanie": 3
+        },
+        "correctly_routed": {
+          "odwolanie": 12,
+          "pelnomocnictwo": 6,
+          "przelew": 4,
+          "negatywny": 11
+        }
+      },
+      "dev": {
+        "micro_f1": 0.7878787878787878,
+        "macro_f1_classes": 0.6445768488779241,
+        "class_f1": {
+          "odwolanie": 0.8359788359788359,
+          "pelnomocnictwo": 0.946236559139785,
+          "przelew": 0.15151515151515152
+        },
+        "strict_exact": {
+          "odwolanie": 2,
+          "negatywny": 11,
+          "pelnomocnictwo": 3
+        },
+        "correctly_routed": {
+          "odwolanie": 13,
+          "pelnomocnictwo": 5,
+          "przelew": 1,
+          "negatywny": 11
+        }
+      },
+      "scan": {
+        "micro_f1": 0.9203296703296703,
+        "macro_f1_classes": 0.7314814814814815,
+        "class_f1": {
+          "odwolanie": 1.0,
+          "pelnomocnictwo": 1.0,
+          "przelew": 0.19444444444444445
+        },
+        "strict_exact": {
+          "odwolanie": 10,
+          "pelnomocnictwo": 10
+        },
+        "correctly_routed": {
+          "odwolanie": 10,
+          "pelnomocnictwo": 10,
+          "przelew": 2
+        }
+      }
+    },
+    "Image reread of damaged searchable appeals": {
+      "all": {
+        "micro_f1": 0.8522848034006376,
+        "macro_f1_classes": 0.754478701287212,
+        "class_f1": {
+          "odwolanie": 0.8829787234042553,
+          "pelnomocnictwo": 0.918918918918919,
+          "przelew": 0.46153846153846156
+        },
+        "strict_exact": {
+          "pelnomocnictwo": 1,
+          "negatywny": 11,
+          "odwolanie": 3
+        },
+        "correctly_routed": {
+          "odwolanie": 13,
+          "pelnomocnictwo": 6,
+          "przelew": 4,
+          "negatywny": 11
+        }
+      },
+      "dev": {
+        "micro_f1": 0.7878787878787878,
+        "macro_f1_classes": 0.6445768488779241,
+        "class_f1": {
+          "odwolanie": 0.8359788359788359,
+          "pelnomocnictwo": 0.946236559139785,
+          "przelew": 0.15151515151515152
+        },
+        "strict_exact": {
+          "odwolanie": 2,
+          "negatywny": 11,
+          "pelnomocnictwo": 3
+        },
+        "correctly_routed": {
+          "odwolanie": 13,
+          "pelnomocnictwo": 5,
+          "przelew": 1,
+          "negatywny": 11
+        }
+      },
+      "scan": {
+        "micro_f1": 0.9203296703296703,
+        "macro_f1_classes": 0.7314814814814815,
+        "class_f1": {
+          "odwolanie": 1.0,
+          "pelnomocnictwo": 1.0,
+          "przelew": 0.19444444444444445
+        },
+        "strict_exact": {
+          "odwolanie": 10,
+          "pelnomocnictwo": 10
+        },
+        "correctly_routed": {
+          "odwolanie": 10,
+          "pelnomocnictwo": 10,
+          "przelew": 2
+        }
+      }
+    },
+    "First charge and filing-period evidence, before review": {
+      "all": {
+        "micro_f1": 0.8586609989373007,
+        "macro_f1_classes": 0.7571382757552971,
+        "class_f1": {
+          "odwolanie": 0.8909574468085106,
+          "pelnomocnictwo": 0.918918918918919,
+          "przelew": 0.46153846153846156
+        },
+        "strict_exact": {
+          "pelnomocnictwo": 1,
+          "negatywny": 11,
+          "odwolanie": 3
+        },
+        "correctly_routed": {
+          "odwolanie": 13,
+          "pelnomocnictwo": 6,
+          "przelew": 4,
+          "negatywny": 11
+        }
+      },
+      "dev": {
+        "micro_f1": 0.8181818181818182,
+        "macro_f1_classes": 0.6575104173670482,
+        "class_f1": {
+          "odwolanie": 0.8747795414462081,
+          "pelnomocnictwo": 0.946236559139785,
+          "przelew": 0.15151515151515152
+        },
+        "strict_exact": {
+          "odwolanie": 2,
+          "negatywny": 11,
+          "pelnomocnictwo": 3
+        },
+        "correctly_routed": {
+          "odwolanie": 13,
+          "pelnomocnictwo": 5,
+          "przelew": 1,
+          "negatywny": 11
+        }
+      },
+      "scan": {
+        "micro_f1": 0.9203296703296703,
+        "macro_f1_classes": 0.7314814814814815,
+        "class_f1": {
+          "odwolanie": 1.0,
+          "pelnomocnictwo": 1.0,
+          "przelew": 0.19444444444444445
+        },
+        "strict_exact": {
+          "odwolanie": 10,
+          "pelnomocnictwo": 10
+        },
+        "correctly_routed": {
+          "odwolanie": 10,
+          "pelnomocnictwo": 10,
+          "przelew": 2
+        }
+      }
+    },
+    "Restrict dates and appointments to their owner after review": {
+      "all": {
+        "micro_f1": 0.8586609989373007,
+        "macro_f1_classes": 0.7571382757552971,
+        "class_f1": {
+          "odwolanie": 0.8909574468085106,
+          "pelnomocnictwo": 0.918918918918919,
+          "przelew": 0.46153846153846156
+        },
+        "strict_exact": {
+          "pelnomocnictwo": 1,
+          "negatywny": 11,
+          "odwolanie": 3
+        },
+        "correctly_routed": {
+          "odwolanie": 13,
+          "pelnomocnictwo": 6,
+          "przelew": 4,
+          "negatywny": 11
+        }
+      },
+      "dev": {
+        "micro_f1": 0.8154269972451791,
+        "macro_f1_classes": 0.6563346384134915,
+        "class_f1": {
+          "odwolanie": 0.8712522045855379,
+          "pelnomocnictwo": 0.946236559139785,
+          "przelew": 0.15151515151515152
+        },
+        "strict_exact": {
+          "odwolanie": 2,
+          "negatywny": 11,
+          "pelnomocnictwo": 3
+        },
+        "correctly_routed": {
+          "odwolanie": 13,
+          "pelnomocnictwo": 5,
+          "przelew": 1,
+          "negatywny": 11
+        }
+      },
+      "scan": {
+        "micro_f1": 0.9203296703296703,
+        "macro_f1_classes": 0.7314814814814815,
+        "class_f1": {
+          "odwolanie": 1.0,
+          "pelnomocnictwo": 1.0,
+          "przelew": 0.19444444444444445
+        },
+        "strict_exact": {
+          "odwolanie": 10,
+          "pelnomocnictwo": 10
+        },
+        "correctly_routed": {
+          "odwolanie": 10,
+          "pelnomocnictwo": 10,
+          "przelew": 2
+        }
+      }
+    }
+  },
+  "training": {
+    "documents": 196,
+    "byte_identical_to_main": 196,
+    "empty_negatives": 16,
+    "fields": 2316,
+    "micro_f1": 1.0
+  },
+  "timing": {
+    "host": "shared macOS arm64 host",
+    "scan_child_cpu_seconds": 173.59123,
+    "scan_wall_seconds": 234.8802454173565,
+    "seconds_per_pdf": {
+      "all": 16.270784605760127,
+      "dev": 15.016163455131345,
+      "scan": 7.829341513911883
+    }
+  },
+  "method": "Intermediate steps use the repository metric and cached PDF page readings. Final scan timing uses serial CLI extraction and fresh OCR. Corpus timings cover full CLI runs; the final corpus 2 date guard affects one native document, rerun via the CLI before rescoring all 39 predictions."
+}

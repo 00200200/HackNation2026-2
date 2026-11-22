@@ -3,12 +3,13 @@
 import re
 from collections import defaultdict
 from functools import lru_cache
-from itertools import product
+from itertools import pairwise, product
 from statistics import median
 
 from rapidfuzz.distance import Levenshtein
 from stdnum import iban
 
+from .bank_transfer import REFERENCE_RE
 from .common import DATE_RE
 from .ocr_normalize import normalize_ocr
 from .pdf_text import WordBox
@@ -40,6 +41,7 @@ LABELS = {
         "rachunek nadawcy",
         "rachunek zleceniodawcy",
         "rachunek obciążany",
+        "z rachunku nr",
         "z rachunku",
         "dane nadawcy",
         "dane zleceniodawcy",
@@ -49,6 +51,7 @@ LABELS = {
         "płatnik",
     ),
     "Rachunek odbiorcy": (
+        "numer rachunku odbiorcy",
         "rachunek odbiorcy",
         "rachunek beneficjenta",
         "rachunek uznawany",
@@ -73,7 +76,7 @@ LABELS = {
     "Data operacji": ("data operacji", "data transakcji"),
     "Data księgowania": ("data księgowania",),
     "Data obciążenia": ("data obciążenia",),
-    "Data realizacji": ("data realizacji", "data wykonania"),
+    "Data realizacji": ("data realizacji przelewu", "data realizacji", "data wykonania"),
     "": (
         "data waluty",
         "data wydruku",
@@ -104,7 +107,7 @@ MONEY_CELL = re.compile(
 @lru_cache(maxsize=2048)
 def _label_words(token: str, ocr: bool) -> tuple[str, ...]:
     word = token.strip("|:/.,").casefold()
-    if not ocr or word in VOCABULARY or len(word) < 4 or not word.isalpha():
+    if not ocr or word in VOCABULARY or len(word) <= 4 or not word.isalpha():
         return (word,)
     # Resolve equally close spellings only when the complete phrase gives one field.
     cutoff = 1 if len(word) < 9 else 2
@@ -114,7 +117,8 @@ def _label_words(token: str, ocr: bool) -> tuple[str, ...]:
 
 
 def booking_heading(line: str, *, ocr: bool = False) -> bool:
-    tokens = line.strip(" |:/.-").split()
+    heading = re.split(r"(?i)\s+suma kontrolna dokumentu\s*:", line, maxsplit=1)[0]
+    tokens = heading.strip(" |:/.-").split()
     if len(tokens) != 3:
         return False
     words = [set(_label_words(w, ocr)) for w in tokens]
@@ -163,10 +167,10 @@ def has_detached_labels(pages: list[str], *, ocr: bool = False) -> bool:
     return len(detached) >= 2
 
 
-def _word_rows(boxes: list[WordBox]) -> tuple[list[list[WordBox]], float]:
+def word_rows(boxes: list[WordBox], page: int = 1) -> tuple[list[list[WordBox]], float]:
     words = []
     for box in boxes:
-        if box.page != 1 or box.y1 <= box.y0:
+        if box.page != page or box.y1 <= box.y0:
             continue
         # The native reader returns individual words. Some OCR backends also return multiword spans.
         for match in re.finditer(r"\S+", box.text):
@@ -198,9 +202,14 @@ def _cell_value(field: str, cell: str, ocr: bool) -> str | None:
             compact = normalize_ocr(compact)
             if len(compact) == 26 and sum(c.isdigit() for c in compact) == 25:
                 compact = re.sub(r"[^0-9]", "?", compact)
-            return validated_account(compact) if re.fullmatch(r"[0-9?]{26}", compact) else None
+            value = validated_account(compact) if re.fullmatch(r"[0-9?]{26}", compact) else None
+            if value and re.match(r"(?:IBAN[ :]+)?PL", cell):
+                return "PL" + value
+            return value
         return compact if re.fullmatch(r"[0-9]{26}", compact) else None
     if field.startswith("Data"):
+        if ocr:
+            cell = cell.rstrip(" *|")
         day = DATE_RE.match(cell)
         if day and re.fullmatch(r"(?:\s+\d{1,2}:\d{2}(?::\d{2})?)?", cell[day.end() :]):
             return day[0]
@@ -220,7 +229,13 @@ def _row_headers(row: list[WordBox], following: list[WordBox], height: float, oc
     headers = [
         (start, stop, field)
         for start, stop, field in _headers([w.text for w in row], ocr)
-        if start == 0 or row[start].x0 - row[start - 1].x1 > height * 0.75
+        if (start == 0 or row[start].x0 - row[start - 1].x1 > height * 0.75)
+        and not (
+            ocr
+            and row[start].text.casefold() == "opłata"
+            and stop < len(row)
+            and row[stop].text.casefold() == "skarbowa"
+        )
     ]
     # On a header row, a visually separate phrase with its own data column is a cell
     # boundary even when the bank uses a heading outside our extraction vocabulary.
@@ -231,6 +246,8 @@ def _row_headers(row: list[WordBox], following: list[WordBox], height: float, oc
         return headers
     label_tokens = {i for start, stop, _ in headers for i in range(start, stop)}
     for i, word in enumerate(row):
+        if headers[0][2] == "Tytuł" and word.text.casefold() in {"wpis", "opłata", "zapłata"}:
+            continue
         if i in label_tokens or (i and word.x0 - row[i - 1].x1 <= 2 * height):
             continue
         if any(abs(value.x0 - word.x0) <= height for value in following):
@@ -238,13 +255,94 @@ def _row_headers(row: list[WordBox], following: list[WordBox], height: float, oc
     return sorted(headers)
 
 
+def _level_scan_rows(boxes: list[WordBox]) -> list[WordBox]:
+    # OCR supplies words in reading order. Long left-to-right runs estimate the tilt
+    # more reliably than adjacent glyphs with different ascenders and descenders.
+    slopes = []
+    first = previous = None
+    for word in boxes:
+        if previous is None or word.page != previous.page or word.x0 <= previous.x0:
+            first = word
+        span = (word.x0 + word.x1 - first.x0 - first.x1) / 2
+        if span > 75:
+            slopes.append((word.y0 + word.y1 - first.y0 - first.y1) / (2 * span))
+        previous = word
+    slope = median(slopes) if slopes else 0
+    if not 0.01 < abs(slope) < 0.12:
+        return boxes
+    return [
+        word._replace(y0=word.y0 - slope * (word.x0 + word.x1) / 2, y1=word.y1 - slope * (word.x0 + word.x1) / 2)
+        for word in boxes
+    ]
+
+
+def _account_below_party(rows, height):
+    """Bind the adjacent account row before OCR normalization merges the columns."""
+    for header, cells in pairwise(rows):
+        if len(header) < 2 or len(cells) < 3:
+            continue
+        owner, kind = (w.text.casefold().strip(" :;") for w in header[:2])
+        if Levenshtein.distance(kind, "przelewu", score_cutoff=1) > 1:
+            continue
+        role = next(
+            (name for name in ("nadawca", "odbiorca") if Levenshtein.distance(owner, name, score_cutoff=1) <= 1), None
+        )
+        if role is None or abs(cells[0].x0 - header[0].x0) > height or cells[0].y0 - header[0].y1 > 3 * height:
+            continue
+        # A second heading can share the row. Its column owns the words
+        # beneath it, even when the first party's account cell is empty.
+        right = header[2].x0 - height if len(header) > 2 else float("inf")
+        words = " ".join(w.text for w in cells if w.x1 <= right)
+        account = re.match(r"(?i)^nr\.? rachunku[;:]\s+[_ ]*((?:PL\s*)?\d{2}(?: \d{4}){6})(?!\d| \d{4}\b)", words)
+        if account:
+            number = "".join(account[1].split())
+            if iban.is_valid("PL" + number.removeprefix("PL")):
+                yield ("Rachunek nadawcy" if role == "nadawca" else "Rachunek odbiorcy"), number
+
+
+def _amount_beside_label(rows, labels, index, anchor, height):
+    """An independently labelled column can continue beside the amount's value."""
+    amounts = []
+    bottom = anchor.y1
+    for row, headers in zip(rows[index + 1 : index + 4], labels[index + 1 : index + 4], strict=True):
+        if not headers or min(word.y0 for word in row) - bottom > 3 * height:
+            break
+        if any(
+            row[start].x0 >= anchor.x0 - height
+            or not field.startswith(("Rachunek", "Data", "Numer transakcji", "Dzienny numer"))
+            for start, _, field in headers
+        ):
+            break
+        bottom = max(word.y1 for word in row)
+        cell = [word for word in row if word.x0 >= anchor.x0 - height]
+        if cell:
+            value = " ".join(word.text for word in cell)
+            if (
+                abs(cell[0].x0 - anchor.x0) > height
+                or not MONEY_CELL.fullmatch(value)
+                or not re.search(r"[A-Za-zł]", value)
+            ):
+                break
+            amounts.append(value)
+    return amounts[0] if len(amounts) == 1 else None
+
+
 def receipt_cell_fields(boxes: list[WordBox], *, ocr: bool = False) -> dict[str, str]:
-    rows, height = _word_rows(boxes)
+    first_page = [word for word in boxes if word.page == 1]
+    rows, height = word_rows(_level_scan_rows(first_page) if ocr else first_page)
     labels = [_row_headers(row, following, height, ocr) for row, following in zip(rows, rows[1:] + [[]])]
     evidence = defaultdict(set)
+    if ocr:
+        for label, value in _account_below_party(rows, height):
+            evidence[label].add(value)
     for index, (row, headers) in enumerate(zip(rows, labels)):
         if not headers or headers[0][0] != 0:
             continue
+        if ocr:
+            # An institution-qualified reference and a neighbouring date may share a physical line.
+            reference = REFERENCE_RE.match(" ".join(word.text for word in row))
+            if reference:
+                evidence["Numer transakcji"].add(reference[1])
         # Stop at the next heading or visual break. All columns share a block boundary,
         # while each field can bind independently within that block.
         below = []
@@ -266,6 +364,10 @@ def receipt_cell_fields(boxes: list[WordBox], *, ocr: bool = False) -> dict[str,
             cells = [" ".join(w.text for w in row[stop:end])]
             cells.extend(" ".join(w.text for w in values if left <= w.x0 < right) for values in below)
             values = [value for cell in cells if (value := _cell_value(field, cell, ocr))]
+            if not values and field == "Kwota" and stop == len(row):
+                adjacent = _amount_beside_label(rows, labels, index, row[start], height)
+                if adjacent:
+                    values.append(adjacent)
             if field == "Tytuł" and values:
                 columns[field] = " ".join(values)
             elif len(values) > 1 and (field == "Kwota" or field.startswith("Data")):
