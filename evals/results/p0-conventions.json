@@ -424,11 +424,17 @@
     },
     "training_files_matching_candidate_by_sha256": 196
   },
-  "jury_ci_integration": {
-    "product_commit": "4f691de1f82063cffdaf64195d0ed2177599577c",
+  "final_verification": {
+    "product_commit": "97dc53ef3cd6f6fa8f7c87abcc18d917e1769766",
+    "main": "328f7059449d9f66dd6ff711749a8d2e56332a83",
     "training_files_matching_integration_by_sha256": 196,
     "jury_batch_training_exact": 90,
     "jury_batch_training_total": 90,
+    "training_corrected_uzp": 1.0,
+    "training_corrected_strict": 1.0,
+    "organizer_scans_uzp": 1.0,
+    "organizer_scans_strict": 0.9974226804123711,
+    "organizer_scans_total": 30,
     "corrected_full_training_eval": "evals/results/latest.json"
   }
 }
