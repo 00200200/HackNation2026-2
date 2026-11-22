@@ -13,7 +13,7 @@ BASE = "32106434f746628c7080191597f0766d4151d786"
 CASES = Path(__file__).with_name("native_cases.json")
 
 
-def write_native_pdf(path, pages):
+def write_native_pdf(path, pages, *, size=(1600, 800), font=10, margin=20):
     """Write selectable Polish text using a standard PDF font and a Central European encoding."""
     encoding = (
         "/Encoding << /BaseEncoding /WinAnsiEncoding /Differences "
@@ -30,12 +30,13 @@ def write_native_pdf(path, pages):
     for text in pages:
         content_id = len(objects) + 2
         objects.append(
-            "<< /Type /Page /Parent 2 0 R /MediaBox [0 0 1600 800] "
+            f"<< /Type /Page /Parent 2 0 R /MediaBox [0 0 {size[0]} {size[1]}] "
             f"/Resources << /Font << /F1 3 0 R >> >> /Contents {content_id} 0 R >>"
         )
         if isinstance(text, str):
             lines = [f"<{line.encode('cp1250').hex()}> Tj" for line in text.splitlines()]
-            stream = "BT /F1 10 Tf 20 770 Td 14 TL " + " T* ".join(lines) + " ET"
+            start = f"BT /F1 {font} Tf {margin} {size[1] - 30} Td {round(font * 1.4)} TL "
+            stream = start + " T* ".join(lines) + " ET"
         else:
             # Independent text objects give neighbouring cells a real horizontal gap.
             cells = [

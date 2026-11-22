@@ -1,4 +1,5 @@
 id = "participation"
+name = "Karta uczestnika"
 enabled = false
 engines = ["labelled_fields"]
 

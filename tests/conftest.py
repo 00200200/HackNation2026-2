@@ -13,8 +13,8 @@ def in_process_cli(monkeypatch):
     from kio2json import __main__ as cli
     from kio2json.batch import read_document
 
-    def read_in_process(pdfs, sources, workers):
+    def read_in_process(pdfs, sources, workers, explain=False):
         classes = cli.parse_classes(sources)
-        return (read_document(pdf, classes) for pdf in pdfs)
+        return (read_document(pdf, classes, explain=explain) for pdf in pdfs)
 
     monkeypatch.setattr(cli, "read_batch", read_in_process)
