@@ -589,3 +589,93 @@ def extract(text: str) -> dict:
     attorneys = _attorneys(text)
     signers = _signers(text, [p["nazwa"] for p in principals], {a["imie_nazwisko"] for a in attorneys})
     return finish_record(text, principals, officers, attorneys, signers)
+
+
+def _card_people(lines: list[str]) -> list[dict]:
+    """Each new name needs a complete labelled slot or an explicitly listed entry."""
+    result = []
+    person = re.compile(rf"(?:(?:\d+[.)]|[•–-])\s+)?(?:(?:adw\.|r\.\s*pr\.)\s+)?({PERSON})[,;]?")
+    for index, line in enumerate(lines):
+        if match := person.fullmatch(line):
+            if index and not re.match(r"^(?:\d+[.)]|[•–-])\s+", line):
+                break
+            result.append({"imie_nazwisko": match[1], "pesel": None})
+        elif result and (pesel := re.fullmatch(r"PESEL\s*:?\s*(\d{11})", line, re.IGNORECASE)):
+            result.append({"imie_nazwisko": result[-1]["imie_nazwisko"], "pesel": pesel[1]})
+        else:
+            break
+    return result
+
+
+def _merge_card_people(existing, printed, *, with_pesel):
+    for person in printed:
+        name = person["imie_nazwisko"]
+        matches = [p for p in existing if (p["imie_nazwisko"] or "").casefold() == name.casefold()]
+        if len(matches) == 1 and with_pesel and not matches[0]["pesel"]:
+            matches[0]["pesel"] = person["pesel"]
+        elif not matches and all(
+            p["imie_nazwisko"]
+            and not (len(p["imie_nazwisko"].split()) == 2 and compatible_names(p["imie_nazwisko"], name))
+            and not (with_pesel and person["pesel"] and p["pesel"] == person["pesel"])
+            for p in existing
+        ):
+            existing.append(person if with_pesel else {"imie_nazwisko": name})
+
+
+def apply_grant_blocks(record, blocks, text):
+    """A signature inherits the identified principal of its column, never a global list position."""
+    if not blocks or NOTARIAL_HEADING.search(text):
+        return
+    owners = {}
+    printed_people = []
+    for block in blocks:
+        if block.role == "appointee":
+            printed_people.extend(_card_people(block.lines))
+        elif block.role == "principal" and block.lines:
+            lines = block.lines
+            identity = re.split(r"\b(?:KRS|NIP|REGON)\b", squash(" ".join(lines)), maxsplit=1)[0].strip(" ,;")
+            identity = re.sub(r"^\d+[.)]\s+", "", identity)
+            if not COMPANY_RE.fullmatch(identity):
+                continue
+            data = _company_data(identity, "\n".join(lines))
+            rows = record["mocodawca"]
+            matches = [r for r in rows if (r["data"]["nazwa"] or "").casefold() == identity.casefold()]
+            if len(matches) == 1 and all(
+                not data[k] or not matches[0]["data"][k] or data[k] == matches[0]["data"][k] for k in ("krs", "nip")
+            ):
+                owner = matches[0]
+                for key in ("krs", "nip"):
+                    owner["data"][key] = owner["data"][key] or data[key]
+            elif not matches and all(
+                r["data"]["nazwa"]
+                and not any(data[k] and r["data"][k] == data[k] for k in ("krs", "nip"))
+                and identity.casefold() not in r["data"]["nazwa"].casefold()
+                and r["data"]["nazwa"].casefold() not in identity.casefold()
+                for r in rows
+            ):
+                owner = {"data": data, "podpisujacy": []}
+                rows.append(owner)
+            else:
+                continue
+            owners[block.order] = owner
+    for block in blocks:
+        if block.role == "signature_owner":
+            identity = squash(" ".join(block.lines)).strip(" :").casefold()
+            matches = [r for r in record["mocodawca"] if (r["data"]["nazwa"] or "").casefold() == identity]
+            if len(matches) == 1:
+                owners[block.order] = matches[0]
+    by_name, by_id = {}, {}
+    for person in [*record["pelnomocnicy"], *printed_people]:
+        if person["imie_nazwisko"] and person["pesel"]:
+            name = person["imie_nazwisko"].casefold()
+            by_name.setdefault(name, set()).add(person["pesel"])
+            by_id.setdefault(person["pesel"], set()).add(name)
+    people = []
+    for person in printed_people:
+        ids = by_name.get(person["imie_nazwisko"].casefold(), set())
+        if len(ids) <= 1 and all(len(by_id[number]) == 1 for number in ids):
+            people.append({**person, "pesel": next(iter(ids), None)})
+    _merge_card_people(record["pelnomocnicy"], people, with_pesel=True)
+    for block in blocks:
+        if block.role == "signer" and block.parent in owners:
+            _merge_card_people(owners[block.parent]["podpisujacy"], _card_people(block.lines), with_pesel=False)
