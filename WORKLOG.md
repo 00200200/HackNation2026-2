@@ -260,6 +260,8 @@ Two and four grant JSONs matched exactly. The ten organizer grants remained exac
 
 - 22.11.2026 · Claude · Updated the final deck (12 slides) with the UZP-formula F1, the #76 accession class, a components and licences slide, the Regulamin Stage II split, an architecture slide, UZP value and a two-minute demo script; added the submission checklist with the VM evaluation from the organizer's VM.md. Posted the pre-access history audit and the title recommendation on #48 · docs/pitch
 
+- 22.11.2026 · Claude · The rehearsal sentence in `docs/readme/reference.md` no longer repeats the two timing figures, because the repo's rule asks for a matching record next to a speed number in the docs. It keeps the parity result and links `evals/results/vm-2vcpu.json` as the measurements · docs/rehearsal-measurements-link
+
 ## Frontend branch snapshot before API integration
 
 Public landing https://doc2json.pl (`frontend/`, static nginx, monochrome) runs on the team VPS as `doc2json-web`
