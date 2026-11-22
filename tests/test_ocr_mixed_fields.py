@@ -87,3 +87,15 @@ def test_an_extra_page_cannot_give_the_opposite_role_the_printed_account():
     pages = [f"Rachunek odbiorcy: {ACCOUNT}", f"Nadawca: {ACCOUNT}"]
     record = extract_bank_transfer(pages, {1})["przelew_bankowy"]
     assert (record["z_rachunku"], record["na_rachunek"]) == (None, ACCOUNT)
+
+
+@pytest.mark.parametrize(
+    ("pages", "scanned"),
+    [
+        ([f"{GRANT}\nPodpis przedstawiciela mocodawcy:\n{NAME}\n{ROLE}"], {1}),
+        ([f"{GRANT}\nPodpis przedstawiciela mocodawcy:\n......................", f"{NAME}\n{ROLE}"], {2}),
+    ],
+)
+def test_representative_caption_owns_the_scanned_signature(pages, scanned):
+    (principal,) = extract_power_of_attorney(pages, scanned)["mocodawca"]
+    assert principal["podpisujacy"] == [{"imie_nazwisko": NAME}]

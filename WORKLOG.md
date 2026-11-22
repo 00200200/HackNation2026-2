@@ -98,6 +98,10 @@ Two and four grant JSONs matched exactly. The ten organizer grants remained exac
 | Confirm the long-string similarity function with UZP and record the Stage II weights | Open |
 | Promote HackNation2026 PR #48 to `prod` after the faktczyfejk demo, so the doc2json.pl Caddy block survives a redeploy | Open |
 
+<!-- Superseded by the UZP scoring decision below. Previous open item:
+| Confirm the organizer’s F1 formula and Stage II weights with UZP | Open |
+-->
+
 ## Decisions
 
 - 22.11.2026: UZP micro F1 is the primary extraction score. Compare the five long fields at an inclusive 80% threshold using RapidFuzz normalized Levenshtein until UZP names its similarity function. When the reference contains a value, both a wrong guess and a null cost one error. Keep supported OCR text, especially when trimming noise could recover a match. Abstaining helps when the reference is absent. [Organizer rules](https://github.com/00200200/HackNation2026-2/issues/59)
@@ -212,6 +216,8 @@ Two and four grant JSONs matched exactly. The ten organizer grants remained exac
 
 - 21.11.2026 · Integrated #27 and #34 with streamed upload limits and a disposable OCR process per document. The request deadline includes upload and queue time.
 
+- 22.11.2026 · Codex · Fixed appeal party boundaries at numbered headings, parenthesized page counters over scans, labelled OCR receipt accounts and explicit grantor signature blocks. The remaining round-three routing and role errors are tracked in #1.
+
 ## Frontend branch snapshot before API integration
 
 Public landing https://doc2json.pl (`frontend/`, static nginx, monochrome) runs on the team VPS as `doc2json-web`
@@ -241,4 +247,10 @@ These runs used local rules with the three endpoint variables unset. The two loc
 - 22.11.2026 · Codex · Implemented the UZP scorer and retained historical strict micro F1 on `feat/uzp-metric` (#59).
 - 22.11.2026 · Codex · Added local jury Compose services and the signed task rules for #60. Compose configuration validated. Docker Desktop did not answer its health probe, so container byte parity is pending.
 
+- 2026-11-22 · Grounded candidate selection for disputed, populated first-page transfer fields, singleton appeal party names and procurement titles in the rules-first schema profile (`feat/doubtful-values`).
+- 22.11.2026 · Codex · Scored candidate selection after merging #71 at `c13dc3e7f`. Across 91 development PDFs, UZP micro-F1 was 0.9572 keyless and 0.9617 keyed with two workers. All 196 keyless training outputs matched main byte for byte. [Development counts](evals/results/doubtful-values.json)
 - 22.11.2026 · Codex · Prepared the VM installation and offline rehearsal for #66 and refreshed the organizer instructions to `eadffbc`. [Rehearsal measurements](evals/results/vm-2vcpu.json)
+
+- 22.11.2026 · Codex · Synced #72 with main at `4222472`, retaining first-page candidate selection in the keyed profile.
+- 22.11.2026 · Codex · Synced the rule fixes in #75 with main at `b9c2c7f`, preserving the printed account prefix during OCR slash repair.
+- 22.11.2026 · Codex · Integrated the merged #75 rule fixes into #72 at main `257a6af`.

@@ -1,0 +1,1147 @@
+{
+  "uzp_development": {
+    "product_commit": "c13dc3e7fbbc555f73a7c8679ccca6d33a80b593",
+    "main_commit": "11008c5d3acbcc042e02201a49bec651ad480981",
+    "jobs": 2,
+    "measurements": "Each profile processed each development set through the batch CLI, using the official evaluation harness on the clean merge. The keyed profile used the documented regional Ministral configuration with live responses. Both metrics use identical outputs within each run. Pooled F1 sums TP, FP and FN across the 91 development PDFs.",
+    "target_fields": "Within each PDF and field, gained and lost count changes in UZP true positives from keyless to the full keyed profile. These comparisons include all keyed features.",
+    "training": {
+      "byte_identical_keyless_to_main": 196,
+      "n_docs": 196,
+      "micro_f1": 1.0,
+      "micro_f1_strict": 1.0,
+      "holdout_51_60_micro_f1": 1.0
+    },
+    "validation": {
+      "tests_passed": 1766
+    },
+    "datasets": {
+      "c1": {
+        "local": {
+          "counts": {
+            "tp": 142,
+            "fp": 13,
+            "fn": 11,
+            "tn": 81
+          },
+          "counts_strict": {
+            "tp": 215,
+            "fp": 30,
+            "fn": 32
+          },
+          "micro_f1": 0.922077922077922,
+          "micro_f1_strict": 0.8739837398373984,
+          "macro_f1_classes": 0.8982323232323233,
+          "per_class_f1": {
+            "odwolanie": 0.9363636363636364,
+            "pelnomocnictwo": 0.9583333333333334,
+            "przelew": 0.8
+          },
+          "routing_by_class": {
+            "odwolanie": {
+              "correct": 8,
+              "total": 8
+            },
+            "pelnomocnictwo": {
+              "correct": 3,
+              "total": 3
+            },
+            "przelew": {
+              "correct": 4,
+              "total": 4
+            },
+            "negatywny": {
+              "correct": 7,
+              "total": 7
+            }
+          },
+          "outputs_complete": 1.0,
+          "negatives_empty": 1.0,
+          "n_docs": 22,
+          "strict_exact_documents": 10,
+          "seconds_per_doc": 7.598664106039161,
+          "hard_failures_retried": 0
+        },
+        "keyed": {
+          "counts": {
+            "tp": 143,
+            "fp": 15,
+            "fn": 8,
+            "tn": 81
+          },
+          "counts_strict": {
+            "tp": 216,
+            "fp": 29,
+            "fn": 31
+          },
+          "micro_f1": 0.9255663430420712,
+          "micro_f1_strict": 0.8780487804878049,
+          "macro_f1_classes": 0.8998366013071896,
+          "per_class_f1": {
+            "odwolanie": 0.9411764705882353,
+            "pelnomocnictwo": 0.9583333333333334,
+            "przelew": 0.8
+          },
+          "routing_by_class": {
+            "odwolanie": {
+              "correct": 8,
+              "total": 8
+            },
+            "pelnomocnictwo": {
+              "correct": 3,
+              "total": 3
+            },
+            "przelew": {
+              "correct": 4,
+              "total": 4
+            },
+            "negatywny": {
+              "correct": 7,
+              "total": 7
+            }
+          },
+          "outputs_complete": 1.0,
+          "negatives_empty": 1.0,
+          "n_docs": 22,
+          "strict_exact_documents": 10,
+          "seconds_per_doc": 5.4223356325899,
+          "hard_failures_retried": 0
+        },
+        "target_field_change_in_uzp_tp": {
+          "Odwolujacy[].nazwa": {
+            "gained": 0,
+            "lost": 0
+          },
+          "Zamawiajacy[].nazwa": {
+            "gained": 1,
+            "lost": 0
+          },
+          "ZamowieniePubliczne.tytul": {
+            "gained": 0,
+            "lost": 0
+          },
+          "przelew_bankowy.data_operacji": {
+            "gained": 0,
+            "lost": 0
+          },
+          "przelew_bankowy.kwota": {
+            "gained": 0,
+            "lost": 0
+          }
+        }
+      },
+      "c2": {
+        "local": {
+          "counts": {
+            "tp": 220,
+            "fp": 12,
+            "fn": 24,
+            "tn": 138
+          },
+          "counts_strict": {
+            "tp": 350,
+            "fp": 38,
+            "fn": 44
+          },
+          "micro_f1": 0.9243697478991597,
+          "micro_f1_strict": 0.8951406649616368,
+          "macro_f1_classes": 0.948527346879887,
+          "per_class_f1": {
+            "odwolanie": 0.8976897689768977,
+            "pelnomocnictwo": 0.9836065573770492,
+            "przelew": 0.9642857142857143
+          },
+          "routing_by_class": {
+            "odwolanie": {
+              "correct": 13,
+              "total": 13
+            },
+            "pelnomocnictwo": {
+              "correct": 5,
+              "total": 5
+            },
+            "przelew": {
+              "correct": 10,
+              "total": 10
+            },
+            "negatywny": {
+              "correct": 11,
+              "total": 11
+            }
+          },
+          "outputs_complete": 1.0,
+          "negatives_empty": 1.0,
+          "n_docs": 39,
+          "strict_exact_documents": 23,
+          "seconds_per_doc": 4.397907944431958,
+          "hard_failures_retried": 0
+        },
+        "keyed": {
+          "counts": {
+            "tp": 226,
+            "fp": 10,
+            "fn": 21,
+            "tn": 137
+          },
+          "counts_strict": {
+            "tp": 359,
+            "fp": 34,
+            "fn": 35
+          },
+          "micro_f1": 0.9358178053830227,
+          "micro_f1_strict": 0.9123252858958069,
+          "macro_f1_classes": 0.9565239060397178,
+          "per_class_f1": {
+            "odwolanie": 0.9120521172638436,
+            "pelnomocnictwo": 0.9836065573770492,
+            "przelew": 0.9739130434782609
+          },
+          "routing_by_class": {
+            "odwolanie": {
+              "correct": 13,
+              "total": 13
+            },
+            "pelnomocnictwo": {
+              "correct": 5,
+              "total": 5
+            },
+            "przelew": {
+              "correct": 10,
+              "total": 10
+            },
+            "negatywny": {
+              "correct": 11,
+              "total": 11
+            }
+          },
+          "outputs_complete": 1.0,
+          "negatives_empty": 1.0,
+          "n_docs": 39,
+          "strict_exact_documents": 25,
+          "seconds_per_doc": 7.780784009621502,
+          "hard_failures_retried": 0
+        },
+        "target_field_change_in_uzp_tp": {
+          "Odwolujacy[].nazwa": {
+            "gained": 0,
+            "lost": 0
+          },
+          "Zamawiajacy[].nazwa": {
+            "gained": 1,
+            "lost": 0
+          },
+          "ZamowieniePubliczne.tytul": {
+            "gained": 3,
+            "lost": 0
+          },
+          "przelew_bankowy.data_operacji": {
+            "gained": 0,
+            "lost": 0
+          },
+          "przelew_bankowy.kwota": {
+            "gained": 0,
+            "lost": 0
+          }
+        }
+      },
+      "scans": {
+        "local": {
+          "counts": {
+            "tp": 309,
+            "fp": 0,
+            "fn": 0,
+            "tn": 79
+          },
+          "counts_strict": {
+            "tp": 387,
+            "fp": 1,
+            "fn": 1
+          },
+          "micro_f1": 1.0,
+          "micro_f1_strict": 0.9974226804123711,
+          "macro_f1_classes": 1.0,
+          "per_class_f1": {
+            "odwolanie": 1.0,
+            "pelnomocnictwo": 1.0,
+            "przelew": 1.0
+          },
+          "routing_by_class": {
+            "odwolanie": {
+              "correct": 10,
+              "total": 10
+            },
+            "pelnomocnictwo": {
+              "correct": 10,
+              "total": 10
+            },
+            "przelew": {
+              "correct": 10,
+              "total": 10
+            },
+            "negatywny": {
+              "correct": 0,
+              "total": 0
+            }
+          },
+          "outputs_complete": 1.0,
+          "negatives_empty": null,
+          "n_docs": 30,
+          "strict_exact_documents": 29,
+          "seconds_per_doc": 8.915915126369024,
+          "hard_failures_retried": 0
+        },
+        "keyed": {
+          "counts": {
+            "tp": 309,
+            "fp": 0,
+            "fn": 0,
+            "tn": 79
+          },
+          "counts_strict": {
+            "tp": 387,
+            "fp": 1,
+            "fn": 1
+          },
+          "micro_f1": 1.0,
+          "micro_f1_strict": 0.9974226804123711,
+          "macro_f1_classes": 1.0,
+          "per_class_f1": {
+            "odwolanie": 1.0,
+            "pelnomocnictwo": 1.0,
+            "przelew": 1.0
+          },
+          "routing_by_class": {
+            "odwolanie": {
+              "correct": 10,
+              "total": 10
+            },
+            "pelnomocnictwo": {
+              "correct": 10,
+              "total": 10
+            },
+            "przelew": {
+              "correct": 10,
+              "total": 10
+            },
+            "negatywny": {
+              "correct": 0,
+              "total": 0
+            }
+          },
+          "outputs_complete": 1.0,
+          "negatives_empty": null,
+          "n_docs": 30,
+          "strict_exact_documents": 29,
+          "seconds_per_doc": 9.68913138473096,
+          "hard_failures_retried": 0
+        },
+        "target_field_change_in_uzp_tp": {
+          "Odwolujacy[].nazwa": {
+            "gained": 0,
+            "lost": 0
+          },
+          "Zamawiajacy[].nazwa": {
+            "gained": 0,
+            "lost": 0
+          },
+          "ZamowieniePubliczne.tytul": {
+            "gained": 0,
+            "lost": 0
+          },
+          "przelew_bankowy.data_operacji": {
+            "gained": 0,
+            "lost": 0
+          },
+          "przelew_bankowy.kwota": {
+            "gained": 0,
+            "lost": 0
+          }
+        }
+      }
+    },
+    "pooled_dev": {
+      "local": {
+        "counts": {
+          "tp": 671,
+          "fp": 25,
+          "fn": 35,
+          "tn": 298
+        },
+        "counts_strict": {
+          "tp": 952,
+          "fp": 69,
+          "fn": 77
+        },
+        "micro_f1": 0.9572039942938659,
+        "micro_f1_strict": 0.9287804878048781
+      },
+      "keyed": {
+        "counts": {
+          "tp": 678,
+          "fp": 25,
+          "fn": 29,
+          "tn": 297
+        },
+        "counts_strict": {
+          "tp": 962,
+          "fp": 64,
+          "fn": 67
+        },
+        "micro_f1": 0.9617021276595744,
+        "micro_f1_strict": 0.9362530413625304
+      }
+    }
+  },
+  "historical_measurements": "The remaining sections record the original strict-metric experiment before #71 landed. Its five-field fuzzy sensitivity uses the earlier null-inclusive scoring rules.",
+  "product_commit": "5741d66d48f81bd601dcabc5d25e254234d9fe55",
+  "base": "f7f3ee9",
+  "model": "ministral-3b-2512",
+  "profile": "README regional RL, spans, supported routing, incomplete gaps, charge focus, dual OCR disabled",
+  "definitions": {
+    "local": "Keyless CLI with the development inventories.",
+    "control": "Documented keyed profile before the selector. For triggered documents the original engine chain is replayed from the saved pre-selector rule record with the selector bypassed. General model replies are reused only for identical schema, instructions and prompt. Non-triggered outputs are shared.",
+    "merged": "Live selector within the documented keyed profile on the same development documents.",
+    "fuzzy": "Strict null-inclusive evals.metrics with one-to-one normalized Levenshtein >=0.80 credit on the five eligible long-string fields. Fuzzy sensitivity only.",
+    "timing": "Per-document service seconds in a contended development run, including OCR and model requests. Control subtracts measured selector request and replay durations. The coordinator reserved quiet 150-PDF timing for the integrated system. These service times cannot be summed to give parallel wall time.",
+    "paired_fields": "Field counts compare values within the same PDF. fixed and broken count changes in normalized matched leaves. Populated substitution and retention counts use singleton paths with one prediction and one reference. Request seconds are counted once per block.",
+    "residual": "Unmatched reference leaves grouped by whether a competing prediction is present, null, against a gold null, or missing entirely."
+  },
+  "iterations": [
+    "A first-page party-name pilot made four live choices on corpus 1. One completed a branch name and three incorporated mailing text. Name expansions now require a printed legal form or identifying unit.",
+    "The purchase-title collector addresses role confusion between a procurement and a named project inside its subject. Only one bounded cover span containing exactly the current project name is eligible. Two of the three corrected titles were related development examples.",
+    "The payment selector found no supported amount or date replacements in the final development inventories. No attempt to synthesize an unreadable amount was made."
+  ],
+  "under_load_retry": {
+    "initial_keyless_exact_before_adaptive_merge": 23,
+    "keyed_organizer_exact_before_retry": 22,
+    "resumed_batch_pdfs": 62,
+    "batch_deadline_seconds": 669.6,
+    "documents_repeated": 12,
+    "selection": "Every document whose completion followed the scaled batch deadline, regardless of score. A fresh two-worker batch restored the optional reads; no code or threshold changed."
+  },
+  "datasets": {
+    "c1": {
+      "local": {
+        "counts": {
+          "tp": 215,
+          "fp": 30,
+          "fn": 32
+        },
+        "micro_f1": 0.8739837398373984,
+        "macro_f1_classes": 0.8064469215034998,
+        "micro_f1_non_null": 0.8195718654434251,
+        "per_class_f1": {
+          "odwolanie": 0.900523560209424,
+          "pelnomocnictwo": 0.9354838709677419,
+          "przelew": 0.5833333333333334
+        },
+        "negatives_empty": 1.0,
+        "outputs_complete": 1.0,
+        "n": 22,
+        "fuzzy": 0.9024390243902439,
+        "exact": {
+          "negatywny": 7,
+          "odwolanie": 3,
+          "przelew": 0,
+          "pelnomocnictwo": 0
+        },
+        "correct_routes": {
+          "negatywny": 7,
+          "odwolanie": 8,
+          "przelew": 4,
+          "pelnomocnictwo": 3
+        },
+        "residual": {
+          "predicted null": 10,
+          "different non-null": 19,
+          "absent field/row": 2,
+          "gold null": 1
+        },
+        "calls": {},
+        "calls_per_pdf": 0.0,
+        "mean_document_seconds": 35.71943741867488
+      },
+      "control": {
+        "counts": {
+          "tp": 215,
+          "fp": 30,
+          "fn": 32
+        },
+        "micro_f1": 0.8739837398373984,
+        "macro_f1_classes": 0.8064469215034998,
+        "micro_f1_non_null": 0.8195718654434251,
+        "per_class_f1": {
+          "odwolanie": 0.900523560209424,
+          "pelnomocnictwo": 0.9354838709677419,
+          "przelew": 0.5833333333333334
+        },
+        "negatives_empty": 1.0,
+        "outputs_complete": 1.0,
+        "n": 22,
+        "fuzzy": 0.9024390243902439,
+        "exact": {
+          "negatywny": 7,
+          "odwolanie": 3,
+          "przelew": 0,
+          "pelnomocnictwo": 0
+        },
+        "correct_routes": {
+          "negatywny": 7,
+          "odwolanie": 8,
+          "przelew": 4,
+          "pelnomocnictwo": 3
+        },
+        "residual": {
+          "predicted null": 7,
+          "different non-null": 22,
+          "absent field/row": 2,
+          "gold null": 1
+        },
+        "calls": {
+          "ChargeEvidence": 1,
+          "bank_transfer": 2,
+          "power_of_attorney": 3
+        },
+        "calls_per_pdf": 0.2727272727272727,
+        "mean_document_seconds": 48.10828513453122
+      },
+      "merged": {
+        "counts": {
+          "tp": 216,
+          "fp": 29,
+          "fn": 31
+        },
+        "micro_f1": 0.8780487804878049,
+        "macro_f1_classes": 0.8081921222015801,
+        "micro_f1_non_null": 0.8256880733944955,
+        "per_class_f1": {
+          "odwolanie": 0.9057591623036649,
+          "pelnomocnictwo": 0.9354838709677419,
+          "przelew": 0.5833333333333334
+        },
+        "negatives_empty": 1.0,
+        "outputs_complete": 1.0,
+        "n": 22,
+        "fuzzy": 0.9065040650406504,
+        "exact": {
+          "negatywny": 7,
+          "odwolanie": 3,
+          "przelew": 0,
+          "pelnomocnictwo": 0
+        },
+        "correct_routes": {
+          "negatywny": 7,
+          "odwolanie": 8,
+          "przelew": 4,
+          "pelnomocnictwo": 3
+        },
+        "residual": {
+          "predicted null": 7,
+          "different non-null": 21,
+          "absent field/row": 2,
+          "gold null": 1
+        },
+        "calls": {
+          "ChargeEvidence": 1,
+          "bank_transfer": 2,
+          "power_of_attorney": 3,
+          "GroundedChoice": 1
+        },
+        "calls_per_pdf": 0.3181818181818182,
+        "mean_document_seconds": 48.160039547386326
+      },
+      "paired_target_fields": {
+        "local": {
+          "Odwolujacy[].nazwa": {
+            "fixed": 0,
+            "broken": 0,
+            "correct_retained": 7,
+            "populated_correct_retained": 7,
+            "populated_wrong_retained": 1
+          },
+          "Zamawiajacy[].nazwa": {
+            "fixed": 1,
+            "broken": 0,
+            "correct_retained": 6,
+            "populated_correct_retained": 5,
+            "populated_wrong_retained": 1,
+            "populated_substitution_fixed": 1
+          },
+          "ZamowieniePubliczne.tytul": {
+            "fixed": 0,
+            "broken": 0,
+            "correct_retained": 5,
+            "populated_correct_retained": 5,
+            "populated_wrong_retained": 3
+          },
+          "przelew_bankowy.kwota": {
+            "fixed": 0,
+            "broken": 0,
+            "correct_retained": 2,
+            "populated_wrong_retained": 2,
+            "populated_correct_retained": 2
+          },
+          "przelew_bankowy.data_operacji": {
+            "fixed": 0,
+            "broken": 0,
+            "correct_retained": 4,
+            "populated_correct_retained": 4
+          }
+        },
+        "control": {
+          "Odwolujacy[].nazwa": {
+            "fixed": 0,
+            "broken": 0,
+            "correct_retained": 7,
+            "populated_correct_retained": 7,
+            "populated_wrong_retained": 1
+          },
+          "Zamawiajacy[].nazwa": {
+            "fixed": 1,
+            "broken": 0,
+            "correct_retained": 6,
+            "populated_correct_retained": 5,
+            "populated_wrong_retained": 1,
+            "populated_substitution_fixed": 1
+          },
+          "ZamowieniePubliczne.tytul": {
+            "fixed": 0,
+            "broken": 0,
+            "correct_retained": 5,
+            "populated_correct_retained": 5,
+            "populated_wrong_retained": 3
+          },
+          "przelew_bankowy.kwota": {
+            "fixed": 0,
+            "broken": 0,
+            "correct_retained": 2,
+            "populated_wrong_retained": 2,
+            "populated_correct_retained": 2
+          },
+          "przelew_bankowy.data_operacji": {
+            "fixed": 0,
+            "broken": 0,
+            "correct_retained": 4,
+            "populated_correct_retained": 4
+          }
+        }
+      },
+      "selector": {
+        "calls": 1,
+        "calls_per_pdf": 0.045454545454545456,
+        "seconds": 1.138597082812339,
+        "by_field": {
+          "Zamawiajacy[].nazwa": {
+            "calls": 1,
+            "request_seconds": 1.138597082812339,
+            "errors": 0,
+            "fixed": 1,
+            "broken": 0,
+            "correct_retained": 0,
+            "abstain": 0
+          }
+        }
+      },
+      "recoveries": {
+        "merged": 0,
+        "local": 0
+      }
+    },
+    "c2": {
+      "local": {
+        "counts": {
+          "tp": 349,
+          "fp": 39,
+          "fn": 45
+        },
+        "micro_f1": 0.8925831202046036,
+        "macro_f1_classes": 0.9170379652835793,
+        "micro_f1_non_null": 0.8431372549019608,
+        "per_class_f1": {
+          "odwolanie": 0.8783068783068783,
+          "pelnomocnictwo": 0.9894736842105263,
+          "przelew": 0.8833333333333333
+        },
+        "negatives_empty": 1.0,
+        "outputs_complete": 1.0,
+        "n": 39,
+        "fuzzy": 0.9028132992327366,
+        "exact": {
+          "negatywny": 11,
+          "pelnomocnictwo": 4,
+          "odwolanie": 2,
+          "przelew": 5
+        },
+        "correct_routes": {
+          "negatywny": 11,
+          "pelnomocnictwo": 5,
+          "odwolanie": 13,
+          "przelew": 10
+        },
+        "residual": {
+          "absent field/row": 6,
+          "different non-null": 16,
+          "predicted null": 23
+        },
+        "calls": {},
+        "calls_per_pdf": 0.0,
+        "mean_document_seconds": 14.46812525543217
+      },
+      "control": {
+        "counts": {
+          "tp": 354,
+          "fp": 39,
+          "fn": 40
+        },
+        "micro_f1": 0.8996188055908514,
+        "macro_f1_classes": 0.9203063018852493,
+        "micro_f1_non_null": 0.8493150684931506,
+        "per_class_f1": {
+          "odwolanie": 0.8881118881118881,
+          "pelnomocnictwo": 0.9894736842105263,
+          "przelew": 0.8833333333333333
+        },
+        "negatives_empty": 1.0,
+        "outputs_complete": 1.0,
+        "n": 39,
+        "fuzzy": 0.9097839898348158,
+        "exact": {
+          "negatywny": 11,
+          "pelnomocnictwo": 4,
+          "odwolanie": 2,
+          "przelew": 5
+        },
+        "correct_routes": {
+          "negatywny": 11,
+          "pelnomocnictwo": 5,
+          "odwolanie": 13,
+          "przelew": 10
+        },
+        "residual": {
+          "absent field/row": 1,
+          "different non-null": 16,
+          "predicted null": 22,
+          "gold null": 1
+        },
+        "calls": {
+          "power_of_attorney": 3,
+          "ChargeEvidence": 2,
+          "bank_transfer": 1,
+          "appeal": 1
+        },
+        "calls_per_pdf": 0.1794871794871795,
+        "mean_document_seconds": 21.89161191874733
+      },
+      "merged": {
+        "counts": {
+          "tp": 357,
+          "fp": 36,
+          "fn": 37
+        },
+        "micro_f1": 0.9072426937738246,
+        "macro_f1_classes": 0.9238028053817527,
+        "micro_f1_non_null": 0.8610567514677103,
+        "per_class_f1": {
+          "odwolanie": 0.8986013986013986,
+          "pelnomocnictwo": 0.9894736842105263,
+          "przelew": 0.8833333333333333
+        },
+        "negatives_empty": 1.0,
+        "outputs_complete": 1.0,
+        "n": 39,
+        "fuzzy": 0.9174078780177891,
+        "exact": {
+          "negatywny": 11,
+          "pelnomocnictwo": 4,
+          "odwolanie": 4,
+          "przelew": 5
+        },
+        "correct_routes": {
+          "negatywny": 11,
+          "pelnomocnictwo": 5,
+          "odwolanie": 13,
+          "przelew": 10
+        },
+        "residual": {
+          "absent field/row": 1,
+          "different non-null": 13,
+          "predicted null": 22,
+          "gold null": 1
+        },
+        "calls": {
+          "power_of_attorney": 3,
+          "GroundedChoice": 3,
+          "ChargeEvidence": 2,
+          "bank_transfer": 1,
+          "appeal": 1
+        },
+        "calls_per_pdf": 0.2564102564102564,
+        "mean_document_seconds": 21.937916951862952
+      },
+      "paired_target_fields": {
+        "local": {
+          "Odwolujacy[].nazwa": {
+            "fixed": 0,
+            "broken": 0,
+            "correct_retained": 11,
+            "populated_correct_retained": 11,
+            "populated_wrong_retained": 2
+          },
+          "Zamawiajacy[].nazwa": {
+            "fixed": 1,
+            "broken": 0,
+            "correct_retained": 11,
+            "populated_correct_retained": 11,
+            "populated_wrong_retained": 1
+          },
+          "ZamowieniePubliczne.tytul": {
+            "fixed": 3,
+            "broken": 0,
+            "correct_retained": 8,
+            "populated_correct_retained": 8,
+            "populated_substitution_fixed": 3
+          },
+          "przelew_bankowy.kwota": {
+            "fixed": 0,
+            "broken": 0,
+            "correct_retained": 10,
+            "populated_correct_retained": 10
+          },
+          "przelew_bankowy.data_operacji": {
+            "fixed": 0,
+            "broken": 0,
+            "correct_retained": 10,
+            "populated_correct_retained": 10
+          }
+        },
+        "control": {
+          "Odwolujacy[].nazwa": {
+            "fixed": 0,
+            "broken": 0,
+            "correct_retained": 11,
+            "populated_correct_retained": 11,
+            "populated_wrong_retained": 2
+          },
+          "Zamawiajacy[].nazwa": {
+            "fixed": 0,
+            "broken": 0,
+            "correct_retained": 12,
+            "populated_correct_retained": 12,
+            "populated_wrong_retained": 1
+          },
+          "ZamowieniePubliczne.tytul": {
+            "fixed": 3,
+            "broken": 0,
+            "correct_retained": 8,
+            "populated_correct_retained": 8,
+            "populated_substitution_fixed": 3
+          },
+          "przelew_bankowy.kwota": {
+            "fixed": 0,
+            "broken": 0,
+            "correct_retained": 10,
+            "populated_correct_retained": 10
+          },
+          "przelew_bankowy.data_operacji": {
+            "fixed": 0,
+            "broken": 0,
+            "correct_retained": 10,
+            "populated_correct_retained": 10
+          }
+        }
+      },
+      "selector": {
+        "calls": 3,
+        "calls_per_pdf": 0.07692307692307693,
+        "seconds": 1.8058962915092707,
+        "by_field": {
+          "ZamowieniePubliczne.tytul": {
+            "calls": 3,
+            "request_seconds": 1.8058962915092707,
+            "errors": 0,
+            "fixed": 3,
+            "broken": 0,
+            "correct_retained": 0,
+            "abstain": 0
+          }
+        }
+      },
+      "recoveries": {
+        "merged": 0,
+        "local": 0
+      }
+    },
+    "scans": {
+      "local": {
+        "counts": {
+          "tp": 387,
+          "fp": 1,
+          "fn": 1
+        },
+        "micro_f1": 0.9974226804123711,
+        "macro_f1_classes": 0.9944444444444445,
+        "micro_f1_non_null": 0.996742671009772,
+        "per_class_f1": {
+          "odwolanie": 1.0,
+          "pelnomocnictwo": 1.0,
+          "przelew": 0.9833333333333333
+        },
+        "negatives_empty": null,
+        "outputs_complete": 1.0,
+        "n": 30,
+        "fuzzy": 1.0,
+        "exact": {
+          "przelew": 9,
+          "odwolanie": 10,
+          "pelnomocnictwo": 10
+        },
+        "correct_routes": {
+          "przelew": 10,
+          "odwolanie": 10,
+          "pelnomocnictwo": 10
+        },
+        "residual": {
+          "different non-null": 1
+        },
+        "calls": {},
+        "calls_per_pdf": 0.0,
+        "mean_document_seconds": 21.381894429276386
+      },
+      "control": {
+        "counts": {
+          "tp": 387,
+          "fp": 1,
+          "fn": 1
+        },
+        "micro_f1": 0.9974226804123711,
+        "macro_f1_classes": 0.9944444444444445,
+        "micro_f1_non_null": 0.996742671009772,
+        "per_class_f1": {
+          "odwolanie": 1.0,
+          "pelnomocnictwo": 1.0,
+          "przelew": 0.9833333333333333
+        },
+        "negatives_empty": null,
+        "outputs_complete": 1.0,
+        "n": 30,
+        "fuzzy": 1.0,
+        "exact": {
+          "przelew": 9,
+          "odwolanie": 10,
+          "pelnomocnictwo": 10
+        },
+        "correct_routes": {
+          "przelew": 10,
+          "odwolanie": 10,
+          "pelnomocnictwo": 10
+        },
+        "residual": {
+          "different non-null": 1
+        },
+        "calls": {
+          "power_of_attorney": 10
+        },
+        "calls_per_pdf": 0.3333333333333333,
+        "mean_document_seconds": 34.79875592792717
+      },
+      "merged": {
+        "counts": {
+          "tp": 387,
+          "fp": 1,
+          "fn": 1
+        },
+        "micro_f1": 0.9974226804123711,
+        "macro_f1_classes": 0.9944444444444445,
+        "micro_f1_non_null": 0.996742671009772,
+        "per_class_f1": {
+          "odwolanie": 1.0,
+          "pelnomocnictwo": 1.0,
+          "przelew": 0.9833333333333333
+        },
+        "negatives_empty": null,
+        "outputs_complete": 1.0,
+        "n": 30,
+        "fuzzy": 1.0,
+        "exact": {
+          "przelew": 9,
+          "odwolanie": 10,
+          "pelnomocnictwo": 10
+        },
+        "correct_routes": {
+          "przelew": 10,
+          "odwolanie": 10,
+          "pelnomocnictwo": 10
+        },
+        "residual": {
+          "different non-null": 1
+        },
+        "calls": {
+          "power_of_attorney": 10
+        },
+        "calls_per_pdf": 0.3333333333333333,
+        "mean_document_seconds": 34.79875592792717
+      },
+      "paired_target_fields": {
+        "local": {
+          "przelew_bankowy.kwota": {
+            "fixed": 0,
+            "broken": 0,
+            "correct_retained": 10,
+            "populated_correct_retained": 10
+          },
+          "przelew_bankowy.data_operacji": {
+            "fixed": 0,
+            "broken": 0,
+            "correct_retained": 10,
+            "populated_correct_retained": 10
+          },
+          "Odwolujacy[].nazwa": {
+            "fixed": 0,
+            "broken": 0,
+            "correct_retained": 10,
+            "populated_correct_retained": 10
+          },
+          "Zamawiajacy[].nazwa": {
+            "fixed": 0,
+            "broken": 0,
+            "correct_retained": 11,
+            "populated_correct_retained": 9
+          },
+          "ZamowieniePubliczne.tytul": {
+            "fixed": 0,
+            "broken": 0,
+            "correct_retained": 10,
+            "populated_correct_retained": 10
+          }
+        },
+        "control": {
+          "przelew_bankowy.kwota": {
+            "fixed": 0,
+            "broken": 0,
+            "correct_retained": 10,
+            "populated_correct_retained": 10
+          },
+          "przelew_bankowy.data_operacji": {
+            "fixed": 0,
+            "broken": 0,
+            "correct_retained": 10,
+            "populated_correct_retained": 10
+          },
+          "Odwolujacy[].nazwa": {
+            "fixed": 0,
+            "broken": 0,
+            "correct_retained": 10,
+            "populated_correct_retained": 10
+          },
+          "Zamawiajacy[].nazwa": {
+            "fixed": 0,
+            "broken": 0,
+            "correct_retained": 11,
+            "populated_correct_retained": 9
+          },
+          "ZamowieniePubliczne.tytul": {
+            "fixed": 0,
+            "broken": 0,
+            "correct_retained": 10,
+            "populated_correct_retained": 10
+          }
+        }
+      },
+      "selector": {
+        "calls": 0,
+        "calls_per_pdf": 0.0,
+        "seconds": 0,
+        "by_field": {}
+      },
+      "recoveries": {
+        "merged": 0,
+        "local": 0
+      }
+    }
+  },
+  "training": {
+    "product": {
+      "compared": 196,
+      "equal": 196,
+      "extra": 0
+    },
+    "live": {
+      "compared": 196,
+      "equal": 196,
+      "extra": 0
+    }
+  },
+  "synthetic_full_f1": 1.0,
+  "selection_limit": "Both case splits are development sets. Thresholds and selection patterns were informed by development errors. No family-independent estimate of generalization follows from the four corrections.",
+  "corpus_1_test_once": {
+    "counts": {
+      "tp": 218,
+      "fp": 22,
+      "fn": 23
+    },
+    "micro_f1": 0.9064449064449065,
+    "macro_f1_classes": 0.8979685567920862,
+    "per_class_f1": {
+      "odwolanie": 0.9135135135135135,
+      "pelnomocnictwo": 0.9803921568627451,
+      "przelew": 0.8
+    },
+    "routing_by_class": {
+      "odwolanie": {
+        "correct": 5,
+        "total": 5
+      },
+      "pelnomocnictwo": {
+        "correct": 3,
+        "total": 3
+      },
+      "przelew": {
+        "correct": 5,
+        "total": 5
+      },
+      "negatywny": {
+        "correct": 4,
+        "total": 4
+      }
+    },
+    "n": 17,
+    "product_commit": "118d4169026014257e9e8ed42654317779565053"
+  },
+  "integrated_product_commit": "118d4169026014257e9e8ed42654317779565053",
+  "integrated_smoke": {
+    "checked": 4,
+    "correct": 4
+  },
+  "validation": {
+    "ablation_tests": 1745,
+    "integrated_tests": 1756,
+    "all_dev_replay_cache_misses": 0,
+    "synthetic_fields": 2316
+  },
+  "pooled_dev": {
+    "local": {
+      "counts": {
+        "tp": 951,
+        "fp": 70,
+        "fn": 78
+      },
+      "micro_f1": 0.9278048780487805
+    },
+    "control": {
+      "counts": {
+        "tp": 956,
+        "fp": 70,
+        "fn": 73
+      },
+      "micro_f1": 0.9304136253041363
+    },
+    "merged": {
+      "counts": {
+        "tp": 960,
+        "fp": 66,
+        "fn": 69
+      },
+      "micro_f1": 0.9343065693430657
+    }
+  }
+}
