@@ -59,7 +59,7 @@ Acceptance passed in each view. All 48 files were byte-identical across revision
 
 ## Regression gates
 
-Paired with merged main `725765b` on the same host and CPython 3.13.1. Scores are UZP / strict micro-F1.
+Paired with merged main `725765b` on the same host and CPython 3.13.1. Scores are UZP / strict micro-F1. [Main measurements](merged-main-725765b.json)
 
 | Gate | Main | Branch |
 |---|---:|---:|

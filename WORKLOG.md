@@ -255,6 +255,7 @@ Two and four grant JSONs matched exactly. The ten organizer grants remained exac
 - 22.11.2026 · Codex · Fixed appeal party boundaries at numbered headings, parenthesized page counters over scans, labelled OCR receipt accounts and explicit grantor signature blocks. The remaining round-three routing and role errors are tracked in #1.
 
 - 22.11.2026 · Restored independent appeal sections from native and OCR word positions, preserved shared headings and bound party cards to their columns. [Measurements](evals/results/two-column-appeals.json)
+- 22.11.2026 · Measured merged main `725765b` keyless with two workers. Printed-prefix training was 196/196 byte-identical (UZP and strict F1 1.0000), and organizer scans were 29/30 exact (UZP 1.0000). UZP F1 was 0.9512 on fixed variants, 0.9729/0.7923 on linked development/reserved cases and 0.9286/0.9244 on corpus 1/2 development. The 150-PDF mixed batch took 343.53 seconds. [Measurements](evals/results/merged-main-725765b.json)
 
 - 22.11.2026 · Added corroborating Polish filing and payment cues, scoped fields and native two-column reading for issue #63. Re-ran the 240-PDF benchmark and organizer and private gates against the confirmed JSON and account conventions. [Final field counts](evals/results/variants.json)
 
