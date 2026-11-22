@@ -238,3 +238,26 @@ def test_incomplete_or_contradictory_ledger(heading, payee, date):
         + date
     )
     assert classify([text]) is None
+
+
+@pytest.mark.parametrize("between_words", [False, True])
+def test_full_width_heading_does_not_split_across_legal_form_columns(between_words):
+    from kio2json.appeal_layout import form_columns
+    from kio2json.pdf_text import WordBox
+
+    header = "Pełnomocnictwo procesowe"
+    rows = [
+        ("Mocodawca", "Upoważniam do reprezentowania"),
+        ("Pracownia Wag", "przed organem:"),
+        ("NIP 1231231231", "Ada Most"),
+    ]
+    boxes = (
+        [WordBox(1, "Pełnomocnictwo", 220, 10, 309, 22), WordBox(1, "procesowe", 320, 10, 383, 22)]
+        if between_words
+        else [WordBox(1, header, 220, 10, 390, 22)]
+    )
+    for i, row in enumerate(rows):
+        for x, text in zip((40, 320), row, strict=True):
+            boxes.append(WordBox(1, text, x, 50 + 18 * i, x + 6 * len(text), 62 + 18 * i))
+    page = header + "\n" + "\n".join(" ".join(row) for row in rows)
+    assert form_columns(page, boxes, 600).splitlines() == [header, *[row[0] for row in rows], *[row[1] for row in rows]]
