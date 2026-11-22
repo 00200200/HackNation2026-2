@@ -21,6 +21,8 @@ behind the faktczyfejk Caddy; deploy in `docs/deploy.md`. Its upload calls `kio2
 
 The jury can run the batch CLI and upload UI locally with the root Compose file. [Docker instructions](README.md#run-with-docker-compose)
 
+The final deck (12 slides) and a two-minute demo script are in `docs/pitch/`. The form fields and the jury's commands are in `docs/submission.md`. [Number sources](docs/pitch/README.md)
+
 The evaluation VM kit installs the rules CLI under `/opt/solution`. The VM owner still needs to run the Ubuntu offline and reboot checks. [Deployment steps](README.md#deploy-on-the-evaluation-vm)
 
 A new document class needs one TOML file. `--classes PATH` and `--enable ID` add classes to the three organizer
@@ -112,7 +114,7 @@ Two and four grant JSONs matched exactly. The ten organizer grants remained exac
 
 | Item | Owner |
 |---|---|
-| Rehearse the installed solution on the organizer VM before access ends at 11:00 on 22 November. Check the offline run, reboot, and two-vCPU timing using [the VM instructions](data/uzp/VM.md). | VM owner |
+| Rehearse the installed solution on the organizer VM before access ends at 11:00 on 22 November. Check the offline run, reboot, and two-vCPU timing using [the VM instructions](data/uzp/VM.md). | 00200200 (VM request, credentials, final deployment, 2-vCPU timing and F1, rehearsal on the VM, per the #66 thread); Dominik-Galus built the kit (PR #77) |
 | If the team keeps the Ministral profile (#38): obtain an EU/EEA-only processing commitment for Mistral or deploy the same weights within the EEA. UZP said no private hosting; UNCONFIRMED whether that rules out the second option, since upstream `VM.md` allows models and containers on the evaluation VM | Deployment |
 | Score corpus 2 test once after the class rules and small-model profile are integrated | Coordinator |
 | Improve receipt routing and recover damaged party names on development inputs | Open |
@@ -141,6 +143,8 @@ Two and four grant JSONs matched exactly. The ten organizer grants remained exac
   `/orchestrator`, not to Claude subagents.
 
 ## Log
+
+- 22.11.2026 · Codex · Separated sole-trader identities, mandate signatures and challenged acts using the case-linked development split. [Field errors and split results](evals/results/case-mandates-appeals.md)
 
 - 22.11.2026 · Codex · Added contracting-authority descriptions and inflected captions to the appeal party reader. Joint authority cards preserve the printed names, registry IDs and lead marker. [Caption measurements](evals/results/authority-captions.json)
 
@@ -257,6 +261,8 @@ Two and four grant JSONs matched exactly. The ten organizer grants remained exac
 
 - 22.11.2026 · Claude · The rehearsal sentence in `docs/readme/reference.md` now says the output was compared with the reference run, names the 226 files as 196 synthetic training PDFs plus 30 organizer scans, and cites the committed record `evals/results/vm-2vcpu.json` for the 399.77 s figure and the revision `7a1c45b` · fix/jury-run-hardening
 
+- 22.11.2026 · Claude · Updated the final deck (12 slides) with the UZP-formula F1, the #76 accession class, a components and licences slide, the Regulamin Stage II split, an architecture slide, UZP value and a two-minute demo script; added the submission checklist with the VM evaluation from the organizer's VM.md. Posted the pre-access history audit and the title recommendation on #48 · docs/pitch
+
 ## Frontend branch snapshot before API integration
 
 Public landing https://doc2json.pl (`frontend/`, static nginx, monochrome) runs on the team VPS as `doc2json-web`
@@ -277,7 +283,6 @@ These runs used local rules with the three endpoint variables unset. The two loc
 |---|---|
 | Evaluate the planned Mistral API model (at most 8B parameters) on dev | Open |
 | Score corpus 2 test once after selecting and freezing the merged profile | Open |
-| Wire the doc2json.pl upload to the extraction (serve the GUI backend behind `/api/` or point the page at it) | Open |
 
 - 21.11.2026 · Codex · Round 3 traced 130 field errors on 78 real development PDFs. Recovered identifiers from matching party records, checked damaged company names against declarations and read debit amounts across bank columns. The single-field Ministral whitespace trial lost one correct title in 12 calls and was dropped.
 - 22.11.2026 · Codex · Implemented UZP’s empty-object and printed-account conventions on `fix/p0-conventions`. The training scorer can restore missing country codes from each transfer PDF with `--correct-training-accounts`.
@@ -290,10 +295,12 @@ These runs used local rules with the three endpoint variables unset. The two loc
 - 22.11.2026 · Codex · Added local jury Compose services and the signed task rules for #60. Compose configuration validated. Docker Desktop did not answer its health probe, so container byte parity is pending.
 - 22.11.2026 · Codex · The keyless LSTM crop experiment retained 13 correctly printed checksum-invalid accounts on the 240 seeded variants, raising UZP F1 from 0.2960 to 0.3053. It changed no digits on either real cohort or the organizer scans. [Paired measurements](evals/results/ocr-alternatives.json)
 
+- 22.11.2026 · Claude · doc2json.pl frontend: route file drops anywhere on the page to the upload, report a refused clipboard copy, white keyboard focus ring on light buttons, null token at #8a8a8a (CodeRabbit threads on #27) · fix/frontend-review-27
 - 2026-11-22 · Grounded candidate selection for disputed, populated first-page transfer fields, singleton appeal party names and procurement titles in the rules-first schema profile (`feat/doubtful-values`).
 - 22.11.2026 · Codex · Scored candidate selection after merging #71 at `c13dc3e7f`. Across 91 development PDFs, UZP micro-F1 was 0.9572 keyless and 0.9617 keyed with two workers. All 196 keyless training outputs matched main byte for byte. [Development counts](evals/results/doubtful-values.json)
 - 22.11.2026 · Codex · Prepared the VM installation and offline rehearsal for #66 and refreshed the organizer instructions to `eadffbc`. [Rehearsal measurements](evals/results/vm-2vcpu.json)
 
+- 22.11.2026 · Claude · Follow-up to #49 after #90 integrated an earlier snapshot of it: restored the `docs/task/BRIEF.md` text that snapshot dropped (per-profile failure behaviour, the PR #77 install kit and its unverified checks, the UNCONFIRMED tag on the synthetic-set relay, the `--correct-training-accounts` note) and recorded that the organizer README (`data/uzp/README.md:143`) still asks for an empty file while UZP replied four times on Discord, three times explicitly specifying `{}` (#57). Removed the stale "wire the upload" row from the frontend snapshot, since the page calls `/api/extract`, and named the owners of the VM row from the #66 thread · docs/brief-followup
 - 22.11.2026 · Codex · Synced #72 with main at `4222472`, retaining first-page candidate selection in the keyed profile.
 - 22.11.2026 · Codex · Synced the rule fixes in #75 with main at `b9c2c7f`, preserving the printed account prefix during OCR slash repair.
 - 22.11.2026 · Codex · Integrated the merged #75 rule fixes into #72 at main `257a6af`.
