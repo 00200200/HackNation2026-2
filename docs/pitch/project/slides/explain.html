@@ -1,0 +1,33 @@
+<section id="explain" class="light" data-transition="fade">
+<div class="hdr"><p>Zadanie UZP: Odwołania2json</p><p class="r">HackNation 2026</p></div>
+<h2 class="in" style="--i:0;">Każdą wartość da się sprawdzić.</h2>
+<div style="flex:1; display:flex; align-items:center; gap:56px;">
+<div class="window in" style="--i:1; flex:none; width:960px; background:#0a0a0a; border-color:#0a0a0a;">
+<div class="titlebar" style="border-bottom-color:rgba(255,255,255,0.08);"><div class="dot" style="background:#2e2e2e;"></div><div class="dot" style="background:#2e2e2e;"></div><div class="dot" style="background:#2e2e2e;"></div><p class="t" style="color:#8f8f8f;">explain/przyklad_01/odwolanie.trace.json</p></div>
+<div class="code" style="padding:24px 28px;">
+<p style="font-size:20px; line-height:1.5;">{</p>
+<p style="font-size:20px; line-height:1.5;">&nbsp;&nbsp;"class": <span class="c">"appeal"</span>,</p>
+<p style="font-size:20px; line-height:1.5;">&nbsp;&nbsp;"routing": {…, "cue": {"page": <span class="c">1</span>, "line": <span class="c">"ODWOŁANIE"</span>}},</p>
+<p style="font-size:20px; line-height:1.5;">&nbsp;&nbsp;"fields": [</p>
+<p style="font-size:20px; line-height:1.5;">&nbsp;&nbsp;&nbsp;&nbsp;{"field": <span class="c">"Odwolujacy[0].nip"</span>, "value": <span class="c">"9999284065"</span>,</p>
+<p style="font-size:20px; line-height:1.5;">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;"page": <span class="c">1</span>,</p>
+<p style="font-size:20px; line-height:1.5;">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;"snippet": <span class="c">"KRS: 9999405188, NIP: 9999284065, REGON: 999642785"</span>},</p>
+<p style="font-size:20px; line-height:1.5;">&nbsp;&nbsp;&nbsp;&nbsp;{"field": <span class="c">"OdwolanieKIO.czynnosc_powod_id"</span>, "value": <span class="c">9</span>,</p>
+<p style="font-size:20px; line-height:1.5;">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;"note": <span class="c">"derived code or flag, not a printed value"</span>},</p>
+<p style="font-size:20px; line-height:1.5;">&nbsp;&nbsp;&nbsp;&nbsp;{"field": <span class="c">"OdwolanieKIO.data"</span>, "value": <span class="c">null</span>,</p>
+<p style="font-size:20px; line-height:1.5;">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;"note": <span class="c">"no value extracted"</span>},</p>
+<p style="font-size:20px; line-height:1.5;">&nbsp;&nbsp;&nbsp;&nbsp;…</p>
+<p style="font-size:20px; line-height:1.5;">&nbsp;&nbsp;]</p>
+<p style="font-size:20px; line-height:1.5;">}</p>
+</div>
+</div>
+<div style="flex:1; display:flex; flex-direction:column; gap:36px;">
+<div class="pt in" style="--i:2;"><p class="n">01</p><p class="h">Dlaczego ta klasa</p><p class="d">Strona i&nbsp;wiersz, które ją wybrały.</p></div>
+<div class="pt in" style="--i:3;"><p class="n">02</p><p class="h">Skąd wartość</p><p class="d">Strona i&nbsp;fragment tekstu przy polu.</p></div>
+<div class="pt in" style="--i:4;"><p class="n">03</p><p class="h">Bez zgadywania</p><p class="d">Brak w&nbsp;tekście to null. Kody wyliczone są oznaczone.</p></div>
+<p class="mono in" style="--i:5; font-size:20px; color:#666666;">python -m kio2json --explain explain/</p>
+</div>
+</div>
+<div class="ftr"><div class="brand"><svg aria-label="Logo doc2json" width="40" height="40" viewBox="0 0 64 64" style="width:40px; height:40px;"><rect width="64" height="64" rx="15" fill="#000"/><g fill="none" stroke="#fff" stroke-width="4.5" stroke-linecap="round" stroke-linejoin="round"><path d="M24 15c-4.5 0-5.5 2-5.5 6v6c0 3-1.5 5-4.5 5 3 0 4.5 2 4.5 5v6c0 4 1 6 5.5 6"/><path d="M40 15c4.5 0 5.5 2 5.5 6v6c0 3 1.5 5 4.5 5-3 0-4.5 2-4.5 5v6c0 4-1 6-5.5 6"/><path d="M28 27h8M28 37h5"/></g></svg><p>doc2json</p></div><p class="src">Wynik --explain dla przyklad_01 z&nbsp;danych UZP</p><p class="pg">07 / 12</p></div>
+<aside>Flaga --explain zapisuje dla każdego PDF-u plik trace.json w&nbsp;osobnym folderze, bo JSON-y w&nbsp;output są oceniane. Plik mówi, który wiersz na której stronie wybrał klasę, a&nbsp;przy każdym polu podaje stronę i&nbsp;fragment odczytanego tekstu z&nbsp;wartością. Wartości, których nie ma w&nbsp;tekście dosłownie, jak wyliczony kod czynnosc_powod_id albo opis czynności ze słownika UZP, są oznaczone, a&nbsp;pole bez wartości ma null z&nbsp;adnotacją. Na slajdzie wynik dla syntetycznej sprawy przyklad_01 z&nbsp;danych UZP; nazwy i&nbsp;numery są fikcyjne.</aside>
+</section>

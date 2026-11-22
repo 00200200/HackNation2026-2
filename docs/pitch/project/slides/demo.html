@@ -2,16 +2,16 @@
 <div class="hdr"><p>Zadanie UZP: Odwołania2json</p><p class="r">HackNation 2026</p></div>
 <h2 class="in" style="--i:0;">Pokaz na żywo, 2&nbsp;minuty.</h2>
 <div style="flex:1; display:flex; align-items:center; gap:48px;">
-<div class="window in" style="--i:1; flex:none; width:1040px;">
-<div class="titlebar"><div class="dot"></div><div class="dot"></div><div class="dot"></div><p class="t">127.0.0.1:8000 · lokalny podgląd</p></div>
-<img src="../gui/appeal.png" alt="Lokalny podgląd: strona odwołania po lewej, wynik JSON po prawej" style="width:1040px; height:600px; object-fit:cover; object-position:top left; display:block;">
+<div class="window in" style="--i:1; flex:none; width:960px;">
+<div class="titlebar"><div class="dot"></div><div class="dot"></div><div class="dot"></div><p class="t">doc2json.pl</p></div>
+<img src="../readme/web.png" alt="doc2json.pl: PDF-y sprawy po lewej, JSON po prawej" style="width:960px; height:auto; display:block;">
 </div>
 <div style="flex:1; display:flex; flex-direction:column; gap:36px;">
 <div class="pt in" style="--i:2;"><p class="n">01</p><p class="h">CLI na folderze</p><p class="d">Sprawa z&nbsp;danych UZP, dokument spoza klas i&nbsp;dwa skany bez tekstu. Klasa i&nbsp;JSON dla każdego pliku.</p></div>
-<div class="pt in" style="--i:3;"><p class="n">02</p><p class="h">PDF obok JSON-a</p><p class="d">Ten sam wynik w&nbsp;GUI. Wyniki sprawy do pobrania jako ZIP.</p></div>
+<div class="pt in" style="--i:3;"><p class="n">02</p><p class="h">doc2json.pl</p><p class="d">PDF-y sprawy po lewej, JSON po prawej. Lokalnie: <span style="font-family:var(--mono); font-size:0.92em; white-space:nowrap;">docker compose up gui</span>.</p></div>
 <div class="pt in" style="--i:4;"><p class="n">03</p><p class="h">Nowa klasa</p><p class="d">Plik TOML zgłoszenia przystąpienia w&nbsp;katalogu klas, ponowna analiza i&nbsp;JSON nowego typu.</p></div>
 </div>
 </div>
-<div class="ftr"><div class="brand"><svg aria-label="Logo doc2json" width="40" height="40" viewBox="0 0 64 64" style="width:40px; height:40px;"><rect width="64" height="64" rx="15" fill="#000"/><g fill="none" stroke="#fff" stroke-width="4.5" stroke-linecap="round" stroke-linejoin="round"><path d="M24 15c-4.5 0-5.5 2-5.5 6v6c0 3-1.5 5-4.5 5 3 0 4.5 2 4.5 5v6c0 4 1 6 5.5 6"/><path d="M40 15c4.5 0 5.5 2 5.5 6v6c0 3 1.5 5 4.5 5-3 0-4.5 2-4.5 5v6c0 4-1 6-5.5 6"/><path d="M28 27h8M28 37h5"/></g></svg><p>doc2json</p></div><p class="src">Scenariusz z&nbsp;komendami: docs/pitch/demo.md · na zrzucie syntetyczny przyklad_01 UZP</p><p class="pg">08 / 12</p></div>
+<div class="ftr"><div class="brand"><svg aria-label="Logo doc2json" width="40" height="40" viewBox="0 0 64 64" style="width:40px; height:40px;"><rect width="64" height="64" rx="15" fill="#000"/><g fill="none" stroke="#fff" stroke-width="4.5" stroke-linecap="round" stroke-linejoin="round"><path d="M24 15c-4.5 0-5.5 2-5.5 6v6c0 3-1.5 5-4.5 5 3 0 4.5 2 4.5 5v6c0 4 1 6 5.5 6"/><path d="M40 15c4.5 0 5.5 2 5.5 6v6c0 3 1.5 5 4.5 5-3 0-4.5 2-4.5 5v6c0 4-1 6-5.5 6"/><path d="M28 27h8M28 37h5"/></g></svg><p>doc2json</p></div><p class="src">Scenariusz z&nbsp;komendami: docs/pitch/demo.md</p><p class="pg">09 / 12</p></div>
 <aside>Pokaz trwa dwie minuty, scenariusz z komendami jest w docs/pitch/demo.md. Najpierw CLI na folderze z całą sprawą z danych UZP, dokumentem spoza klas i dwoma skanami: program wypisuje klasę każdego pliku, a skan odwołania wychodzi identyczny ze wzorcem UZP. Potem ten sam folder w GUI: strona PDF po lewej, JSON po prawej, wyniki do pobrania jako ZIP. Na koniec kopiujemy plik TOML zgłoszenia przystąpienia do katalogu klas i klikamy Analizuj jeszcze raz; GUI pokazuje też frazy, które wybrały klasę. Gdyby GUI zawiodło, ten sam krok robimy w CLI.</aside>
 </section>

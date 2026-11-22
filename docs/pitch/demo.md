@@ -1,6 +1,6 @@
 # Pokaz na żywo: scenariusz na 2 minuty
 
-Do slajdu 8. Pokaz ma trzy kroki: CLI na folderze, ten sam folder w GUI i nowa klasa z pliku TOML.
+Do slajdu 9. Pokaz ma trzy kroki: CLI na folderze, ten sam folder w GUI i nowa klasa z pliku TOML.
 Profil bez LLM: zmienne `KIO_LLM_*` puste i bez pliku `.env` w katalogu repozytorium.
 
 Klasa `accession`, flagi `--classes` i `--explain` są na `main` od scalenia #95.
