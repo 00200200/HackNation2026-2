@@ -250,6 +250,8 @@ Two and four grant JSONs matched exactly. The ten organizer grants remained exac
 
 - 22.11.2026 · Claude · The rehearsal sentence in `docs/readme/reference.md` now says the output was compared with the reference run, names the 226 files as 196 synthetic training PDFs plus 30 organizer scans, and cites the committed record `evals/results/vm-2vcpu.json` for the 399.77 s figure and the revision `7a1c45b` · fix/jury-run-hardening
 
+- 22.11.2026 · Claude · The rehearsal sentence in `docs/readme/reference.md` no longer repeats the two timing figures, because the repo's rule asks for a matching record next to a speed number in the docs. It keeps the parity result and links `evals/results/vm-2vcpu.json` as the measurements · docs/rehearsal-measurements-link
+
 ## Frontend branch snapshot before API integration
 
 Public landing https://doc2json.pl (`frontend/`, static nginx, monochrome) runs on the team VPS as `doc2json-web`
