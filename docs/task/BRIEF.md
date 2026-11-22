@@ -73,7 +73,8 @@ Value conventions (Discord):
   into `/opt/solution/input`, run the command from `/opt/solution/RUN.md` in `/opt/solution` with `sudo` (no
   interaction; it must end on its own) and read `/opt/solution/output`. The project and its config belong in
   `/opt/solution`; models, Docker images and dependencies must already be on the VM, because `VM.md` says not to count
-  on downloads during the evaluation. Deployment is tracked in #66. UNCONFIRMED: whether a team without a VM is
+  on downloads during the evaluation. The install kit is `deploy/` (PR #77, README "Deploy on the evaluation VM");
+  its Ubuntu offline run, 2-vCPU timing and reboot check are unverified. UNCONFIRMED: whether a team without a VM is
   evaluated from its GitHub link, whether the 45-minute limit is measured on this VM, and the format of `RUN.md`
   (`VM.md` points to a template that the file does not contain). FAQ 11 still calls the test machine an "office"
   computer without GPU.
@@ -178,7 +179,7 @@ F1 and keeps the older strict score for comparison; its definition is in `.claud
 - Required: project title, GitHub link to a working prototype (upload documents, read the extraction result).
 - Optional: technical documentation incl. the LLM used, own quality test results.
 - Delivery for evaluation (`VM.md`): the project in `/opt/solution` on the team VM, with `RUN.md`, `input/` and
-  `output/`, ready before 22.11.2026 at 11:00 (#66).
+  `output/`, ready before 22.11.2026 at 11:00 (#66; the install kit is PR #77).
 - API key of an LLM solution: `/opt/solution/.env` (`VM.md`) or a field of the HackNation submission form, not the repo
   (Discord). UNCONFIRMED which applies.
 - Finalists (at most three): an architecture description, the source code and a presentation (Regulamin § 2.4b).

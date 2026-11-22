@@ -96,12 +96,14 @@ def test_crashed_worker_does_not_lose_healthy_documents(tmp_path, monkeypatch, w
         f"        {exit_call}\n"
         "    assert remaining_ms(1) == 0, 'worker received a fresh batch deadline'\n"
         "    return {'threads': os.environ['OMP_THREAD_LIMIT']}\n"
-        "extract = lambda text: backend(text)\n"
+        "extract = lambda text: backend(text)\n",
+        encoding="utf-8",
     )
     monkeypatch.syspath_prepend(str(tmp_path))
     (tmp_path / "example.toml").write_text(
         'id = "example"\nengines = ["python"]\nextractor = "runtime_fixture.extract"\n'
-        "[routing]\nrequired = ['\\w']\n[fields.threads]\ntype = 'string'\ninstruction = 'test'\n"
+        "[routing]\nrequired = ['\\w']\n[fields.threads]\ntype = 'string'\ninstruction = 'test'\n",
+        encoding="utf-8",
     )
     source = Path("data/uzp/dane/przyklad_01")
     pdfs = [source / name for name in ("przelew.pdf", "pelnomocnictwo.pdf", "odwolanie.pdf")]

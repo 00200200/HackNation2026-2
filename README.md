@@ -8,6 +8,78 @@ Without endpoint credentials the jury configuration runs three rule-based extrac
 that selects its routing rules, output fields and extraction engines. New classes can use
 label patterns or an optional language model.
 
+## Deploy on the evaluation VM
+
+1. **Request the VM.** Submit one request per team using the form in the
+   organizer’s instructions. When the login arrives, connect over SSH. The
+   deployment account needs read access to the private GitHub repository.
+   [Organizer’s VM instructions and request form](data/uzp/VM.md)
+
+2. **Run `vm_setup.sh`.** While the VM is online, run these commands as the
+   deployment user. Before the kit merges, use `deploy/vm-kit` in place of
+   `main`. Setup copies the checked-out commit into `/opt/solution/repo`,
+   installs Python 3.13 and the pinned requirements, and smoke-tests a transfer
+   and a scanned appeal outside the evaluator directories.
+
+   ```sh
+   git clone --single-branch --branch main git@github.com:00200200/HackNation2026-2.git ~/kio-release
+   cd /opt/solution
+   bash ~/kio-release/deploy/vm_setup.sh
+   ```
+
+3. **Run the offline rehearsal.** On the VM, the following command prepares a
+   disposable x86-64 Ubuntu 24.04 container with two CPUs and 16 GiB. It uses
+   the installed Python as the reference. For both the network-disabled run
+   and the run after a container restart, it compares all 226 organizer files
+   by path and bytes and prints a time estimate for 150 PDFs. The script
+   removes its temporary outputs, containers and snapshot image when it exits.
+
+   ```sh
+   cd /opt/solution
+   bash repo/deploy/rehearse_vm.sh /opt/solution/.venv/bin/python
+   ```
+
+   The development host’s Docker engine timed out before starting Ubuntu.
+   The Ubuntu offline run, two-vCPU timing and reboot result are unverified.
+   On the shared Apple M1 host, the network-denied run matched all 226 local
+   files byte for byte in 399.77 seconds with two workers. The same mix scales
+   to about 4 min 25 s for 150 PDFs on that host. [Rehearsal measurements](evals/results/vm-2vcpu.json)
+
+4. **Copy `RUN.md` and check the real VM.** Setup installs the native command
+   automatically. To restore it for handover, run the following from
+   `/opt/solution`.
+
+   ```sh
+   install -m 644 repo/deploy/RUN.md /opt/solution/RUN.md
+   ```
+
+   Place sample PDFs under a fresh case name in `/opt/solution/input`, run
+   the command from `RUN.md` and inspect the matching JSON files. Run
+   `sudo reboot`, reconnect, remove your sample outputs and repeat. Remove
+   your sample inputs and outputs after the check. The organizer owns both
+   directories. Keep them in place for evaluation.
+
+To update, fetch the desired release in `~/kio-release`, check out its commit
+and repeat steps 2–4 using the existing clone. The rules-only profile uses
+**no external services**. For a keyed deployment, create `/opt/solution/.env`
+with mode 600, configure the agreed provider and model there, and identify
+the service in `RUN.md`. [Model profile settings](#use-a-model-endpoint)
+
+**Docker Compose fallback.** On the VM, use Compose v2.24 or later. From
+`/opt/solution`, build the jury image while online, then install the fallback
+command in `RUN.md` if this is the profile the evaluators should run.
+
+```sh
+docker compose -f repo/compose.yaml build cli
+sed 's|^sudo env PYTHONPATH=.*|sudo docker compose -f repo/deploy/compose.vm.yaml run --rm -T cli|' repo/deploy/RUN.md > RUN.md
+```
+
+Run the command in the installed `RUN.md` for the same handover check.
+The CLI mounts the evaluator directories, uses the local image and exits after
+the batch. For the optional upload UI on port 8080, run
+`docker compose -f repo/deploy/compose.vm.yaml up -d gui`. Docker restarts the
+UI after a reboot.
+
 ## Run with Docker Compose
 
 Install Docker with Compose v2.24 or later. From the repository root, place case PDFs in
@@ -17,7 +89,8 @@ Install Docker with Compose v2.24 or later. From the repository root, place case
 docker compose run --rm cli
 ```
 
-The first build downloads the Python dependencies and Polish and English OCR data.
+The first build downloads the Python dependencies from PyPI. The Polish and English OCR data ship in the repository
+(`kio2json/tessdata/`), so nothing else is fetched.
 Each input PDF gets a matching file under `output/<case>/`. To upload PDFs in a browser, run:
 
 ```sh
@@ -43,18 +116,14 @@ From the repository root, create a virtual environment with 64-bit CPython 3.13.
 | Windows PowerShell | `py -3.13 -m venv .venv` | `.\.venv\Scripts\Activate.ps1` |
 | macOS or Linux | `python3.13 -m venv .venv` | `. .venv/bin/activate` |
 
-Use the activated shell for the install and run commands below. pip installs the
-Tesseract native libraries from PyPI. The local language-data wheel downloads the Polish and
-English fast models (8.88 MB combined) from a pinned revision on `raw.githubusercontent.com`
-and verifies both SHA-256 hashes. Once installed, the rules-only CLI and viewer process PDFs offline.
+Use the activated shell for the install and run commands below. `requirements.txt` lists only pinned PyPI
+packages and no local paths, so pip downloads only from PyPI (`pypi.org` and `files.pythonhosted.org`). Run the install
+from the repository root; from another directory, pass the file's full path to `-r`. pip installs the
+Tesseract native libraries from PyPI. The Polish and English fast models (8.88 MB, Apache-2.0) ship in
+`kio2json/tessdata/` with their licence. They come from a pinned `tessdata_fast` revision, and the CLI checks both
+SHA-256 hashes before the first OCR page. Run `python -m kio2json` from the repository root. The rules-only CLI and
+viewer process PDFs offline.
 [Platform wheels](https://pypi.org/project/tesserocr/2.13.0/#files)
-
-If the Tesseract data host is unreachable, download both language files on a connected machine and copy them into
-one directory. Before rerunning the install command below, set
-`export KIO_TESSDATA_SOURCE=/absolute/path/to/models` in a POSIX shell or
-`$env:KIO_TESSDATA_SOURCE = 'C:\models'` in PowerShell. Keep the original filenames.
-The installer verifies the same hashes for locally supplied files.
-[pol.traineddata](https://raw.githubusercontent.com/tesseract-ocr/tessdata_fast/87416418657359cb625c412a48b6e1d6d41c29bd/pol.traineddata) · [eng.traineddata](https://raw.githubusercontent.com/tesseract-ocr/tessdata_fast/87416418657359cb625c412a48b6e1d6d41c29bd/eng.traineddata)
 
 ```
 python -m pip install -r requirements.txt
@@ -115,8 +184,11 @@ corrected only when its NIP checksum fails. Missing fields stay empty.
    a possible e-mail address with a missing `@`, an English single-word pass rereads that crop. The extractor accepts the separator
    only when the rest of both readings agrees. Call `read_pages(path, word_boxes=boxes)` with
    an empty list to collect raw words and their rectangles alongside the page strings. Coordinates
-   are PDF points from the top left, with one-based page numbers. Polish Tesseract has 60 seconds per
-   primary page. Verification crops get up to 10 seconds each and optional full-page reads get up to
+   are PDF points from the top left, with one-based page numbers. Required Tesseract and RapidOCR
+   pages use a 180-second recognition watchdog at 300 dpi. After a timeout, the reader retries once
+   at 150 dpi if the document and batch still have time. It gives the retry the smaller of 60 seconds
+   and the remaining budget. Tesseract checks its timer during recognition, so setup and cancellation
+   can add wall time. Verification crops get up to 10 seconds each and optional full-page reads get up to
    180 seconds each. All optional OCR shares a deadline of
    300 seconds from the start of a PDF. The CLI and GUI also share one cutoff across the batch,
    10.8 seconds per input PDF with a minimum of 300 seconds for small batches. For the jury’s 150 PDFs
@@ -348,6 +420,12 @@ With these limits, eight busy loops and `--jobs 1`, the CLI processed the 150-PD
 (6 min 42 s of the jury’s 45 min). All 150 outputs matched the corresponding four-worker readings.
 The mix contained two copies of each organizer scan and 90 training PDFs. This timing preceded the
 final change to handling expired optional page reads. [Measurements and output digests](evals/results/adaptive-ocr-budget.json)
+
+With the 180-second primary watchdog, two workers processed all 226 public PDFs in 160.75 seconds.
+Every output matched `328f705` byte for byte. In a separate serial run on three scans, suspending the
+OCR worker for 65 seconds during the first page caused one document failure with the old watchdog.
+The new watchdog finished in 83.76 seconds including the pause, and all three outputs matched their
+ordinary readings. [Watchdog measurements](evals/results/first-pass-watchdog.json)
 
 In the earlier runtime-only experiment on a 16 GiB M1 MacBook Air, four workers processed 30 organizer scans in 37.15 seconds and a mix of
 60 scans and 90 training PDFs in 74.42 seconds. Peak sampled process-tree RSS for the mix was
