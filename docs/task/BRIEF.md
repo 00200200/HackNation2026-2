@@ -34,7 +34,7 @@ Classes and schemas (`data/uzp/oczekiwane-json/`):
 | appeal (odwołanie do KIO) | `odwolanie.json` | `OdwolanieKIO` (date, place, challenged action date, `czynnosc_powod_id` 1–12 + canonical `czynnosc_opis`, both from the **first** charge only), `Odwolujacy[]` (KRS/NIP/REGON, consortium leader, `przez-pelnomocnika`, attorney name, firm, e-mail), `Zamawiajacy[]` (+ `prowadzacy_postepowanie` null/0/1), `ZamowieniePubliczne` (BZP no. `YYYY/BZP########`, internal no., TED no. `NNNNNN-YYYY`, title) |
 | power of attorney (pełnomocnictwo) | `pelnomocnictwo.json` | `mocodawca[]` (`data`: name/KRS/NIP/`typ` osoba_prawna/osoba_fizyczna, `podpisujacy[]`), `pelnomocnicy[]` (name in nominative, PESEL) |
 | transfer confirmation (potwierdzenie przelewu) | `przelew.json` | `przelew_bankowy`: `data_operacji`, `kwota`, `na_rachunek`, `z_rachunku`, `numer_transakcji`, `tytul` |
-| anything else (negative) | none | a JSON file containing only `{}`, no class |
+| anything else (negative) | none | a JSON file containing only `{}`, no class (Discord, #57; the README says "empty `.json` file") |
 
 `czynnosc_powod_id` dictionary: `data/uzp/oczekiwane-json/czynnosc_powod_id_dict.md`. The schema files contain
 `//` comments with the extraction rules for each field; treat them as the spec.
@@ -116,11 +116,14 @@ Value conventions (Discord):
 - `data/uzp/dane/skany/`: 30 labelled scans (10 each in `odwolania`, `pelnomocnictwa`, `potwierdzenia`, one
   folder per scan with `NNNN.pdf` and gold `NNNN.json`). The README does not describe them; the folder is in the
   repo only.
-- `data/uzp/szablon-aplikacja/`: the expected folder layout (`input/case1`, `output/case1`).
+- `data/uzp/szablon-aplikacja/`: the expected folder layout (`input/case1`, `output/case1`). Its `output/case1`
+  holds only `przyklad odwolanie.json`: the template has no output file for its `negatywny przyklad.pdf`, so it
+  does not show the `{}` convention.
 - Hidden test set: not published. The task PDF (section 6) says it contains real appeal cases prepared by the
-  organizer, and README section 6 calls it complete cases, scored against references written by subject experts. On
-  Discord UZP said the documents are **synthetic, generated from real cases**, include both text PDFs and scans, and
-  contain no PDF that merges a document with an attachment; we follow that later answer. Regulamin § 2.4a: at least
+  organizer, and README section 6 calls it complete cases, scored against references written by subject experts. The
+  #63 relay of UZP's Discord answers (two Discord speakers, roles not recorded) says the documents are **synthetic, generated
+  from real cases**, include both text PDFs and scans, and contain no PDF that merges a document with an attachment;
+  we follow that later answer. Regulamin § 2.4a: at least
   10 appeal cases. The UZP stand can show it (FAQ 9).
 
 ## Judging
