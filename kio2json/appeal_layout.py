@@ -294,6 +294,16 @@ def form_columns(page: str, boxes: list[WordBox], width: float) -> str:
     rows, height = word_rows(boxes)
     if len(rows) < 3 or not width:
         return page
+    # A document title may sit entirely to one side of the table beneath it.
+    # Keep it above the form and out of the evidence for either column.
+    first_line = _line(rows[0])
+    heading = re.fullmatch(
+        r"pe[łl]nomocnictwo(?: procesowe)?|odwo[łl]anie(?: do (?:prezesa )?(?:KIO|Krajowej Izby Odwo[łl]awczej))?",
+        first_line,
+        re.IGNORECASE,
+    )
+    if heading:
+        rows = rows[1:]
     # The start of the right column recurs at the same position on several rows.
     starts = Counter(
         round(b.x0 / height)
@@ -311,7 +321,7 @@ def form_columns(page: str, boxes: list[WordBox], width: float) -> str:
         if count < 3:
             break
         gutter = (margin - 0.8) * height
-        ordered = []
+        ordered = [first_line] if heading else []
         changed = False
         # Headings and footers that cross the gutter retain their place between bands.
         for spanning, band_rows in itertools.groupby(rows, key=lambda row: _spans_gutter(row, gutter, height)):

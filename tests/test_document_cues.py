@@ -261,3 +261,17 @@ def test_full_width_heading_does_not_split_across_legal_form_columns(between_wor
             boxes.append(WordBox(1, text, x, 50 + 18 * i, x + 6 * len(text), 62 + 18 * i))
     page = header + "\n" + "\n".join(" ".join(row) for row in rows)
     assert form_columns(page, boxes, 600).splitlines() == [header, *[row[0] for row in rows], *[row[1] for row in rows]]
+
+
+@pytest.mark.parametrize(("header", "role"), [("Pełnomocnictwo", "Mocodawca"), ("Odwołanie do KIO", "Odwołujący")])
+def test_offset_document_title_preserves_label_value_rows(header, role):
+    from kio2json.appeal_layout import form_columns
+    from kio2json.pdf_text import WordBox
+
+    rows = [(role, "Pracownia Wag"), ("Zamawiający", "Spółka B"), ("Data", "01.03.2031")]
+    boxes = [WordBox(1, header, 285, 8, 380, 20)]
+    for i, row in enumerate(rows):
+        for x, text in zip((40, 250), row, strict=True):
+            boxes.append(WordBox(1, text, x, 42 + 18 * i, x + 6 * len(text), 54 + 18 * i))
+    page = header + "\n" + "\n".join(" ".join(row) for row in rows)
+    assert form_columns(page, boxes, 600) == page
