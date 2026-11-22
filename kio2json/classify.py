@@ -81,8 +81,9 @@ GRANT_CUES = (
     r"(?:do reprezentowania|w charakterze pelnomocnika|^pelnomocni(?:k|cy)\b)",
 )
 PAYMENT_TITLE = re.compile(
-    r"^(?:potwierdzenie|dowod|zaswiadczenie) (?:bankowe )?(?:(?:o )?"
-    r"(?:wykonani[aeu]|realizacji|zaksiegowania) )?(?:polecenia )?(?:transakcji|platnosci|operacji|przelewu)\b"
+    r"^(?:(?:bankowe|elektroniczne) )?(?:potwierdzenie|dowod|zaswiadczenie|poswiadczenie) (?:bankowe )?(?:(?:o )?"
+    r"(?:wykonani[aeu]|realizacji|zaksiegowania|zrealizowania) )?(?:polecenia )?(?:transakcji|platnosci|operacji|przelewu)\b"
+    r"|^(?:szczegoly|dane) (?:zrealizowan|wykonan|zaksiegowan)(?:ej|ego) (?:transakcji|platnosci|operacji|przelewu)\b"
 )
 
 

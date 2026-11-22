@@ -153,3 +153,27 @@ def test_completed_status_corroborates_a_bank_record_without_confirmation_title(
     assert classify([page]) == "bank_transfer"
     assert classify([page.replace("rozliczona", "oczekująca")]) is None
     assert classify(["Faktura pro forma\n" + page]) is None
+
+
+def test_bank_attestation_uses_the_printed_booking_and_payment_fields():
+    from kio2json.bank_transfer import extract
+
+    text = (
+        "Bankowe poświadczenie wykonania płatności\nDzień zaksięgowania: 2031/11/09\n"
+        "Suma transakcji: 12 544,20 PLN\nRachunek obciążony: "
+        + "23" * 13
+        + "\nRachunek uznany: "
+        + "54" * 13
+        + "\nIdentyfikator płatności: RN-989\nOpis płatności: Dostawa wag"
+    )
+    assert classify([text]) == "bank_transfer"
+    fields = extract(text)["przelew_bankowy"]
+    assert (fields["kwota"], fields["data_operacji"], fields["numer_transakcji"]) == (12544.2, "2031-11-09", "RN-989")
+    assert (fields["z_rachunku"], fields["na_rachunek"]) == ("23" * 13, "54" * 13)
+    assert classify([text.replace("poświadczenie wykonania", "zlecenie wykonania")]) is None
+
+
+def test_booking_date_and_amount_columns_accept_day_heading():
+    from kio2json.bank_transfer import transaction_values
+
+    assert transaction_values("Dzień zaksięgowania | Suma transakcji\n02.07.2031 | 41,80 PLN") == (41.8, "2031-07-02")

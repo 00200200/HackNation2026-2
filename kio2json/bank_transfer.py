@@ -10,9 +10,14 @@ SENDER_RE = re.compile(r"nadawc|zleceniodawc|płatnik|obciąż|z rachunku")
 RECIPIENT_RE = re.compile(r"odbiorc|beneficjent|adresat|uznawan|na rachunek")
 
 MONEY = r"(?<![\d.,])(?:\d{1,3}(?:[ .\u00a0\u202f]\d{3})+[.,]\d{2}|\d{1,3}(?:,\d{3})+\.\d{2}|\d+[.,]\d{2})(?![.,]?\d)"
-AMOUNT_LABEL = r"(?:kwota(?: (?:operacji|przelewu|transakcji|płatności|zaksięgowana))?|wartość(?: (?:operacji|przelewu|transakcji|płatności))?)"
-DATE_LABEL = r"data (?:operacji|transakcji|realizacji|wykonania|księgowania|obciążenia|zlecenia)"
-REFERENCE_LABEL = r"(?:nr ref\.?|(?:nr|numer) (?:operacji|transakcji)(?: w [^:\n]{1,55}(?=:))?|numer referencyjny|(?:id|identyfikator) (?:operacji|transakcji))(?: operacji)?"
+AMOUNT_LABEL = (
+    r"(?:(?:kwota|wartość)(?: (?:operacji|przelewu|transakcji|płatności|obciążenia|zaksięgowana))?"
+    r"|suma (?:operacji|przelewu|transakcji|płatności))"
+)
+DATE_LABEL = (
+    r"(?:data|dzień) (?:operacji|transakcji|realizacji|wykonania|(?:za)?księgowania|obciążenia|zlecenia|płatności)"
+)
+REFERENCE_LABEL = r"(?:nr ref\.?|(?:nr|numer) (?:operacji|transakcji)(?: w [^:\n]{1,55}(?=:))?|numer referencyjny|(?:id|identyfikator) (?:operacji|transakcji|płatności|przelewu))(?: operacji)?"
 TITLE_LABEL = r"(?:szczegóły płatności|tytułem|tytu[łl](?: (?:przelewu|operacji|płatności|transakcji))?|opis(?: (?:płatności|przelewu|transakcji))?)"
 FIELD_LABEL = rf"(?:{AMOUNT_LABEL}|{DATE_LABEL}|{REFERENCE_LABEL}|{TITLE_LABEL})"
 GENERIC_LABEL = r"[^\W\d_][\w /().-]{0,55}:"
@@ -186,7 +191,7 @@ ROLE_NOUN = r"(?:rachun(?:ek|ku)|kont[oa]|IBAN)"
 DIRECT_ROLE = re.compile(
     rf"(?im)^(?:(?:(?:numer|nr\.?)\s+)?{ROLE_NOUN}\s+)?"
     r"(?:(?P<sender>nadawc[ay]|zleceniodawc[ay]|płatnik(?:a)?|obciąż(?:an|on)[ey]|źródłow[ey]|z (?:rachunku|konta))"
-    r"|(?P<recipient>odbiorc[ay]|beneficjent(?:a)?|uznawan[ey]|docelow[ey]|na (?:rachunek|konto)))\b"
+    r"|(?P<recipient>odbiorc[ay]|beneficjent(?:a)?|uzna(?:wan|n)[ey]|docelow[ey]|na (?:rachunek|konto)))\b"
 )
 MASK = re.compile(r"(?i)(?:PL[ \t]*)?(?=[0-9x* .-]*[x*])[0-9x*][0-9x* .-]{2,}[0-9x*]")
 PARTY_SECTION = re.compile(r"(?i)^(?:dane\s+|rachunek\s+|konto\s+)?(właściciel\w*|posiadacz\w*|kontrahent\w*)\b")
@@ -259,24 +264,27 @@ TABLE_TIME = re.compile(r"\b\d{1,2}:\d{2}(?::\d{2})?\b")
 SIGNED_MONEY = re.compile(rf"(?:PLN[ \t]*)?([−-]?)({MONEY})(?:[ \t]*(?:PLN|zł))?", re.IGNORECASE)
 
 
+def _date_label(label: str) -> str:
+    return label.casefold().replace("dzień ", "data ").replace("zaksięgowania", "księgowania")
+
+
 def _posted_row(text: str) -> tuple[str, dict[str, str]] | None:
     lines = text.splitlines()
     records = []
     for index, line in enumerate(lines[:-1]):
-        headers = list(TABLE_HEADER.finditer(line))
+        headers = [_date_label(m[0]) for m in TABLE_HEADER.finditer(line)]
         if len(headers) < 2 or TABLE_HEADER.sub("", line).strip(" \t|:"):
             continue
-        if not any(h[0].lower().startswith("data ") for h in headers):
+        if not any(key.startswith("data ") for key in headers):
             continue
-        if not any(not h[0].lower().startswith("data ") for h in headers):
+        if not any(not key.startswith("data ") for key in headers):
             continue
         # Each header determines the type of the corresponding cell; ignore an optional clock in date cells.
         for row in lines[index + 1 :]:
             row = TABLE_TIME.sub("", row).strip(" \t|")
             fields = {}
             amount = None
-            for h in headers:
-                key = h[0].casefold()
+            for key in headers:
                 token = (DATE_RE if key.startswith("data ") else SIGNED_MONEY).match(row)
                 if not token:
                     break
@@ -390,7 +398,7 @@ def transaction_values(text: str) -> tuple[float | None, str | None]:
         )
         if integer:
             money = float("".join(integer[1].split()))
-    dates = [(m[1].casefold(), m[2]) for m in OPERATION_DATE_RE.finditer(fields)]
+    dates = [(_date_label(m[1]), m[2]) for m in OPERATION_DATE_RE.finditer(fields)]
     posted = _posted_row(fields)
     if posted:
         raw, cells = posted
@@ -407,7 +415,7 @@ def transaction_values(text: str) -> tuple[float | None, str | None]:
     # A value date is not evidence of execution.
     day = None
     for labels in (
-        {"data operacji", "data transakcji"},
+        {"data operacji", "data transakcji", "data płatności"},
         {"data wykonania", "data realizacji"},
         {"data księgowania", "data zlecenia"},
         {"data obciążenia"},
