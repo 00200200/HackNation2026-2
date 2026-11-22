@@ -48,3 +48,7 @@ eval-real: ## F1 eval on the local real corpus
 .PHONY: eval-variants
 eval-variants: ## Gate rule changes on the fixed 60-case robustness baseline
 	uv run python -m evals.run --variants 60 --variant-baseline evals/results/variants.json --variant-out .cache/variants-current.json
+
+.PHONY: eval-cases
+eval-cases: ## Score paired native and scanned documents generated from linked case records
+	uv run python -m evals.cases $(CASE_ARGS)
