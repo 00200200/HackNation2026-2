@@ -56,7 +56,7 @@ def test_gate_detects_regression_and_preserves_baseline(tmp_path, monkeypatch):
         for pdf in source.glob("*/*.pdf"):
             prediction = output / pdf.relative_to(source).with_suffix(".json")
             prediction.parent.mkdir(exist_ok=True)
-            prediction.touch()
+            prediction.write_text("{}\n", encoding="utf-8")
         return 0, None
 
     monkeypatch.setattr(run, "run_app", empty_predictions)

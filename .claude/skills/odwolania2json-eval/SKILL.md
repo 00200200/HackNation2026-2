@@ -60,7 +60,7 @@ On test splits, corpus I/O failures report an error count and type on the consol
 Invalid inputs, an empty selection and extractor failures exit 2 before writing results or the training gate.
 Both commands validate selected PDF pages and their text layers and read every reference as UTF-8 JSON, even when scoring saved predictions.
 A zero-byte corpus reference labels a negative. The three named organizer references must each contain fields for the expected class. A bad prediction misses all gold leaves and counts as incomplete.
-For a negative prediction to meet the team target, its file must contain zero bytes. A missed target gives exit code 1. Targets with no applicable documents, such as negative handling on an all-positive corpus, are skipped.
+For a negative prediction to meet the team target, its file must contain `{}` (the JSON writer appends a newline). A missed target gives exit code 1. Targets with no applicable documents, such as negative handling on an all-positive corpus, are skipped.
 
 An optional `SPLIT.json` at the corpus root gives two lists of case folder names, `dev` and `test`.
 Together they must cover each case exactly once. Both commands accept `--split dev|test|all` (default `all`).
@@ -86,7 +86,7 @@ The evaluator uses RapidFuzz normalized Levenshtein similarity of at least 0.80 
 
 List entries are paired one-to-one by content within each parent. The assignment maximizes matching leaves, then pairs remaining present fields. Reordering entries preserves the score, and duplicate entries consume distinct matches. Missing predictions miss all present reference values. Extra predicted values on unrelated documents are FP.
 
-`micro_f1_strict` retains the historical score for comparison across revisions. It flattens lists to leaf multisets, includes null hits, uses the original identifier normalization and charges FP + FN for an incorrect substitution. `micro_f1_non_null` is its historical gold-null-excluded variant.
+`micro_f1_strict` retains the historical score for comparison across revisions. It flattens lists to leaf multisets, includes null hits, compares accounts as printed without whitespace and uses the original normalization for other identifiers and charges FP + FN for an incorrect substitution. `micro_f1_non_null` is its historical gold-null-excluded variant.
 
 The document, class and field macro scores average the defined UZP F1 scores of their respective groups. An empty average is JSON null. Full runs also report both micro metrics on training cases 51–60.
 
@@ -96,8 +96,8 @@ The document, class and field macro scores average the defined UZP F1 scores of 
 |---|---|---|
 | `micro_f1` | pooled field-level F1, all documents incl. negatives | ≥ `ODW_F1_TARGET` (0.90 default; **team target**, the jury has no threshold, only a ranking) |
 | `micro_f1_strict` | historical pooled field-level F1 | reported |
-| `outputs_complete` | every input PDF has a valid JSON (or an empty file) in the right place | 1.00 |
-| `negatives_empty` | negatives returned as an empty file | 1.00 |
+| `outputs_complete` | every input PDF has a valid JSON object in the right place | 1.00 |
+| `negatives_empty` | negatives returned as `{}` | 1.00 |
 | `classification_accuracy` | positive documents given the right class | 1.00 |
 | `seconds_per_doc` | wall time of the whole run / documents (16 GB, i7, no GPU at the jury) | reported |
 

@@ -3,9 +3,9 @@
 import re
 
 from rapidfuzz.distance import Levenshtein
-from stdnum import iban
 
 from . import bank_transfer, power_of_attorney
+from .accounts import account_identity, account_matches, valid_account
 from .appeal_charges import FILING
 from .common import DATE, to_iso
 from .ocr_accounts import AccountEvidence
@@ -124,7 +124,7 @@ def _payment_card(first: str, folded: str, amount: float | None, day: str | None
     if not (titles or bank_header) or not (amount is not None or CURRENCY_VALUE.search(folded)):
         return False
     accounts = bank_transfer.ANCILLARY_ACCOUNT.sub("", bank_transfer.normalize_account_spacing(first))
-    numbers = {"".join(m[1].split()) for m in bank_transfer.ACCOUNT_RE.finditer(accounts)}
+    numbers = {account_identity("".join(m[1].split())) for m in account_matches(accounts)}
     if len(numbers) != 2:
         return False
     if None in bank_transfer.printed_accounts(accounts).values():
@@ -136,13 +136,14 @@ def _payment_card(first: str, folded: str, amount: float | None, day: str | None
     attestation = any(ATTESTS_PAYMENT.search(title) for title in titles)
     sender, recipient = bank_transfer._accounts(accounts)
     reference = bool(bank_transfer.REFERENCE_RE.search(first))
+    bound_pair = bool(sender and recipient and account_identity(sender) != account_identity(recipient))
     if not titles:
-        return bool(bank_header and booked and reference and sender and recipient and sender != recipient)
+        return bool(bank_header and booked and reference and bound_pair)
     corroboration = sum(
         (
             day is not None,
             reference,
-            bool(sender and recipient and sender != recipient),
+            bound_pair,
         )
     )
     return (attestation or booked) and corroboration >= 1
@@ -255,7 +256,7 @@ def routing_evidence(first_page: str) -> tuple[set[str], bool]:
     )
     lines = lines[:cutoff]
     receipt = "\n".join(lines)
-    account = bank_transfer.ACCOUNT_RE.search(receipt)
+    account = next(account_matches(receipt), None)
     own_lines = [
         line
         for i, line in enumerate(lines)
@@ -392,7 +393,7 @@ def classify(pages: list[str], *, ocr_accounts: AccountEvidence | None = None) -
         sender, recipient = bank_transfer._accounts(first)
     else:
         sender, recipient = ocr_accounts.sender, ocr_accounts.recipient
-    bound_pair = bool(sender and recipient and sender != recipient)
+    bound_pair = bool(sender and recipient and account_identity(sender) != account_identity(recipient))
     # A posted transaction with no confirmation title must bind both accounts,
     # its amount, and at least one independent ledger date or transaction ID.
     ledger_score = sum((amount is not None, day is not None, bool(bank_transfer.REFERENCE_RE.search(first))))
@@ -401,9 +402,9 @@ def classify(pages: list[str], *, ocr_accounts: AccountEvidence | None = None) -
     # Classic confirmations sometimes give an unlabelled pair. Preserve their routing
     # while keeping explicit commission/refund/archive accounts out of that pair.
     payment_fields = bank_transfer.ANCILLARY_ACCOUNT.sub("", first)
-    candidates = {"".join(number[1].split()) for number in bank_transfer.ACCOUNT_RE.finditer(payment_fields)}
+    candidates = {account_identity("".join(number[1].split())) for number in account_matches(payment_fields)}
     known_party = (sender or recipient) and len(
-        {"".join(number[1].split()) for number in bank_transfer.ACCOUNT_RE.finditer(first)}
+        {account_identity("".join(number[1].split())) for number in account_matches(first)}
     ) >= 2
     if (
         (bound_pair or known_party or len(candidates) >= 2)
@@ -420,7 +421,7 @@ def classify(pages: list[str], *, ocr_accounts: AccountEvidence | None = None) -
             ocr_accounts is not None
             and {"sender", "recipient"} <= ocr_accounts.declared
             and re.search(rf"(?im)^{bank_transfer.REFERENCE_LABEL}[ \t]*[:.]", first)
-            and any(account and iban.is_valid("PL" + account) for account in (sender, recipient))
+            and any(account and valid_account(account) for account in (sender, recipient))
         ):
             return "bank_transfer"
         if (
@@ -437,7 +438,7 @@ def classify(pages: list[str], *, ocr_accounts: AccountEvidence | None = None) -
         if (
             bool(sender) != bool(recipient)
             and visible
-            and iban.is_valid("PL" + visible)
+            and valid_account(visible)
             and bank_transfer.partial_account_mask(first, "recipient" if sender else "sender")
         ):
             return "bank_transfer"

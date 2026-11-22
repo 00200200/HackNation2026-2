@@ -32,8 +32,10 @@ from pathlib import Path
 import pdfplumber
 import pypdfium2 as pdfium
 from pdfminer import settings as pdf_settings
+from stdnum import numdb
 
 from evals.metrics import (
+    ACCOUNT_KEYS,
     CLASSES,
     NEGATIVE,
     DocResult,
@@ -123,7 +125,37 @@ def training_inventory() -> dict[str, set[str]]:
     return inventory
 
 
-def load_cases(data: Path, quick: bool, *, holdout: bool = False) -> dict[str, dict[str, dict]]:
+def correct_training_accounts(pdf_path: Path, reference: dict) -> dict:
+    """Restore a missing country prefix only when the PDF prints it with the exact reference number."""
+    payment = reference.get("przelew_bankowy")
+    if not isinstance(payment, dict):
+        return reference
+    with pdfplumber.open(pdf_path) as pdf:
+        pages = [page.extract_text() or "" for page in pdf.pages]
+    corrected = payment.copy()
+    for key in ACCOUNT_KEYS:
+        value = payment.get(key)
+        if not isinstance(value, str) or not re.fullmatch(r"[0-9]+", digits := "".join(value.split())):
+            continue
+        printed = r"\s*".join(digits)
+        # After a complete known account, the next row can begin with an amount or date.
+        # A separate digit group on the same row can be part of an overlong account.
+        token = re.compile(
+            rf"(?<!\w)(?:([A-Za-z]\s*[A-Za-z])\s*)?{printed}"
+            r"(?!\w|[^\S\r\n]+[0-9]+\b(?![.,/-][0-9]))"
+        )
+        prefixes = {"".join(match[1].split()) if match[1] else None for page in pages for match in token.finditer(page)}
+        if len(prefixes) == 1 and (prefix := prefixes.pop()):
+            info = numdb.get("iban").info(prefix.upper())[0][1]
+            bban_length = sum(map(int, re.findall(r"(\d+)!", info.get("bban", ""))))
+            if bban_length and len(digits) == 2 + bban_length:
+                corrected[key] = prefix + digits
+    return {**reference, "przelew_bankowy": corrected}
+
+
+def load_cases(
+    data: Path, quick: bool, *, holdout: bool = False, correct_accounts: bool = False
+) -> dict[str, dict[str, dict]]:
     selected = HOLDOUT if holdout else QUICK if quick else FULL
     inventory = training_inventory()
     if not (quick or holdout) and case_names(data) - {"skany"} != FULL:
@@ -162,7 +194,7 @@ def load_cases(data: Path, quick: bool, *, holdout: bool = False) -> dict[str, d
                 markers = reference.keys() & CLASSES.values()
                 if markers != {marker} or not flatten(reference[marker]):
                     raise ValueError(f"organizer reference {case}/{ref} must contain fields for its expected class")
-            docs[name] = reference
+            docs[name] = correct_training_accounts(folder / name, reference) if correct_accounts else reference
         cases[case] = docs
     return cases
 
@@ -408,6 +440,11 @@ def main() -> int:
     parser.add_argument(
         "--detail-out", type=external_detail_path, help="write corpus document rows to this file outside the repository"
     )
+    parser.add_argument(
+        "--correct-training-accounts",
+        action="store_true",
+        help="restore country prefixes printed in the organizer training PDFs to the scoring references",
+    )
     parser.add_argument("--cmd", default=os.environ.get("ODW_CMD", DEFAULT_CMD))
     parser.add_argument("--pred", type=Path, help="score this output tree (original file names) instead of running")
     parser.add_argument("--data", type=Path, help="override the organizer training data directory")
@@ -440,6 +477,8 @@ def evaluate(args: argparse.Namespace, parser: argparse.ArgumentParser) -> int:
         parser.error("--variant-out and --variant-baseline require --variants")
     if (args.detail_out or args.split) and not args.corpus:
         parser.error("--detail-out and --split require --corpus")
+    if args.correct_training_accounts and (args.corpus or args.organizer_scans):
+        parser.error("--correct-training-accounts applies only to the organizer text training cases")
     if args.corpus:
         if args.data:
             parser.error("--data and --corpus select different layouts and cannot be used together")
@@ -453,7 +492,7 @@ def evaluate(args: argparse.Namespace, parser: argparse.ArgumentParser) -> int:
         if not data.is_dir():
             print(f"no data at {data}; run: make data", file=sys.stderr)
             return 2
-        cases = load_cases(data, args.quick)
+        cases = load_cases(data, args.quick, correct_accounts=args.correct_training_accounts)
     n_docs = sum(len(d) for d in cases.values())
 
     with tempfile.TemporaryDirectory(prefix="odw-eval-") as tmp:
@@ -491,6 +530,7 @@ def evaluate(args: argparse.Namespace, parser: argparse.ArgumentParser) -> int:
                 json.dump({**results, "docs": document_rows(docs)}, tmp, ensure_ascii=False, indent=2)
                 tmp.write("\n")
     else:
+        results["training_account_references"] = "printed-prefix" if args.correct_training_accounts else "original"
         results["docs"] = document_rows(docs)
     payload = json.dumps(results, ensure_ascii=False, indent=2) + "\n"
     destination.parent.mkdir(parents=True, exist_ok=True)
@@ -503,6 +543,8 @@ def evaluate(args: argparse.Namespace, parser: argparse.ArgumentParser) -> int:
             (ROOT / git_dir.strip() / "eval-latest.json").write_text(payload, encoding="utf-8")
 
     selection = f" split={results['split']}" if args.corpus else ""
+    if "training_account_references" in results:
+        selection = f" account_references={results['training_account_references']}"
     print(
         f"mode={mode}{selection} cases={results['n_cases']} docs={n_docs} commit={results['commit'][:9]} dirty={results['dirty']}"
     )

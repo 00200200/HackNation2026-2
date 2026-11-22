@@ -2,10 +2,9 @@
 
 import re
 
+from .accounts import ACCOUNT_RE, account_matches, complete_account_match, normalize_account, valid_account
 from .common import DATE, DATE_RE, squash, to_iso
 
-# 26-digit Polish account number, optionally 'PL'-prefixed, grouped or wrapped across lines.
-ACCOUNT_RE = re.compile(r"(?<![\d])(?:PL\s?)?(\d{2}(?:[ \n]?\d{4}){6})(?!\d)")
 SENDER_RE = re.compile(r"nadawc|zleceniodawc|płatnik|obciąż|z rachunku")
 RECIPIENT_RE = re.compile(r"odbiorc|beneficjent|adresat|uznawan|na rachunek")
 
@@ -84,8 +83,8 @@ def normalize_account_spacing(text: str) -> str:
 def _legacy_accounts(text: str) -> tuple[str | None, str | None]:
     """Resolve labelled roles or an ordered pair of column headers."""
     found = {}
-    for match in ACCOUNT_RE.finditer(text):
-        found.setdefault(re.sub(r"\s", "", match[1]), match)
+    for match in account_matches(text):
+        found.setdefault("".join(match[1].split()), match)
     if not found or len(found) > 2:
         return None, None
 
@@ -222,9 +221,10 @@ def _printed_role_cells(text: str):
         value = text[match.end() : end if end >= 0 else None].lstrip(" \t:")
         if not value and end >= 0:
             value = text[end + 1 :].partition("\n")[0].strip()
-        account = ACCOUNT_RE.fullmatch(value)
-        if account:
-            yield match.lastgroup, "".join(account[1].split()), False
+        account = normalize_account(value)
+        scanned = ACCOUNT_RE.fullmatch(value)
+        if account and ((scanned and complete_account_match(scanned)) or valid_account(account)):
+            yield match.lastgroup, account, False
         elif MASK.fullmatch(value):
             explicit_account = re.search(ROLE_NOUN, match[0], re.IGNORECASE)
             yield match.lastgroup, None, bool(explicit_account and re.search(r"\d", value))
@@ -323,7 +323,7 @@ def _participant_accounts(text: str) -> dict[str, str]:
         ):
             role = None
         if role:
-            for number in ACCOUNT_RE.finditer(line):
+            for number in account_matches(line):
                 candidates.setdefault(role, set()).add("".join(number[1].split()))
     return {role: next(iter(values)) for role, values in candidates.items() if len(values) == 1}
 
@@ -341,6 +341,8 @@ def printed_accounts(text: str) -> dict[str, str | None]:
     if executed_letter(text):
         mentions = {}
         for m in PROSE_ACCOUNT.finditer(text):
+            if not complete_account_match(m, 3):
+                continue
             role = "sender" if m["sender"] else "recipient"
             mentions.setdefault(role, set()).add("".join(m[3].split()))
         for role, values in mentions.items():

@@ -82,7 +82,7 @@ def test_corpus_staging_aggregation_and_private_detail(corpus, repo, monkeypatch
     assert aggregate["n_cases"] == aggregate["n_docs"] == 2
     assert aggregate["detail"]["counts"] == {"tp": 0, "fp": 1, "fn": 1, "tn": 0}
     assert aggregate["detail"]["routing_by_class"]["pelnomocnictwo"] == {"correct": 0, "total": 1}
-    assert aggregate["detail"]["routing_by_class"]["negatywny"] == {"correct": 0, "total": 1}
+    assert aggregate["detail"]["routing_by_class"]["negatywny"] == {"correct": 1, "total": 1}
     assert len(json.loads(detail.read_text())["docs"]) == 2
     assert (repo / "evals/results/latest.json").read_text() == "training"
     assert (repo / ".git/eval-latest.json").read_text() == "gate"
@@ -158,9 +158,11 @@ def test_split_selects_whole_cases_and_skips_other_gold(corpus, repo, monkeypatc
     (corpus / "SPLIT.json").write_text(json.dumps({"dev": ["alpha"], "test": ["beta"]}))
     assert len(run.load_corpus(corpus, "all")) == 2
     (corpus / "gold/beta/three.json").write_text("invalid")
-    monkeypatch.setattr(
-        sys, "argv", ["eval", "--corpus", str(corpus), "--split", "dev", "--pred", str(corpus / "gold")]
-    )
+    predictions = corpus / "pred"
+    (predictions / "alpha").mkdir(parents=True)
+    (predictions / "alpha/one.json").write_text('{"mocodawca": 1}')
+    (predictions / "alpha/two.json").write_text("{}\n")
+    monkeypatch.setattr(sys, "argv", ["eval", "--corpus", str(corpus), "--split", "dev", "--pred", str(predictions)])
     assert run.main() == 0
     report = json.loads((repo / "evals/results/corpus-latest.json").read_text())
     assert (report["split"], report["n_cases"], report["n_docs"]) == ("dev", 1, 2)
@@ -469,7 +471,8 @@ def test_training_inventory_and_references(training_tree, repo, monkeypatch, cap
 @pytest.mark.parametrize(
     ("payload", "valid"),
     [
-        (b"", True),
+        (b"{}", True),
+        (b"", False),
         (None, False),
         (b"\xff", False),
         (b"\xef\xbb\xbf{}", False),
