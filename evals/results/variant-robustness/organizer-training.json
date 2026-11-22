@@ -1,0 +1,4611 @@
+{
+  "commit": "2c00fbb061c0e4291cb060f79ae182b49d312266",
+  "dirty": false,
+  "mode": "full",
+  "timestamp": "2026-11-22T02:32:52+00:00",
+  "n_cases": 60,
+  "n_docs": 196,
+  "coverage_ok": true,
+  "overall_pass": true,
+  "run_error": null,
+  "metrics": {
+    "micro_f1": {
+      "value": 1.0,
+      "target": 0.9,
+      "pass": true
+    },
+    "outputs_complete": {
+      "value": 1.0,
+      "target": 1.0,
+      "pass": true
+    },
+    "negatives_empty": {
+      "value": 1.0,
+      "target": 1.0,
+      "pass": true
+    },
+    "classification_accuracy": {
+      "value": 1.0,
+      "target": 1.0,
+      "pass": true
+    },
+    "seconds_per_doc": {
+      "value": 0.1308575835463838,
+      "target": null,
+      "pass": true
+    },
+    "micro_f1_strict": {
+      "value": 1.0,
+      "target": null,
+      "pass": null
+    }
+  },
+  "detail": {
+    "micro_f1": 1.0,
+    "micro_f1_strict": 1.0,
+    "counts_strict": {
+      "tp": 2316,
+      "fp": 0,
+      "fn": 0
+    },
+    "macro_f1_documents": 1.0,
+    "macro_f1_classes": 1.0,
+    "macro_f1_class_count": 3,
+    "macro_f1_fields": 1.0,
+    "micro_f1_non_null": 1.0,
+    "per_class_f1": {
+      "odwolanie": 1.0,
+      "pelnomocnictwo": 1.0,
+      "przelew": 1.0
+    },
+    "classification_accuracy": 1.0,
+    "negatives_empty": 1.0,
+    "outputs_complete": 1.0,
+    "counts": {
+      "tp": 2032,
+      "fp": 0,
+      "fn": 0,
+      "tn": 284
+    }
+  },
+  "holdout_51_60": {
+    "micro_f1": 1.0,
+    "micro_f1_strict": 1.0,
+    "counts_strict": {
+      "tp": 394,
+      "fp": 0,
+      "fn": 0
+    },
+    "macro_f1_documents": 1.0,
+    "macro_f1_classes": 1.0,
+    "macro_f1_class_count": 3,
+    "macro_f1_fields": 1.0,
+    "micro_f1_non_null": 1.0,
+    "per_class_f1": {
+      "odwolanie": 1.0,
+      "pelnomocnictwo": 1.0,
+      "przelew": 1.0
+    },
+    "classification_accuracy": 1.0,
+    "negatives_empty": null,
+    "outputs_complete": 1.0,
+    "counts": {
+      "tp": 343,
+      "fp": 0,
+      "fn": 0,
+      "tn": 51
+    }
+  },
+  "f1_definition": "UZP #59 with RapidFuzz normalized Levenshtein >= 0.80 on five long fields",
+  "training_account_references": "printed-prefix",
+  "docs": [
+    {
+      "case": "negatywne",
+      "file": "1648041143_1647951357decyzja-ministrasportu-pzn.pdf",
+      "gold_class": "negatywny",
+      "pred_class": "negatywny",
+      "counts": {
+        "tp": 0,
+        "fp": 0,
+        "fn": 0,
+        "tn": 0
+      },
+      "counts_strict": {
+        "tp": 0,
+        "fp": 0,
+        "fn": 0
+      },
+      "counts_non_null": {
+        "tp": 0,
+        "fp": 0,
+        "fn": 0
+      },
+      "errors": []
+    },
+    {
+      "case": "negatywne",
+      "file": "16_komisja_ds._regulacji_wynagrodzeń.pdf",
+      "gold_class": "negatywny",
+      "pred_class": "negatywny",
+      "counts": {
+        "tp": 0,
+        "fp": 0,
+        "fn": 0,
+        "tn": 0
+      },
+      "counts_strict": {
+        "tp": 0,
+        "fp": 0,
+        "fn": 0
+      },
+      "counts_non_null": {
+        "tp": 0,
+        "fp": 0,
+        "fn": 0
+      },
+      "errors": []
+    },
+    {
+      "case": "negatywne",
+      "file": "2020_03_21-22prowadzenie_postepowania_odwolawczego.pdf",
+      "gold_class": "negatywny",
+      "pred_class": "negatywny",
+      "counts": {
+        "tp": 0,
+        "fp": 0,
+        "fn": 0,
+        "tn": 0
+      },
+      "counts_strict": {
+        "tp": 0,
+        "fp": 0,
+        "fn": 0
+      },
+      "counts_non_null": {
+        "tp": 0,
+        "fp": 0,
+        "fn": 0
+      },
+      "errors": []
+    },
+    {
+      "case": "negatywne",
+      "file": "2025-OJS107-00364525-pl-ts-1.pdf",
+      "gold_class": "negatywny",
+      "pred_class": "negatywny",
+      "counts": {
+        "tp": 0,
+        "fp": 0,
+        "fn": 0,
+        "tn": 0
+      },
+      "counts_strict": {
+        "tp": 0,
+        "fp": 0,
+        "fn": 0
+      },
+      "counts_non_null": {
+        "tp": 0,
+        "fp": 0,
+        "fn": 0
+      },
+      "errors": []
+    },
+    {
+      "case": "negatywne",
+      "file": "2025-OJS107-00364525-pl-ts.pdf",
+      "gold_class": "negatywny",
+      "pred_class": "negatywny",
+      "counts": {
+        "tp": 0,
+        "fp": 0,
+        "fn": 0,
+        "tn": 0
+      },
+      "counts_strict": {
+        "tp": 0,
+        "fp": 0,
+        "fn": 0
+      },
+      "counts_non_null": {
+        "tp": 0,
+        "fp": 0,
+        "fn": 0
+      },
+      "errors": []
+    },
+    {
+      "case": "negatywne",
+      "file": "2025_BZP 00143067_01.pdf",
+      "gold_class": "negatywny",
+      "pred_class": "negatywny",
+      "counts": {
+        "tp": 0,
+        "fp": 0,
+        "fn": 0,
+        "tn": 0
+      },
+      "counts_strict": {
+        "tp": 0,
+        "fp": 0,
+        "fn": 0
+      },
+      "counts_non_null": {
+        "tp": 0,
+        "fp": 0,
+        "fn": 0
+      },
+      "errors": []
+    },
+    {
+      "case": "negatywne",
+      "file": "2025_S 112-383751.pdf",
+      "gold_class": "negatywny",
+      "pred_class": "negatywny",
+      "counts": {
+        "tp": 0,
+        "fp": 0,
+        "fn": 0,
+        "tn": 0
+      },
+      "counts_strict": {
+        "tp": 0,
+        "fp": 0,
+        "fn": 0
+      },
+      "counts_non_null": {
+        "tp": 0,
+        "fp": 0,
+        "fn": 0
+      },
+      "errors": []
+    },
+    {
+      "case": "negatywne",
+      "file": "2025_S 188-641009.pdf",
+      "gold_class": "negatywny",
+      "pred_class": "negatywny",
+      "counts": {
+        "tp": 0,
+        "fp": 0,
+        "fn": 0,
+        "tn": 0
+      },
+      "counts_strict": {
+        "tp": 0,
+        "fp": 0,
+        "fn": 0
+      },
+      "counts_non_null": {
+        "tp": 0,
+        "fp": 0,
+        "fn": 0
+      },
+      "errors": []
+    },
+    {
+      "case": "negatywne",
+      "file": "Broszura_JPK_FA(2).pdf",
+      "gold_class": "negatywny",
+      "pred_class": "negatywny",
+      "counts": {
+        "tp": 0,
+        "fp": 0,
+        "fn": 0,
+        "tn": 0
+      },
+      "counts_strict": {
+        "tp": 0,
+        "fp": 0,
+        "fn": 0
+      },
+      "counts_non_null": {
+        "tp": 0,
+        "fp": 0,
+        "fn": 0
+      },
+      "errors": []
+    },
+    {
+      "case": "negatywne",
+      "file": "Decyzja-Ministra-Sportu-i-Turystyki1.pdf",
+      "gold_class": "negatywny",
+      "pred_class": "negatywny",
+      "counts": {
+        "tp": 0,
+        "fp": 0,
+        "fn": 0,
+        "tn": 0
+      },
+      "counts_strict": {
+        "tp": 0,
+        "fp": 0,
+        "fn": 0
+      },
+      "counts_non_null": {
+        "tp": 0,
+        "fp": 0,
+        "fn": 0
+      },
+      "errors": []
+    },
+    {
+      "case": "negatywne",
+      "file": "KIO_KIO 2617-21.pdf",
+      "gold_class": "negatywny",
+      "pred_class": "negatywny",
+      "counts": {
+        "tp": 0,
+        "fp": 0,
+        "fn": 0,
+        "tn": 0
+      },
+      "counts_strict": {
+        "tp": 0,
+        "fp": 0,
+        "fn": 0
+      },
+      "counts_non_null": {
+        "tp": 0,
+        "fp": 0,
+        "fn": 0
+      },
+      "errors": []
+    },
+    {
+      "case": "negatywne",
+      "file": "Minister-Sprawiedliwosci-pismo-RDSSP-z-11.03.2024-r..pdf",
+      "gold_class": "negatywny",
+      "pred_class": "negatywny",
+      "counts": {
+        "tp": 0,
+        "fp": 0,
+        "fn": 0,
+        "tn": 0
+      },
+      "counts_strict": {
+        "tp": 0,
+        "fp": 0,
+        "fn": 0
+      },
+      "counts_non_null": {
+        "tp": 0,
+        "fp": 0,
+        "fn": 0
+      },
+      "errors": []
+    },
+    {
+      "case": "przyklad_01",
+      "file": "odwolanie.pdf",
+      "gold_class": "odwolanie",
+      "pred_class": "odwolanie",
+      "counts": {
+        "tp": 19,
+        "fp": 0,
+        "fn": 0,
+        "tn": 3
+      },
+      "counts_strict": {
+        "tp": 22,
+        "fp": 0,
+        "fn": 0
+      },
+      "counts_non_null": {
+        "tp": 19,
+        "fp": 0,
+        "fn": 0
+      },
+      "errors": []
+    },
+    {
+      "case": "przyklad_01",
+      "file": "pelnomocnictwo.pdf",
+      "gold_class": "pelnomocnictwo",
+      "pred_class": "pelnomocnictwo",
+      "counts": {
+        "tp": 7,
+        "fp": 0,
+        "fn": 0,
+        "tn": 3
+      },
+      "counts_strict": {
+        "tp": 10,
+        "fp": 0,
+        "fn": 0
+      },
+      "counts_non_null": {
+        "tp": 7,
+        "fp": 0,
+        "fn": 0
+      },
+      "errors": []
+    },
+    {
+      "case": "przyklad_01",
+      "file": "przelew.pdf",
+      "gold_class": "przelew",
+      "pred_class": "przelew",
+      "counts": {
+        "tp": 6,
+        "fp": 0,
+        "fn": 0,
+        "tn": 0
+      },
+      "counts_strict": {
+        "tp": 6,
+        "fp": 0,
+        "fn": 0
+      },
+      "counts_non_null": {
+        "tp": 6,
+        "fp": 0,
+        "fn": 0
+      },
+      "errors": []
+    },
+    {
+      "case": "przyklad_02",
+      "file": "odwolanie.pdf",
+      "gold_class": "odwolanie",
+      "pred_class": "odwolanie",
+      "counts": {
+        "tp": 20,
+        "fp": 0,
+        "fn": 0,
+        "tn": 2
+      },
+      "counts_strict": {
+        "tp": 22,
+        "fp": 0,
+        "fn": 0
+      },
+      "counts_non_null": {
+        "tp": 20,
+        "fp": 0,
+        "fn": 0
+      },
+      "errors": []
+    },
+    {
+      "case": "przyklad_02",
+      "file": "pelnomocnictwo.pdf",
+      "gold_class": "pelnomocnictwo",
+      "pred_class": "pelnomocnictwo",
+      "counts": {
+        "tp": 7,
+        "fp": 0,
+        "fn": 0,
+        "tn": 3
+      },
+      "counts_strict": {
+        "tp": 10,
+        "fp": 0,
+        "fn": 0
+      },
+      "counts_non_null": {
+        "tp": 7,
+        "fp": 0,
+        "fn": 0
+      },
+      "errors": []
+    },
+    {
+      "case": "przyklad_02",
+      "file": "przelew.pdf",
+      "gold_class": "przelew",
+      "pred_class": "przelew",
+      "counts": {
+        "tp": 6,
+        "fp": 0,
+        "fn": 0,
+        "tn": 0
+      },
+      "counts_strict": {
+        "tp": 6,
+        "fp": 0,
+        "fn": 0
+      },
+      "counts_non_null": {
+        "tp": 6,
+        "fp": 0,
+        "fn": 0
+      },
+      "errors": []
+    },
+    {
+      "case": "przyklad_03",
+      "file": "odwolanie.pdf",
+      "gold_class": "odwolanie",
+      "pred_class": "odwolanie",
+      "counts": {
+        "tp": 21,
+        "fp": 0,
+        "fn": 0,
+        "tn": 1
+      },
+      "counts_strict": {
+        "tp": 22,
+        "fp": 0,
+        "fn": 0
+      },
+      "counts_non_null": {
+        "tp": 21,
+        "fp": 0,
+        "fn": 0
+      },
+      "errors": []
+    },
+    {
+      "case": "przyklad_03",
+      "file": "pelnomocnictwo.pdf",
+      "gold_class": "pelnomocnictwo",
+      "pred_class": "pelnomocnictwo",
+      "counts": {
+        "tp": 6,
+        "fp": 0,
+        "fn": 0,
+        "tn": 2
+      },
+      "counts_strict": {
+        "tp": 8,
+        "fp": 0,
+        "fn": 0
+      },
+      "counts_non_null": {
+        "tp": 6,
+        "fp": 0,
+        "fn": 0
+      },
+      "errors": []
+    },
+    {
+      "case": "przyklad_03",
+      "file": "potwierdzenie_przelewu.pdf",
+      "gold_class": "przelew",
+      "pred_class": "przelew",
+      "counts": {
+        "tp": 6,
+        "fp": 0,
+        "fn": 0,
+        "tn": 0
+      },
+      "counts_strict": {
+        "tp": 6,
+        "fp": 0,
+        "fn": 0
+      },
+      "counts_non_null": {
+        "tp": 6,
+        "fp": 0,
+        "fn": 0
+      },
+      "errors": []
+    },
+    {
+      "case": "przyklad_04",
+      "file": "2025_S 112-383751.pdf",
+      "gold_class": "negatywny",
+      "pred_class": "negatywny",
+      "counts": {
+        "tp": 0,
+        "fp": 0,
+        "fn": 0,
+        "tn": 0
+      },
+      "counts_strict": {
+        "tp": 0,
+        "fp": 0,
+        "fn": 0
+      },
+      "counts_non_null": {
+        "tp": 0,
+        "fp": 0,
+        "fn": 0
+      },
+      "errors": []
+    },
+    {
+      "case": "przyklad_04",
+      "file": "odwolanie.pdf",
+      "gold_class": "odwolanie",
+      "pred_class": "odwolanie",
+      "counts": {
+        "tp": 20,
+        "fp": 0,
+        "fn": 0,
+        "tn": 2
+      },
+      "counts_strict": {
+        "tp": 22,
+        "fp": 0,
+        "fn": 0
+      },
+      "counts_non_null": {
+        "tp": 20,
+        "fp": 0,
+        "fn": 0
+      },
+      "errors": []
+    },
+    {
+      "case": "przyklad_04",
+      "file": "pelnomocnictwo.pdf",
+      "gold_class": "pelnomocnictwo",
+      "pred_class": "pelnomocnictwo",
+      "counts": {
+        "tp": 7,
+        "fp": 0,
+        "fn": 0,
+        "tn": 3
+      },
+      "counts_strict": {
+        "tp": 10,
+        "fp": 0,
+        "fn": 0
+      },
+      "counts_non_null": {
+        "tp": 7,
+        "fp": 0,
+        "fn": 0
+      },
+      "errors": []
+    },
+    {
+      "case": "przyklad_04",
+      "file": "potwierdzenie_przelewu.pdf",
+      "gold_class": "przelew",
+      "pred_class": "przelew",
+      "counts": {
+        "tp": 6,
+        "fp": 0,
+        "fn": 0,
+        "tn": 0
+      },
+      "counts_strict": {
+        "tp": 6,
+        "fp": 0,
+        "fn": 0
+      },
+      "counts_non_null": {
+        "tp": 6,
+        "fp": 0,
+        "fn": 0
+      },
+      "errors": []
+    },
+    {
+      "case": "przyklad_05",
+      "file": "odwolanie.pdf",
+      "gold_class": "odwolanie",
+      "pred_class": "odwolanie",
+      "counts": {
+        "tp": 21,
+        "fp": 0,
+        "fn": 0,
+        "tn": 1
+      },
+      "counts_strict": {
+        "tp": 22,
+        "fp": 0,
+        "fn": 0
+      },
+      "counts_non_null": {
+        "tp": 21,
+        "fp": 0,
+        "fn": 0
+      },
+      "errors": []
+    },
+    {
+      "case": "przyklad_05",
+      "file": "pelnomocnictwo.pdf",
+      "gold_class": "pelnomocnictwo",
+      "pred_class": "pelnomocnictwo",
+      "counts": {
+        "tp": 6,
+        "fp": 0,
+        "fn": 0,
+        "tn": 2
+      },
+      "counts_strict": {
+        "tp": 8,
+        "fp": 0,
+        "fn": 0
+      },
+      "counts_non_null": {
+        "tp": 6,
+        "fp": 0,
+        "fn": 0
+      },
+      "errors": []
+    },
+    {
+      "case": "przyklad_05",
+      "file": "potwierdzenie_przelewu.pdf",
+      "gold_class": "przelew",
+      "pred_class": "przelew",
+      "counts": {
+        "tp": 6,
+        "fp": 0,
+        "fn": 0,
+        "tn": 0
+      },
+      "counts_strict": {
+        "tp": 6,
+        "fp": 0,
+        "fn": 0
+      },
+      "counts_non_null": {
+        "tp": 6,
+        "fp": 0,
+        "fn": 0
+      },
+      "errors": []
+    },
+    {
+      "case": "przyklad_06",
+      "file": "odwolanie.pdf",
+      "gold_class": "odwolanie",
+      "pred_class": "odwolanie",
+      "counts": {
+        "tp": 20,
+        "fp": 0,
+        "fn": 0,
+        "tn": 2
+      },
+      "counts_strict": {
+        "tp": 22,
+        "fp": 0,
+        "fn": 0
+      },
+      "counts_non_null": {
+        "tp": 20,
+        "fp": 0,
+        "fn": 0
+      },
+      "errors": []
+    },
+    {
+      "case": "przyklad_06",
+      "file": "pelnomocnictwo.pdf",
+      "gold_class": "pelnomocnictwo",
+      "pred_class": "pelnomocnictwo",
+      "counts": {
+        "tp": 7,
+        "fp": 0,
+        "fn": 0,
+        "tn": 2
+      },
+      "counts_strict": {
+        "tp": 9,
+        "fp": 0,
+        "fn": 0
+      },
+      "counts_non_null": {
+        "tp": 7,
+        "fp": 0,
+        "fn": 0
+      },
+      "errors": []
+    },
+    {
+      "case": "przyklad_06",
+      "file": "potwierdzenie_przelewu.pdf",
+      "gold_class": "przelew",
+      "pred_class": "przelew",
+      "counts": {
+        "tp": 6,
+        "fp": 0,
+        "fn": 0,
+        "tn": 0
+      },
+      "counts_strict": {
+        "tp": 6,
+        "fp": 0,
+        "fn": 0
+      },
+      "counts_non_null": {
+        "tp": 6,
+        "fp": 0,
+        "fn": 0
+      },
+      "errors": []
+    },
+    {
+      "case": "przyklad_07",
+      "file": "odwolanie.pdf",
+      "gold_class": "odwolanie",
+      "pred_class": "odwolanie",
+      "counts": {
+        "tp": 20,
+        "fp": 0,
+        "fn": 0,
+        "tn": 2
+      },
+      "counts_strict": {
+        "tp": 22,
+        "fp": 0,
+        "fn": 0
+      },
+      "counts_non_null": {
+        "tp": 20,
+        "fp": 0,
+        "fn": 0
+      },
+      "errors": []
+    },
+    {
+      "case": "przyklad_07",
+      "file": "pelnomocnictwo.pdf",
+      "gold_class": "pelnomocnictwo",
+      "pred_class": "pelnomocnictwo",
+      "counts": {
+        "tp": 7,
+        "fp": 0,
+        "fn": 0,
+        "tn": 2
+      },
+      "counts_strict": {
+        "tp": 9,
+        "fp": 0,
+        "fn": 0
+      },
+      "counts_non_null": {
+        "tp": 7,
+        "fp": 0,
+        "fn": 0
+      },
+      "errors": []
+    },
+    {
+      "case": "przyklad_07",
+      "file": "potwierdzenie_przelewu.pdf",
+      "gold_class": "przelew",
+      "pred_class": "przelew",
+      "counts": {
+        "tp": 6,
+        "fp": 0,
+        "fn": 0,
+        "tn": 0
+      },
+      "counts_strict": {
+        "tp": 6,
+        "fp": 0,
+        "fn": 0
+      },
+      "counts_non_null": {
+        "tp": 6,
+        "fp": 0,
+        "fn": 0
+      },
+      "errors": []
+    },
+    {
+      "case": "przyklad_08",
+      "file": "odwolanie.pdf",
+      "gold_class": "odwolanie",
+      "pred_class": "odwolanie",
+      "counts": {
+        "tp": 21,
+        "fp": 0,
+        "fn": 0,
+        "tn": 1
+      },
+      "counts_strict": {
+        "tp": 22,
+        "fp": 0,
+        "fn": 0
+      },
+      "counts_non_null": {
+        "tp": 21,
+        "fp": 0,
+        "fn": 0
+      },
+      "errors": []
+    },
+    {
+      "case": "przyklad_08",
+      "file": "pelnomocnictwo.pdf",
+      "gold_class": "pelnomocnictwo",
+      "pred_class": "pelnomocnictwo",
+      "counts": {
+        "tp": 8,
+        "fp": 0,
+        "fn": 0,
+        "tn": 3
+      },
+      "counts_strict": {
+        "tp": 11,
+        "fp": 0,
+        "fn": 0
+      },
+      "counts_non_null": {
+        "tp": 8,
+        "fp": 0,
+        "fn": 0
+      },
+      "errors": []
+    },
+    {
+      "case": "przyklad_08",
+      "file": "potwierdzenie_przelewu.pdf",
+      "gold_class": "przelew",
+      "pred_class": "przelew",
+      "counts": {
+        "tp": 6,
+        "fp": 0,
+        "fn": 0,
+        "tn": 0
+      },
+      "counts_strict": {
+        "tp": 6,
+        "fp": 0,
+        "fn": 0
+      },
+      "counts_non_null": {
+        "tp": 6,
+        "fp": 0,
+        "fn": 0
+      },
+      "errors": []
+    },
+    {
+      "case": "przyklad_09",
+      "file": "odwolanie.pdf",
+      "gold_class": "odwolanie",
+      "pred_class": "odwolanie",
+      "counts": {
+        "tp": 20,
+        "fp": 0,
+        "fn": 0,
+        "tn": 2
+      },
+      "counts_strict": {
+        "tp": 22,
+        "fp": 0,
+        "fn": 0
+      },
+      "counts_non_null": {
+        "tp": 20,
+        "fp": 0,
+        "fn": 0
+      },
+      "errors": []
+    },
+    {
+      "case": "przyklad_09",
+      "file": "pelnomocnictwo.pdf",
+      "gold_class": "pelnomocnictwo",
+      "pred_class": "pelnomocnictwo",
+      "counts": {
+        "tp": 7,
+        "fp": 0,
+        "fn": 0,
+        "tn": 3
+      },
+      "counts_strict": {
+        "tp": 10,
+        "fp": 0,
+        "fn": 0
+      },
+      "counts_non_null": {
+        "tp": 7,
+        "fp": 0,
+        "fn": 0
+      },
+      "errors": []
+    },
+    {
+      "case": "przyklad_09",
+      "file": "potwierdzenie_przelewu.pdf",
+      "gold_class": "przelew",
+      "pred_class": "przelew",
+      "counts": {
+        "tp": 6,
+        "fp": 0,
+        "fn": 0,
+        "tn": 0
+      },
+      "counts_strict": {
+        "tp": 6,
+        "fp": 0,
+        "fn": 0
+      },
+      "counts_non_null": {
+        "tp": 6,
+        "fp": 0,
+        "fn": 0
+      },
+      "errors": []
+    },
+    {
+      "case": "przyklad_10",
+      "file": "2025-OJS107-00364525-pl-ts.pdf",
+      "gold_class": "negatywny",
+      "pred_class": "negatywny",
+      "counts": {
+        "tp": 0,
+        "fp": 0,
+        "fn": 0,
+        "tn": 0
+      },
+      "counts_strict": {
+        "tp": 0,
+        "fp": 0,
+        "fn": 0
+      },
+      "counts_non_null": {
+        "tp": 0,
+        "fp": 0,
+        "fn": 0
+      },
+      "errors": []
+    },
+    {
+      "case": "przyklad_10",
+      "file": "odwolanie.pdf",
+      "gold_class": "odwolanie",
+      "pred_class": "odwolanie",
+      "counts": {
+        "tp": 21,
+        "fp": 0,
+        "fn": 0,
+        "tn": 1
+      },
+      "counts_strict": {
+        "tp": 22,
+        "fp": 0,
+        "fn": 0
+      },
+      "counts_non_null": {
+        "tp": 21,
+        "fp": 0,
+        "fn": 0
+      },
+      "errors": []
+    },
+    {
+      "case": "przyklad_10",
+      "file": "pelnomocnictwo.pdf",
+      "gold_class": "pelnomocnictwo",
+      "pred_class": "pelnomocnictwo",
+      "counts": {
+        "tp": 8,
+        "fp": 0,
+        "fn": 0,
+        "tn": 3
+      },
+      "counts_strict": {
+        "tp": 11,
+        "fp": 0,
+        "fn": 0
+      },
+      "counts_non_null": {
+        "tp": 8,
+        "fp": 0,
+        "fn": 0
+      },
+      "errors": []
+    },
+    {
+      "case": "przyklad_10",
+      "file": "potwierdzenie_przelewu.pdf",
+      "gold_class": "przelew",
+      "pred_class": "przelew",
+      "counts": {
+        "tp": 6,
+        "fp": 0,
+        "fn": 0,
+        "tn": 0
+      },
+      "counts_strict": {
+        "tp": 6,
+        "fp": 0,
+        "fn": 0
+      },
+      "counts_non_null": {
+        "tp": 6,
+        "fp": 0,
+        "fn": 0
+      },
+      "errors": []
+    },
+    {
+      "case": "przyklad_11",
+      "file": "odwolanie.pdf",
+      "gold_class": "odwolanie",
+      "pred_class": "odwolanie",
+      "counts": {
+        "tp": 20,
+        "fp": 0,
+        "fn": 0,
+        "tn": 2
+      },
+      "counts_strict": {
+        "tp": 22,
+        "fp": 0,
+        "fn": 0
+      },
+      "counts_non_null": {
+        "tp": 20,
+        "fp": 0,
+        "fn": 0
+      },
+      "errors": []
+    },
+    {
+      "case": "przyklad_11",
+      "file": "pelnomocnictwo.pdf",
+      "gold_class": "pelnomocnictwo",
+      "pred_class": "pelnomocnictwo",
+      "counts": {
+        "tp": 6,
+        "fp": 0,
+        "fn": 0,
+        "tn": 2
+      },
+      "counts_strict": {
+        "tp": 8,
+        "fp": 0,
+        "fn": 0
+      },
+      "counts_non_null": {
+        "tp": 6,
+        "fp": 0,
+        "fn": 0
+      },
+      "errors": []
+    },
+    {
+      "case": "przyklad_11",
+      "file": "potwierdzenie_przelewu.pdf",
+      "gold_class": "przelew",
+      "pred_class": "przelew",
+      "counts": {
+        "tp": 6,
+        "fp": 0,
+        "fn": 0,
+        "tn": 0
+      },
+      "counts_strict": {
+        "tp": 6,
+        "fp": 0,
+        "fn": 0
+      },
+      "counts_non_null": {
+        "tp": 6,
+        "fp": 0,
+        "fn": 0
+      },
+      "errors": []
+    },
+    {
+      "case": "przyklad_12",
+      "file": "odwolanie.pdf",
+      "gold_class": "odwolanie",
+      "pred_class": "odwolanie",
+      "counts": {
+        "tp": 21,
+        "fp": 0,
+        "fn": 0,
+        "tn": 1
+      },
+      "counts_strict": {
+        "tp": 22,
+        "fp": 0,
+        "fn": 0
+      },
+      "counts_non_null": {
+        "tp": 21,
+        "fp": 0,
+        "fn": 0
+      },
+      "errors": []
+    },
+    {
+      "case": "przyklad_12",
+      "file": "pelnomocnictwo.pdf",
+      "gold_class": "pelnomocnictwo",
+      "pred_class": "pelnomocnictwo",
+      "counts": {
+        "tp": 6,
+        "fp": 0,
+        "fn": 0,
+        "tn": 2
+      },
+      "counts_strict": {
+        "tp": 8,
+        "fp": 0,
+        "fn": 0
+      },
+      "counts_non_null": {
+        "tp": 6,
+        "fp": 0,
+        "fn": 0
+      },
+      "errors": []
+    },
+    {
+      "case": "przyklad_12",
+      "file": "potwierdzenie_przelewu.pdf",
+      "gold_class": "przelew",
+      "pred_class": "przelew",
+      "counts": {
+        "tp": 6,
+        "fp": 0,
+        "fn": 0,
+        "tn": 0
+      },
+      "counts_strict": {
+        "tp": 6,
+        "fp": 0,
+        "fn": 0
+      },
+      "counts_non_null": {
+        "tp": 6,
+        "fp": 0,
+        "fn": 0
+      },
+      "errors": []
+    },
+    {
+      "case": "przyklad_13",
+      "file": "odwolanie.pdf",
+      "gold_class": "odwolanie",
+      "pred_class": "odwolanie",
+      "counts": {
+        "tp": 19,
+        "fp": 0,
+        "fn": 0,
+        "tn": 3
+      },
+      "counts_strict": {
+        "tp": 22,
+        "fp": 0,
+        "fn": 0
+      },
+      "counts_non_null": {
+        "tp": 19,
+        "fp": 0,
+        "fn": 0
+      },
+      "errors": []
+    },
+    {
+      "case": "przyklad_13",
+      "file": "pelnomocnictwo.pdf",
+      "gold_class": "pelnomocnictwo",
+      "pred_class": "pelnomocnictwo",
+      "counts": {
+        "tp": 8,
+        "fp": 0,
+        "fn": 0,
+        "tn": 3
+      },
+      "counts_strict": {
+        "tp": 11,
+        "fp": 0,
+        "fn": 0
+      },
+      "counts_non_null": {
+        "tp": 8,
+        "fp": 0,
+        "fn": 0
+      },
+      "errors": []
+    },
+    {
+      "case": "przyklad_13",
+      "file": "potwierdzenie_przelewu.pdf",
+      "gold_class": "przelew",
+      "pred_class": "przelew",
+      "counts": {
+        "tp": 6,
+        "fp": 0,
+        "fn": 0,
+        "tn": 0
+      },
+      "counts_strict": {
+        "tp": 6,
+        "fp": 0,
+        "fn": 0
+      },
+      "counts_non_null": {
+        "tp": 6,
+        "fp": 0,
+        "fn": 0
+      },
+      "errors": []
+    },
+    {
+      "case": "przyklad_14",
+      "file": "odwolanie.pdf",
+      "gold_class": "odwolanie",
+      "pred_class": "odwolanie",
+      "counts": {
+        "tp": 21,
+        "fp": 0,
+        "fn": 0,
+        "tn": 1
+      },
+      "counts_strict": {
+        "tp": 22,
+        "fp": 0,
+        "fn": 0
+      },
+      "counts_non_null": {
+        "tp": 21,
+        "fp": 0,
+        "fn": 0
+      },
+      "errors": []
+    },
+    {
+      "case": "przyklad_14",
+      "file": "pelnomocnictwo.pdf",
+      "gold_class": "pelnomocnictwo",
+      "pred_class": "pelnomocnictwo",
+      "counts": {
+        "tp": 8,
+        "fp": 0,
+        "fn": 0,
+        "tn": 3
+      },
+      "counts_strict": {
+        "tp": 11,
+        "fp": 0,
+        "fn": 0
+      },
+      "counts_non_null": {
+        "tp": 8,
+        "fp": 0,
+        "fn": 0
+      },
+      "errors": []
+    },
+    {
+      "case": "przyklad_14",
+      "file": "potwierdzenie_przelewu.pdf",
+      "gold_class": "przelew",
+      "pred_class": "przelew",
+      "counts": {
+        "tp": 6,
+        "fp": 0,
+        "fn": 0,
+        "tn": 0
+      },
+      "counts_strict": {
+        "tp": 6,
+        "fp": 0,
+        "fn": 0
+      },
+      "counts_non_null": {
+        "tp": 6,
+        "fp": 0,
+        "fn": 0
+      },
+      "errors": []
+    },
+    {
+      "case": "przyklad_15",
+      "file": "odwolanie.pdf",
+      "gold_class": "odwolanie",
+      "pred_class": "odwolanie",
+      "counts": {
+        "tp": 20,
+        "fp": 0,
+        "fn": 0,
+        "tn": 2
+      },
+      "counts_strict": {
+        "tp": 22,
+        "fp": 0,
+        "fn": 0
+      },
+      "counts_non_null": {
+        "tp": 20,
+        "fp": 0,
+        "fn": 0
+      },
+      "errors": []
+    },
+    {
+      "case": "przyklad_15",
+      "file": "pelnomocnictwo.pdf",
+      "gold_class": "pelnomocnictwo",
+      "pred_class": "pelnomocnictwo",
+      "counts": {
+        "tp": 6,
+        "fp": 0,
+        "fn": 0,
+        "tn": 2
+      },
+      "counts_strict": {
+        "tp": 8,
+        "fp": 0,
+        "fn": 0
+      },
+      "counts_non_null": {
+        "tp": 6,
+        "fp": 0,
+        "fn": 0
+      },
+      "errors": []
+    },
+    {
+      "case": "przyklad_15",
+      "file": "potwierdzenie_przelewu.pdf",
+      "gold_class": "przelew",
+      "pred_class": "przelew",
+      "counts": {
+        "tp": 6,
+        "fp": 0,
+        "fn": 0,
+        "tn": 0
+      },
+      "counts_strict": {
+        "tp": 6,
+        "fp": 0,
+        "fn": 0
+      },
+      "counts_non_null": {
+        "tp": 6,
+        "fp": 0,
+        "fn": 0
+      },
+      "errors": []
+    },
+    {
+      "case": "przyklad_16",
+      "file": "odwolanie.pdf",
+      "gold_class": "odwolanie",
+      "pred_class": "odwolanie",
+      "counts": {
+        "tp": 20,
+        "fp": 0,
+        "fn": 0,
+        "tn": 2
+      },
+      "counts_strict": {
+        "tp": 22,
+        "fp": 0,
+        "fn": 0
+      },
+      "counts_non_null": {
+        "tp": 20,
+        "fp": 0,
+        "fn": 0
+      },
+      "errors": []
+    },
+    {
+      "case": "przyklad_16",
+      "file": "pelnomocnictwo.pdf",
+      "gold_class": "pelnomocnictwo",
+      "pred_class": "pelnomocnictwo",
+      "counts": {
+        "tp": 8,
+        "fp": 0,
+        "fn": 0,
+        "tn": 3
+      },
+      "counts_strict": {
+        "tp": 11,
+        "fp": 0,
+        "fn": 0
+      },
+      "counts_non_null": {
+        "tp": 8,
+        "fp": 0,
+        "fn": 0
+      },
+      "errors": []
+    },
+    {
+      "case": "przyklad_16",
+      "file": "potwierdzenie_przelewu.pdf",
+      "gold_class": "przelew",
+      "pred_class": "przelew",
+      "counts": {
+        "tp": 6,
+        "fp": 0,
+        "fn": 0,
+        "tn": 0
+      },
+      "counts_strict": {
+        "tp": 6,
+        "fp": 0,
+        "fn": 0
+      },
+      "counts_non_null": {
+        "tp": 6,
+        "fp": 0,
+        "fn": 0
+      },
+      "errors": []
+    },
+    {
+      "case": "przyklad_17",
+      "file": "odwolanie.pdf",
+      "gold_class": "odwolanie",
+      "pred_class": "odwolanie",
+      "counts": {
+        "tp": 20,
+        "fp": 0,
+        "fn": 0,
+        "tn": 2
+      },
+      "counts_strict": {
+        "tp": 22,
+        "fp": 0,
+        "fn": 0
+      },
+      "counts_non_null": {
+        "tp": 20,
+        "fp": 0,
+        "fn": 0
+      },
+      "errors": []
+    },
+    {
+      "case": "przyklad_17",
+      "file": "pelnomocnictwo.pdf",
+      "gold_class": "pelnomocnictwo",
+      "pred_class": "pelnomocnictwo",
+      "counts": {
+        "tp": 6,
+        "fp": 0,
+        "fn": 0,
+        "tn": 2
+      },
+      "counts_strict": {
+        "tp": 8,
+        "fp": 0,
+        "fn": 0
+      },
+      "counts_non_null": {
+        "tp": 6,
+        "fp": 0,
+        "fn": 0
+      },
+      "errors": []
+    },
+    {
+      "case": "przyklad_17",
+      "file": "potwierdzenie_przelewu.pdf",
+      "gold_class": "przelew",
+      "pred_class": "przelew",
+      "counts": {
+        "tp": 6,
+        "fp": 0,
+        "fn": 0,
+        "tn": 0
+      },
+      "counts_strict": {
+        "tp": 6,
+        "fp": 0,
+        "fn": 0
+      },
+      "counts_non_null": {
+        "tp": 6,
+        "fp": 0,
+        "fn": 0
+      },
+      "errors": []
+    },
+    {
+      "case": "przyklad_18",
+      "file": "odwolanie.pdf",
+      "gold_class": "odwolanie",
+      "pred_class": "odwolanie",
+      "counts": {
+        "tp": 21,
+        "fp": 0,
+        "fn": 0,
+        "tn": 1
+      },
+      "counts_strict": {
+        "tp": 22,
+        "fp": 0,
+        "fn": 0
+      },
+      "counts_non_null": {
+        "tp": 21,
+        "fp": 0,
+        "fn": 0
+      },
+      "errors": []
+    },
+    {
+      "case": "przyklad_18",
+      "file": "pelnomocnictwo.pdf",
+      "gold_class": "pelnomocnictwo",
+      "pred_class": "pelnomocnictwo",
+      "counts": {
+        "tp": 6,
+        "fp": 0,
+        "fn": 0,
+        "tn": 2
+      },
+      "counts_strict": {
+        "tp": 8,
+        "fp": 0,
+        "fn": 0
+      },
+      "counts_non_null": {
+        "tp": 6,
+        "fp": 0,
+        "fn": 0
+      },
+      "errors": []
+    },
+    {
+      "case": "przyklad_18",
+      "file": "potwierdzenie_przelewu.pdf",
+      "gold_class": "przelew",
+      "pred_class": "przelew",
+      "counts": {
+        "tp": 6,
+        "fp": 0,
+        "fn": 0,
+        "tn": 0
+      },
+      "counts_strict": {
+        "tp": 6,
+        "fp": 0,
+        "fn": 0
+      },
+      "counts_non_null": {
+        "tp": 6,
+        "fp": 0,
+        "fn": 0
+      },
+      "errors": []
+    },
+    {
+      "case": "przyklad_19",
+      "file": "odwolanie.pdf",
+      "gold_class": "odwolanie",
+      "pred_class": "odwolanie",
+      "counts": {
+        "tp": 19,
+        "fp": 0,
+        "fn": 0,
+        "tn": 3
+      },
+      "counts_strict": {
+        "tp": 22,
+        "fp": 0,
+        "fn": 0
+      },
+      "counts_non_null": {
+        "tp": 19,
+        "fp": 0,
+        "fn": 0
+      },
+      "errors": []
+    },
+    {
+      "case": "przyklad_19",
+      "file": "pelnomocnictwo.pdf",
+      "gold_class": "pelnomocnictwo",
+      "pred_class": "pelnomocnictwo",
+      "counts": {
+        "tp": 7,
+        "fp": 0,
+        "fn": 0,
+        "tn": 2
+      },
+      "counts_strict": {
+        "tp": 9,
+        "fp": 0,
+        "fn": 0
+      },
+      "counts_non_null": {
+        "tp": 7,
+        "fp": 0,
+        "fn": 0
+      },
+      "errors": []
+    },
+    {
+      "case": "przyklad_19",
+      "file": "potwierdzenie_przelewu.pdf",
+      "gold_class": "przelew",
+      "pred_class": "przelew",
+      "counts": {
+        "tp": 6,
+        "fp": 0,
+        "fn": 0,
+        "tn": 0
+      },
+      "counts_strict": {
+        "tp": 6,
+        "fp": 0,
+        "fn": 0
+      },
+      "counts_non_null": {
+        "tp": 6,
+        "fp": 0,
+        "fn": 0
+      },
+      "errors": []
+    },
+    {
+      "case": "przyklad_20",
+      "file": "odwolanie.pdf",
+      "gold_class": "odwolanie",
+      "pred_class": "odwolanie",
+      "counts": {
+        "tp": 20,
+        "fp": 0,
+        "fn": 0,
+        "tn": 2
+      },
+      "counts_strict": {
+        "tp": 22,
+        "fp": 0,
+        "fn": 0
+      },
+      "counts_non_null": {
+        "tp": 20,
+        "fp": 0,
+        "fn": 0
+      },
+      "errors": []
+    },
+    {
+      "case": "przyklad_20",
+      "file": "pelnomocnictwo.pdf",
+      "gold_class": "pelnomocnictwo",
+      "pred_class": "pelnomocnictwo",
+      "counts": {
+        "tp": 8,
+        "fp": 0,
+        "fn": 0,
+        "tn": 3
+      },
+      "counts_strict": {
+        "tp": 11,
+        "fp": 0,
+        "fn": 0
+      },
+      "counts_non_null": {
+        "tp": 8,
+        "fp": 0,
+        "fn": 0
+      },
+      "errors": []
+    },
+    {
+      "case": "przyklad_20",
+      "file": "potwierdzenie_przelewu.pdf",
+      "gold_class": "przelew",
+      "pred_class": "przelew",
+      "counts": {
+        "tp": 6,
+        "fp": 0,
+        "fn": 0,
+        "tn": 0
+      },
+      "counts_strict": {
+        "tp": 6,
+        "fp": 0,
+        "fn": 0
+      },
+      "counts_non_null": {
+        "tp": 6,
+        "fp": 0,
+        "fn": 0
+      },
+      "errors": []
+    },
+    {
+      "case": "przyklad_21",
+      "file": "odwolanie.pdf",
+      "gold_class": "odwolanie",
+      "pred_class": "odwolanie",
+      "counts": {
+        "tp": 21,
+        "fp": 0,
+        "fn": 0,
+        "tn": 1
+      },
+      "counts_strict": {
+        "tp": 22,
+        "fp": 0,
+        "fn": 0
+      },
+      "counts_non_null": {
+        "tp": 21,
+        "fp": 0,
+        "fn": 0
+      },
+      "errors": []
+    },
+    {
+      "case": "przyklad_21",
+      "file": "pelnomocnictwo.pdf",
+      "gold_class": "pelnomocnictwo",
+      "pred_class": "pelnomocnictwo",
+      "counts": {
+        "tp": 6,
+        "fp": 0,
+        "fn": 0,
+        "tn": 2
+      },
+      "counts_strict": {
+        "tp": 8,
+        "fp": 0,
+        "fn": 0
+      },
+      "counts_non_null": {
+        "tp": 6,
+        "fp": 0,
+        "fn": 0
+      },
+      "errors": []
+    },
+    {
+      "case": "przyklad_21",
+      "file": "potwierdzenie_przelewu.pdf",
+      "gold_class": "przelew",
+      "pred_class": "przelew",
+      "counts": {
+        "tp": 6,
+        "fp": 0,
+        "fn": 0,
+        "tn": 0
+      },
+      "counts_strict": {
+        "tp": 6,
+        "fp": 0,
+        "fn": 0
+      },
+      "counts_non_null": {
+        "tp": 6,
+        "fp": 0,
+        "fn": 0
+      },
+      "errors": []
+    },
+    {
+      "case": "przyklad_22",
+      "file": "odwolanie.pdf",
+      "gold_class": "odwolanie",
+      "pred_class": "odwolanie",
+      "counts": {
+        "tp": 19,
+        "fp": 0,
+        "fn": 0,
+        "tn": 3
+      },
+      "counts_strict": {
+        "tp": 22,
+        "fp": 0,
+        "fn": 0
+      },
+      "counts_non_null": {
+        "tp": 19,
+        "fp": 0,
+        "fn": 0
+      },
+      "errors": []
+    },
+    {
+      "case": "przyklad_22",
+      "file": "pelnomocnictwo.pdf",
+      "gold_class": "pelnomocnictwo",
+      "pred_class": "pelnomocnictwo",
+      "counts": {
+        "tp": 7,
+        "fp": 0,
+        "fn": 0,
+        "tn": 3
+      },
+      "counts_strict": {
+        "tp": 10,
+        "fp": 0,
+        "fn": 0
+      },
+      "counts_non_null": {
+        "tp": 7,
+        "fp": 0,
+        "fn": 0
+      },
+      "errors": []
+    },
+    {
+      "case": "przyklad_22",
+      "file": "potwierdzenie_przelewu.pdf",
+      "gold_class": "przelew",
+      "pred_class": "przelew",
+      "counts": {
+        "tp": 6,
+        "fp": 0,
+        "fn": 0,
+        "tn": 0
+      },
+      "counts_strict": {
+        "tp": 6,
+        "fp": 0,
+        "fn": 0
+      },
+      "counts_non_null": {
+        "tp": 6,
+        "fp": 0,
+        "fn": 0
+      },
+      "errors": []
+    },
+    {
+      "case": "przyklad_23",
+      "file": "odwolanie.pdf",
+      "gold_class": "odwolanie",
+      "pred_class": "odwolanie",
+      "counts": {
+        "tp": 20,
+        "fp": 0,
+        "fn": 0,
+        "tn": 2
+      },
+      "counts_strict": {
+        "tp": 22,
+        "fp": 0,
+        "fn": 0
+      },
+      "counts_non_null": {
+        "tp": 20,
+        "fp": 0,
+        "fn": 0
+      },
+      "errors": []
+    },
+    {
+      "case": "przyklad_23",
+      "file": "pelnomocnictwo.pdf",
+      "gold_class": "pelnomocnictwo",
+      "pred_class": "pelnomocnictwo",
+      "counts": {
+        "tp": 8,
+        "fp": 0,
+        "fn": 0,
+        "tn": 3
+      },
+      "counts_strict": {
+        "tp": 11,
+        "fp": 0,
+        "fn": 0
+      },
+      "counts_non_null": {
+        "tp": 8,
+        "fp": 0,
+        "fn": 0
+      },
+      "errors": []
+    },
+    {
+      "case": "przyklad_23",
+      "file": "potwierdzenie_przelewu.pdf",
+      "gold_class": "przelew",
+      "pred_class": "przelew",
+      "counts": {
+        "tp": 6,
+        "fp": 0,
+        "fn": 0,
+        "tn": 0
+      },
+      "counts_strict": {
+        "tp": 6,
+        "fp": 0,
+        "fn": 0
+      },
+      "counts_non_null": {
+        "tp": 6,
+        "fp": 0,
+        "fn": 0
+      },
+      "errors": []
+    },
+    {
+      "case": "przyklad_24",
+      "file": "odwolanie.pdf",
+      "gold_class": "odwolanie",
+      "pred_class": "odwolanie",
+      "counts": {
+        "tp": 19,
+        "fp": 0,
+        "fn": 0,
+        "tn": 3
+      },
+      "counts_strict": {
+        "tp": 22,
+        "fp": 0,
+        "fn": 0
+      },
+      "counts_non_null": {
+        "tp": 19,
+        "fp": 0,
+        "fn": 0
+      },
+      "errors": []
+    },
+    {
+      "case": "przyklad_24",
+      "file": "pelnomocnictwo.pdf",
+      "gold_class": "pelnomocnictwo",
+      "pred_class": "pelnomocnictwo",
+      "counts": {
+        "tp": 7,
+        "fp": 0,
+        "fn": 0,
+        "tn": 2
+      },
+      "counts_strict": {
+        "tp": 9,
+        "fp": 0,
+        "fn": 0
+      },
+      "counts_non_null": {
+        "tp": 7,
+        "fp": 0,
+        "fn": 0
+      },
+      "errors": []
+    },
+    {
+      "case": "przyklad_24",
+      "file": "potwierdzenie_przelewu.pdf",
+      "gold_class": "przelew",
+      "pred_class": "przelew",
+      "counts": {
+        "tp": 6,
+        "fp": 0,
+        "fn": 0,
+        "tn": 0
+      },
+      "counts_strict": {
+        "tp": 6,
+        "fp": 0,
+        "fn": 0
+      },
+      "counts_non_null": {
+        "tp": 6,
+        "fp": 0,
+        "fn": 0
+      },
+      "errors": []
+    },
+    {
+      "case": "przyklad_24",
+      "file": "prowadzenie_postepowania_odwolawczego.pdf",
+      "gold_class": "negatywny",
+      "pred_class": "negatywny",
+      "counts": {
+        "tp": 0,
+        "fp": 0,
+        "fn": 0,
+        "tn": 0
+      },
+      "counts_strict": {
+        "tp": 0,
+        "fp": 0,
+        "fn": 0
+      },
+      "counts_non_null": {
+        "tp": 0,
+        "fp": 0,
+        "fn": 0
+      },
+      "errors": []
+    },
+    {
+      "case": "przyklad_25",
+      "file": "odwolanie.pdf",
+      "gold_class": "odwolanie",
+      "pred_class": "odwolanie",
+      "counts": {
+        "tp": 20,
+        "fp": 0,
+        "fn": 0,
+        "tn": 2
+      },
+      "counts_strict": {
+        "tp": 22,
+        "fp": 0,
+        "fn": 0
+      },
+      "counts_non_null": {
+        "tp": 20,
+        "fp": 0,
+        "fn": 0
+      },
+      "errors": []
+    },
+    {
+      "case": "przyklad_25",
+      "file": "pelnomocnictwo.pdf",
+      "gold_class": "pelnomocnictwo",
+      "pred_class": "pelnomocnictwo",
+      "counts": {
+        "tp": 8,
+        "fp": 0,
+        "fn": 0,
+        "tn": 3
+      },
+      "counts_strict": {
+        "tp": 11,
+        "fp": 0,
+        "fn": 0
+      },
+      "counts_non_null": {
+        "tp": 8,
+        "fp": 0,
+        "fn": 0
+      },
+      "errors": []
+    },
+    {
+      "case": "przyklad_25",
+      "file": "potwierdzenie_przelewu.pdf",
+      "gold_class": "przelew",
+      "pred_class": "przelew",
+      "counts": {
+        "tp": 6,
+        "fp": 0,
+        "fn": 0,
+        "tn": 0
+      },
+      "counts_strict": {
+        "tp": 6,
+        "fp": 0,
+        "fn": 0
+      },
+      "counts_non_null": {
+        "tp": 6,
+        "fp": 0,
+        "fn": 0
+      },
+      "errors": []
+    },
+    {
+      "case": "przyklad_26",
+      "file": "odwolanie.pdf",
+      "gold_class": "odwolanie",
+      "pred_class": "odwolanie",
+      "counts": {
+        "tp": 20,
+        "fp": 0,
+        "fn": 0,
+        "tn": 2
+      },
+      "counts_strict": {
+        "tp": 22,
+        "fp": 0,
+        "fn": 0
+      },
+      "counts_non_null": {
+        "tp": 20,
+        "fp": 0,
+        "fn": 0
+      },
+      "errors": []
+    },
+    {
+      "case": "przyklad_26",
+      "file": "pelnomocnictwo.pdf",
+      "gold_class": "pelnomocnictwo",
+      "pred_class": "pelnomocnictwo",
+      "counts": {
+        "tp": 7,
+        "fp": 0,
+        "fn": 0,
+        "tn": 3
+      },
+      "counts_strict": {
+        "tp": 10,
+        "fp": 0,
+        "fn": 0
+      },
+      "counts_non_null": {
+        "tp": 7,
+        "fp": 0,
+        "fn": 0
+      },
+      "errors": []
+    },
+    {
+      "case": "przyklad_26",
+      "file": "potwierdzenie_przelewu.pdf",
+      "gold_class": "przelew",
+      "pred_class": "przelew",
+      "counts": {
+        "tp": 6,
+        "fp": 0,
+        "fn": 0,
+        "tn": 0
+      },
+      "counts_strict": {
+        "tp": 6,
+        "fp": 0,
+        "fn": 0
+      },
+      "counts_non_null": {
+        "tp": 6,
+        "fp": 0,
+        "fn": 0
+      },
+      "errors": []
+    },
+    {
+      "case": "przyklad_27",
+      "file": "odwolanie.pdf",
+      "gold_class": "odwolanie",
+      "pred_class": "odwolanie",
+      "counts": {
+        "tp": 20,
+        "fp": 0,
+        "fn": 0,
+        "tn": 2
+      },
+      "counts_strict": {
+        "tp": 22,
+        "fp": 0,
+        "fn": 0
+      },
+      "counts_non_null": {
+        "tp": 20,
+        "fp": 0,
+        "fn": 0
+      },
+      "errors": []
+    },
+    {
+      "case": "przyklad_27",
+      "file": "pelnomocnictwo.pdf",
+      "gold_class": "pelnomocnictwo",
+      "pred_class": "pelnomocnictwo",
+      "counts": {
+        "tp": 7,
+        "fp": 0,
+        "fn": 0,
+        "tn": 3
+      },
+      "counts_strict": {
+        "tp": 10,
+        "fp": 0,
+        "fn": 0
+      },
+      "counts_non_null": {
+        "tp": 7,
+        "fp": 0,
+        "fn": 0
+      },
+      "errors": []
+    },
+    {
+      "case": "przyklad_27",
+      "file": "potwierdzenie_przelewu.pdf",
+      "gold_class": "przelew",
+      "pred_class": "przelew",
+      "counts": {
+        "tp": 6,
+        "fp": 0,
+        "fn": 0,
+        "tn": 0
+      },
+      "counts_strict": {
+        "tp": 6,
+        "fp": 0,
+        "fn": 0
+      },
+      "counts_non_null": {
+        "tp": 6,
+        "fp": 0,
+        "fn": 0
+      },
+      "errors": []
+    },
+    {
+      "case": "przyklad_28",
+      "file": "odwolanie.pdf",
+      "gold_class": "odwolanie",
+      "pred_class": "odwolanie",
+      "counts": {
+        "tp": 18,
+        "fp": 0,
+        "fn": 0,
+        "tn": 4
+      },
+      "counts_strict": {
+        "tp": 22,
+        "fp": 0,
+        "fn": 0
+      },
+      "counts_non_null": {
+        "tp": 18,
+        "fp": 0,
+        "fn": 0
+      },
+      "errors": []
+    },
+    {
+      "case": "przyklad_28",
+      "file": "pelnomocnictwo.pdf",
+      "gold_class": "pelnomocnictwo",
+      "pred_class": "pelnomocnictwo",
+      "counts": {
+        "tp": 7,
+        "fp": 0,
+        "fn": 0,
+        "tn": 2
+      },
+      "counts_strict": {
+        "tp": 9,
+        "fp": 0,
+        "fn": 0
+      },
+      "counts_non_null": {
+        "tp": 7,
+        "fp": 0,
+        "fn": 0
+      },
+      "errors": []
+    },
+    {
+      "case": "przyklad_28",
+      "file": "potwierdzenie_przelewu.pdf",
+      "gold_class": "przelew",
+      "pred_class": "przelew",
+      "counts": {
+        "tp": 6,
+        "fp": 0,
+        "fn": 0,
+        "tn": 0
+      },
+      "counts_strict": {
+        "tp": 6,
+        "fp": 0,
+        "fn": 0
+      },
+      "counts_non_null": {
+        "tp": 6,
+        "fp": 0,
+        "fn": 0
+      },
+      "errors": []
+    },
+    {
+      "case": "przyklad_29",
+      "file": "odwolanie.pdf",
+      "gold_class": "odwolanie",
+      "pred_class": "odwolanie",
+      "counts": {
+        "tp": 21,
+        "fp": 0,
+        "fn": 0,
+        "tn": 1
+      },
+      "counts_strict": {
+        "tp": 22,
+        "fp": 0,
+        "fn": 0
+      },
+      "counts_non_null": {
+        "tp": 21,
+        "fp": 0,
+        "fn": 0
+      },
+      "errors": []
+    },
+    {
+      "case": "przyklad_29",
+      "file": "pelnomocnictwo.pdf",
+      "gold_class": "pelnomocnictwo",
+      "pred_class": "pelnomocnictwo",
+      "counts": {
+        "tp": 7,
+        "fp": 0,
+        "fn": 0,
+        "tn": 2
+      },
+      "counts_strict": {
+        "tp": 9,
+        "fp": 0,
+        "fn": 0
+      },
+      "counts_non_null": {
+        "tp": 7,
+        "fp": 0,
+        "fn": 0
+      },
+      "errors": []
+    },
+    {
+      "case": "przyklad_29",
+      "file": "potwierdzenie_przelewu.pdf",
+      "gold_class": "przelew",
+      "pred_class": "przelew",
+      "counts": {
+        "tp": 6,
+        "fp": 0,
+        "fn": 0,
+        "tn": 0
+      },
+      "counts_strict": {
+        "tp": 6,
+        "fp": 0,
+        "fn": 0
+      },
+      "counts_non_null": {
+        "tp": 6,
+        "fp": 0,
+        "fn": 0
+      },
+      "errors": []
+    },
+    {
+      "case": "przyklad_30",
+      "file": "odwolanie.pdf",
+      "gold_class": "odwolanie",
+      "pred_class": "odwolanie",
+      "counts": {
+        "tp": 21,
+        "fp": 0,
+        "fn": 0,
+        "tn": 1
+      },
+      "counts_strict": {
+        "tp": 22,
+        "fp": 0,
+        "fn": 0
+      },
+      "counts_non_null": {
+        "tp": 21,
+        "fp": 0,
+        "fn": 0
+      },
+      "errors": []
+    },
+    {
+      "case": "przyklad_30",
+      "file": "pelnomocnictwo.pdf",
+      "gold_class": "pelnomocnictwo",
+      "pred_class": "pelnomocnictwo",
+      "counts": {
+        "tp": 6,
+        "fp": 0,
+        "fn": 0,
+        "tn": 2
+      },
+      "counts_strict": {
+        "tp": 8,
+        "fp": 0,
+        "fn": 0
+      },
+      "counts_non_null": {
+        "tp": 6,
+        "fp": 0,
+        "fn": 0
+      },
+      "errors": []
+    },
+    {
+      "case": "przyklad_30",
+      "file": "potwierdzenie_przelewu.pdf",
+      "gold_class": "przelew",
+      "pred_class": "przelew",
+      "counts": {
+        "tp": 6,
+        "fp": 0,
+        "fn": 0,
+        "tn": 0
+      },
+      "counts_strict": {
+        "tp": 6,
+        "fp": 0,
+        "fn": 0
+      },
+      "counts_non_null": {
+        "tp": 6,
+        "fp": 0,
+        "fn": 0
+      },
+      "errors": []
+    },
+    {
+      "case": "przyklad_31",
+      "file": "odwolanie.pdf",
+      "gold_class": "odwolanie",
+      "pred_class": "odwolanie",
+      "counts": {
+        "tp": 21,
+        "fp": 0,
+        "fn": 0,
+        "tn": 1
+      },
+      "counts_strict": {
+        "tp": 22,
+        "fp": 0,
+        "fn": 0
+      },
+      "counts_non_null": {
+        "tp": 21,
+        "fp": 0,
+        "fn": 0
+      },
+      "errors": []
+    },
+    {
+      "case": "przyklad_31",
+      "file": "pelnomocnictwo.pdf",
+      "gold_class": "pelnomocnictwo",
+      "pred_class": "pelnomocnictwo",
+      "counts": {
+        "tp": 7,
+        "fp": 0,
+        "fn": 0,
+        "tn": 3
+      },
+      "counts_strict": {
+        "tp": 10,
+        "fp": 0,
+        "fn": 0
+      },
+      "counts_non_null": {
+        "tp": 7,
+        "fp": 0,
+        "fn": 0
+      },
+      "errors": []
+    },
+    {
+      "case": "przyklad_31",
+      "file": "potwierdzenie_przelewu.pdf",
+      "gold_class": "przelew",
+      "pred_class": "przelew",
+      "counts": {
+        "tp": 6,
+        "fp": 0,
+        "fn": 0,
+        "tn": 0
+      },
+      "counts_strict": {
+        "tp": 6,
+        "fp": 0,
+        "fn": 0
+      },
+      "counts_non_null": {
+        "tp": 6,
+        "fp": 0,
+        "fn": 0
+      },
+      "errors": []
+    },
+    {
+      "case": "przyklad_32",
+      "file": "odwolanie.pdf",
+      "gold_class": "odwolanie",
+      "pred_class": "odwolanie",
+      "counts": {
+        "tp": 20,
+        "fp": 0,
+        "fn": 0,
+        "tn": 2
+      },
+      "counts_strict": {
+        "tp": 22,
+        "fp": 0,
+        "fn": 0
+      },
+      "counts_non_null": {
+        "tp": 20,
+        "fp": 0,
+        "fn": 0
+      },
+      "errors": []
+    },
+    {
+      "case": "przyklad_32",
+      "file": "pelnomocnictwo.pdf",
+      "gold_class": "pelnomocnictwo",
+      "pred_class": "pelnomocnictwo",
+      "counts": {
+        "tp": 7,
+        "fp": 0,
+        "fn": 0,
+        "tn": 2
+      },
+      "counts_strict": {
+        "tp": 9,
+        "fp": 0,
+        "fn": 0
+      },
+      "counts_non_null": {
+        "tp": 7,
+        "fp": 0,
+        "fn": 0
+      },
+      "errors": []
+    },
+    {
+      "case": "przyklad_32",
+      "file": "potwierdzenie_przelewu.pdf",
+      "gold_class": "przelew",
+      "pred_class": "przelew",
+      "counts": {
+        "tp": 6,
+        "fp": 0,
+        "fn": 0,
+        "tn": 0
+      },
+      "counts_strict": {
+        "tp": 6,
+        "fp": 0,
+        "fn": 0
+      },
+      "counts_non_null": {
+        "tp": 6,
+        "fp": 0,
+        "fn": 0
+      },
+      "errors": []
+    },
+    {
+      "case": "przyklad_33",
+      "file": "odwolanie.pdf",
+      "gold_class": "odwolanie",
+      "pred_class": "odwolanie",
+      "counts": {
+        "tp": 19,
+        "fp": 0,
+        "fn": 0,
+        "tn": 3
+      },
+      "counts_strict": {
+        "tp": 22,
+        "fp": 0,
+        "fn": 0
+      },
+      "counts_non_null": {
+        "tp": 19,
+        "fp": 0,
+        "fn": 0
+      },
+      "errors": []
+    },
+    {
+      "case": "przyklad_33",
+      "file": "pelnomocnictwo.pdf",
+      "gold_class": "pelnomocnictwo",
+      "pred_class": "pelnomocnictwo",
+      "counts": {
+        "tp": 7,
+        "fp": 0,
+        "fn": 0,
+        "tn": 3
+      },
+      "counts_strict": {
+        "tp": 10,
+        "fp": 0,
+        "fn": 0
+      },
+      "counts_non_null": {
+        "tp": 7,
+        "fp": 0,
+        "fn": 0
+      },
+      "errors": []
+    },
+    {
+      "case": "przyklad_33",
+      "file": "potwierdzenie_przelewu.pdf",
+      "gold_class": "przelew",
+      "pred_class": "przelew",
+      "counts": {
+        "tp": 6,
+        "fp": 0,
+        "fn": 0,
+        "tn": 0
+      },
+      "counts_strict": {
+        "tp": 6,
+        "fp": 0,
+        "fn": 0
+      },
+      "counts_non_null": {
+        "tp": 6,
+        "fp": 0,
+        "fn": 0
+      },
+      "errors": []
+    },
+    {
+      "case": "przyklad_34",
+      "file": "odwolanie.pdf",
+      "gold_class": "odwolanie",
+      "pred_class": "odwolanie",
+      "counts": {
+        "tp": 19,
+        "fp": 0,
+        "fn": 0,
+        "tn": 3
+      },
+      "counts_strict": {
+        "tp": 22,
+        "fp": 0,
+        "fn": 0
+      },
+      "counts_non_null": {
+        "tp": 19,
+        "fp": 0,
+        "fn": 0
+      },
+      "errors": []
+    },
+    {
+      "case": "przyklad_34",
+      "file": "pelnomocnictwo.pdf",
+      "gold_class": "pelnomocnictwo",
+      "pred_class": "pelnomocnictwo",
+      "counts": {
+        "tp": 7,
+        "fp": 0,
+        "fn": 0,
+        "tn": 3
+      },
+      "counts_strict": {
+        "tp": 10,
+        "fp": 0,
+        "fn": 0
+      },
+      "counts_non_null": {
+        "tp": 7,
+        "fp": 0,
+        "fn": 0
+      },
+      "errors": []
+    },
+    {
+      "case": "przyklad_34",
+      "file": "potwierdzenie_przelewu.pdf",
+      "gold_class": "przelew",
+      "pred_class": "przelew",
+      "counts": {
+        "tp": 6,
+        "fp": 0,
+        "fn": 0,
+        "tn": 0
+      },
+      "counts_strict": {
+        "tp": 6,
+        "fp": 0,
+        "fn": 0
+      },
+      "counts_non_null": {
+        "tp": 6,
+        "fp": 0,
+        "fn": 0
+      },
+      "errors": []
+    },
+    {
+      "case": "przyklad_35",
+      "file": "odwolanie.pdf",
+      "gold_class": "odwolanie",
+      "pred_class": "odwolanie",
+      "counts": {
+        "tp": 21,
+        "fp": 0,
+        "fn": 0,
+        "tn": 1
+      },
+      "counts_strict": {
+        "tp": 22,
+        "fp": 0,
+        "fn": 0
+      },
+      "counts_non_null": {
+        "tp": 21,
+        "fp": 0,
+        "fn": 0
+      },
+      "errors": []
+    },
+    {
+      "case": "przyklad_35",
+      "file": "pelnomocnictwo.pdf",
+      "gold_class": "pelnomocnictwo",
+      "pred_class": "pelnomocnictwo",
+      "counts": {
+        "tp": 7,
+        "fp": 0,
+        "fn": 0,
+        "tn": 3
+      },
+      "counts_strict": {
+        "tp": 10,
+        "fp": 0,
+        "fn": 0
+      },
+      "counts_non_null": {
+        "tp": 7,
+        "fp": 0,
+        "fn": 0
+      },
+      "errors": []
+    },
+    {
+      "case": "przyklad_35",
+      "file": "potwierdzenie_przelewu.pdf",
+      "gold_class": "przelew",
+      "pred_class": "przelew",
+      "counts": {
+        "tp": 6,
+        "fp": 0,
+        "fn": 0,
+        "tn": 0
+      },
+      "counts_strict": {
+        "tp": 6,
+        "fp": 0,
+        "fn": 0
+      },
+      "counts_non_null": {
+        "tp": 6,
+        "fp": 0,
+        "fn": 0
+      },
+      "errors": []
+    },
+    {
+      "case": "przyklad_36",
+      "file": "odwolanie.pdf",
+      "gold_class": "odwolanie",
+      "pred_class": "odwolanie",
+      "counts": {
+        "tp": 19,
+        "fp": 0,
+        "fn": 0,
+        "tn": 3
+      },
+      "counts_strict": {
+        "tp": 22,
+        "fp": 0,
+        "fn": 0
+      },
+      "counts_non_null": {
+        "tp": 19,
+        "fp": 0,
+        "fn": 0
+      },
+      "errors": []
+    },
+    {
+      "case": "przyklad_36",
+      "file": "pelnomocnictwo.pdf",
+      "gold_class": "pelnomocnictwo",
+      "pred_class": "pelnomocnictwo",
+      "counts": {
+        "tp": 8,
+        "fp": 0,
+        "fn": 0,
+        "tn": 3
+      },
+      "counts_strict": {
+        "tp": 11,
+        "fp": 0,
+        "fn": 0
+      },
+      "counts_non_null": {
+        "tp": 8,
+        "fp": 0,
+        "fn": 0
+      },
+      "errors": []
+    },
+    {
+      "case": "przyklad_36",
+      "file": "potwierdzenie_przelewu.pdf",
+      "gold_class": "przelew",
+      "pred_class": "przelew",
+      "counts": {
+        "tp": 6,
+        "fp": 0,
+        "fn": 0,
+        "tn": 0
+      },
+      "counts_strict": {
+        "tp": 6,
+        "fp": 0,
+        "fn": 0
+      },
+      "counts_non_null": {
+        "tp": 6,
+        "fp": 0,
+        "fn": 0
+      },
+      "errors": []
+    },
+    {
+      "case": "przyklad_37",
+      "file": "2025_BZP 00143067_01.pdf",
+      "gold_class": "negatywny",
+      "pred_class": "negatywny",
+      "counts": {
+        "tp": 0,
+        "fp": 0,
+        "fn": 0,
+        "tn": 0
+      },
+      "counts_strict": {
+        "tp": 0,
+        "fp": 0,
+        "fn": 0
+      },
+      "counts_non_null": {
+        "tp": 0,
+        "fp": 0,
+        "fn": 0
+      },
+      "errors": []
+    },
+    {
+      "case": "przyklad_37",
+      "file": "odwolanie.pdf",
+      "gold_class": "odwolanie",
+      "pred_class": "odwolanie",
+      "counts": {
+        "tp": 19,
+        "fp": 0,
+        "fn": 0,
+        "tn": 3
+      },
+      "counts_strict": {
+        "tp": 22,
+        "fp": 0,
+        "fn": 0
+      },
+      "counts_non_null": {
+        "tp": 19,
+        "fp": 0,
+        "fn": 0
+      },
+      "errors": []
+    },
+    {
+      "case": "przyklad_37",
+      "file": "pelnomocnictwo.pdf",
+      "gold_class": "pelnomocnictwo",
+      "pred_class": "pelnomocnictwo",
+      "counts": {
+        "tp": 7,
+        "fp": 0,
+        "fn": 0,
+        "tn": 2
+      },
+      "counts_strict": {
+        "tp": 9,
+        "fp": 0,
+        "fn": 0
+      },
+      "counts_non_null": {
+        "tp": 7,
+        "fp": 0,
+        "fn": 0
+      },
+      "errors": []
+    },
+    {
+      "case": "przyklad_37",
+      "file": "potwierdzenie_przelewu.pdf",
+      "gold_class": "przelew",
+      "pred_class": "przelew",
+      "counts": {
+        "tp": 6,
+        "fp": 0,
+        "fn": 0,
+        "tn": 0
+      },
+      "counts_strict": {
+        "tp": 6,
+        "fp": 0,
+        "fn": 0
+      },
+      "counts_non_null": {
+        "tp": 6,
+        "fp": 0,
+        "fn": 0
+      },
+      "errors": []
+    },
+    {
+      "case": "przyklad_38",
+      "file": "odwolanie.pdf",
+      "gold_class": "odwolanie",
+      "pred_class": "odwolanie",
+      "counts": {
+        "tp": 21,
+        "fp": 0,
+        "fn": 0,
+        "tn": 1
+      },
+      "counts_strict": {
+        "tp": 22,
+        "fp": 0,
+        "fn": 0
+      },
+      "counts_non_null": {
+        "tp": 21,
+        "fp": 0,
+        "fn": 0
+      },
+      "errors": []
+    },
+    {
+      "case": "przyklad_38",
+      "file": "pelnomocnictwo.pdf",
+      "gold_class": "pelnomocnictwo",
+      "pred_class": "pelnomocnictwo",
+      "counts": {
+        "tp": 8,
+        "fp": 0,
+        "fn": 0,
+        "tn": 3
+      },
+      "counts_strict": {
+        "tp": 11,
+        "fp": 0,
+        "fn": 0
+      },
+      "counts_non_null": {
+        "tp": 8,
+        "fp": 0,
+        "fn": 0
+      },
+      "errors": []
+    },
+    {
+      "case": "przyklad_38",
+      "file": "potwierdzenie_przelewu.pdf",
+      "gold_class": "przelew",
+      "pred_class": "przelew",
+      "counts": {
+        "tp": 6,
+        "fp": 0,
+        "fn": 0,
+        "tn": 0
+      },
+      "counts_strict": {
+        "tp": 6,
+        "fp": 0,
+        "fn": 0
+      },
+      "counts_non_null": {
+        "tp": 6,
+        "fp": 0,
+        "fn": 0
+      },
+      "errors": []
+    },
+    {
+      "case": "przyklad_39",
+      "file": "odwolanie.pdf",
+      "gold_class": "odwolanie",
+      "pred_class": "odwolanie",
+      "counts": {
+        "tp": 20,
+        "fp": 0,
+        "fn": 0,
+        "tn": 2
+      },
+      "counts_strict": {
+        "tp": 22,
+        "fp": 0,
+        "fn": 0
+      },
+      "counts_non_null": {
+        "tp": 20,
+        "fp": 0,
+        "fn": 0
+      },
+      "errors": []
+    },
+    {
+      "case": "przyklad_39",
+      "file": "pelnomocnictwo.pdf",
+      "gold_class": "pelnomocnictwo",
+      "pred_class": "pelnomocnictwo",
+      "counts": {
+        "tp": 8,
+        "fp": 0,
+        "fn": 0,
+        "tn": 3
+      },
+      "counts_strict": {
+        "tp": 11,
+        "fp": 0,
+        "fn": 0
+      },
+      "counts_non_null": {
+        "tp": 8,
+        "fp": 0,
+        "fn": 0
+      },
+      "errors": []
+    },
+    {
+      "case": "przyklad_39",
+      "file": "potwierdzenie_przelewu.pdf",
+      "gold_class": "przelew",
+      "pred_class": "przelew",
+      "counts": {
+        "tp": 6,
+        "fp": 0,
+        "fn": 0,
+        "tn": 0
+      },
+      "counts_strict": {
+        "tp": 6,
+        "fp": 0,
+        "fn": 0
+      },
+      "counts_non_null": {
+        "tp": 6,
+        "fp": 0,
+        "fn": 0
+      },
+      "errors": []
+    },
+    {
+      "case": "przyklad_40",
+      "file": "odwolanie.pdf",
+      "gold_class": "odwolanie",
+      "pred_class": "odwolanie",
+      "counts": {
+        "tp": 21,
+        "fp": 0,
+        "fn": 0,
+        "tn": 1
+      },
+      "counts_strict": {
+        "tp": 22,
+        "fp": 0,
+        "fn": 0
+      },
+      "counts_non_null": {
+        "tp": 21,
+        "fp": 0,
+        "fn": 0
+      },
+      "errors": []
+    },
+    {
+      "case": "przyklad_40",
+      "file": "pelnomocnictwo.pdf",
+      "gold_class": "pelnomocnictwo",
+      "pred_class": "pelnomocnictwo",
+      "counts": {
+        "tp": 8,
+        "fp": 0,
+        "fn": 0,
+        "tn": 3
+      },
+      "counts_strict": {
+        "tp": 11,
+        "fp": 0,
+        "fn": 0
+      },
+      "counts_non_null": {
+        "tp": 8,
+        "fp": 0,
+        "fn": 0
+      },
+      "errors": []
+    },
+    {
+      "case": "przyklad_40",
+      "file": "potwierdzenie_przelewu.pdf",
+      "gold_class": "przelew",
+      "pred_class": "przelew",
+      "counts": {
+        "tp": 6,
+        "fp": 0,
+        "fn": 0,
+        "tn": 0
+      },
+      "counts_strict": {
+        "tp": 6,
+        "fp": 0,
+        "fn": 0
+      },
+      "counts_non_null": {
+        "tp": 6,
+        "fp": 0,
+        "fn": 0
+      },
+      "errors": []
+    },
+    {
+      "case": "przyklad_41",
+      "file": "odwolanie.pdf",
+      "gold_class": "odwolanie",
+      "pred_class": "odwolanie",
+      "counts": {
+        "tp": 17,
+        "fp": 0,
+        "fn": 0,
+        "tn": 5
+      },
+      "counts_strict": {
+        "tp": 22,
+        "fp": 0,
+        "fn": 0
+      },
+      "counts_non_null": {
+        "tp": 17,
+        "fp": 0,
+        "fn": 0
+      },
+      "errors": []
+    },
+    {
+      "case": "przyklad_41",
+      "file": "pelnomocnictwo.pdf",
+      "gold_class": "pelnomocnictwo",
+      "pred_class": "pelnomocnictwo",
+      "counts": {
+        "tp": 12,
+        "fp": 0,
+        "fn": 0,
+        "tn": 3
+      },
+      "counts_strict": {
+        "tp": 15,
+        "fp": 0,
+        "fn": 0
+      },
+      "counts_non_null": {
+        "tp": 12,
+        "fp": 0,
+        "fn": 0
+      },
+      "errors": []
+    },
+    {
+      "case": "przyklad_41",
+      "file": "potwierdzenie_przelewu.pdf",
+      "gold_class": "przelew",
+      "pred_class": "przelew",
+      "counts": {
+        "tp": 6,
+        "fp": 0,
+        "fn": 0,
+        "tn": 0
+      },
+      "counts_strict": {
+        "tp": 6,
+        "fp": 0,
+        "fn": 0
+      },
+      "counts_non_null": {
+        "tp": 6,
+        "fp": 0,
+        "fn": 0
+      },
+      "errors": []
+    },
+    {
+      "case": "przyklad_42",
+      "file": "odwolanie.pdf",
+      "gold_class": "odwolanie",
+      "pred_class": "odwolanie",
+      "counts": {
+        "tp": 26,
+        "fp": 0,
+        "fn": 0,
+        "tn": 1
+      },
+      "counts_strict": {
+        "tp": 27,
+        "fp": 0,
+        "fn": 0
+      },
+      "counts_non_null": {
+        "tp": 26,
+        "fp": 0,
+        "fn": 0
+      },
+      "errors": []
+    },
+    {
+      "case": "przyklad_42",
+      "file": "pelnomocnictwo.pdf",
+      "gold_class": "pelnomocnictwo",
+      "pred_class": "pelnomocnictwo",
+      "counts": {
+        "tp": 7,
+        "fp": 0,
+        "fn": 0,
+        "tn": 3
+      },
+      "counts_strict": {
+        "tp": 10,
+        "fp": 0,
+        "fn": 0
+      },
+      "counts_non_null": {
+        "tp": 7,
+        "fp": 0,
+        "fn": 0
+      },
+      "errors": []
+    },
+    {
+      "case": "przyklad_42",
+      "file": "potwierdzenie_przelewu.pdf",
+      "gold_class": "przelew",
+      "pred_class": "przelew",
+      "counts": {
+        "tp": 6,
+        "fp": 0,
+        "fn": 0,
+        "tn": 0
+      },
+      "counts_strict": {
+        "tp": 6,
+        "fp": 0,
+        "fn": 0
+      },
+      "counts_non_null": {
+        "tp": 6,
+        "fp": 0,
+        "fn": 0
+      },
+      "errors": []
+    },
+    {
+      "case": "przyklad_43",
+      "file": "odwolanie.pdf",
+      "gold_class": "odwolanie",
+      "pred_class": "odwolanie",
+      "counts": {
+        "tp": 21,
+        "fp": 0,
+        "fn": 0,
+        "tn": 1
+      },
+      "counts_strict": {
+        "tp": 22,
+        "fp": 0,
+        "fn": 0
+      },
+      "counts_non_null": {
+        "tp": 21,
+        "fp": 0,
+        "fn": 0
+      },
+      "errors": []
+    },
+    {
+      "case": "przyklad_43",
+      "file": "pelnomocnictwo.pdf",
+      "gold_class": "pelnomocnictwo",
+      "pred_class": "pelnomocnictwo",
+      "counts": {
+        "tp": 8,
+        "fp": 0,
+        "fn": 0,
+        "tn": 1
+      },
+      "counts_strict": {
+        "tp": 9,
+        "fp": 0,
+        "fn": 0
+      },
+      "counts_non_null": {
+        "tp": 8,
+        "fp": 0,
+        "fn": 0
+      },
+      "errors": []
+    },
+    {
+      "case": "przyklad_43",
+      "file": "potwierdzenie_przelewu.pdf",
+      "gold_class": "przelew",
+      "pred_class": "przelew",
+      "counts": {
+        "tp": 6,
+        "fp": 0,
+        "fn": 0,
+        "tn": 0
+      },
+      "counts_strict": {
+        "tp": 6,
+        "fp": 0,
+        "fn": 0
+      },
+      "counts_non_null": {
+        "tp": 6,
+        "fp": 0,
+        "fn": 0
+      },
+      "errors": []
+    },
+    {
+      "case": "przyklad_44",
+      "file": "odwolanie.pdf",
+      "gold_class": "odwolanie",
+      "pred_class": "odwolanie",
+      "counts": {
+        "tp": 19,
+        "fp": 0,
+        "fn": 0,
+        "tn": 3
+      },
+      "counts_strict": {
+        "tp": 22,
+        "fp": 0,
+        "fn": 0
+      },
+      "counts_non_null": {
+        "tp": 19,
+        "fp": 0,
+        "fn": 0
+      },
+      "errors": []
+    },
+    {
+      "case": "przyklad_44",
+      "file": "pelnomocnictwo.pdf",
+      "gold_class": "pelnomocnictwo",
+      "pred_class": "pelnomocnictwo",
+      "counts": {
+        "tp": 7,
+        "fp": 0,
+        "fn": 0,
+        "tn": 3
+      },
+      "counts_strict": {
+        "tp": 10,
+        "fp": 0,
+        "fn": 0
+      },
+      "counts_non_null": {
+        "tp": 7,
+        "fp": 0,
+        "fn": 0
+      },
+      "errors": []
+    },
+    {
+      "case": "przyklad_44",
+      "file": "potwierdzenie_przelewu.pdf",
+      "gold_class": "przelew",
+      "pred_class": "przelew",
+      "counts": {
+        "tp": 6,
+        "fp": 0,
+        "fn": 0,
+        "tn": 0
+      },
+      "counts_strict": {
+        "tp": 6,
+        "fp": 0,
+        "fn": 0
+      },
+      "counts_non_null": {
+        "tp": 6,
+        "fp": 0,
+        "fn": 0
+      },
+      "errors": []
+    },
+    {
+      "case": "przyklad_45",
+      "file": "odwolanie.pdf",
+      "gold_class": "odwolanie",
+      "pred_class": "odwolanie",
+      "counts": {
+        "tp": 21,
+        "fp": 0,
+        "fn": 0,
+        "tn": 1
+      },
+      "counts_strict": {
+        "tp": 22,
+        "fp": 0,
+        "fn": 0
+      },
+      "counts_non_null": {
+        "tp": 21,
+        "fp": 0,
+        "fn": 0
+      },
+      "errors": []
+    },
+    {
+      "case": "przyklad_45",
+      "file": "pelnomocnictwo.pdf",
+      "gold_class": "pelnomocnictwo",
+      "pred_class": "pelnomocnictwo",
+      "counts": {
+        "tp": 7,
+        "fp": 0,
+        "fn": 0,
+        "tn": 3
+      },
+      "counts_strict": {
+        "tp": 10,
+        "fp": 0,
+        "fn": 0
+      },
+      "counts_non_null": {
+        "tp": 7,
+        "fp": 0,
+        "fn": 0
+      },
+      "errors": []
+    },
+    {
+      "case": "przyklad_45",
+      "file": "potwierdzenie_przelewu.pdf",
+      "gold_class": "przelew",
+      "pred_class": "przelew",
+      "counts": {
+        "tp": 6,
+        "fp": 0,
+        "fn": 0,
+        "tn": 0
+      },
+      "counts_strict": {
+        "tp": 6,
+        "fp": 0,
+        "fn": 0
+      },
+      "counts_non_null": {
+        "tp": 6,
+        "fp": 0,
+        "fn": 0
+      },
+      "errors": []
+    },
+    {
+      "case": "przyklad_46",
+      "file": "odwolanie.pdf",
+      "gold_class": "odwolanie",
+      "pred_class": "odwolanie",
+      "counts": {
+        "tp": 20,
+        "fp": 0,
+        "fn": 0,
+        "tn": 2
+      },
+      "counts_strict": {
+        "tp": 22,
+        "fp": 0,
+        "fn": 0
+      },
+      "counts_non_null": {
+        "tp": 20,
+        "fp": 0,
+        "fn": 0
+      },
+      "errors": []
+    },
+    {
+      "case": "przyklad_46",
+      "file": "pelnomocnictwo.pdf",
+      "gold_class": "pelnomocnictwo",
+      "pred_class": "pelnomocnictwo",
+      "counts": {
+        "tp": 13,
+        "fp": 0,
+        "fn": 0,
+        "tn": 4
+      },
+      "counts_strict": {
+        "tp": 17,
+        "fp": 0,
+        "fn": 0
+      },
+      "counts_non_null": {
+        "tp": 13,
+        "fp": 0,
+        "fn": 0
+      },
+      "errors": []
+    },
+    {
+      "case": "przyklad_46",
+      "file": "potwierdzenie_przelewu.pdf",
+      "gold_class": "przelew",
+      "pred_class": "przelew",
+      "counts": {
+        "tp": 6,
+        "fp": 0,
+        "fn": 0,
+        "tn": 0
+      },
+      "counts_strict": {
+        "tp": 6,
+        "fp": 0,
+        "fn": 0
+      },
+      "counts_non_null": {
+        "tp": 6,
+        "fp": 0,
+        "fn": 0
+      },
+      "errors": []
+    },
+    {
+      "case": "przyklad_47",
+      "file": "odwolanie.pdf",
+      "gold_class": "odwolanie",
+      "pred_class": "odwolanie",
+      "counts": {
+        "tp": 20,
+        "fp": 0,
+        "fn": 0,
+        "tn": 2
+      },
+      "counts_strict": {
+        "tp": 22,
+        "fp": 0,
+        "fn": 0
+      },
+      "counts_non_null": {
+        "tp": 20,
+        "fp": 0,
+        "fn": 0
+      },
+      "errors": []
+    },
+    {
+      "case": "przyklad_47",
+      "file": "pelnomocnictwo.pdf",
+      "gold_class": "pelnomocnictwo",
+      "pred_class": "pelnomocnictwo",
+      "counts": {
+        "tp": 7,
+        "fp": 0,
+        "fn": 0,
+        "tn": 3
+      },
+      "counts_strict": {
+        "tp": 10,
+        "fp": 0,
+        "fn": 0
+      },
+      "counts_non_null": {
+        "tp": 7,
+        "fp": 0,
+        "fn": 0
+      },
+      "errors": []
+    },
+    {
+      "case": "przyklad_47",
+      "file": "potwierdzenie_przelewu.pdf",
+      "gold_class": "przelew",
+      "pred_class": "przelew",
+      "counts": {
+        "tp": 6,
+        "fp": 0,
+        "fn": 0,
+        "tn": 0
+      },
+      "counts_strict": {
+        "tp": 6,
+        "fp": 0,
+        "fn": 0
+      },
+      "counts_non_null": {
+        "tp": 6,
+        "fp": 0,
+        "fn": 0
+      },
+      "errors": []
+    },
+    {
+      "case": "przyklad_48",
+      "file": "odwolanie.pdf",
+      "gold_class": "odwolanie",
+      "pred_class": "odwolanie",
+      "counts": {
+        "tp": 18,
+        "fp": 0,
+        "fn": 0,
+        "tn": 4
+      },
+      "counts_strict": {
+        "tp": 22,
+        "fp": 0,
+        "fn": 0
+      },
+      "counts_non_null": {
+        "tp": 18,
+        "fp": 0,
+        "fn": 0
+      },
+      "errors": []
+    },
+    {
+      "case": "przyklad_48",
+      "file": "pelnomocnictwo.pdf",
+      "gold_class": "pelnomocnictwo",
+      "pred_class": "pelnomocnictwo",
+      "counts": {
+        "tp": 14,
+        "fp": 0,
+        "fn": 0,
+        "tn": 4
+      },
+      "counts_strict": {
+        "tp": 18,
+        "fp": 0,
+        "fn": 0
+      },
+      "counts_non_null": {
+        "tp": 14,
+        "fp": 0,
+        "fn": 0
+      },
+      "errors": []
+    },
+    {
+      "case": "przyklad_48",
+      "file": "potwierdzenie_przelewu.pdf",
+      "gold_class": "przelew",
+      "pred_class": "przelew",
+      "counts": {
+        "tp": 6,
+        "fp": 0,
+        "fn": 0,
+        "tn": 0
+      },
+      "counts_strict": {
+        "tp": 6,
+        "fp": 0,
+        "fn": 0
+      },
+      "counts_non_null": {
+        "tp": 6,
+        "fp": 0,
+        "fn": 0
+      },
+      "errors": []
+    },
+    {
+      "case": "przyklad_49",
+      "file": "odwolanie.pdf",
+      "gold_class": "odwolanie",
+      "pred_class": "odwolanie",
+      "counts": {
+        "tp": 21,
+        "fp": 0,
+        "fn": 0,
+        "tn": 1
+      },
+      "counts_strict": {
+        "tp": 22,
+        "fp": 0,
+        "fn": 0
+      },
+      "counts_non_null": {
+        "tp": 21,
+        "fp": 0,
+        "fn": 0
+      },
+      "errors": []
+    },
+    {
+      "case": "przyklad_49",
+      "file": "pelnomocnictwo.pdf",
+      "gold_class": "pelnomocnictwo",
+      "pred_class": "pelnomocnictwo",
+      "counts": {
+        "tp": 13,
+        "fp": 0,
+        "fn": 0,
+        "tn": 4
+      },
+      "counts_strict": {
+        "tp": 17,
+        "fp": 0,
+        "fn": 0
+      },
+      "counts_non_null": {
+        "tp": 13,
+        "fp": 0,
+        "fn": 0
+      },
+      "errors": []
+    },
+    {
+      "case": "przyklad_49",
+      "file": "potwierdzenie_przelewu.pdf",
+      "gold_class": "przelew",
+      "pred_class": "przelew",
+      "counts": {
+        "tp": 6,
+        "fp": 0,
+        "fn": 0,
+        "tn": 0
+      },
+      "counts_strict": {
+        "tp": 6,
+        "fp": 0,
+        "fn": 0
+      },
+      "counts_non_null": {
+        "tp": 6,
+        "fp": 0,
+        "fn": 0
+      },
+      "errors": []
+    },
+    {
+      "case": "przyklad_50",
+      "file": "odwolanie.pdf",
+      "gold_class": "odwolanie",
+      "pred_class": "odwolanie",
+      "counts": {
+        "tp": 20,
+        "fp": 0,
+        "fn": 0,
+        "tn": 2
+      },
+      "counts_strict": {
+        "tp": 22,
+        "fp": 0,
+        "fn": 0
+      },
+      "counts_non_null": {
+        "tp": 20,
+        "fp": 0,
+        "fn": 0
+      },
+      "errors": []
+    },
+    {
+      "case": "przyklad_50",
+      "file": "pelnomocnictwo.pdf",
+      "gold_class": "pelnomocnictwo",
+      "pred_class": "pelnomocnictwo",
+      "counts": {
+        "tp": 12,
+        "fp": 0,
+        "fn": 0,
+        "tn": 3
+      },
+      "counts_strict": {
+        "tp": 15,
+        "fp": 0,
+        "fn": 0
+      },
+      "counts_non_null": {
+        "tp": 12,
+        "fp": 0,
+        "fn": 0
+      },
+      "errors": []
+    },
+    {
+      "case": "przyklad_50",
+      "file": "potwierdzenie_przelewu.pdf",
+      "gold_class": "przelew",
+      "pred_class": "przelew",
+      "counts": {
+        "tp": 6,
+        "fp": 0,
+        "fn": 0,
+        "tn": 0
+      },
+      "counts_strict": {
+        "tp": 6,
+        "fp": 0,
+        "fn": 0
+      },
+      "counts_non_null": {
+        "tp": 6,
+        "fp": 0,
+        "fn": 0
+      },
+      "errors": []
+    },
+    {
+      "case": "przyklad_51",
+      "file": "odwolanie.pdf",
+      "gold_class": "odwolanie",
+      "pred_class": "odwolanie",
+      "counts": {
+        "tp": 25,
+        "fp": 0,
+        "fn": 0,
+        "tn": 2
+      },
+      "counts_strict": {
+        "tp": 27,
+        "fp": 0,
+        "fn": 0
+      },
+      "counts_non_null": {
+        "tp": 24,
+        "fp": 0,
+        "fn": 0
+      },
+      "errors": []
+    },
+    {
+      "case": "przyklad_51",
+      "file": "pelnomocnictwo.pdf",
+      "gold_class": "pelnomocnictwo",
+      "pred_class": "pelnomocnictwo",
+      "counts": {
+        "tp": 7,
+        "fp": 0,
+        "fn": 0,
+        "tn": 3
+      },
+      "counts_strict": {
+        "tp": 10,
+        "fp": 0,
+        "fn": 0
+      },
+      "counts_non_null": {
+        "tp": 7,
+        "fp": 0,
+        "fn": 0
+      },
+      "errors": []
+    },
+    {
+      "case": "przyklad_51",
+      "file": "potwierdzenie_przelewu.pdf",
+      "gold_class": "przelew",
+      "pred_class": "przelew",
+      "counts": {
+        "tp": 6,
+        "fp": 0,
+        "fn": 0,
+        "tn": 0
+      },
+      "counts_strict": {
+        "tp": 6,
+        "fp": 0,
+        "fn": 0
+      },
+      "counts_non_null": {
+        "tp": 6,
+        "fp": 0,
+        "fn": 0
+      },
+      "errors": []
+    },
+    {
+      "case": "przyklad_52",
+      "file": "odwolanie.pdf",
+      "gold_class": "odwolanie",
+      "pred_class": "odwolanie",
+      "counts": {
+        "tp": 19,
+        "fp": 0,
+        "fn": 0,
+        "tn": 3
+      },
+      "counts_strict": {
+        "tp": 22,
+        "fp": 0,
+        "fn": 0
+      },
+      "counts_non_null": {
+        "tp": 19,
+        "fp": 0,
+        "fn": 0
+      },
+      "errors": []
+    },
+    {
+      "case": "przyklad_52",
+      "file": "pelnomocnictwo.pdf",
+      "gold_class": "pelnomocnictwo",
+      "pred_class": "pelnomocnictwo",
+      "counts": {
+        "tp": 6,
+        "fp": 0,
+        "fn": 0,
+        "tn": 2
+      },
+      "counts_strict": {
+        "tp": 8,
+        "fp": 0,
+        "fn": 0
+      },
+      "counts_non_null": {
+        "tp": 6,
+        "fp": 0,
+        "fn": 0
+      },
+      "errors": []
+    },
+    {
+      "case": "przyklad_52",
+      "file": "potwierdzenie_przelewu.pdf",
+      "gold_class": "przelew",
+      "pred_class": "przelew",
+      "counts": {
+        "tp": 6,
+        "fp": 0,
+        "fn": 0,
+        "tn": 0
+      },
+      "counts_strict": {
+        "tp": 6,
+        "fp": 0,
+        "fn": 0
+      },
+      "counts_non_null": {
+        "tp": 6,
+        "fp": 0,
+        "fn": 0
+      },
+      "errors": []
+    },
+    {
+      "case": "przyklad_53",
+      "file": "odwolanie.pdf",
+      "gold_class": "odwolanie",
+      "pred_class": "odwolanie",
+      "counts": {
+        "tp": 20,
+        "fp": 0,
+        "fn": 0,
+        "tn": 2
+      },
+      "counts_strict": {
+        "tp": 22,
+        "fp": 0,
+        "fn": 0
+      },
+      "counts_non_null": {
+        "tp": 20,
+        "fp": 0,
+        "fn": 0
+      },
+      "errors": []
+    },
+    {
+      "case": "przyklad_53",
+      "file": "pelnomocnictwo.pdf",
+      "gold_class": "pelnomocnictwo",
+      "pred_class": "pelnomocnictwo",
+      "counts": {
+        "tp": 7,
+        "fp": 0,
+        "fn": 0,
+        "tn": 3
+      },
+      "counts_strict": {
+        "tp": 10,
+        "fp": 0,
+        "fn": 0
+      },
+      "counts_non_null": {
+        "tp": 7,
+        "fp": 0,
+        "fn": 0
+      },
+      "errors": []
+    },
+    {
+      "case": "przyklad_53",
+      "file": "potwierdzenie_przelewu.pdf",
+      "gold_class": "przelew",
+      "pred_class": "przelew",
+      "counts": {
+        "tp": 6,
+        "fp": 0,
+        "fn": 0,
+        "tn": 0
+      },
+      "counts_strict": {
+        "tp": 6,
+        "fp": 0,
+        "fn": 0
+      },
+      "counts_non_null": {
+        "tp": 6,
+        "fp": 0,
+        "fn": 0
+      },
+      "errors": []
+    },
+    {
+      "case": "przyklad_54",
+      "file": "odwolanie.pdf",
+      "gold_class": "odwolanie",
+      "pred_class": "odwolanie",
+      "counts": {
+        "tp": 21,
+        "fp": 0,
+        "fn": 0,
+        "tn": 1
+      },
+      "counts_strict": {
+        "tp": 22,
+        "fp": 0,
+        "fn": 0
+      },
+      "counts_non_null": {
+        "tp": 21,
+        "fp": 0,
+        "fn": 0
+      },
+      "errors": []
+    },
+    {
+      "case": "przyklad_54",
+      "file": "pelnomocnictwo.pdf",
+      "gold_class": "pelnomocnictwo",
+      "pred_class": "pelnomocnictwo",
+      "counts": {
+        "tp": 8,
+        "fp": 0,
+        "fn": 0,
+        "tn": 3
+      },
+      "counts_strict": {
+        "tp": 11,
+        "fp": 0,
+        "fn": 0
+      },
+      "counts_non_null": {
+        "tp": 8,
+        "fp": 0,
+        "fn": 0
+      },
+      "errors": []
+    },
+    {
+      "case": "przyklad_54",
+      "file": "potwierdzenie_przelewu.pdf",
+      "gold_class": "przelew",
+      "pred_class": "przelew",
+      "counts": {
+        "tp": 6,
+        "fp": 0,
+        "fn": 0,
+        "tn": 0
+      },
+      "counts_strict": {
+        "tp": 6,
+        "fp": 0,
+        "fn": 0
+      },
+      "counts_non_null": {
+        "tp": 6,
+        "fp": 0,
+        "fn": 0
+      },
+      "errors": []
+    },
+    {
+      "case": "przyklad_55",
+      "file": "odwolanie.pdf",
+      "gold_class": "odwolanie",
+      "pred_class": "odwolanie",
+      "counts": {
+        "tp": 19,
+        "fp": 0,
+        "fn": 0,
+        "tn": 3
+      },
+      "counts_strict": {
+        "tp": 22,
+        "fp": 0,
+        "fn": 0
+      },
+      "counts_non_null": {
+        "tp": 19,
+        "fp": 0,
+        "fn": 0
+      },
+      "errors": []
+    },
+    {
+      "case": "przyklad_55",
+      "file": "pelnomocnictwo.pdf",
+      "gold_class": "pelnomocnictwo",
+      "pred_class": "pelnomocnictwo",
+      "counts": {
+        "tp": 7,
+        "fp": 0,
+        "fn": 0,
+        "tn": 3
+      },
+      "counts_strict": {
+        "tp": 10,
+        "fp": 0,
+        "fn": 0
+      },
+      "counts_non_null": {
+        "tp": 7,
+        "fp": 0,
+        "fn": 0
+      },
+      "errors": []
+    },
+    {
+      "case": "przyklad_55",
+      "file": "potwierdzenie_przelewu.pdf",
+      "gold_class": "przelew",
+      "pred_class": "przelew",
+      "counts": {
+        "tp": 6,
+        "fp": 0,
+        "fn": 0,
+        "tn": 0
+      },
+      "counts_strict": {
+        "tp": 6,
+        "fp": 0,
+        "fn": 0
+      },
+      "counts_non_null": {
+        "tp": 6,
+        "fp": 0,
+        "fn": 0
+      },
+      "errors": []
+    },
+    {
+      "case": "przyklad_56",
+      "file": "odwolanie.pdf",
+      "gold_class": "odwolanie",
+      "pred_class": "odwolanie",
+      "counts": {
+        "tp": 18,
+        "fp": 0,
+        "fn": 0,
+        "tn": 4
+      },
+      "counts_strict": {
+        "tp": 22,
+        "fp": 0,
+        "fn": 0
+      },
+      "counts_non_null": {
+        "tp": 18,
+        "fp": 0,
+        "fn": 0
+      },
+      "errors": []
+    },
+    {
+      "case": "przyklad_56",
+      "file": "pelnomocnictwo.pdf",
+      "gold_class": "pelnomocnictwo",
+      "pred_class": "pelnomocnictwo",
+      "counts": {
+        "tp": 8,
+        "fp": 0,
+        "fn": 0,
+        "tn": 3
+      },
+      "counts_strict": {
+        "tp": 11,
+        "fp": 0,
+        "fn": 0
+      },
+      "counts_non_null": {
+        "tp": 8,
+        "fp": 0,
+        "fn": 0
+      },
+      "errors": []
+    },
+    {
+      "case": "przyklad_56",
+      "file": "potwierdzenie_przelewu.pdf",
+      "gold_class": "przelew",
+      "pred_class": "przelew",
+      "counts": {
+        "tp": 6,
+        "fp": 0,
+        "fn": 0,
+        "tn": 0
+      },
+      "counts_strict": {
+        "tp": 6,
+        "fp": 0,
+        "fn": 0
+      },
+      "counts_non_null": {
+        "tp": 6,
+        "fp": 0,
+        "fn": 0
+      },
+      "errors": []
+    },
+    {
+      "case": "przyklad_57",
+      "file": "odwolanie.pdf",
+      "gold_class": "odwolanie",
+      "pred_class": "odwolanie",
+      "counts": {
+        "tp": 20,
+        "fp": 0,
+        "fn": 0,
+        "tn": 2
+      },
+      "counts_strict": {
+        "tp": 22,
+        "fp": 0,
+        "fn": 0
+      },
+      "counts_non_null": {
+        "tp": 20,
+        "fp": 0,
+        "fn": 0
+      },
+      "errors": []
+    },
+    {
+      "case": "przyklad_57",
+      "file": "pelnomocnictwo.pdf",
+      "gold_class": "pelnomocnictwo",
+      "pred_class": "pelnomocnictwo",
+      "counts": {
+        "tp": 6,
+        "fp": 0,
+        "fn": 0,
+        "tn": 2
+      },
+      "counts_strict": {
+        "tp": 8,
+        "fp": 0,
+        "fn": 0
+      },
+      "counts_non_null": {
+        "tp": 6,
+        "fp": 0,
+        "fn": 0
+      },
+      "errors": []
+    },
+    {
+      "case": "przyklad_57",
+      "file": "potwierdzenie_przelewu.pdf",
+      "gold_class": "przelew",
+      "pred_class": "przelew",
+      "counts": {
+        "tp": 6,
+        "fp": 0,
+        "fn": 0,
+        "tn": 0
+      },
+      "counts_strict": {
+        "tp": 6,
+        "fp": 0,
+        "fn": 0
+      },
+      "counts_non_null": {
+        "tp": 6,
+        "fp": 0,
+        "fn": 0
+      },
+      "errors": []
+    },
+    {
+      "case": "przyklad_58",
+      "file": "odwolanie.pdf",
+      "gold_class": "odwolanie",
+      "pred_class": "odwolanie",
+      "counts": {
+        "tp": 18,
+        "fp": 0,
+        "fn": 0,
+        "tn": 4
+      },
+      "counts_strict": {
+        "tp": 22,
+        "fp": 0,
+        "fn": 0
+      },
+      "counts_non_null": {
+        "tp": 18,
+        "fp": 0,
+        "fn": 0
+      },
+      "errors": []
+    },
+    {
+      "case": "przyklad_58",
+      "file": "pelnomocnictwo.pdf",
+      "gold_class": "pelnomocnictwo",
+      "pred_class": "pelnomocnictwo",
+      "counts": {
+        "tp": 7,
+        "fp": 0,
+        "fn": 0,
+        "tn": 3
+      },
+      "counts_strict": {
+        "tp": 10,
+        "fp": 0,
+        "fn": 0
+      },
+      "counts_non_null": {
+        "tp": 7,
+        "fp": 0,
+        "fn": 0
+      },
+      "errors": []
+    },
+    {
+      "case": "przyklad_58",
+      "file": "potwierdzenie_przelewu.pdf",
+      "gold_class": "przelew",
+      "pred_class": "przelew",
+      "counts": {
+        "tp": 6,
+        "fp": 0,
+        "fn": 0,
+        "tn": 0
+      },
+      "counts_strict": {
+        "tp": 6,
+        "fp": 0,
+        "fn": 0
+      },
+      "counts_non_null": {
+        "tp": 6,
+        "fp": 0,
+        "fn": 0
+      },
+      "errors": []
+    },
+    {
+      "case": "przyklad_59",
+      "file": "odwolanie.pdf",
+      "gold_class": "odwolanie",
+      "pred_class": "odwolanie",
+      "counts": {
+        "tp": 27,
+        "fp": 0,
+        "fn": 0,
+        "tn": 0
+      },
+      "counts_strict": {
+        "tp": 27,
+        "fp": 0,
+        "fn": 0
+      },
+      "counts_non_null": {
+        "tp": 27,
+        "fp": 0,
+        "fn": 0
+      },
+      "errors": []
+    },
+    {
+      "case": "przyklad_59",
+      "file": "pelnomocnictwo.pdf",
+      "gold_class": "pelnomocnictwo",
+      "pred_class": "pelnomocnictwo",
+      "counts": {
+        "tp": 7,
+        "fp": 0,
+        "fn": 0,
+        "tn": 3
+      },
+      "counts_strict": {
+        "tp": 10,
+        "fp": 0,
+        "fn": 0
+      },
+      "counts_non_null": {
+        "tp": 7,
+        "fp": 0,
+        "fn": 0
+      },
+      "errors": []
+    },
+    {
+      "case": "przyklad_59",
+      "file": "potwierdzenie_przelewu.pdf",
+      "gold_class": "przelew",
+      "pred_class": "przelew",
+      "counts": {
+        "tp": 6,
+        "fp": 0,
+        "fn": 0,
+        "tn": 0
+      },
+      "counts_strict": {
+        "tp": 6,
+        "fp": 0,
+        "fn": 0
+      },
+      "counts_non_null": {
+        "tp": 6,
+        "fp": 0,
+        "fn": 0
+      },
+      "errors": []
+    },
+    {
+      "case": "przyklad_60",
+      "file": "odwolanie.pdf",
+      "gold_class": "odwolanie",
+      "pred_class": "odwolanie",
+      "counts": {
+        "tp": 21,
+        "fp": 0,
+        "fn": 0,
+        "tn": 1
+      },
+      "counts_strict": {
+        "tp": 22,
+        "fp": 0,
+        "fn": 0
+      },
+      "counts_non_null": {
+        "tp": 21,
+        "fp": 0,
+        "fn": 0
+      },
+      "errors": []
+    },
+    {
+      "case": "przyklad_60",
+      "file": "pelnomocnictwo.pdf",
+      "gold_class": "pelnomocnictwo",
+      "pred_class": "pelnomocnictwo",
+      "counts": {
+        "tp": 12,
+        "fp": 0,
+        "fn": 0,
+        "tn": 4
+      },
+      "counts_strict": {
+        "tp": 16,
+        "fp": 0,
+        "fn": 0
+      },
+      "counts_non_null": {
+        "tp": 12,
+        "fp": 0,
+        "fn": 0
+      },
+      "errors": []
+    },
+    {
+      "case": "przyklad_60",
+      "file": "potwierdzenie_przelewu.pdf",
+      "gold_class": "przelew",
+      "pred_class": "przelew",
+      "counts": {
+        "tp": 6,
+        "fp": 0,
+        "fn": 0,
+        "tn": 0
+      },
+      "counts_strict": {
+        "tp": 6,
+        "fp": 0,
+        "fn": 0
+      },
+      "counts_non_null": {
+        "tp": 6,
+        "fp": 0,
+        "fn": 0
+      },
+      "errors": []
+    }
+  ]
+}
