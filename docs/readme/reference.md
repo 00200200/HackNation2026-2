@@ -527,7 +527,7 @@ The table columns are the `variants.<name>` entries `micro_f1`, `macro_three_cla
 
 ## Known limits
 
-- Appeal party cards can use inflected role captions. An unfamiliar caption or a nearby name without local organization, address or registry evidence can leave the party list empty.
+- An appeal can name the contracting authority by its role in conducting or awarding the procurement. A numbered list can identify joint authorities and mark one as the lead. An unfamiliar caption or a nearby name without local organization, address or registry evidence can leave the party list empty.
 
 - In rules-first native-schema mode, a receipt amount, execution date, singleton appeal party name or procurement title can be reconsidered when its first page contains a conflicting, locally readable value. The model selects a candidate ID in one request per disputed block. The extractor copies the corresponding printed span and normalizes it locally. Abstention or a failed request preserves the rule value. If OCR misses the correct digits in every reading, this step cannot recover them.
 
@@ -598,3 +598,33 @@ unrelated documents with an empty JSON object against the committed baseline. It
 the historical strict score, per-field counts and F1, class F1, positive layout profiles ranked
 by F1, and negative outcomes by family. Profiles use different synthetic cases in each cycle,
 so the ranking also reflects differences in case difficulty. Hidden-set performance is unknown.
+
+### Case-linked benchmark
+
+Run `make eval-cases` to score 26 invented cases with the local jury CLI. Each case supplies a short or long appeal, a mandate with identified grantors and signers, a bank receipt, and a related out-of-scope document. Each set of four appears in a separate case folder in native and image-only form. The two folders share case facts, independently of their opaque filenames. Only the PDFs enter the extractor.
+
+```sh
+make eval-cases CASE_ARGS="--split development"
+make eval-cases CASE_ARGS="--split reserved"
+make eval-cases CASE_ARGS="--seed 104 --cases 13 --generate-to .cache/case-inspection"
+```
+
+The default report is `.cache/case-benchmark.json`. Generation alone requires a new directory and writes `input/`, `gold/` and `manifest.json`. The manifest gives the reference path, paired PDF paths, case, split, family, scan settings, section bounds and printed field boxes. Page indices start at zero. Boxes are in native PDF points from the top left. To locate them on a scan, rotate their corners about the page center by the recorded counterclockwise angle and scale by DPI/72.
+
+The development split uses the early modular appeal, six early mandates and seven early receipt layouts. The reserved split uses independently phrased long appeals, company/consortium/sole-trader mandates, the late bank table and the five organizer scan receipt layouts. CCITT Group 4 is reserved for that split. Both splits also contain JPEG scans. A 13-case cycle covers every family. Larger prefixes repeat layouts with new parties, dates and payment facts.
+
+The report gives UZP and strict F1, literal JSON matches, routing and negative rejection by family, class and rendering, plus field counts within each family. Its 95% intervals resample complete cases 1,000 times and are omitted for single-case slices. Family frequencies in the jury set are unknown. The synthetic scores describe these authored layouts. Scans retain the page geometry of their native counterparts. Interior pages in the long appeal are more lightly typeset than those in the inspected organizer files.
+
+On the 26-case panel, keyless main `fa9937e` scored **0.7191 UZP F1** (case-bootstrap 95% interval 0.6780–0.7570) and **0.6617 strict F1**. It routed 188/208 PDFs, returned 85 exact JSONs and rejected all 52 negatives. Extraction took 485 seconds with two workers on the shared development Mac.
+
+| Main on the generated cases | PDFs | UZP F1 | Strict F1 | Exact |
+|---|---:|---:|---:|---:|
+| Appeals | 52 | 0.7285 | 0.6377 | 0 |
+| Mandates | 52 | 0.6667 | 0.6763 | 4 |
+| Transfers | 52 | 0.7557 | 0.7460 | 29 |
+| Native, all classes | 104 | 0.6086 | 0.5339 | 44 |
+| Scans, all classes | 104 | 0.8133 | 0.7865 | 41 |
+
+Four receipt layouts are the first routing targets. The early bank letter, transaction history, operation details and order details each missed all four PDFs (two cases in both renditions). The sole-trader mandate routed 8/8 but scored 0.2069 UZP F1, with missed principal names and identifiers. Most families have few independent cases. The scorecard includes every family, codec/DPI combination, sample count and field result. [Benchmark measurements](../../evals/results/case-benchmark.json)
+
+On the same main revision, #69’s 240 compact-form PDFs scored 0.9125 UZP and 0.8743 strict, with 60/60 negatives rejected. The replay matched #69’s published PDF/reference digest and five-case batching. The two panels differ in both facts and layouts.

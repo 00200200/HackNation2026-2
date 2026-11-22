@@ -43,6 +43,8 @@ Routing reads the document text. Each class configuration supplies its routing r
 
 The public training score uses the account prefixes printed in the PDFs. The local rows report the `fast` Tesseract arm of the OCR-alternatives experiment. All four rows used local rules without a model endpoint. UZP accepts approximate matches for five long fields. Our scorer uses normalized Levenshtein similarity for those fields. The strict column uses the project's earlier scoring method. [Scoring rules](https://github.com/00200200/HackNation2026-2/issues/59) · [Evaluation method](docs/readme/reference.md#measure)
 
+Run `make eval-cases` for the paired native/scan benchmark. [Case families and scores](docs/readme/reference.md#case-linked-benchmark)
+
 ## Quick start
 
 Install 64-bit Python 3.13. From the repository root, create and activate a virtual environment.
