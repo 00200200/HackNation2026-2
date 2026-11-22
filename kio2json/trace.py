@@ -73,6 +73,13 @@ def note_warnings(warnings: list[dict]) -> None:
         events["warnings"].extend(warnings)
 
 
+def discard_warnings() -> None:
+    """Drop the warnings of an attempt whose output was discarded, before a retry records its own."""
+    events = _events.get()
+    if events is not None:
+        events["warnings"].clear()
+
+
 def note_candidate(engine: str, candidate: dict) -> None:
     events = _events.get()
     if events is not None:

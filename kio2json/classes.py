@@ -121,7 +121,7 @@ def skeleton(class_id: str, pages: list[str], source: Path, *, name: str | None,
             *([f'normalizer = "{kind["normalizer"]}"'] if "normalizer" in kind else []),
             *([f"validators = {json.dumps(kind['validators'])}"] if "validators" in kind else []),
             f"instruction = {toml_string(f'Value printed after {label}: on the document.')}",
-            f"pattern = {toml_string(f'^{label_pattern}[ \\t]*:[ \\t]*(.+)$')}",
+            f"pattern = {toml_string(f'^[ \\t]*{label_pattern}[ \\t]*:[ \\t]*(.+)$')}",
         ]
     return "\n".join(out) + "\n"
 

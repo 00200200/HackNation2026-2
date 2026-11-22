@@ -87,7 +87,9 @@ def field_table(trace: dict | None) -> ui.Tag:
     for field in trace["fields"]:
         page = field["page"]
         notes = field.get("note", "").split("; ") if field.get("note") else []
-        source = field["snippet"] or "; ".join(NOTE_NAMES.get(note, note) for note in notes)
+        # A snippet and a note can both apply, as for a value corrected from another document of the case.
+        named = "; ".join(NOTE_NAMES.get(note, note) for note in notes)
+        source = "; ".join(part for part in (field["snippet"], named) if part)
         # A native button opens the page, so a keyboard user can reach it with Tab, Enter and Space.
         show = ui.tags.button(
             str(page),

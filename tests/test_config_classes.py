@@ -473,10 +473,37 @@ def test_an_amount_does_not_match_another_amounts_integer_part(value, found, mis
 def test_a_case_repair_shows_in_the_trace():
     from kio2json.trace import repaired
 
-    trace = {"fields": [{"field": "a.nip", "value": "1234567884", "page": 1, "snippet": "NIP: 1234567884"}]}
+    trace = {
+        "fields": [{"field": "a.nip", "value": "1234567884", "page": 1, "snippet": "NIP: 1234567884", "engine": "ocr"}]
+    }
     fixed = repaired(trace, {"a": {"nip": "1234567883"}})["fields"][0]
     assert fixed["value"] == "1234567883" and fixed["note"] == "corrected from another document in the case folder"
     assert trace["fields"][0]["value"] == "1234567884"
+    from kio2json.gui_explain import field_table
+
+    shown = str(field_table({"class": "x", "fields": [fixed]}))
+    assert "NIP: 1234567884" in shown and "poprawione według innego dokumentu sprawy" in shown
+
+
+def test_warnings_of_a_discarded_attempt_do_not_reach_the_retry():
+    from kio2json import trace
+
+    with trace.recording() as events:
+        trace.note_warnings([{"field": "nip", "check": "nip", "value": "1", "action": "null"}])
+        trace.discard_warnings()
+    assert events["warnings"] == []
+
+
+def test_the_scaffold_pattern_accepts_an_indented_label(tmp_path, monkeypatch):
+    pages = ["  ZGŁOSZENIE TESTOWE\n  Numer: A-7\n  Data: 01.02.2026"]
+    monkeypatch.setattr(tool, "read_pages", lambda path: pages)
+    out = tmp_path / "classes"
+    monkeypatch.setattr(sys, "argv", ["classes", "new", "indented", "--from-pdf", str(SAMPLE), "--out", str(out)])
+    assert tool.main() == 0
+    definition = next(c for c in parse_classes(class_sources(extra=[out])) if c.id == "indented")
+    from kio2json.engines import extract
+
+    assert extract(definition, pages[0])["numer"] == "A-7"
 
 
 def test_the_page_of_a_field_is_a_keyboard_button():
