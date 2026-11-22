@@ -42,12 +42,14 @@ label patterns or an optional language model.
 
    The development host’s Docker engine timed out before starting Ubuntu.
    The Ubuntu offline run, two-vCPU timing and reboot result are unverified.
-   On the shared Apple M1 host, the network-denied run matched all 226 local
-   files byte for byte in 399.77 seconds with two workers
-   (`fallback_host.byte_identical_including_paths`, 226, and
-   `fallback_host.offline_wall_seconds`). The same mix scales to about 4 min 25 s
-   for 150 PDFs on that host (`fallback_host.estimate_150_pdfs_seconds_same_host_mix`,
-   265.33). Both figures come from extraction revision `7a1c45b` (`extraction_revision`),
+   On the shared Apple M1 host, the network-denied run (rules-only profile) wrote
+   output byte-identical to the reference run for all 226 local files, 196
+   synthetic training PDFs and 30 organizer scans
+   (`fallback_host.byte_identical_including_paths`, 226), in 399.77 seconds with
+   two workers (`fallback_host.offline_wall_seconds`). The same mix scales to
+   about 4 min 25 s for 150 PDFs on that host
+   (`fallback_host.estimate_150_pdfs_seconds_same_host_mix`, 265.33). Both
+   figures come from extraction revision `7a1c45b` (`extraction_revision`),
    which predates the first-pass watchdog (#79) and the `{}` output for unrelated
    PDFs (#57), so 16 of those 226 outputs are zero-byte files
    (`fallback_host.zero_byte_predictions`).
@@ -91,6 +93,8 @@ the batch. For the optional upload UI on port 8080, run
 UI after a reboot.
 
 ## Run with Docker Compose
+
+We have not yet run the `cli` and `gui` services end to end in a container and compared their output with the CLI's; that check is open in [WORKLOG.md](../../WORKLOG.md).
 
 Install Docker with Compose v2.24 or later. From the repository root, place case PDFs in
 `input/<case>/` or use the bundled `input/case1/`, then run:
@@ -344,7 +348,7 @@ uv run python -m evals.field_report --corpus "$corpus" --split dev --force-ocr -
 
 Set `corpus` to a directory containing `cases/<case_id>/<name>.pdf` and `gold/<case_id>/<name>.json`.
 An empty gold file marks an unrelated document. Corpus runs write aggregates to
-`evals/results/corpus-latest.json`. Set `HN_REAL_SPLIT` to `dev`, `test`, or `all` (default) for `make eval-real`.
+`evals/results/corpus-latest.json`. Set `HN_REAL_CORPUS` to the corpus directory (required) and `HN_REAL_SPLIT` to `dev`, `test`, or `all` (default) for `make eval-real`.
 The optional `--detail-out` file must be outside every checkout of this repository and its Git metadata.
 Both commands check the selected directories, PDFs and references before reporting scores, including with
 `--pred`. Invalid inputs or an extractor failure exit with status 2 and preserve the previous results and gate.
@@ -389,7 +393,7 @@ The current figures are in the [README results table](../../README.md#results), 
 
 Revision `ca2975392` was evaluated with local rules and with the documented live Ministral 3B profile. The two local datasets contain real documents and use whole-case splits. Corpus 1 contributes all 39 development PDFs, including its previously evaluated split. Corpus 2 contributes 39 development PDFs from 14 cases. Its 60 test PDFs are reserved for the merged system. The organizer supplied a separate set of 30 labelled scans, ten per target class. The scan command stages the committed PDF/reference pairs as one batch with neutral filenames. [Organizer scan set at the measured revision](https://github.com/Urzad-Zamowien-Publicznych/hacknation-2026/tree/0b360a9da4b482a6a280696df6714404e0953505/dane/skany)
 
-This round is history. It uses the earlier strict metric (`method.f1` in [`round2-integration.json`](../../evals/results/round2-integration.json): pooled normalized leaf F1 with nulls) at product commit `ca29753` (`product_commit`), so its figures are not comparable with UZP micro F1. UZP micro F1 runs came later. The README results table lists the current ones, and the intermediate runs in [`p0-conventions.json`](../../evals/results/p0-conventions.json) used the local rules, no model, and development data only: 0.9212 on corpus 1 all and 0.9244 on corpus 2 dev (`integration.corpus1all.micro_f1` and `integration.corpus2.micro_f1`, product commit `55dc2a1`), and 1.0000 on the 30 organizer scans with strict 0.9974 (`final_verification.organizer_scans_uzp` and `organizer_scans_strict`, product commit `97dc53e`).
+This round is history. It uses the earlier strict metric (`method.f1` in [`round2-integration.json`](../../evals/results/round2-integration.json): pooled normalized leaf F1 with nulls) at product commit `ca29753` (`product_commit`), so its figures are not comparable with UZP micro F1. UZP micro F1 runs came later. The README results table lists the current ones. Its corpus 1 value (0.9231) is the `fast` arm of [`ocr-alternatives.json`](../../evals/results/ocr-alternatives.json), a different run from the intermediate runs in [`p0-conventions.json`](../../evals/results/p0-conventions.json), which used the local rules, no model, and development data only: 0.9212 on corpus 1 all and 0.9244 on corpus 2 dev (`integration.corpus1all.micro_f1` and `integration.corpus2.micro_f1`, product commit `55dc2a1`), and 1.0000 on the 30 organizer scans with strict 0.9974 (`final_verification.organizer_scans_uzp` and `organizer_scans_strict`, product commit `97dc53e`).
 
 | Dataset | Profile | Micro F1 | Macro F1 | Appeal F1 | Power F1 | Transfer F1 | Exact A/P/T | Empty negatives | Wall s/PDF |
 |---|---|---:|---:|---:|---:|---:|---|---:|---:|
