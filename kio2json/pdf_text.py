@@ -365,6 +365,11 @@ def _text_layer(page, force_ocr: bool, repair_image_text: bool) -> str | None:
     text = "" if force_ocr else page.extract_text() or ""
     if _needs_ocr(page, text) or (repair_image_text and damaged_text_layer(text) and _page_sized_image(page)):
         return None
+    if page.page_number == 1:
+        # The layout reader also consumes WordBox, so import after this module is initialized.
+        from .appeal_layout import restore_overprinted_card
+
+        return restore_overprinted_card(page, text)
     return text
 
 

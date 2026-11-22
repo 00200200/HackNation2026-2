@@ -500,6 +500,8 @@ rules. [OCR results](../../evals/results/ocr-engines.json)
 
 ## Known limits
 
+- Appeal party cards can use inflected role captions. An unfamiliar caption or a nearby name without local organization, address or registry evidence can leave the party list empty.
+
 - In rules-first native-schema mode, a receipt amount, execution date, singleton appeal party name or procurement title can be reconsidered when its first page contains a conflicting, locally readable value. The model selects a candidate ID in one request per disputed block. The extractor copies the corresponding printed span and normalizes it locally. Abstention or a failed request preserves the rule value. If OCR misses the correct digits in every reading, this step cannot recover them.
 
 - On two-column receipts a payment amount can sit beside a different label. The reader checks the amount's column and currency. A damaged account, reference or remittance title can still be unreadable after the receipt is identified.
