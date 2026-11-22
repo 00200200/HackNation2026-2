@@ -16,11 +16,11 @@ Sources (read 21 and 22.11.2026):
   refreshes the copy, then review `git diff data/uzp` (gold fixes change the eval) and commit it.
 - Template example `szablon-aplikacja/input/case1` (one appeal, one negative) is also in our `input/case1`.
 
-Where the sources disagree, the Regulamin decides judging and the prize (its § 5.2 ranks it above the general
-HackNation Regulamin). For everything else we follow the most recent organizer statement and read the Discord answers
-as clarifications of the README; the FAQ and the task PDF are the oldest. UZP has not stated that order. This is noted
-per item. Where the order cannot be told, for example a Discord answer with no recorded time against `VM.md`, the
-item stays UNCONFIRMED.
+The signed Regulamin decides judging and the prize. Its § 5.2 only ranks it above the general HackNation Regulamin;
+how it ranks against the README, the FAQ and the task PDF is our reading, not a UZP statement. For everything else we
+follow the most recent organizer statement and read the Discord answers as clarifications of the README; the FAQ and
+the task PDF are the oldest. UZP has not stated that order. This is noted per item. Where the order cannot be told, for
+example a Discord answer with no recorded time against `VM.md`, the item stays UNCONFIRMED.
 
 ## What to build
 
@@ -42,7 +42,7 @@ Classes and schemas (`data/uzp/oczekiwane-json/`):
 Missing information: never invent it; use `null` where the schema allows (FAQ 6).
 
 Value conventions (Discord):
-- Personal names in the nominative: "Mateusz Szymański", not "Mateusza Szymańskiego".
+- Personal names in the nominative: "Jan Kowalski", not "Jana Kowalskiego".
 - The grantor's (`mocodawca`) company name exactly as printed in the document, even when it differs from CEIDG.
 - Account numbers as printed in the document: keep the country code when one is printed (`PL` or another country's
   code) and remove all whitespace. This answers #46. The code change is #58.
@@ -111,7 +111,8 @@ Value conventions (Discord):
 - 48 of the 60 training transfers print `PL` before an account number, yet all 60 gold files hold bare digits
   (counted 21.11.2026, #58). UZP called the missing `PL` an error in the references and said the hidden set will not
   repeat it.
-- Negatives: 13 files in `data/uzp/dane/negatywne/`, and one extra PDF each in `przyklad_04`, `_10`, `_24`, `_37`.
+- Negatives: 12 PDFs in `data/uzp/dane/negatywne/` (plus a `readme.md`) and one extra PDF each in `przyklad_04`, `_10`,
+  `_24`, `_37`: 16 in all.
 - `data/uzp/dane/skany/`: 30 labelled scans (10 each in `odwolania`, `pelnomocnictwa`, `potwierdzenia`, one
   folder per scan with `NNNN.pdf` and gold `NNNN.json`). The README does not describe them; the folder is in the
   repo only.
@@ -142,8 +143,10 @@ UNCONFIRMED that UZP withdrew it.
 
 README breakdown of the flexibility part: 1-20 pts for LLM size (**smaller model scores more**: balance
 extraction quality against cost), 1-20 pts for adding new document types and data classes without rebuilding,
-1-10 pts for other features (e.g. GUI). On Discord UZP confirmed that a solution **without an LLM gets the maximum
-LLM-size score**. For solutions that use an LLM the rule is **under revision**: the README ("Sposób punktacji LLM")
+1-10 pts for other features (e.g. GUI). The #64 relay of UZP's Discord answers says a solution **without an LLM gets
+the maximum LLM-size score** (the answer "Tak, dokładnie" at 13:51; the question and the speaker are not recorded, and
+no organizer document says it), so we treat it as UNCONFIRMED. For solutions that use an LLM the rule is **under
+revision**: the README ("Sposób punktacji LLM")
 says the organizers are working on new guidelines after discussion with participants and reports of possible
 manipulation, "stay tuned". UNCONFIRMED: the new rule, and how these three parts fit into the Regulamin's single
 50% flexibility criterion, which names only new document classes.
@@ -159,12 +162,12 @@ UZP described it on Discord:
 - FN: the value is absent from our JSON but present in the reference.
 - Lists are matched by content, not by position.
 
-Our reading of the FP and FN rules together: a wrong value counts as one FP and no FN. #59 relies on it; UZP did not
-state it in so many words.
+Our reading of the FP and FN rules together: a wrong value counts as one FP and no FN. The scorer (PR #71, #59) relies
+on it; UZP did not state it in so many words.
 
-UNCONFIRMED: the similarity measure behind the 80% rule (normalised Levenshtein is our stand-in), and how the counts
-are aggregated across fields, documents and classes. Our working definition is in
-`.claude/skills/odwolania2json-eval/SKILL.md`; #59 aligns it with the rules above.
+UNCONFIRMED: the similarity measure behind the 80% rule (RapidFuzz normalised Levenshtein is our stand-in), and how
+the counts are aggregated across fields, documents and classes. Our scorer implements the rules above as pooled micro
+F1 and keeps the older strict score for comparison; its definition is in `.claude/skills/odwolania2json-eval/SKILL.md`.
 
 ## Deliverables
 

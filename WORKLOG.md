@@ -75,13 +75,13 @@ Two and four grant JSONs matched exactly. The ten organizer grants remained exac
 
 | Item | Owner |
 |---|---|
-| Deadline 22.11.2026 11:00 (#66): the organizer VM (`data/uzp/VM.md`). Team access ends then and the evaluators run `/opt/solution/RUN.md` there. Request the VM through the form, install the solution in `/opt/solution` with `RUN.md` (and `.env` if an LLM is used), time it on 2 vCPU and test it as they will. UNCONFIRMED: whether a team without a VM is evaluated from GitHub | install-docker session (setup, `RUN.md`, compose, 2-vCPU timing); the team (VM request through the form, SSH access) |
-| If the team keeps the Ministral profile (#38): obtain an EU/EEA-only processing commitment from Mistral. UZP said no private hosting; UNCONFIRMED what that covers, since upstream `VM.md` allows models and containers on the evaluation VM | Deployment |
+| Deadline 22.11.2026 11:00 (#66): the organizer VM (`data/uzp/VM.md`). Team access ends then and the evaluators run `/opt/solution/RUN.md` there. Request the VM through the form, install the solution in `/opt/solution` with `RUN.md` (and `.env` if an LLM is used), time it on 2 vCPU and test it as they will. The Compose services from PR #68 still need their container byte-parity check. UNCONFIRMED: whether a team without a VM is evaluated from GitHub | install-docker session (setup, `RUN.md`, compose, 2-vCPU timing); the team (VM request through the form, SSH access) |
+| If the team keeps the Ministral profile (#38): obtain an EU/EEA-only processing commitment for Mistral or deploy the same weights within the EEA. UZP said no private hosting; UNCONFIRMED whether that rules out the second option, since upstream `VM.md` allows models and containers on the evaluation VM | Deployment |
 | Score corpus 2 test once after the class rules and small-model profile are integrated | Coordinator |
 | Improve receipt routing and recover damaged party names on development inputs | Open |
 | Ask UZP the questions `docs/task/BRIEF.md` marks UNCONFIRMED (`grep -n UNCONFIRMED docs/task/BRIEF.md`). The ones that change the build: is a team without a VM evaluated from GitHub, does `.env` replace the form's key field, where "no private hosting" ends, the `RUN.md` format, whether the 45-minute limit is measured on the VM, how files unprocessed at the cutoff count, how F1 counts are aggregated, whether a solution without an LLM gets the maximum LLM-size score (only the #64 relay says so) and whether the PDF's 30/20 split still stands. The long-string similarity function is the next row | Open |
 | Confirm the long-string similarity function with UZP and record the Stage II weights | Open |
-| `{}` for unrelated documents (#57) and the printed country code in account numbers (#58) | Dominik-Galus (`fix/p0-conventions`) |
+| `{}` for unrelated documents (#57), including the eval's `negatives_empty` check, which still scores zero bytes as compliant and `{}` as not (`evals/metrics.py`, `evals/run.py`, `tests/test_eval_metrics.py`), and the printed country code in account numbers (#58) | Dominik-Galus (`fix/p0-conventions`) |
 | Use the case folder to repair OCR misreads from sibling documents and show case-level checks (#61) | Dominik-Galus (`feat/case-siblings`) |
 | Robustness eval on seeded layout variants and generated negatives (#63) | Dominik-Galus (`feat/variant-eval`, PR #69) |
 | Class-config flag, TOML validators, weighted routing and a scaffold for new classes (#62) | 00200200 (`claude/config-classes-case-ab8189`) |
@@ -100,10 +100,10 @@ Two and four grant JSONs matched exactly. The ten organizer grants remained exac
   the introductory sentence describing the dated act. In cases 01–39 that sentence supplies the reference reason.
 - 22.11.2026: unrelated documents get a JSON containing only `{}`, not a 0-byte file. UZP confirmed it on Discord on
   21.11 at 13:50, 22:19 and 22:32, after an ambiguous first answer at 13:27 (issue #57, `docs/task/BRIEF.md`).
-  Supersedes the 21.11 empty-file decision.
+  Supersedes the 21.11 empty-file decision. The code still writes an empty file until #57 lands.
 - 22.11.2026: account numbers are written as printed in the document: a printed country code (`PL` or another) is
-  kept and all whitespace is removed (UZP on Discord; issues #46, #58). UZP calls the training references without `PL` an error that the
-  hidden set will not repeat.
+  kept and all whitespace is removed (UZP on Discord; issues #46, #58). UZP calls the training references without `PL`
+  an error that the hidden set will not repeat. The text-layer path still drops `PL` until #58 lands; the OCR path keeps it.
 - 21.11.2026: file, module and identifier names are English; the jury GUI, organizer's JSON keys and original file stems use Polish.
 - 21.11.2026: delegated work and reviews (pre-commit review, pre-push judge) go to Codex workers through
   `/orchestrator`, not to Claude subagents.
@@ -215,4 +215,4 @@ These runs used local rules with the three endpoint variables unset. The two loc
 - 22.11.2026 · Codex · Added a Python 3.13 jury install and 150-PDF CLI comparison for Windows x64, Linux x64 and macOS in `ab3c8fa`. GitHub blocked all three jobs before checkout due to account billing. The run produced no timings. [Run record](evals/results/jury-batch.json)
 - 22.11.2026 · Codex · Implemented the UZP scorer and retained historical strict micro F1 on `feat/uzp-metric` (#59).
 - 22.11.2026 · Codex · Added local jury Compose services and the signed task rules for #60. Compose configuration validated. Docker Desktop did not answer its health probe, so container byte parity is pending.
-- 22.11.2026 · Claude · Brought `docs/task/BRIEF.md` up to UZP's Discord answers (#64), the Regulamin (`docs/task/regulamin.pdf`) and the organizer's new `VM.md`; refreshed `data/uzp` to `eadffbc` (adds `VM.md` only). Recorded the `{}` and account-number decisions, added the VM row to Next, split the row of UZP-answer issues into per-issue rows with the owners claimed in them, dropped Docker Compose (#60, closed by PR #68) from Next and merged main into PR #49 · docs/brief-update
+- 22.11.2026 · Claude · Brought `docs/task/BRIEF.md` up to UZP's Discord answers (#64), the Regulamin (`docs/task/regulamin.pdf`) and the organizer's new `VM.md`; refreshed `data/uzp` to `eadffbc` (adds `VM.md` only). Recorded the `{}` and account-number decisions, added the VM row to Next, split the row of UZP-answer issues into per-issue rows with the owners claimed in them, dropped Docker Compose (#60, closed by PR #68) from Next, merged main into PR #49 (UZP scorer, jury batch), moved the VM row first with its deadline, scoped the Ministral row to #38, flagged the eval's `negatives_empty` check and the pending Compose byte parity, hedged the no-LLM maximum as a #64 relay and aligned the F1 text with the scorer · docs/brief-update
