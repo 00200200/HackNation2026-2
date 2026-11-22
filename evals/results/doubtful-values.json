@@ -1,4 +1,398 @@
 {
+  "uzp_development": {
+    "product_commit": "c13dc3e7fbbc555f73a7c8679ccca6d33a80b593",
+    "main_commit": "11008c5d3acbcc042e02201a49bec651ad480981",
+    "jobs": 2,
+    "measurements": "Each profile processed each development set through the batch CLI, using the official evaluation harness on the clean merge. The keyed profile used the documented regional Ministral configuration with live responses. Both metrics use identical outputs within each run. Pooled F1 sums TP, FP and FN across the 91 development PDFs.",
+    "target_fields": "Within each PDF and field, gained and lost count changes in UZP true positives from keyless to the full keyed profile. These comparisons include all keyed features.",
+    "training": {
+      "byte_identical_keyless_to_main": 196,
+      "n_docs": 196,
+      "micro_f1": 1.0,
+      "micro_f1_strict": 1.0,
+      "holdout_51_60_micro_f1": 1.0
+    },
+    "validation": {
+      "tests_passed": 1766
+    },
+    "datasets": {
+      "c1": {
+        "local": {
+          "counts": {
+            "tp": 142,
+            "fp": 13,
+            "fn": 11,
+            "tn": 81
+          },
+          "counts_strict": {
+            "tp": 215,
+            "fp": 30,
+            "fn": 32
+          },
+          "micro_f1": 0.922077922077922,
+          "micro_f1_strict": 0.8739837398373984,
+          "macro_f1_classes": 0.8982323232323233,
+          "per_class_f1": {
+            "odwolanie": 0.9363636363636364,
+            "pelnomocnictwo": 0.9583333333333334,
+            "przelew": 0.8
+          },
+          "routing_by_class": {
+            "odwolanie": {
+              "correct": 8,
+              "total": 8
+            },
+            "pelnomocnictwo": {
+              "correct": 3,
+              "total": 3
+            },
+            "przelew": {
+              "correct": 4,
+              "total": 4
+            },
+            "negatywny": {
+              "correct": 7,
+              "total": 7
+            }
+          },
+          "outputs_complete": 1.0,
+          "negatives_empty": 1.0,
+          "n_docs": 22,
+          "strict_exact_documents": 10,
+          "seconds_per_doc": 7.598664106039161,
+          "hard_failures_retried": 0
+        },
+        "keyed": {
+          "counts": {
+            "tp": 143,
+            "fp": 15,
+            "fn": 8,
+            "tn": 81
+          },
+          "counts_strict": {
+            "tp": 216,
+            "fp": 29,
+            "fn": 31
+          },
+          "micro_f1": 0.9255663430420712,
+          "micro_f1_strict": 0.8780487804878049,
+          "macro_f1_classes": 0.8998366013071896,
+          "per_class_f1": {
+            "odwolanie": 0.9411764705882353,
+            "pelnomocnictwo": 0.9583333333333334,
+            "przelew": 0.8
+          },
+          "routing_by_class": {
+            "odwolanie": {
+              "correct": 8,
+              "total": 8
+            },
+            "pelnomocnictwo": {
+              "correct": 3,
+              "total": 3
+            },
+            "przelew": {
+              "correct": 4,
+              "total": 4
+            },
+            "negatywny": {
+              "correct": 7,
+              "total": 7
+            }
+          },
+          "outputs_complete": 1.0,
+          "negatives_empty": 1.0,
+          "n_docs": 22,
+          "strict_exact_documents": 10,
+          "seconds_per_doc": 5.4223356325899,
+          "hard_failures_retried": 0
+        },
+        "target_field_change_in_uzp_tp": {
+          "Odwolujacy[].nazwa": {
+            "gained": 0,
+            "lost": 0
+          },
+          "Zamawiajacy[].nazwa": {
+            "gained": 1,
+            "lost": 0
+          },
+          "ZamowieniePubliczne.tytul": {
+            "gained": 0,
+            "lost": 0
+          },
+          "przelew_bankowy.data_operacji": {
+            "gained": 0,
+            "lost": 0
+          },
+          "przelew_bankowy.kwota": {
+            "gained": 0,
+            "lost": 0
+          }
+        }
+      },
+      "c2": {
+        "local": {
+          "counts": {
+            "tp": 220,
+            "fp": 12,
+            "fn": 24,
+            "tn": 138
+          },
+          "counts_strict": {
+            "tp": 350,
+            "fp": 38,
+            "fn": 44
+          },
+          "micro_f1": 0.9243697478991597,
+          "micro_f1_strict": 0.8951406649616368,
+          "macro_f1_classes": 0.948527346879887,
+          "per_class_f1": {
+            "odwolanie": 0.8976897689768977,
+            "pelnomocnictwo": 0.9836065573770492,
+            "przelew": 0.9642857142857143
+          },
+          "routing_by_class": {
+            "odwolanie": {
+              "correct": 13,
+              "total": 13
+            },
+            "pelnomocnictwo": {
+              "correct": 5,
+              "total": 5
+            },
+            "przelew": {
+              "correct": 10,
+              "total": 10
+            },
+            "negatywny": {
+              "correct": 11,
+              "total": 11
+            }
+          },
+          "outputs_complete": 1.0,
+          "negatives_empty": 1.0,
+          "n_docs": 39,
+          "strict_exact_documents": 23,
+          "seconds_per_doc": 4.397907944431958,
+          "hard_failures_retried": 0
+        },
+        "keyed": {
+          "counts": {
+            "tp": 226,
+            "fp": 10,
+            "fn": 21,
+            "tn": 137
+          },
+          "counts_strict": {
+            "tp": 359,
+            "fp": 34,
+            "fn": 35
+          },
+          "micro_f1": 0.9358178053830227,
+          "micro_f1_strict": 0.9123252858958069,
+          "macro_f1_classes": 0.9565239060397178,
+          "per_class_f1": {
+            "odwolanie": 0.9120521172638436,
+            "pelnomocnictwo": 0.9836065573770492,
+            "przelew": 0.9739130434782609
+          },
+          "routing_by_class": {
+            "odwolanie": {
+              "correct": 13,
+              "total": 13
+            },
+            "pelnomocnictwo": {
+              "correct": 5,
+              "total": 5
+            },
+            "przelew": {
+              "correct": 10,
+              "total": 10
+            },
+            "negatywny": {
+              "correct": 11,
+              "total": 11
+            }
+          },
+          "outputs_complete": 1.0,
+          "negatives_empty": 1.0,
+          "n_docs": 39,
+          "strict_exact_documents": 25,
+          "seconds_per_doc": 7.780784009621502,
+          "hard_failures_retried": 0
+        },
+        "target_field_change_in_uzp_tp": {
+          "Odwolujacy[].nazwa": {
+            "gained": 0,
+            "lost": 0
+          },
+          "Zamawiajacy[].nazwa": {
+            "gained": 1,
+            "lost": 0
+          },
+          "ZamowieniePubliczne.tytul": {
+            "gained": 3,
+            "lost": 0
+          },
+          "przelew_bankowy.data_operacji": {
+            "gained": 0,
+            "lost": 0
+          },
+          "przelew_bankowy.kwota": {
+            "gained": 0,
+            "lost": 0
+          }
+        }
+      },
+      "scans": {
+        "local": {
+          "counts": {
+            "tp": 309,
+            "fp": 0,
+            "fn": 0,
+            "tn": 79
+          },
+          "counts_strict": {
+            "tp": 387,
+            "fp": 1,
+            "fn": 1
+          },
+          "micro_f1": 1.0,
+          "micro_f1_strict": 0.9974226804123711,
+          "macro_f1_classes": 1.0,
+          "per_class_f1": {
+            "odwolanie": 1.0,
+            "pelnomocnictwo": 1.0,
+            "przelew": 1.0
+          },
+          "routing_by_class": {
+            "odwolanie": {
+              "correct": 10,
+              "total": 10
+            },
+            "pelnomocnictwo": {
+              "correct": 10,
+              "total": 10
+            },
+            "przelew": {
+              "correct": 10,
+              "total": 10
+            },
+            "negatywny": {
+              "correct": 0,
+              "total": 0
+            }
+          },
+          "outputs_complete": 1.0,
+          "negatives_empty": null,
+          "n_docs": 30,
+          "strict_exact_documents": 29,
+          "seconds_per_doc": 8.915915126369024,
+          "hard_failures_retried": 0
+        },
+        "keyed": {
+          "counts": {
+            "tp": 309,
+            "fp": 0,
+            "fn": 0,
+            "tn": 79
+          },
+          "counts_strict": {
+            "tp": 387,
+            "fp": 1,
+            "fn": 1
+          },
+          "micro_f1": 1.0,
+          "micro_f1_strict": 0.9974226804123711,
+          "macro_f1_classes": 1.0,
+          "per_class_f1": {
+            "odwolanie": 1.0,
+            "pelnomocnictwo": 1.0,
+            "przelew": 1.0
+          },
+          "routing_by_class": {
+            "odwolanie": {
+              "correct": 10,
+              "total": 10
+            },
+            "pelnomocnictwo": {
+              "correct": 10,
+              "total": 10
+            },
+            "przelew": {
+              "correct": 10,
+              "total": 10
+            },
+            "negatywny": {
+              "correct": 0,
+              "total": 0
+            }
+          },
+          "outputs_complete": 1.0,
+          "negatives_empty": null,
+          "n_docs": 30,
+          "strict_exact_documents": 29,
+          "seconds_per_doc": 9.68913138473096,
+          "hard_failures_retried": 0
+        },
+        "target_field_change_in_uzp_tp": {
+          "Odwolujacy[].nazwa": {
+            "gained": 0,
+            "lost": 0
+          },
+          "Zamawiajacy[].nazwa": {
+            "gained": 0,
+            "lost": 0
+          },
+          "ZamowieniePubliczne.tytul": {
+            "gained": 0,
+            "lost": 0
+          },
+          "przelew_bankowy.data_operacji": {
+            "gained": 0,
+            "lost": 0
+          },
+          "przelew_bankowy.kwota": {
+            "gained": 0,
+            "lost": 0
+          }
+        }
+      }
+    },
+    "pooled_dev": {
+      "local": {
+        "counts": {
+          "tp": 671,
+          "fp": 25,
+          "fn": 35,
+          "tn": 298
+        },
+        "counts_strict": {
+          "tp": 952,
+          "fp": 69,
+          "fn": 77
+        },
+        "micro_f1": 0.9572039942938659,
+        "micro_f1_strict": 0.9287804878048781
+      },
+      "keyed": {
+        "counts": {
+          "tp": 678,
+          "fp": 25,
+          "fn": 29,
+          "tn": 297
+        },
+        "counts_strict": {
+          "tp": 962,
+          "fp": 64,
+          "fn": 67
+        },
+        "micro_f1": 0.9617021276595744,
+        "micro_f1_strict": 0.9362530413625304
+      }
+    }
+  },
+  "historical_measurements": "The remaining sections record the original strict-metric experiment before #71 landed. Its five-field fuzzy sensitivity uses the earlier null-inclusive scoring rules.",
   "product_commit": "5741d66d48f81bd601dcabc5d25e254234d9fe55",
   "base": "f7f3ee9",
   "model": "ministral-3b-2512",
