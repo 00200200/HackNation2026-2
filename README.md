@@ -45,8 +45,8 @@ From the repository root, create a virtual environment with 64-bit CPython 3.13.
 | macOS or Linux | `python3.13 -m venv .venv` | `. .venv/bin/activate` |
 
 Use the activated shell for the install and run commands below. `requirements.txt` lists only pinned PyPI
-packages and no local paths, so pip contacts no other host. Run the install from the repository root; from another
-directory, pass the file's full path to `-r`. pip installs the
+packages and no local paths, so pip downloads only from PyPI (`pypi.org` and `files.pythonhosted.org`). Run the install
+from the repository root; from another directory, pass the file's full path to `-r`. pip installs the
 Tesseract native libraries from PyPI. The Polish and English fast models (8.88 MB, Apache-2.0) ship in
 `kio2json/tessdata/` with their licence. They come from a pinned `tessdata_fast` revision, and the CLI checks both
 SHA-256 hashes before the first OCR page. Run `python -m kio2json` from the repository root. The rules-only CLI and
