@@ -131,6 +131,38 @@ def test_variants_are_cached_and_rebuilt_when_a_source_changes(tmp_path):
     assert stress.build([source], "dpi-150", spec, 2026, cache, workers=1) != root
 
 
+def test_two_writers_of_one_variant_do_not_share_a_temporary_file(tmp_path, monkeypatch):
+    target = tmp_path / "cache" / "case" / "0001.pdf"
+    monkeypatch.setattr(stress, "render_pdf", lambda *args: b"%PDF rendered")
+    job = (tmp_path / "source.pdf", stress.Spec(), "key", target)
+    real_replace, published = os.replace, []
+
+    def replace(source, destination):
+        published.append(Path(source).name)
+        if len(published) == 1:  # another run builds the same variant just before this one publishes it
+            stress.write_variant(job)
+        real_replace(source, destination)
+
+    monkeypatch.setattr(os, "replace", replace)
+    stress.write_variant(job)
+    assert len(set(published)) == 2  # a temporary file of its own for each writer
+    assert target.read_bytes() == b"%PDF rendered"
+    assert list(target.parent.iterdir()) == [target]
+
+
+def test_a_variant_that_cannot_be_published_leaves_no_temporary_file(tmp_path, monkeypatch):
+    target = tmp_path / "cache" / "case" / "0001.pdf"
+    monkeypatch.setattr(stress, "render_pdf", lambda *args: b"%PDF rendered")
+
+    def refuse(source, destination):
+        raise OSError("disk full")
+
+    monkeypatch.setattr(os, "replace", refuse)
+    with pytest.raises(OSError, match="disk full"):
+        stress.write_variant((tmp_path / "source.pdf", stress.Spec(), "key", target))
+    assert list(target.parent.iterdir()) == []
+
+
 def test_the_loss_split_adds_up_to_one_minus_the_micro_f1():
     routed_right = result("a", "odwolanie", "odwolanie", tp=7, fp=1, fn=2)
     misrouted = result("b", "przelew", None, fn=5)
@@ -315,13 +347,15 @@ def test_the_command_line_runs_every_variant_once_and_writes_the_report(tmp_path
     assert report["groups"]["mixed"]["docs"] == 30  # one mixed variant, not counted twice
 
 
-def test_one_crashing_variant_does_not_fail_the_run_but_all_of_them_do(tmp_path, capsys):
+def test_a_crashing_variant_fails_the_run_but_keeps_the_report_and_all_of_them_stop_it(tmp_path, capsys):
     cmd = stub_app(tmp_path, stress.load_sources(stress.DATA))
     out = tmp_path / "report.json"
     argv = ["--cache", str(tmp_path / "cache"), "--out", str(out), "--cmd", cmd]
     assert stress.main(["--variants", "skew-3", *argv]) == 2  # every variant wrote nothing
     assert "the app wrote no output" in capsys.readouterr().err and not out.exists()
-    assert stress.main(["--variants", "delivered,skew-3", *argv]) == 0
+    # a partial extraction fails the run, and the report is still written
+    assert stress.main(["--variants", "delivered,skew-3", *argv]) == 1
+    assert "30 documents had no output" in capsys.readouterr().err
     variants = json.loads(out.read_text(encoding="utf-8"))["variants"]
     assert variants["delivered"]["micro_f1"] == 1.0 and variants["delivered"]["app_error"] is None
     assert variants["skew-3"]["no_output"] == 30 and "crashed on purpose" in variants["skew-3"]["app_error"]

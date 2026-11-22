@@ -19,6 +19,9 @@ The app runs as the jury's default run does (no model endpoint, even when a `.en
 classes) and sees neutral case folders.
 A diagnostic, not a gate: compare two reports to see whether a change helps. A partial run (`--variants`) writes the
 same report path as a full one, so give it another `--out` to keep the full report.
+Exit status: 0 for a complete run; 1 when some documents have no output (the report is still written and counts them as
+misses: `no_output` per variant, and in `app_error` what the app said if it failed); 2 when it wrote nothing at all (no
+report).
 """
 
 import argparse
@@ -161,9 +164,17 @@ def write_variant(job: tuple[Path, Spec, str, Path]) -> None:
     if target.exists():
         return
     target.parent.mkdir(parents=True, exist_ok=True)
-    partial = target.with_suffix(".partial")
-    partial.write_bytes(render_pdf(source, spec, key))
-    partial.replace(target)  # an interrupted build never leaves a half-written PDF in the cache
+    pdf = render_pdf(source, spec, key)
+    # A temporary file of its own for every writer: two runs that build the same variant never share a path, and an
+    # interrupted build never leaves a half-written PDF under the final name.
+    handle, partial = tempfile.mkstemp(dir=target.parent, suffix=".partial")
+    try:
+        with os.fdopen(handle, "wb") as out:
+            out.write(pdf)
+        os.replace(partial, target)
+    except BaseException:
+        Path(partial).unlink(missing_ok=True)
+        raise
 
 
 def build(sources: list[Source], name: str, spec: Spec, seed: int, cache: Path, workers: int) -> Path:
@@ -386,6 +397,9 @@ def main(argv: list[str] | None = None) -> int:
     args.out.write_text(json.dumps(results, ensure_ascii=False, indent=1) + "\n", encoding="utf-8")
     show(results)
     print(f"written: {args.out}")
+    if without_output := sum(1 for run in runs.values() for d in run.docs if d.errors):
+        print(f"{without_output} documents had no output (missing or unreadable JSON): see the report", file=sys.stderr)
+        return 1
     return 0
 
 
