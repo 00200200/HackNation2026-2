@@ -32,7 +32,9 @@ python docs/pitch/build.py
 | Slide | Claim | Source |
 |---|---|---|
 | 2 (notes), 10 | 5986 appeals and 5881 accessions filed with KIO in 2025 | *Informacja o działalności Krajowej Izby Odwoławczej za 2025 r.*, UZP, published 26.06.2026, [gov.pl](https://www.gov.pl/web/uzp/informacja-roczna-z-dzialalnosci-krajowej-izby-odwolawczej-za-2025-r) |
-| 6, 9 | F1 1.000 on 196 synthetic training PDFs, 0.9974 on 30 organizer scans (29/30 exact), 0.8900 and 0.8926 on the two real development sets (0.89 pooled over 78 PDFs), routing 78/78 | `evals/results/round3.json` (`steps.verified`), `WORKLOG.md` "Last eval" |
+| 6, 9 | F1 under the UZP formula of #59 (main `6ff2966`, local rules, two workers; #74 kept every default output byte for byte): 1.000 on 196 synthetic training PDFs, 1.000 on the 30 organizer scans (29/30 exact), 0.9231 and 0.9244 on the two real development sets (0.92 for both); strict F1 on the same predictions 1.000, 0.9974, 0.8900 and 0.8951. UZP has not confirmed its similarity function; the scorer uses normalized Levenshtein at 0.80 | `evals/results/case-siblings.json`, `WORKLOG.md` Log 22.11 (#61) |
+| 6 (notes) | An earlier run on `f7f3ee9` misrouted one transfer scan: scans 0.9869 UZP, 0.9740 strict | `evals/results/uzp-metric.json` |
+| 6 (notes) | Round 3: strict F1 0.9974 on the 30 scans with all 30 routed, routing 78/78 on the real development sets including 22 unrelated PDFs | `evals/results/round3.json` (`steps.verified`) |
 | 6 | All three sets are development data, so none predicts the hidden-set score | `README.md` (results sections), `WORKLOG.md` "Last eval" |
 | 9 | Ministral 3B added 0.0087 and 0.0131 micro F1 on the real development sets in round 2 | `evals/results/round2-integration.json` |
 | 5 (notes), 10 | 150 PDFs in 83 s with four workers | `evals/results/round3.json` (`timing`); that entry does not record the machine |
@@ -50,8 +52,8 @@ access records the original messages.
 
 ## Open items
 
-- Slide 6 shows our strict F1 from `evals/metrics.py`. Add the F1 under the organizer's formula
-  (#59) once it lands.
+- Slides 6 and 9 use the UZP-formula F1 measured on main `6ff2966`. Re-measure on the final commit before the
+  final and update both slides if the numbers move.
 - Slides 3 and 5 say "pusty wynik" for unrelated documents. That is true both for today's empty file and
   for the `{}` that #57 introduces; the demo shows whichever is on `main`.
 - Slide 10 names per-field evidence as the next step: #40 is not on `main`.

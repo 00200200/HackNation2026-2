@@ -57,7 +57,7 @@ optional. We have not seen the form itself, so its exact field names are UNCONFI
 | Project title (required) | `doc2json`, subtitle "Odwołania2json (UZP)" | Recommended on #48; the team decides |
 | GitHub link (required) | https://github.com/00200200/HackNation2026-2 | The repository is private. Grant read access to DominikOlczak, MateuSzSz-Sz and rkrol-dev first (UZP request, 21.11.2026 16:23); audit on #48 |
 | Technical documentation (optional) | `README.md` and `docs/pipeline/pipeline.pdf` | The organizer README (section 4) lists a description of the LLM used as part of this documentation |
-| Quality test results (optional) | `WORKLOG.md` "Last eval" and `evals/results/round3.json` | Numbers and sources in `docs/pitch/README.md` |
+| Quality test results (optional) | `evals/results/case-siblings.json` (newest UZP-formula and strict F1 on main), `evals/results/uzp-metric.json` and `evals/results/round3.json` | Numbers and sources in `docs/pitch/README.md` |
 | LLM used | None in the default configuration | Rules only unless the team decides otherwise on #38 |
 | API key | Leave empty for a rules-only submission | Only if a model is used. UZP mentioned a form field on Discord (issue #64); `VM.md` says `/opt/solution/.env` |
 | Presentation or video | `docs/pitch/doc2json-pitch.pdf` | UNCONFIRMED whether the form asks for either |

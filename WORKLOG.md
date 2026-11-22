@@ -25,6 +25,8 @@ The final deck (11 slides) and a two-minute demo script are in `docs/pitch/`. Th
 
 ## Last eval
 
+The newest paired run on main `6ff2966` (#74 measurement, keyless CLI, two PDF workers) scored UZP F1 1.000 on training and on the 30 organizer scans (strict 0.9974, 29/30 exact), 0.9231 on corpus 1 all and 0.9244 on corpus 2 dev (strict 0.8900 and 0.8951). [Paired case measurements](evals/results/case-siblings.json)
+
 Main `f7f3ee9` ran with local rules and two PDF workers. Both scores below use the same predictions and original references. The difference is UZP F1 minus historical strict F1.
 
 | Dataset | PDFs | UZP micro F1 | Strict micro F1 | Difference |
@@ -210,4 +212,4 @@ These runs used local rules with the three endpoint variables unset. The two loc
 - 22.11.2026 · Codex · Implemented the UZP scorer and retained historical strict micro F1 on `feat/uzp-metric` (#59).
 - 22.11.2026 · Codex · Added local jury Compose services and the signed task rules for #60. Compose configuration validated. Docker Desktop did not answer its health probe, so container byte parity is pending.
 
-- 22.11.2026 · Claude · Updated the final deck with round 3 numbers, the Regulamin Stage II split, an architecture slide, UZP value and a verified two-minute demo script; added the submission checklist with the VM evaluation from the organizer's VM.md. Posted the pre-access history audit and the title recommendation on #48 · docs/pitch
+- 22.11.2026 · Claude · Updated the final deck with the UZP-formula F1 and round 3 numbers, the Regulamin Stage II split, an architecture slide, UZP value and a verified two-minute demo script; added the submission checklist with the VM evaluation from the organizer's VM.md. Posted the pre-access history audit and the title recommendation on #48 · docs/pitch
