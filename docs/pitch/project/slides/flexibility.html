@@ -1,18 +1,40 @@
 <section id="flexibility" data-transition="fade">
 <div class="glow"></div>
 <div class="hdr"><p>Zadanie UZP: Odwołania2json</p><p class="r">HackNation 2026</p></div>
-<h2 class="in" style="--i:0; width:1300px;">Nowa klasa to nowy plik. Bez zmian w kodzie.</h2>
-<div style="flex:1; display:flex; align-items:center; justify-content:center;">
-<div class="window in" style="--i:1; width:900px;">
-<div class="titlebar"><div class="dot"></div><div class="dot"></div><div class="dot"></div><p class="t">klasy/nowa_klasa</p></div>
-<div class="code">
-<p>klasa: <span class="c">nowa_klasa</span></p>
-<p>schemat: <span class="c">schemat.json</span></p>
-<p>wskazowki_klasyfikacji: <span class="c">...</span></p>
-<p>instrukcje_ekstrakcji: <span class="c">...</span></p>
+<h2 class="in" style="--i:0; width:1400px;">Nowa klasa to jeden plik TOML.</h2>
+<div style="flex:1; display:flex; align-items:center; gap:32px;">
+<div class="window in" style="--i:1; flex:none; width:900px;">
+<div class="titlebar"><div class="dot"></div><div class="dot"></div><div class="dot"></div><p class="t">config/classes/participation.toml</p></div>
+<div class="code" style="padding:24px 32px;">
+<p>id = <span class="c">"participation"</span></p>
+<p>enabled = <span class="c">true</span></p>
+<p>engines = <span class="c">["labelled_fields"]</span></p>
+<p>[routing]</p>
+<p>required = <span class="c">['^Karta uczestnika[ \t]*$', '^Uczestnik:']</span></p>
+<p>[fields.participant]</p>
+<p>pattern = <span class="c">'^Uczestnik:[ \t]*(.+)$'</span></p>
+<p>[fields.filed]</p>
+<p>normalizer = <span class="c">"iso_date"</span></p>
+<p>pattern = <span class="c">'^Data:[ \t]*(.+)$'</span></p>
+<p>[fields.reference]</p>
+<p>pattern = <span class="c">'^Sygnatura:[ \t]*(.+)$'</span></p>
 </div>
 </div>
+<div style="flex:1; display:flex; flex-direction:column; gap:28px;">
+<div class="window in" style="--i:2;">
+<div class="titlebar"><div class="dot"></div><div class="dot"></div><div class="dot"></div><p class="t">karta-uczestnika.json</p></div>
+<div class="code" style="padding:24px 32px;">
+<p>{</p>
+<p>&nbsp;&nbsp;"participant": <span class="c">"Pracownia</span></p>
+<p><span class="c">&nbsp;&nbsp;&nbsp;&nbsp;Brzozowa sp. z&nbsp;o.o."</span>,</p>
+<p>&nbsp;&nbsp;"filed": <span class="c">"2026-11-21"</span>,</p>
+<p>&nbsp;&nbsp;"reference": <span class="c">"KIO-DEMO/2026/1"</span></p>
+<p>}</p>
 </div>
-<div class="ftr"><div class="brand"><svg aria-label="Logo doc2json" width="40" height="40" viewBox="0 0 64 64" style="width:40px; height:40px;"><rect x="0.5" y="0.5" width="63" height="63" rx="15" fill="#0a0a0a" stroke="#4a4a4a" stroke-width="1"/><g fill="none" stroke="#fff" stroke-width="4.5" stroke-linecap="round" stroke-linejoin="round"><path d="M24 15c-4.5 0-5.5 2-5.5 6v6c0 3-1.5 5-4.5 5 3 0 4.5 2 4.5 5v6c0 4 1 6 5.5 6"/><path d="M40 15c4.5 0 5.5 2 5.5 6v6c0 3 1.5 5 4.5 5-3 0-4.5 2-4.5 5v6c0 4-1 6-5.5 6"/><path d="M28 27h8M28 37h5"/></g></svg><p>doc2json</p></div><p class="src">Plan · model open-weight, API w UE/EOG, CLI i GUI</p><p class="pg">06 / 09</p></div>
-<aside>Klasa dokumentu to plik konfiguracji: schemat, wskazówki do klasyfikacji i instrukcje dla pól. Na finale chcemy dodać czwartą klasę na żywo. Moduły: OCR dla skanów, klasyfikator po treści, ekstraktor, walidacja ze schematem. Model open-weight przez API u dostawcy w UE/EOG, [model: __], [dostawca: __]. CLI dla jury, GUI z podglądem PDF obok JSON-a. [Przykład pliku jest poglądowy, format do ustalenia. Zdjąć „Plan”, gdy zadziała.]</aside>
+</div>
+<p class="body in" style="--i:3; font-size:26px;">Bez zmiany kodu i&nbsp;bez restartu GUI. Data z&nbsp;„21.11.2026” wychodzi w&nbsp;formacie ISO.</p>
+</div>
+</div>
+<div class="ftr"><div class="brand"><svg aria-label="Logo doc2json" width="40" height="40" viewBox="0 0 64 64" style="width:40px; height:40px;"><rect x="0.5" y="0.5" width="63" height="63" rx="15" fill="#0a0a0a" stroke="#4a4a4a" stroke-width="1"/><g fill="none" stroke="#fff" stroke-width="4.5" stroke-linecap="round" stroke-linejoin="round"><path d="M24 15c-4.5 0-5.5 2-5.5 6v6c0 3-1.5 5-4.5 5 3 0 4.5 2 4.5 5v6c0 4-1 6-5.5 6"/><path d="M40 15c4.5 0 5.5 2 5.5 6v6c0 3 1.5 5 4.5 5-3 0-4.5 2-4.5 5v6c0 4-1 6-5.5 6"/><path d="M28 27h8M28 37h5"/></g></svg><p>doc2json</p></div><p class="src">Wyciąg z&nbsp;pliku, w&nbsp;repo enabled = false · tests/test_class_config.py</p><p class="pg">07 / 11</p></div>
+<aside>Klasa dokumentu to plik TOML: wzorce rozpoznania, pola z typami i normalizatorami oraz kolejność silników. Trzy klasy UZP siedzą w tym samym rejestrze, tyle że ich klasyfikator i ekstraktory są w Pythonie. Czwarta klasa na slajdzie jest w całości w TOML. W repozytorium jest wyłączona, żeby ukryty zbiór dostał dokładnie trzy klasy. Na pokazie włączamy ją jedną linią i klikamy Analizuj jeszcze raz, bo GUI czyta pliki klas przy każdej analizie. Dostępne normalizatory: iso_date, money, account_number, krs, nip, regon, pesel. Dokument na pokazie jest zmyślony.</aside>
 </section>

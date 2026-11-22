@@ -29,7 +29,7 @@ h1 { font-size:96px } h2 { font-size:64px } h3 { font-size:44px }
 <p class="stack in" style="--i:2; color:#262626;">doc2json</p>
 <p class="stack in" style="--i:3; color:#141414;">doc2json</p>
 </div>
-<aside>Dzień dobry. Jesteśmy doc2json. Bierzemy PDF-y ze sprawy odwoławczej KIO i oddajemy JSON w schemacie UZP, osobny dla każdego dokumentu.</aside>
+<aside>Dzień dobry, jesteśmy doc2json. Z PDF-ów sprawy odwoławczej KIO robimy JSON w schemacie UZP, osobny dla każdego dokumentu. Działa na zwykłym komputerze, bez GPU i bez modelu językowego.</aside>
 </section>
 
 <section id="problem" data-transition="fade">
@@ -42,7 +42,7 @@ h1 { font-size:96px } h2 { font-size:64px } h3 { font-size:44px }
 <div class="crop" style="top:770px; height:310px;">
 <p class="giant in" style="--i:3;">Problem</p>
 </div>
-<aside>Sprawa odwoławcza przed KIO to kilka powiązanych dokumentów: odwołanie, pełnomocnictwo, potwierdzenie przelewu i inne. Mają różną budowę, część to skany, a dane jednej sprawy są rozrzucone po kilku plikach. UZP pisze wprost: człowiek to przeczyta bez trudu, system informatyczny już nie. Źródło: opis wyzwania Odwołania2json, sekcja 1 „Wprowadzenie”.</aside>
+<aside>Sprawa przed KIO to kilka powiązanych dokumentów: odwołanie, pełnomocnictwo, potwierdzenie przelewu i inne. Każdy wygląda inaczej, część to skany. Dane jednej sprawy leżą w kilku plikach. UZP pisze wprost, że człowiek przeczyta to bez trudu, a system informatyczny już nie. Skala: w 2025 r. do Prezesa KIO wpłynęło 5986 odwołań. Źródła: opis wyzwania Odwołania2json, sekcja 1; Informacja o działalności KIO za 2025 r. (UZP, 26.06.2026).</aside>
 </section>
 
 <section id="solution" class="light" data-transition="fade">
@@ -59,18 +59,18 @@ h1 { font-size:96px } h2 { font-size:64px } h3 { font-size:44px }
 <div class="hub" style="width:420px; height:368px;">
 <svg aria-label="Logo doc2json" width="72" height="72" viewBox="0 0 64 64" style="width:72px; height:72px;"><rect x="0.5" y="0.5" width="63" height="63" rx="15" fill="#000" stroke="#4a4a4a" stroke-width="1"/><g fill="none" stroke="#fff" stroke-width="4.5" stroke-linecap="round" stroke-linejoin="round"><path d="M24 15c-4.5 0-5.5 2-5.5 6v6c0 3-1.5 5-4.5 5 3 0 4.5 2 4.5 5v6c0 4 1 6 5.5 6"/><path d="M40 15c4.5 0 5.5 2 5.5 6v6c0 3 1.5 5 4.5 5-3 0-4.5 2-4.5 5v6c0 4-1 6-5.5 6"/><path d="M28 27h8M28 37h5"/></g></svg>
 <p class="t">doc2json</p>
-<p class="s">klasa z treści<br>pola ze schematu UZP</p>
+<p class="s">klasa z&nbsp;treści<br>pola ze schematu UZP</p>
 </div>
 <div style="width:90px; display:flex; flex-direction:column; gap:16px;"><div class="wire"><div></div></div><div class="wire"><div></div></div><div class="wire"><div></div></div><div class="wire"><div></div></div></div>
 <div style="flex:1; display:flex; flex-direction:column; gap:16px;">
 <div class="node"><p class="a">odwołanie</p></div>
 <div class="node"><p class="a">przelew</p></div>
 <div class="node"><p class="a">pełnomocnictwo</p></div>
-<div class="node empty"><p class="a">pusty plik</p></div>
+<div class="node empty"><p class="a">pusty wynik <span style="color:#666666">dokument spoza klas</span></p></div>
 </div>
 </div>
-<div class="ftr"><div class="brand"><svg aria-label="Logo doc2json" width="40" height="40" viewBox="0 0 64 64" style="width:40px; height:40px;"><rect width="64" height="64" rx="15" fill="#000"/><g fill="none" stroke="#fff" stroke-width="4.5" stroke-linecap="round" stroke-linejoin="round"><path d="M24 15c-4.5 0-5.5 2-5.5 6v6c0 3-1.5 5-4.5 5 3 0 4.5 2 4.5 5v6c0 4 1 6 5.5 6"/><path d="M40 15c4.5 0 5.5 2 5.5 6v6c0 3 1.5 5 4.5 5-3 0-4.5 2-4.5 5v6c0 4-1 6-5.5 6"/><path d="M28 27h8M28 37h5"/></g></svg><p>doc2json</p></div><p class="pg">03 / 09</p></div>
-<aside>Jury wrzuca PDF-y sprawy do folderu input. Nazwy plików są dowolne, więc klasę rozpoznajemy z treści. Wyciągamy pola ze schematu UZP i zapisujemy JSON o tej samej nazwie co PDF. Dokument spoza trzech klas dostaje pusty plik. Czego nie ma w dokumencie, zostaje null. Kontrakt wejścia i wyjścia: README UZP, sekcja 3.</aside>
+<div class="ftr"><div class="brand"><svg aria-label="Logo doc2json" width="40" height="40" viewBox="0 0 64 64" style="width:40px; height:40px;"><rect width="64" height="64" rx="15" fill="#000"/><g fill="none" stroke="#fff" stroke-width="4.5" stroke-linecap="round" stroke-linejoin="round"><path d="M24 15c-4.5 0-5.5 2-5.5 6v6c0 3-1.5 5-4.5 5 3 0 4.5 2 4.5 5v6c0 4 1 6 5.5 6"/><path d="M40 15c4.5 0 5.5 2 5.5 6v6c0 3 1.5 5 4.5 5-3 0-4.5 2-4.5 5v6c0 4-1 6-5.5 6"/><path d="M28 27h8M28 37h5"/></g></svg><p>doc2json</p></div><p class="src">Kontrakt wejścia i&nbsp;wyjścia: README UZP, sekcja 3</p><p class="pg">03 / 11</p></div>
+<aside>Jury wrzuca PDF-y sprawy do folderu input. Nazwy plików bywają dowolne, więc klasę rozpoznajemy z treści. Pola bierzemy ze schematu UZP i zapisujemy JSON o tej samej nazwie co PDF. Dokument spoza trzech klas dostaje pusty wynik; zapis jako {} czeka w #57. Czego nie ma w dokumencie, zostaje null.</aside>
 </section>
 
 <section id="fields" class="light" data-transition="fade">
@@ -81,67 +81,147 @@ h1 { font-size:96px } h2 { font-size:64px } h3 { font-size:44px }
 <div class="card in" style="--i:2; padding:48px; gap:20px;"><h3 style="font-size:44px;">Pełnomocnictwo</h3><p class="desc">Mocodawca, osoby podpisujące, pełnomocnicy.</p></div>
 <div class="card in" style="--i:3; padding:48px; gap:20px;"><h3 style="font-size:44px;">Przelew</h3><p class="desc">Data, kwota, rachunki, tytuł.</p></div>
 </div>
-<div class="ftr"><div class="brand"><svg aria-label="Logo doc2json" width="40" height="40" viewBox="0 0 64 64" style="width:40px; height:40px;"><rect width="64" height="64" rx="15" fill="#000"/><g fill="none" stroke="#fff" stroke-width="4.5" stroke-linecap="round" stroke-linejoin="round"><path d="M24 15c-4.5 0-5.5 2-5.5 6v6c0 3-1.5 5-4.5 5 3 0 4.5 2 4.5 5v6c0 4 1 6 5.5 6"/><path d="M40 15c4.5 0 5.5 2 5.5 6v6c0 3 1.5 5 4.5 5-3 0-4.5 2-4.5 5v6c0 4-1 6-5.5 6"/><path d="M28 27h8M28 37h5"/></g></svg><p>doc2json</p></div><p class="pg">04 / 09</p></div>
+<div class="ftr"><div class="brand"><svg aria-label="Logo doc2json" width="40" height="40" viewBox="0 0 64 64" style="width:40px; height:40px;"><rect width="64" height="64" rx="15" fill="#000"/><g fill="none" stroke="#fff" stroke-width="4.5" stroke-linecap="round" stroke-linejoin="round"><path d="M24 15c-4.5 0-5.5 2-5.5 6v6c0 3-1.5 5-4.5 5 3 0 4.5 2 4.5 5v6c0 4 1 6 5.5 6"/><path d="M40 15c4.5 0 5.5 2 5.5 6v6c0 3 1.5 5 4.5 5-3 0-4.5 2-4.5 5v6c0 4-1 6-5.5 6"/><path d="M28 27h8M28 37h5"/></g></svg><p>doc2json</p></div><p class="src">Schematy UZP: oczekiwane-json</p><p class="pg">04 / 11</p></div>
 <aside>Pola pochodzą ze schematów UZP w oczekiwane-json. Odwołanie: data i miejscowość, Odwołujący z pełnomocnikiem, Zamawiający, powód ze słownika 1 do 12 liczony z pierwszego zarzutu, numery BZP, TED i postępowania, tytuł. Pełnomocnictwo: mocodawca z KRS i NIP, osoby podpisujące, pełnomocnicy z PESEL. Przelew: data operacji, kwota, rachunki, numer transakcji, tytuł.</aside>
+</section>
+
+<section id="architecture" class="light" data-transition="fade">
+<div class="hdr"><p>Zadanie UZP: Odwołania2json</p><p class="r">HackNation 2026</p></div>
+<h2 class="in" style="--i:0;">Jeden potok dla CLI, GUI i&nbsp;API.</h2>
+<div style="flex:1; display:flex; flex-direction:column; justify-content:center; gap:20px;">
+<div class="row in" style="--i:1; gap:16px;">
+<div class="node" style="flex:1;"><p class="a">CLI</p><p class="b">python -m kio2json</p></div>
+<div class="node" style="flex:1;"><p class="a">GUI</p><p class="b">python -m kio2json.gui</p></div>
+<div class="node" style="flex:1;"><p class="a">Strona i&nbsp;API</p><p class="b">docker compose up gui</p></div>
+</div>
+<p class="mono in" style="--i:1; color:#666666; text-align:center;">każde wejście woła tę samą funkcję: batch.read_document</p>
+<div class="row in" style="--i:2; gap:12px; align-items:stretch;">
+<div class="card" style="gap:10px; padding:28px;"><p class="num">01</p><h3 style="font-size:32px;">Odczyt stron</h3><p class="desc" style="font-size:24px;">Tekst z&nbsp;PDF przez pdfplumber. Strona bez tekstu idzie do OCR: Tesseract na CPU.</p></div>
+<div style="flex:none; align-self:center; font-family:var(--mono); font-size:32px; color:#999999;">→</div>
+<div class="card" style="gap:10px; padding:28px;"><p class="num">02</p><h3 style="font-size:32px;">Klasa z&nbsp;treści</h3><p class="desc" style="font-size:24px;">Nagłówki i&nbsp;cechy pierwszych stron. Nazwa pliku nie gra roli.</p></div>
+<div style="flex:none; align-self:center; font-family:var(--mono); font-size:32px; color:#999999;">→</div>
+<div class="card" style="gap:10px; padding:28px;"><p class="num">03</p><h3 style="font-size:32px;">Pola</h3><p class="desc" style="font-size:24px;">Reguły dla trzech klas UZP. Na skanach czytamy bloki i&nbsp;kolumny z&nbsp;pozycji słów.</p></div>
+<div style="flex:none; align-self:center; font-family:var(--mono); font-size:32px; color:#999999;">→</div>
+<div class="card" style="gap:10px; padding:28px;"><p class="num">04</p><h3 style="font-size:32px;">Normalizacja i&nbsp;zapis</h3><p class="desc" style="font-size:24px;">Daty, kwoty, NIP, KRS, PESEL, rachunki. JSON o&nbsp;nazwie PDF-u, pusty wynik dla innych.</p></div>
+</div>
+<div class="row in" style="--i:3; gap:16px;">
+<div class="card" style="gap:8px; padding:24px 28px; border:1px dashed rgba(0,0,0,0.25); background:#ffffff;"><p class="mono" style="color:#000000;">config/classes/*.toml</p><p class="desc" style="font-size:24px;">Klasa: wzorce rozpoznania, pola, normalizatory, kolejność silników.</p></div>
+<div class="card" style="gap:8px; padding:24px 28px; border:1px dashed rgba(0,0,0,0.25); background:#ffffff;"><p class="mono" style="color:#000000;">limity czasu</p><p class="desc" style="font-size:24px;">OCR: 60&nbsp;s na stronę, do 300&nbsp;s dodatkowych odczytów na dokument, wspólny limit partii.</p></div>
+<div class="card" style="gap:8px; padding:24px 28px; border:1px dashed rgba(0,0,0,0.25); background:#ffffff;"><p class="mono" style="color:#000000;">evals/</p><p class="desc" style="font-size:24px;">F1 pole po polu przy każdej zmianie, na danych UZP i&nbsp;własnych.</p></div>
+</div>
+<p class="mono in" style="--i:4; font-size:20px; color:#666666;">Open source: pdfplumber z&nbsp;pdfminer.six, pypdfium2, Pillow, Tesseract (tesserocr, tessdata_fast), RapidOCR z&nbsp;ONNX Runtime, Morfeusz&nbsp;2, python-stdnum, RapidFuzz, Babel, asn1crypto, Pydantic z&nbsp;pydantic-settings, Shiny, FastAPI ze Starlette, uvicorn, czcionki Geist. Opcjonalnie: pydantic-ai, SDK openai, Ministral&nbsp;3B.</p>
+</div>
+<div class="ftr"><div class="brand"><svg aria-label="Logo doc2json" width="40" height="40" viewBox="0 0 64 64" style="width:40px; height:40px;"><rect width="64" height="64" rx="15" fill="#000"/><g fill="none" stroke="#fff" stroke-width="4.5" stroke-linecap="round" stroke-linejoin="round"><path d="M24 15c-4.5 0-5.5 2-5.5 6v6c0 3-1.5 5-4.5 5 3 0 4.5 2 4.5 5v6c0 4 1 6 5.5 6"/><path d="M40 15c4.5 0 5.5 2 5.5 6v6c0 3 1.5 5 4.5 5-3 0-4.5 2-4.5 5v6c0 4-1 6-5.5 6"/><path d="M28 27h8M28 37h5"/></g></svg><p>doc2json</p></div><p class="src">Pełny schemat: docs/pipeline/pipeline.pdf</p><p class="pg">05 / 11</p></div>
+<aside>CLI, GUI i strona z API wołają tę samą funkcję. Dla GUI sprawdziliśmy, że pliki z pobranego ZIP-a są identyczne z wynikiem CLI. Najpierw czytamy tekst z PDF. Strony bez tekstu idą do Tesseracta, który instaluje się przez pip i działa na CPU. Klasę rozpoznajemy z treści pierwszych stron, a reguły rozpoznania i listę pól trzyma plik TOML danej klasy. Ekstraktory trzech klas UZP są w Pythonie i czytają układ dokumentu, na przykład bloki stron i kolumny potwierdzeń przelewu. Na końcu normalizujemy daty, kwoty i identyfikatory i zapisujemy JSON. Limity czasu są ustawione tak, żeby 150 PDF-ów zmieściło się w 45 minutach UZP; w naszym pomiarze zajęło to 83 sekundy. Model językowy jest opcjonalny i domyślnie wyłączony. Każdą zmianę mierzymy w evals. Na dole slajdu wymieniamy biblioteki open source, z których korzystamy, bo Regulamin w § 4 ust. 1 wymaga wskazania rozwiązań zewnętrznych w prezentacji.</aside>
 </section>
 
 <section id="quality" data-transition="fade">
 <div class="glow"></div>
 <div class="hdr"><p>Zadanie UZP: Odwołania2json</p><p class="r">HackNation 2026</p></div>
-<h2 class="in" style="--i:0;">Liczymy F1 tak jak jury.</h2>
-<div style="flex:1; display:flex; align-items:center;">
-<div class="row" style="gap:96px; width:100%;">
-<div class="metric in" style="--i:1;"><p class="val" style="font-size:200px; letter-spacing:-8px;">[ __ ]</p><p class="lbl">F1, wszystkie dokumenty</p></div>
-<div class="metric in" style="--i:2;"><p class="val" style="font-size:200px; letter-spacing:-8px;">[ __ ]</p><p class="lbl">F1, holdout 51-60</p></div>
+<h2 class="in" style="--i:0;">Mierzymy F1 przy każdej zmianie.</h2>
+<div style="flex:1; display:flex; flex-direction:column; justify-content:center; gap:48px;">
+<div class="row" style="gap:48px; width:100%;">
+<div class="metric in" style="--i:1;"><p class="val" style="font-size:112px; letter-spacing:-4px;">1,000</p><p class="lbl">F1, dane treningowe UZP<br>196&nbsp;PDF-ów, 2316&nbsp;z&nbsp;2316&nbsp;pól</p></div>
+<div class="metric in" style="--i:2;"><p class="val" style="font-size:112px; letter-spacing:-4px;">0,9974</p><p class="lbl">F1, 30 skanów UZP<br>29&nbsp;z&nbsp;30 bez błędu</p></div>
+<div class="metric in" style="--i:3;"><p class="val" style="font-size:112px; letter-spacing:-4px;">0,89</p><p class="lbl">F1, 78&nbsp;PDF-ów z&nbsp;prawdziwych spraw<br>dwa zbiory: 0,8900 i&nbsp;0,8926</p></div>
+<div class="metric in" style="--i:4;"><p class="val" style="font-size:112px; letter-spacing:-4px;">78/78</p><p class="lbl">trafiona klasa<br>w&nbsp;tym 22&nbsp;PDF-y spoza klas</p></div>
 </div>
+<p class="body in" style="--i:5; font-size:26px;">Na wszystkich trzech zbiorach szukaliśmy błędów, więc to nie jest prognoza. Wynik na ukrytym zbiorze zna tylko jury.</p>
 </div>
-<div class="ftr"><div class="brand"><svg aria-label="Logo doc2json" width="40" height="40" viewBox="0 0 64 64" style="width:40px; height:40px;"><rect x="0.5" y="0.5" width="63" height="63" rx="15" fill="#0a0a0a" stroke="#4a4a4a" stroke-width="1"/><g fill="none" stroke="#fff" stroke-width="4.5" stroke-linecap="round" stroke-linejoin="round"><path d="M24 15c-4.5 0-5.5 2-5.5 6v6c0 3-1.5 5-4.5 5 3 0 4.5 2 4.5 5v6c0 4 1 6 5.5 6"/><path d="M40 15c4.5 0 5.5 2 5.5 6v6c0 3 1.5 5 4.5 5-3 0-4.5 2-4.5 5v6c0 4-1 6-5.5 6"/><path d="M28 27h8M28 37h5"/></g></svg><p>doc2json</p></div><p class="src">Dane treningowe UZP (syntetyczne) · [commit __]</p><p class="pg">05 / 09</p></div>
-<aside>F1 na poziomie pól: każdy JSON rozkładamy na pary ścieżka i wartość i porównujemy z wzorcem. Null zgodny ze wzorcem to trafienie, wymyślona wartość to błąd, negatyw musi zostać pustym plikiem. Sprawy 51-60 to holdout, do którego nie zaglądamy przy pisaniu promptów. Wyniki z evals/results/latest.json, dane syntetyczne. Wynik na zbiorze testowym zna tylko jury. [Wpisać liczby i commit.]</aside>
+<div class="ftr"><div class="brand"><svg aria-label="Logo doc2json" width="40" height="40" viewBox="0 0 64 64" style="width:40px; height:40px;"><rect x="0.5" y="0.5" width="63" height="63" rx="15" fill="#0a0a0a" stroke="#4a4a4a" stroke-width="1"/><g fill="none" stroke="#fff" stroke-width="4.5" stroke-linecap="round" stroke-linejoin="round"><path d="M24 15c-4.5 0-5.5 2-5.5 6v6c0 3-1.5 5-4.5 5 3 0 4.5 2 4.5 5v6c0 4 1 6 5.5 6"/><path d="M40 15c4.5 0 5.5 2 5.5 6v6c0 3 1.5 5 4.5 5-3 0-4.5 2-4.5 5v6c0 4-1 6-5.5 6"/><path d="M28 27h8M28 37h5"/></g></svg><p>doc2json</p></div><p class="src">Ścisłe F1&nbsp;z&nbsp;evals/metrics.py · runda 3 · evals/results/round3.json</p><p class="pg">06 / 11</p></div>
+<aside>Każdy JSON rozkładamy na pary ścieżka i wartość i porównujemy ze wzorcem. Pierwsze dwie liczby pochodzą z danych UZP: syntetyczne PDF-y z repozytorium zadania, na których pisaliśmy reguły, i 30 opisanych skanów. Trzecia to nasz zbiór 78 dokumentów z prawdziwych spraw. Na wszystkich trzech szukaliśmy błędów, więc żadna z tych liczb nie przewiduje wyniku na ukrytym zbiorze. Czwarta: wszystkie 78 dokumentów trafiło do właściwej klasy, także 22 spoza klas. Nasza miara jest ścisła i wymaga dokładnej zgodności pola. Wzór F1 z Discorda opisany w #59 nie jest jeszcze potwierdzony na piśmie ani dodany do evals, więc go nie podajemy.</aside>
 </section>
 
 <section id="flexibility" data-transition="fade">
 <div class="glow"></div>
 <div class="hdr"><p>Zadanie UZP: Odwołania2json</p><p class="r">HackNation 2026</p></div>
-<h2 class="in" style="--i:0; width:1300px;">Nowa klasa to nowy plik. Bez zmian w kodzie.</h2>
-<div style="flex:1; display:flex; align-items:center; justify-content:center;">
-<div class="window in" style="--i:1; width:900px;">
-<div class="titlebar"><div class="dot"></div><div class="dot"></div><div class="dot"></div><p class="t">klasy/nowa_klasa</p></div>
-<div class="code">
-<p>klasa: <span class="c">nowa_klasa</span></p>
-<p>schemat: <span class="c">schemat.json</span></p>
-<p>wskazowki_klasyfikacji: <span class="c">...</span></p>
-<p>instrukcje_ekstrakcji: <span class="c">...</span></p>
+<h2 class="in" style="--i:0; width:1400px;">Nowa klasa to jeden plik TOML.</h2>
+<div style="flex:1; display:flex; align-items:center; gap:32px;">
+<div class="window in" style="--i:1; flex:none; width:900px;">
+<div class="titlebar"><div class="dot"></div><div class="dot"></div><div class="dot"></div><p class="t">config/classes/participation.toml</p></div>
+<div class="code" style="padding:24px 32px;">
+<p>id = <span class="c">"participation"</span></p>
+<p>enabled = <span class="c">true</span></p>
+<p>engines = <span class="c">["labelled_fields"]</span></p>
+<p>[routing]</p>
+<p>required = <span class="c">['^Karta uczestnika[ \t]*$', '^Uczestnik:']</span></p>
+<p>[fields.participant]</p>
+<p>pattern = <span class="c">'^Uczestnik:[ \t]*(.+)$'</span></p>
+<p>[fields.filed]</p>
+<p>normalizer = <span class="c">"iso_date"</span></p>
+<p>pattern = <span class="c">'^Data:[ \t]*(.+)$'</span></p>
+<p>[fields.reference]</p>
+<p>pattern = <span class="c">'^Sygnatura:[ \t]*(.+)$'</span></p>
 </div>
 </div>
+<div style="flex:1; display:flex; flex-direction:column; gap:28px;">
+<div class="window in" style="--i:2;">
+<div class="titlebar"><div class="dot"></div><div class="dot"></div><div class="dot"></div><p class="t">karta-uczestnika.json</p></div>
+<div class="code" style="padding:24px 32px;">
+<p>{</p>
+<p>&nbsp;&nbsp;"participant": <span class="c">"Pracownia</span></p>
+<p><span class="c">&nbsp;&nbsp;&nbsp;&nbsp;Brzozowa sp. z&nbsp;o.o."</span>,</p>
+<p>&nbsp;&nbsp;"filed": <span class="c">"2026-11-21"</span>,</p>
+<p>&nbsp;&nbsp;"reference": <span class="c">"KIO-DEMO/2026/1"</span></p>
+<p>}</p>
 </div>
-<div class="ftr"><div class="brand"><svg aria-label="Logo doc2json" width="40" height="40" viewBox="0 0 64 64" style="width:40px; height:40px;"><rect x="0.5" y="0.5" width="63" height="63" rx="15" fill="#0a0a0a" stroke="#4a4a4a" stroke-width="1"/><g fill="none" stroke="#fff" stroke-width="4.5" stroke-linecap="round" stroke-linejoin="round"><path d="M24 15c-4.5 0-5.5 2-5.5 6v6c0 3-1.5 5-4.5 5 3 0 4.5 2 4.5 5v6c0 4 1 6 5.5 6"/><path d="M40 15c4.5 0 5.5 2 5.5 6v6c0 3 1.5 5 4.5 5-3 0-4.5 2-4.5 5v6c0 4-1 6-5.5 6"/><path d="M28 27h8M28 37h5"/></g></svg><p>doc2json</p></div><p class="src">Plan · model open-weight, API w UE/EOG, CLI i GUI</p><p class="pg">06 / 09</p></div>
-<aside>Klasa dokumentu to plik konfiguracji: schemat, wskazówki do klasyfikacji i instrukcje dla pól. Na finale chcemy dodać czwartą klasę na żywo. Moduły: OCR dla skanów, klasyfikator po treści, ekstraktor, walidacja ze schematem. Model open-weight przez API u dostawcy w UE/EOG, [model: __], [dostawca: __]. CLI dla jury, GUI z podglądem PDF obok JSON-a. [Przykład pliku jest poglądowy, format do ustalenia. Zdjąć „Plan”, gdy zadziała.]</aside>
+</div>
+<p class="body in" style="--i:3; font-size:26px;">Bez zmiany kodu i&nbsp;bez restartu GUI. Data z&nbsp;„21.11.2026” wychodzi w&nbsp;formacie ISO.</p>
+</div>
+</div>
+<div class="ftr"><div class="brand"><svg aria-label="Logo doc2json" width="40" height="40" viewBox="0 0 64 64" style="width:40px; height:40px;"><rect x="0.5" y="0.5" width="63" height="63" rx="15" fill="#0a0a0a" stroke="#4a4a4a" stroke-width="1"/><g fill="none" stroke="#fff" stroke-width="4.5" stroke-linecap="round" stroke-linejoin="round"><path d="M24 15c-4.5 0-5.5 2-5.5 6v6c0 3-1.5 5-4.5 5 3 0 4.5 2 4.5 5v6c0 4-1 6-5.5 6"/><path d="M40 15c4.5 0 5.5 2 5.5 6v6c0 3 1.5 5 4.5 5-3 0-4.5 2-4.5 5v6c0 4-1 6-5.5 6"/><path d="M28 27h8M28 37h5"/></g></svg><p>doc2json</p></div><p class="src">Wyciąg z&nbsp;pliku, w&nbsp;repo enabled = false · tests/test_class_config.py</p><p class="pg">07 / 11</p></div>
+<aside>Klasa dokumentu to plik TOML: wzorce rozpoznania, pola z typami i normalizatorami oraz kolejność silników. Trzy klasy UZP siedzą w tym samym rejestrze, tyle że ich klasyfikator i ekstraktory są w Pythonie. Czwarta klasa na slajdzie jest w całości w TOML. W repozytorium jest wyłączona, żeby ukryty zbiór dostał dokładnie trzy klasy. Na pokazie włączamy ją jedną linią i klikamy Analizuj jeszcze raz, bo GUI czyta pliki klas przy każdej analizie. Dostępne normalizatory: iso_date, money, account_number, krs, nip, regon, pesel. Dokument na pokazie jest zmyślony.</aside>
 </section>
 
 <section id="demo" class="light" data-transition="fade">
 <div class="hdr"><p>Zadanie UZP: Odwołania2json</p><p class="r">HackNation 2026</p></div>
-<h2 class="in" style="--i:0;">doc2json.pl</h2>
-<div class="window in" style="--i:1; margin-top:40px;">
-<div class="titlebar"><div class="dot"></div><div class="dot"></div><div class="dot"></div><p class="t">doc2json.pl</p></div>
-<img src="assets/demo-app.png" alt="Strona doc2json.pl: pole do upuszczenia PDF-ów sprawy obok przykładowego JSON-a odwołania" style="width:1662px; height:620px; object-fit:cover; display:block;">
+<h2 class="in" style="--i:0;">Pokaz na żywo, 2&nbsp;minuty.</h2>
+<div style="flex:1; display:flex; align-items:center; gap:48px;">
+<div class="window in" style="--i:1; flex:none; width:1040px;">
+<div class="titlebar"><div class="dot"></div><div class="dot"></div><div class="dot"></div><p class="t">127.0.0.1:8000 · python -m kio2json.gui</p></div>
+<img src="../gui/appeal.png" alt="Lokalny podgląd: strona odwołania po lewej, wynik JSON po prawej" style="width:1040px; height:600px; object-fit:cover; object-position:top left; display:block;">
 </div>
-<div class="ftr"><div class="brand"><svg aria-label="Logo doc2json" width="40" height="40" viewBox="0 0 64 64" style="width:40px; height:40px;"><rect width="64" height="64" rx="15" fill="#000"/><g fill="none" stroke="#fff" stroke-width="4.5" stroke-linecap="round" stroke-linejoin="round"><path d="M24 15c-4.5 0-5.5 2-5.5 6v6c0 3-1.5 5-4.5 5 3 0 4.5 2 4.5 5v6c0 4 1 6 5.5 6"/><path d="M40 15c4.5 0 5.5 2 5.5 6v6c0 3 1.5 5 4.5 5-3 0-4.5 2-4.5 5v6c0 4-1 6-5.5 6"/><path d="M28 27h8M28 37h5"/></g></svg><p>doc2json</p></div><p class="src">Po prawej przykład z fikcyjnymi danymi</p><p class="pg">07 / 09</p></div>
-<aside>Pokaz na żywo: wgrywamy sprawę z kilku PDF-ów, w tym jeden spoza klas, i pokazujemy JSON obok dokumentu oraz pusty plik dla negatywu. Potem to samo z CLI: [komenda CLI: __]. Zrzut strony doc2json.pl z 21.11.2026; JSON po prawej to przykład z fikcyjnymi danymi.</aside>
+<div style="flex:1; display:flex; flex-direction:column; gap:36px;">
+<div class="pt in" style="--i:2;"><p class="n">01</p><p class="h">CLI na folderze</p><p class="d">Sprawa z&nbsp;danych UZP, dokument spoza klas i&nbsp;dwa skany bez tekstu. Klasa i&nbsp;JSON dla każdego pliku.</p></div>
+<div class="pt in" style="--i:3;"><p class="n">02</p><p class="h">PDF obok JSON-a</p><p class="d">Ten sam wynik w&nbsp;GUI. Wyniki sprawy do pobrania jako ZIP.</p></div>
+<div class="pt in" style="--i:4;"><p class="n">03</p><p class="h">Nowa klasa</p><p class="d">Jedna linia w&nbsp;pliku TOML, ponowna analiza i&nbsp;JSON nowego typu.</p></div>
+</div>
+</div>
+<div class="ftr"><div class="brand"><svg aria-label="Logo doc2json" width="40" height="40" viewBox="0 0 64 64" style="width:40px; height:40px;"><rect width="64" height="64" rx="15" fill="#000"/><g fill="none" stroke="#fff" stroke-width="4.5" stroke-linecap="round" stroke-linejoin="round"><path d="M24 15c-4.5 0-5.5 2-5.5 6v6c0 3-1.5 5-4.5 5 3 0 4.5 2 4.5 5v6c0 4 1 6 5.5 6"/><path d="M40 15c4.5 0 5.5 2 5.5 6v6c0 3 1.5 5 4.5 5-3 0-4.5 2-4.5 5v6c0 4-1 6-5.5 6"/><path d="M28 27h8M28 37h5"/></g></svg><p>doc2json</p></div><p class="src">Scenariusz z&nbsp;komendami: docs/pitch/demo.md · na zrzucie syntetyczny przyklad_01 UZP</p><p class="pg">08 / 11</p></div>
+<aside>Pokaz trwa dwie minuty, scenariusz z komendami jest w docs/pitch/demo.md. Najpierw CLI na folderze z całą sprawą z danych UZP, dokumentem spoza klas i dwoma skanami: program wypisuje klasę każdego pliku, a skan odwołania wychodzi identyczny ze wzorcem UZP. Potem ten sam folder w GUI: strona PDF po lewej, JSON po prawej, wyniki do pobrania jako ZIP. Na koniec włączamy czwartą klasę jedną linią w pliku TOML i klikamy Analizuj jeszcze raz. Gdyby GUI zawiodło, ten sam krok robimy w CLI.</aside>
 </section>
 
 <section id="criteria" data-transition="fade">
 <div class="glow"></div>
 <div class="hdr"><p>Zadanie UZP: Odwołania2json</p><p class="r">HackNation 2026</p></div>
-<h2 class="in" style="--i:0;">Pod kryteria jury.</h2>
+<h2 class="in" style="--i:0;">Etap II: 50% F1, 50% elastyczności.</h2>
+<p class="lead in" style="--i:1; font-size:30px; margin-top:16px;">Jury ocenia opis architektury, kod i&nbsp;prezentację.</p>
+<div style="flex:1; display:flex; flex-direction:column; justify-content:center;">
+<div class="crit in" style="--i:2; padding:20px 0; gap:40px;"><p class="w" style="font-size:48px; width:240px;">50%</p><p class="name" style="width:440px; font-size:30px; font-weight:600;">Jakość ekstrakcji, F1</p><p class="how body" style="font-size:26px;">Ukryty zbiór: co najmniej 10 spraw przygotowanych przez UZP. U&nbsp;nas 1,000 na danych treningowych UZP i&nbsp;0,89 na 78&nbsp;PDF-ach z&nbsp;prawdziwych spraw.</p></div>
+<div class="crit in" style="--i:3; padding:20px 0; gap:40px;"><p class="w" style="font-size:48px; width:240px;">do 20&nbsp;pkt</p><p class="name" style="width:440px; font-size:30px; font-weight:600;">Rozmiar modelu</p><p class="how body" style="font-size:26px;">Domyślnie bez LLM. Według README UZP im mniejszy model, tym więcej punktów. Zasady tej punktacji UZP jeszcze zmienia.</p></div>
+<div class="crit in" style="--i:4; padding:20px 0; gap:40px;"><p class="w" style="font-size:48px; width:240px;">do 20&nbsp;pkt</p><p class="name" style="width:440px; font-size:30px; font-weight:600;">Nowe klasy bez przebudowy</p><p class="how body" style="font-size:26px;">Klasa to plik TOML: rozpoznanie, pola, normalizatory i&nbsp;silnik.</p></div>
+<div class="crit in" style="--i:5; padding:20px 0; gap:40px;"><p class="w" style="font-size:48px; width:240px;">do 10&nbsp;pkt</p><p class="name" style="width:440px; font-size:30px; font-weight:600;">Inne funkcje</p><p class="how body" style="font-size:26px;">GUI z&nbsp;PDF-em obok JSON-a, ZIP z&nbsp;wynikami, strona i&nbsp;API w&nbsp;Docker Compose.</p></div>
+<div class="crit in" style="--i:6; padding:20px 0; gap:40px;"><p class="w" style="font-size:48px; width:240px;">premia</p><p class="name" style="width:440px; font-size:30px; font-weight:600;">Przejrzystość</p><p class="how body" style="font-size:26px;">Reguły w&nbsp;czytelnych plikach i&nbsp;null zamiast zgadywania. Źródło przy każdym polu to następny krok.</p></div>
+</div>
+<div class="ftr"><div class="brand"><svg aria-label="Logo doc2json" width="40" height="40" viewBox="0 0 64 64" style="width:40px; height:40px;"><rect x="0.5" y="0.5" width="63" height="63" rx="15" fill="#0a0a0a" stroke="#4a4a4a" stroke-width="1"/><g fill="none" stroke="#fff" stroke-width="4.5" stroke-linecap="round" stroke-linejoin="round"><path d="M24 15c-4.5 0-5.5 2-5.5 6v6c0 3-1.5 5-4.5 5 3 0 4.5 2 4.5 5v6c0 4 1 6 5.5 6"/><path d="M40 15c4.5 0 5.5 2 5.5 6v6c0 3 1.5 5 4.5 5-3 0-4.5 2-4.5 5v6c0 4-1 6-5.5 6"/><path d="M28 27h8M28 37h5"/></g></svg><p>doc2json</p></div><p class="src">Regulamin § 2 ust. 4 · README UZP, sekcje 5, 6 i&nbsp;7</p><p class="pg">09 / 11</p></div>
+<aside>Regulamin dzieli finał pół na pół: F1 i elastyczność, a elastyczność jury ocenia z opisu architektury, kodu i prezentacji. README UZP rozpisuje ją na punkty: do 20 za rozmiar modelu, do 20 za nowe klasy bez przebudowy i do 10 za inne funkcje, na przykład GUI. Zasady punktacji modelu UZP jeszcze zmienia. Mówimy tylko o zasadzie z README. Domyślnie nie używamy modelu. Profil z Ministral 3B zostaje opcjonalny: na danych UZP nie zmienił wyniku, a na naszych prawdziwych dokumentach dodał 0,009 i 0,013 F1 w rundzie 2. README UZP osobno premiuje przejrzystość ekstrakcji.</aside>
+</section>
+
+<section id="value" class="light" data-transition="fade">
+<div class="hdr"><p>Zadanie UZP: Odwołania2json</p><p class="r">HackNation 2026</p></div>
+<h2 class="in" style="--i:0;">Co zyskuje UZP.</h2>
 <div style="flex:1; display:flex; align-items:center;">
-<div class="row" style="gap:64px; width:100%;">
-<div class="metric in" style="--i:1;"><p class="val" style="font-size:160px; letter-spacing:-6px;">50%</p><p class="lbl">Jakość ekstrakcji (F1)</p></div>
-<div class="metric in" style="--i:2;"><p class="val" style="font-size:160px; letter-spacing:-6px;">30%</p><p class="lbl">Elastyczność</p></div>
-<div class="metric in" style="--i:3;"><p class="val" style="font-size:160px; letter-spacing:-6px;">20%</p><p class="lbl">Architektura</p></div>
+<div class="pts3" style="width:100%; gap:44px 48px;">
+<div class="pt in" style="--i:1;"><p class="n">01</p><p class="h">Na miejscu, bez GPU</p><p class="d">Instalacja przez pip albo Docker Compose, dokumenty nie opuszczają urzędu. <span style="white-space:nowrap">150&nbsp;PDF-ów:</span> 83&nbsp;s na 4&nbsp;procesach, 402&nbsp;s na 1&nbsp;procesie przy pełnym obciążeniu CPU. Limit UZP: 45&nbsp;minut.</p></div>
+<div class="pt in" style="--i:2;"><p class="n">02</p><p class="h">Zero kosztów modelu</p><p class="d">Domyślnie nie wołamy żadnego LLM. Nie ma opłat za tokeny ani klucza API, a&nbsp;dane nie wychodzą na zewnątrz.</p></div>
+<div class="pt in" style="--i:3;"><p class="n">03</p><p class="h">Wynik do sprawdzenia</p><p class="d">Reguły są w&nbsp;czytelnych plikach, a&nbsp;GUI pokazuje PDF obok JSON-a. Następny krok: strona i&nbsp;fragment źródła przy każdym polu.</p></div>
+<div class="pt in" style="--i:4;"><p class="n">04</p><p class="h">Kolejne pisma KIO</p><p class="d">Nowy typ dokumentu to plik TOML. Pierwszy kandydat: przystąpienie do postępowania. W&nbsp;2025&nbsp;r. zgłoszono ich 5881.</p></div>
+<div class="pt in" style="--i:5;"><p class="n">05</p><p class="h">Skala</p><p class="d">W&nbsp;2025&nbsp;r. do Prezesa KIO wpłynęło 5986 odwołań. Gdyby dane z&nbsp;każdego <span style="white-space:nowrap">PDF-u</span> przepisywać ręcznie, to około 900&nbsp;godzin rocznie.<br><span style="font-size:20px;">Założenia, nie pomiar: 3&nbsp;PDF-y na odwołanie, 3&nbsp;minuty na PDF.</span></p></div>
+<div class="pt in" style="--i:6;"><p class="n">06</p><p class="h">Droga do pilotażu</p><p class="d">Pomiar F1 naszym evals na próbce spraw z&nbsp;jednego miesiąca. Potem instalacja w&nbsp;sieci UZP przez Docker Compose.</p></div>
 </div>
 </div>
-<div class="ftr"><div class="brand"><svg aria-label="Logo doc2json" width="40" height="40" viewBox="0 0 64 64" style="width:40px; height:40px;"><rect x="0.5" y="0.5" width="63" height="63" rx="15" fill="#0a0a0a" stroke="#4a4a4a" stroke-width="1"/><g fill="none" stroke="#fff" stroke-width="4.5" stroke-linecap="round" stroke-linejoin="round"><path d="M24 15c-4.5 0-5.5 2-5.5 6v6c0 3-1.5 5-4.5 5 3 0 4.5 2 4.5 5v6c0 4 1 6 5.5 6"/><path d="M40 15c4.5 0 5.5 2 5.5 6v6c0 3 1.5 5 4.5 5-3 0-4.5 2-4.5 5v6c0 4-1 6-5.5 6"/><path d="M28 27h8M28 37h5"/></g></svg><p>doc2json</p></div><p class="src">Wagi z opisu wyzwania UZP, sekcja 8</p><p class="pg">08 / 09</p></div>
-<aside>F1: odtwarzamy ocenę jury na danych treningowych przy każdej zmianie, holdout 51-60 wyłapuje przeuczenie. Elastyczność: nowe klasy z konfiguracji, mały model open-weight, GUI obok CLI. README organizatora daje elastyczności 50 procent, w tym punkty za mniejszy model. Architektura: osobne moduły, testy, README z instrukcją CLI.</aside>
+<div class="ftr"><div class="brand"><svg aria-label="Logo doc2json" width="40" height="40" viewBox="0 0 64 64" style="width:40px; height:40px;"><rect width="64" height="64" rx="15" fill="#000"/><g fill="none" stroke="#fff" stroke-width="4.5" stroke-linecap="round" stroke-linejoin="round"><path d="M24 15c-4.5 0-5.5 2-5.5 6v6c0 3-1.5 5-4.5 5 3 0 4.5 2 4.5 5v6c0 4 1 6 5.5 6"/><path d="M40 15c4.5 0 5.5 2 5.5 6v6c0 3 1.5 5 4.5 5-3 0-4.5 2-4.5 5v6c0 4-1 6-5.5 6"/><path d="M28 27h8M28 37h5"/></g></svg><p>doc2json</p></div><p class="src">Raport KIO za 2025&nbsp;r. (UZP) · evals/results/round3.json, adaptive-ocr-budget.json</p><p class="pg">10 / 11</p></div>
+<aside>Dla UZP liczy się to, że rozwiązanie działa u nich: instalacja przez pip albo Docker Compose, bez GPU i bez wysyłania dokumentów do zewnętrznych usług. Domyślnie nie ma też kosztów modelu. Wynik da się sprawdzić, bo GUI pokazuje dokument obok danych, a reguły są w czytelnych plikach; źródło przy każdym polu to nasz następny krok. Kolejne typy pism dodaje się plikiem TOML. Skala z raportu UZP: 5986 odwołań w 2025 r. i 5881 zgłoszonych przystąpień. Szacunek 900 godzin to tylko rachunek na założeniach: trzy PDF-y na odwołanie i trzy minuty ręcznej pracy na PDF. Nie wiemy, ile z tego UZP robi dziś ręcznie, i tego nie mierzyliśmy. Czas 402 s zmierzyliśmy na Apple M1 z 16 GB przy ośmiu pętlach obciążających CPU. Pilotaż proponujemy w dwóch krokach: F1 na próbce spraw z jednego miesiąca, policzone naszym evals, a potem instalacja w sieci UZP.</aside>
 </section>
 
 <section id="closing">
@@ -151,6 +231,7 @@ h1 { font-size:96px } h2 { font-size:64px } h3 { font-size:44px }
 <div style="flex:1; display:flex; flex-direction:column; gap:40px;">
 <h1 class="in" style="--i:0; font-size:144px; letter-spacing:-6px; line-height:0.95;">Od dokumentów<br>do danych.</h1>
 <p class="lead in" style="--i:1; font-size:40px;">Dziękujemy.</p>
+<p class="mono in" style="--i:1; color:#8f8f8f;">github.com/00200200/HackNation2026-2</p>
 </div>
 <div class="in" style="--i:2; width:380px; flex:none; display:flex; flex-direction:column; align-items:center; gap:20px;">
 <div style="width:380px; height:380px; background:#ffffff; border-radius:20px; padding:40px; box-sizing:border-box; display:flex;">
@@ -159,8 +240,8 @@ h1 { font-size:96px } h2 { font-size:64px } h3 { font-size:44px }
 <p class="mono">doc2json.pl</p>
 </div>
 </div>
-<div class="ftr"><div class="brand"><svg aria-label="Logo doc2json" width="40" height="40" viewBox="0 0 64 64" style="width:40px; height:40px;"><rect x="0.5" y="0.5" width="63" height="63" rx="15" fill="#0a0a0a" stroke="#4a4a4a" stroke-width="1"/><g fill="none" stroke="#fff" stroke-width="4.5" stroke-linecap="round" stroke-linejoin="round"><path d="M24 15c-4.5 0-5.5 2-5.5 6v6c0 3-1.5 5-4.5 5 3 0 4.5 2 4.5 5v6c0 4 1 6 5.5 6"/><path d="M40 15c4.5 0 5.5 2 5.5 6v6c0 3 1.5 5 4.5 5-3 0-4.5 2-4.5 5v6c0 4-1 6-5.5 6"/><path d="M28 27h8M28 37h5"/></g></svg><p>doc2json</p></div><p class="src">Michał Furgała · Ryszard Kacperski · Łukasz Lenkiewicz · Dominik Galus</p><p class="pg">09 / 09</p></div>
-<aside>Dziękujemy. Demo na doc2json.pl, kod na github.com/00200200/HackNation2026-2. Zespół: Michał Furgała, Ryszard Kacperski, Łukasz Lenkiewicz, Dominik Galus. [Sprawdzić, czy repo jest publiczne.]</aside>
+<div class="ftr"><div class="brand"><svg aria-label="Logo doc2json" width="40" height="40" viewBox="0 0 64 64" style="width:40px; height:40px;"><rect x="0.5" y="0.5" width="63" height="63" rx="15" fill="#0a0a0a" stroke="#4a4a4a" stroke-width="1"/><g fill="none" stroke="#fff" stroke-width="4.5" stroke-linecap="round" stroke-linejoin="round"><path d="M24 15c-4.5 0-5.5 2-5.5 6v6c0 3-1.5 5-4.5 5 3 0 4.5 2 4.5 5v6c0 4 1 6 5.5 6"/><path d="M40 15c4.5 0 5.5 2 5.5 6v6c0 3 1.5 5 4.5 5-3 0-4.5 2-4.5 5v6c0 4-1 6-5.5 6"/><path d="M28 27h8M28 37h5"/></g></svg><p>doc2json</p></div><p class="src">Michał Furgała · Ryszard Kacperski · Łukasz Lenkiewicz · Dominik Galus</p><p class="pg">11 / 11</p></div>
+<aside>Dziękujemy. Kod jest na github.com/00200200/HackNation2026-2, a podgląd online na doc2json.pl. Chętnie odpowiemy na pytania.</aside>
 </section>
 
 </body></html>

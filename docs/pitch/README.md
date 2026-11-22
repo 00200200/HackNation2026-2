@@ -1,28 +1,61 @@
-# Pitch doc2json (finał HackNation 2026)
+# doc2json pitch (HackNation 2026 final)
 
-Kopia prezentacji z claude.ai (Artifact typu Slides, wersja z 22.11.2026), zapisana przed zmianą konta.
-Prezentacja ma 9 slajdów, jest czarno-biała, w stylu Linear i Tailscale, z czcionkami Geist i Geist Mono.
+Eleven slides in Polish for the UZP jury, black and white, set in Geist and Geist Mono. The slides
+and the demo script are in Polish because the jury and the presenters speak Polish.
 
-| Plik | Co to jest |
+| File | What it is |
 |---|---|
-| `doc2json-pitch.pdf` | eksport PDF, 9 stron 1920×1080 |
-| `index.html` | wszystkie slajdy na jednej stronie. Otwórz w przeglądarce. Czcionki bierze z `frontend/public/fonts/` |
-| `project/deck.json`, `project/deck.css`, `project/slides/*.html` | źródło slajdów w formacie typu Slides. Notatki prelegenta są w `<aside>` |
-| `assets/demo-app.png` | zrzut doc2json.pl z 21.11.2026, użyty na slajdzie 7 |
+| `doc2json-pitch.pdf` | PDF export, 11 pages at 1920×1080 |
+| `index.html` | All slides on one page, built by `build.py`. Open it in a browser. Fonts come from `frontend/public/fonts/` |
+| `project/deck.json`, `project/deck.css`, `project/slides/*.html` | Slide sources in the claude.ai Slides format. Speaker notes are in each `<aside>` |
+| `build.py` | Assembles `index.html` from the slide order in `deck.json` |
+| `demo.md` | Two-minute live demo script with the commands, checked on `main` on 22.11.2026 |
+| `demo/karta-uczestnika.pdf` | Invented form for the fourth-class demo, printed from `demo/karta-uczestnika.html` |
 
-Po zmianie slajdu odbuduj `index.html` i PDF. W `index.html` każdy slajd jest kopią pliku z `project/slides/`,
-a adres `/_blob/...` obrazka zamieniono na `assets/demo-app.png`. PDF drukuje headless Chrome z `index.html`
-(`--print-to-pdf`, rozmiar strony ustawia `@page`).
+Slides reference images by paths relative to `index.html`; slide 8 shows `../gui/appeal.png`.
 
-## Placeholdery do uzupełnienia
+## Rebuild
 
-- Slajd 5 „Liczymy F1 tak jak jury”: dwa wyniki `[ __ ]` (F1 dla wszystkich dokumentów i F1 dla holdoutu 51-60)
-  oraz `[commit __]` w stopce. Liczby wpisz tylko z `evals/results/latest.json`, z podpisem „dane treningowe (syntetyczne)”.
-- Slajd 6 „Nowa klasa to nowy plik”: przykład pliku klasy jest poglądowy, a jego format nie jest jeszcze ustalony.
-  Stopka ma dopisek „Plan”. W notatkach są `[model: __]` i `[dostawca: __]`.
-- Slajd 7 „doc2json.pl”: w notatkach jest `[komenda CLI: __]`.
-- Slajd 9: sprawdź, czy repo github.com/00200200/HackNation2026-2 jest publiczne. Kod QR prowadzi do https://doc2json.pl.
-  Kod nie był skanowany telefonem.
+After editing a slide, rebuild the page and the PDF from the repository root (macOS path to Chrome
+shown; on Linux use `google-chrome`):
 
-Wagi na slajdzie 8 (50/30/20) pochodzą z opisu wyzwania, sekcja 8. README organizatora podaje 50% za
-elastyczność, a jury nie potwierdziło, który podział obowiązuje.
+```sh
+python docs/pitch/build.py
+"/Applications/Google Chrome.app/Contents/MacOS/Google Chrome" --headless=new --no-pdf-header-footer \
+  --print-to-pdf="$PWD/docs/pitch/doc2json-pitch.pdf" "file://$PWD/docs/pitch/index.html"
+```
+
+`@page` in `index.html` sets the page size, and print mode turns off the entry animations.
+
+## Sources of the numbers and claims
+
+| Slide | Claim | Source |
+|---|---|---|
+| 2 (notes), 10 | 5986 appeals and 5881 accessions filed with KIO in 2025 | *Informacja o działalności Krajowej Izby Odwoławczej za 2025 r.*, UZP, published 26.06.2026, [gov.pl](https://www.gov.pl/web/uzp/informacja-roczna-z-dzialalnosci-krajowej-izby-odwolawczej-za-2025-r) |
+| 6, 9 | F1 1.000 on 196 synthetic training PDFs, 0.9974 on 30 organizer scans (29/30 exact), 0.8900 and 0.8926 on the two real development sets (0.89 pooled over 78 PDFs), routing 78/78 | `evals/results/round3.json` (`steps.verified`), `WORKLOG.md` "Last eval" |
+| 6 | All three sets are development data, so none predicts the hidden-set score | `README.md` (results sections), `WORKLOG.md` "Last eval" |
+| 9 | Ministral 3B added 0.0087 and 0.0131 micro F1 on the real development sets in round 2 | `evals/results/round2-integration.json` |
+| 5 (notes), 10 | 150 PDFs in 83 s with four workers | `evals/results/round3.json` (`timing`); that entry does not record the machine |
+| 10 | 150 PDFs in 402 s with one worker under eight CPU busy loops, Apple M1 with 16 GB | `evals/results/adaptive-ocr-budget.json` (`runs`, profile `loaded-serial`) |
+| 5 | Open-source components named on the slide, as the Regulamin requires for external solutions | `pyproject.toml`, `uv.lock`, the imports in `kio2json/`, `compose.yaml`, `packaging/polish_ocr_data/`, `frontend/public/fonts/`; `docs/task/regulamin.pdf`, § 4 ust. 1 |
+| 7, 8 | The fourth class turns an invented form into the JSON shown, with no code change and no GUI restart | Run on `main` on 22.11.2026, steps in `demo.md` |
+| 9 | Stage II is 50% F1 and 50% flexibility, judged on the architecture description, code and presentation; the hidden set has at least 10 appeal cases | `docs/task/regulamin.pdf`, § 2 ust. 4 |
+| 9 | Up to 20 points for model size (a smaller model scores more, rules under revision), up to 20 for new classes, up to 10 for other features | `data/uzp/README.md`, section 7 |
+| 10 | About 900 hours per year if every PDF were retyped by hand | Estimate, not a measurement: 5986 appeals × 3 PDFs × 3 minutes per PDF |
+
+Not on the slides because no written source exists: a second-hand relay in issue #64 says that without an
+LLM the model-size criterion gets the maximum score ("Tak, dokładnie", 13:51; no author or original question
+recorded). The same table says the hidden set is synthetic. Both stay UNCONFIRMED until someone with Discord
+access records the original messages.
+
+## Open items
+
+- Slide 6 shows our strict F1 from `evals/metrics.py`. Add the F1 under the organizer's formula
+  (#59) once it lands.
+- Slides 3 and 5 say "pusty wynik" for unrelated documents. That is true both for today's empty file and
+  for the `{}` that #57 introduces; the demo shows whichever is on `main`.
+- Slide 10 names per-field evidence as the next step: #40 is not on `main`.
+- Once #66 deploys the solution on the evaluation VM, add it to slide 10 (Docker, 2 vCPU, no GPU, no LLM)
+  with the measured 150-PDF time there, and the GUI address on the VM if one is served.
+- Slide 11: the GitHub link works for the jury only after the team grants access (#48). The QR code
+  leads to https://doc2json.pl.
