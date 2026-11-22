@@ -8,8 +8,8 @@ sudo env PYTHONPATH="$PWD/repo" "$PWD/.venv/bin/python" -P -m kio2json --input "
 
 The command reads every PDF recursively. For example, `input/case A/appeal.pdf`
 produces `output/case A/appeal.json`. It exits automatically with status 0 on
-success. UZP requires `{}` for unrelated documents. Releases predating the fix
-for issue #57 write a zero-byte JSON file for those documents.
+success. A document outside the three known classes produces `{}`, as UZP
+requires.
 
 The default rules-only profile uses **no external services**. Its Python runtime,
 OCR models and dependencies are installed on the VM. Each invocation starts
