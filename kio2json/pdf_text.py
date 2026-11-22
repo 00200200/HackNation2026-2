@@ -17,8 +17,16 @@ import pdfplumber
 from pdfplumber.utils import get_bbox_overlap, obj_to_bbox
 from PIL import Image
 
-from .ocr_budget import CROP_TIMEOUT_MS, REREAD_PAGE_TIMEOUT_SECONDS, RereadExpired, remaining_ms, require_remaining_ms
+from .ocr_budget import (
+    CROP_TIMEOUT_MS,
+    REREAD_PAGE_TIMEOUT_SECONDS,
+    RereadExpired,
+    document_budget,
+    remaining_ms,
+    require_remaining_ms,
+)
 from .ocr_normalize import MAIL_TOKEN_RE, confirmed_email, normalize_ocr
+from .ocr_orientation import correction_angle, rotation_improves_text, source_box
 
 # The organizer README says the key information sits on the first three pages.
 MAX_PAGES = 3
@@ -161,6 +169,11 @@ class WordBox(NamedTuple):
     x1: float
     y1: float
 
+    @property
+    def layout_box(self) -> "WordBox":
+        """Upright reading coordinates for rows and columns; tuple coordinates locate PDF ink."""
+        return getattr(self, "_upright", self)
+
 
 class OCRWord(WordBox):
     """A Tesseract reading with the same six positional fields used by the layout readers."""
@@ -268,16 +281,23 @@ class _Raster(NamedTuple):
     bbox: tuple[float, ...]
     scale: float
     page_number: int
+    orientation_eligible: bool = False
 
 
 def _render(page) -> _Raster:
     image = page.to_image(resolution=OCR_DPI)
-    return _Raster(image.original, image.bbox, image.scale, page.page_number)
+    eligible = any(page.images) and (
+        not page.chars or (_page_sized_image(page) and damaged_text_layer(page.extract_text() or ""))
+    )
+    return _Raster(image.original, image.bbox, image.scale, page.page_number, eligible)
 
 
 def _tesseract(image: _Raster, words: list[WordBox] | None, *, explicit_dpi: bool, reread: bool = False) -> str:
+    if reread:
+        require_remaining_ms()
+    start = len(words) if words is not None else 0
     try:
-        return _recognize_raster(image, words, explicit_dpi=explicit_dpi, dpi=OCR_DPI, reread=reread)
+        text = _recognize_raster(image, words, explicit_dpi=explicit_dpi, dpi=OCR_DPI, reread=reread)
     except _PrimaryPageTimeout:
         if not _primary_retry_ms():
             raise
@@ -285,10 +305,44 @@ def _tesseract(image: _Raster, words: list[WordBox] | None, *, explicit_dpi: boo
         with image.original.reduce(2) as reduced:
             retry = image._replace(original=reduced, scale=image.scale / 2)
             return _recognize_raster(retry, words, explicit_dpi=explicit_dpi, dpi=RETRY_DPI, reread=False)
+    if not image.orientation_eligible or not remaining_ms(1):
+        return text
+    candidate_words = [] if words is not None else None
+    # The second read and its e-mail crops share both this page cap and the
+    # existing document cutoff. Preserve the successful primary on any failure.
+    deadline = monotonic() + remaining_ms(8000) / 1000
+    try:
+        with document_budget(deadline):
+            angle = correction_angle(image.original, OCR_DPI)
+            if not angle:
+                return text
+            require_remaining_ms()
+            with image.original.rotate(angle, expand=True) as rotated:
+                candidate = _recognize_raster(
+                    image._replace(original=rotated),
+                    candidate_words,
+                    explicit_dpi=explicit_dpi,
+                    dpi=OCR_DPI,
+                    reread=True,
+                    angle=angle,
+                )
+            if not rotation_improves_text(text, candidate) or not remaining_ms(1):
+                return text
+    except (OSError, RuntimeError, ValueError, RereadExpired):
+        return text
+    if words is not None:
+        words[start:] = candidate_words
+    return candidate
 
 
 def _recognize_raster(
-    image: _Raster, words: list[WordBox] | None, *, explicit_dpi: bool, dpi: int, reread: bool
+    image: _Raster,
+    words: list[WordBox] | None,
+    *,
+    explicit_dpi: bool,
+    dpi: int,
+    reread: bool,
+    angle: int = 0,
 ) -> str:
     """Recognize the page and verify suspect e-mail separators against their image crops."""
     from tesserocr import PSM, RIL, PyTessBaseAPI, iterate_level
@@ -317,7 +371,10 @@ def _recognize_raster(
         english = None
         cursor = 0
         if iterator is not None:
-            left, top = image.bbox[:2]
+            left, top, right, bottom = image.bbox
+            layout_size = (right - left, bottom - top)
+            if angle in (90, 270):
+                layout_size = layout_size[::-1]
             for item in iterate_level(iterator, RIL.WORD):
                 box = item.BoundingBox(RIL.WORD)
                 if not box:
@@ -325,15 +382,39 @@ def _recognize_raster(
                 token = item.GetUTF8Text(RIL.WORD)
                 x0, y0, x1, y1 = box
                 if words is not None:
+                    if angle:
+                        px0, py0, px1, py1 = source_box(box, image.original.size, angle)
+                        physical = (
+                            min(right, left + px0 / image.scale),
+                            min(bottom, top + py0 / image.scale),
+                            min(right, left + px1 / image.scale),
+                            min(bottom, top + py1 / image.scale),
+                        )
+                    else:
+                        physical = (
+                            left + x0 / image.scale,
+                            top + y0 / image.scale,
+                            left + x1 / image.scale,
+                            top + y1 / image.scale,
+                        )
                     word = OCRWord(
                         image.page_number,
                         token,
-                        left + x0 / image.scale,
-                        top + y0 / image.scale,
-                        left + x1 / image.scale,
-                        top + y1 / image.scale,
+                        *physical,
                         confidence=item.Confidence(RIL.WORD),
                     )
+                    if angle:
+                        # Layout readers also need the word in the corrected, page-local frame.
+                        width, height = layout_size
+                        word._upright = WordBox(
+                            image.page_number,
+                            token,
+                            min(width, x0 / image.scale),
+                            min(height, y0 / image.scale),
+                            min(width, x1 / image.scale),
+                            min(height, y1 / image.scale),
+                        )
+                        word.upright_page_size = layout_size
                     words.append(word)
                 start = text.find(token, cursor)
                 if start < 0:
@@ -368,8 +449,9 @@ def _text_layer(page, force_ocr: bool, repair_image_text: bool) -> str | None:
     if page.page_number == 1:
         # The layout reader also consumes WordBox, so import after this module is initialized.
         from .appeal_layout import restore_overprinted_card
+        from .receipt_reading import restore_receipt_spacing
 
-        return restore_overprinted_card(page, text)
+        return restore_overprinted_card(page, restore_receipt_spacing(page, text))
     return text
 
 
@@ -487,7 +569,16 @@ def read_pages(
                 text = normalize_ocr(text)
             elif include:
                 text, spacing = _native_spacing(page, text)
-                if word_boxes is not None:
+                verified = None
+                if selected in TESSERACT_ENGINES and not reread and any(page.images) and _page_sized_image(page):
+                    from .text_layer_repair import repair_layer
+
+                    verified = repair_layer(page, text, spacing, recognize)
+                if verified is not None:
+                    text, verified_boxes = verified
+                    if word_boxes is not None:
+                        words.extend(verified_boxes)
+                elif word_boxes is not None:
                     words.extend(
                         WordBox(page.page_number, w["text"], w["x0"], w["top"], w["x1"], w["bottom"])
                         for w in page.extract_words(**spacing)

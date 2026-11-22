@@ -59,6 +59,19 @@ for file, key in [("transfer.json", "przelew_bankowy"), ("nested/scan.json", "Od
     if key not in json.loads(Path("output", file).read_text(encoding="utf-8")):
         raise SystemExit(f"Smoke test failed to recognize {file}")
 PY
+# Keep a provisioned credential across upgrades. Only the deployment owner can read a new file.
+if [[ ! -e "$root/.env" ]]; then
+    (
+        umask 077
+        set -C
+        cat > "$root/.env" <<'ENV'
+KIO_LLM_BASE_URL=https://api.eu.mistral.ai/v1
+KIO_LLM_MODEL=ministral-3b-2512
+KIO_LLM_API_KEY=
+ENV
+    )
+    echo "Set KIO_LLM_API_KEY in $root/.env to enable Ministral for the jury run."
+fi
 install -m 644 "$repo/deploy/RUN.md" "$root/RUN.md"
 echo "Installed $release. Run from $root:"
 sed -n '/^sudo /p' "$root/RUN.md"

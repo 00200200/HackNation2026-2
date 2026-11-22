@@ -6,8 +6,18 @@ from rapidfuzz.distance import Levenshtein
 from stdnum.pl import nip
 
 from .common import ATTORNEY_RE, EMAIL_RE, PERSON, UPPER, registry_ids, squash
-from .grant_traders import OTHER_PARTY, UNDERSIGNED, sole_trader
-from .personal_names import compatible_names, resolve_attorneys
+from .grant_trader_signatures import add_trader_signers, issuer_signature_text
+from .grant_traders import (
+    GRANTOR_CAPTION,
+    OTHER_PARTY,
+    PASSIVE_ISSUER,
+    UNDERSIGNED,
+    _business_name,
+    printed_firm,
+    sole_trader,
+    stationery_firm,
+)
+from .personal_names import compatible_names, nominative, resolve_attorneys
 
 LEGAL_FORM = (
     r"(?i:(?:sp\.|spółka)\s?z\s?o\.\s?o(?:\.|(?=\s+z siedzibą))(?:\s?sp\.\s?k(?:\.|(?=\s+z siedzibą)))?|S\.\s?A\.|sp\.\s?k\.|sp\.\s?j\.|sp\.\s?p\.|s\.c\."
@@ -44,6 +54,7 @@ def _company_name(raw: str) -> str:
 
 
 GRANT = re.compile(r"\b(?:udziela(?:m|my|ją)?|ustanawia(?:m|my|ją)?|upoważnia(?:m|my|ją)?)\b", re.IGNORECASE)
+ISSUANCE = re.compile(rf"{GRANT.pattern}|{PASSIVE_ISSUER}", re.IGNORECASE)
 GRANTOR = re.compile(
     r"\b(?:mocodawc[ąa](?:\s+jest)?|działając\s+w\s+imieniu)\b|^wykonawcy wspólnie\b[^:]*\bkonsorcjum\)\s*:",
     re.IGNORECASE | re.MULTILINE,
@@ -212,7 +223,7 @@ def _principals(text: str) -> list[dict]:
     grant = GRANT.search(text)
     if grant:
         text = text[: grant.start()]
-    elif not GRANTOR.search(text):
+    elif not (GRANTOR.search(text) or re.search(rf"{PASSIVE_ISSUER}|{GRANTOR_CAPTION}", text, re.IGNORECASE)):
         return []
     if trader := sole_trader(text, COMPANY_RE):
         return [trader]
@@ -539,6 +550,45 @@ def principal_name(principal: dict) -> str:
     return principal["nazwa"] or principal["imie_nazwisko"]
 
 
+BUSINESS_ISSUER = re.compile(
+    rf"^[ \t]*(?:{GRANTOR_CAPTION})[ \t]*:[ \t]*(?:\n[ \t]*)?"
+    r"(?:(?:firma|nazwa firmy)\b[ \t]*:?[ \t]*|"
+    r'(?:przedsiębiorstwo|zakład|pracownia|warsztat|sklep|studio|piekarnia)\b[^:\n„"«]*(?=[„"«]))',
+    re.IGNORECASE | re.MULTILINE,
+)
+PROPRIETOR_SIGNATURE = re.compile(
+    rf"(?i:^[ \t]*podpis (?:właściciela|właścicielki|przedsiębiorcy)[ \t]*:[ \t]*(?:\n[ \t]*)?)({PERSON})[ \t]*$",
+    re.MULTILINE,
+)
+OTHER_SIGNATURE = re.compile(
+    rf"{OTHER_PARTY.pattern}|\b(?:przyjmuję pełnomocnictwo|pełnomocnictwo przyjmuję|przyjęcie pełnomocnictwa)\b",
+    re.IGNORECASE | re.MULTILINE,
+)
+
+
+def _signed_proprietor(body: str, grant: re.Match) -> dict | None:
+    declaration = body[: grant.start()]
+    issuer = BUSINESS_ISSUER.search(declaration)
+    captions = re.findall(rf"\b(?:{GRANTOR_CAPTION}|działając w imieniu)\b", declaration, re.IGNORECASE)
+    if not issuer or len(captions) != 1:
+        return None
+    clause = OTHER_PARTY.split(declaration[issuer.start() :], maxsplit=1)[0]
+    business = _business_name(clause[len(issuer[0]) :], narrative=False)
+    ids = registry_ids(clause)
+    if not business or ids["krs"] or re.search(rf"{LEGAL_FORM}|\bspółk\w*\b", clause, re.IGNORECASE):
+        return None
+
+    # An entrepreneur may also sign as an accepting attorney or a witness.
+    closing = OTHER_SIGNATURE.split(body[grant.end() :], maxsplit=1)[0]
+    names = {squash(m[1]) for m in PROPRIETOR_SIGNATURE.finditer(closing)}
+    if len(names) != 1:
+        return None
+    name = names.pop()
+    if nominative(name, "nom") != name or any(a["imie_nazwisko"] == name for a in _attorneys(body)):
+        return None
+    return {"imie_nazwisko": name, "krs": None, "nazwa": business, "nip": ids["nip"], "typ": "osoba_fizyczna"}
+
+
 RECIPIENT_START = re.compile(
     rf"{OTHER_PARTY.pattern}|{APPOINTMENT_END.pattern}|\b(?:na\s+rzecz|dla(?=\s+(?:adw|r\.|radc|pan|(?-i:{PERSON}))))"
     r"|\b(?:adw\.|adwokatowi\b|r\.\s*pr\.|radcy\s+prawnemu\b|panu\b|pani\b)",
@@ -576,6 +626,12 @@ def grant_parties(text: str) -> tuple[list[dict], list[tuple[dict, str]]]:
                 registry_text = text[: len(text) - len(details) + boundary.start()]
                 details = details[: boundary.start()]
             principals = [_company_data(_company_name(company[1]), details)]
+        else:
+            subject = RECIPIENT_START.split(tail, maxsplit=1)[0]
+            if trader := sole_trader(subject, COMPANY_RE):
+                principals = [trader]
+    if not principals and grant and (trader := _signed_proprietor(body, grant)):
+        principals = [trader]
     officers = _declared_officers(body[: grant.start()]) if grant else []
     if heading and grant:
         # An explicit issuer row may precede the title, alongside unrelated letterhead.
@@ -624,6 +680,11 @@ def grant_parties(text: str) -> tuple[list[dict], list[tuple[dict, str]]]:
             officers = []
     if len(principals) == 1 and principals[0]["typ"] == "osoba_prawna" and principals[0]["nip"] is None:
         _issuer_identifiers(registry_text, principals[0])
+    if len(principals) == 1 and principals[0]["typ"] == "osoba_fizyczna" and principals[0]["imie_nazwisko"]:
+        trader = principals[0]
+        trader["nazwa"] = printed_firm(trader["nazwa"]) or stationery_firm(
+            text, heading, trader["imie_nazwisko"], trader["nip"]
+        )
     return principals, officers
 
 
@@ -650,12 +711,15 @@ def finish_record(
         people = signers[principal_names.index(principal["nazwa"])]
         if name not in people:
             people.append(name)
-    _add_stamp_signers(text, principal_names, {a["imie_nazwisko"] for a in attorneys}, signers)
+    attorney_names = {a["imie_nazwisko"] for a in attorneys}
+    _add_stamp_signers(text, principal_names, attorney_names, signers)
     for principal, people in zip(principals, signers, strict=True):
         if principal["typ"] != "osoba_fizyczna" or not (name := principal["imie_nazwisko"]):
             continue
         if CIVIL_PARTNERS.search(text):
             people[:] = [name]
+        elif len(principals) == 1 and (grant := ISSUANCE.search(text)):
+            add_trader_signers(text, grant, name, attorney_names, people)
         elif name not in people and re.search(
             rf"(?:\b{UNDERSIGNED}[, ]+"
             rf"|\bpodpis (?:właściciela|właścicielki|przedsiębiorcy|mocodawcy)\s*:\s*){re.escape(name)}\b",
@@ -676,6 +740,7 @@ def extract(text: str) -> dict:
     text = operative_grant_text(text)
     principals, officers = grant_parties(text)
     attorneys = _attorneys(text)
+    text = issuer_signature_text(text, principals, ISSUANCE.search(text))
     signers = _signers(text, [principal_name(p) for p in principals], {a["imie_nazwisko"] for a in attorneys})
     return finish_record(text, principals, officers, attorneys, signers)
 

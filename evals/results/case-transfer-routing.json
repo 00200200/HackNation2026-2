@@ -1,0 +1,1161 @@
+{
+  "baseline": "725765b075a8361f2519002f95f50825b5aa9ed3",
+  "frozen_routing": "b5cdc5b192d089ac01737e2b622d2624125bf707",
+  "method": "Only development examples and independently written Polish controls informed the rules. The reserved comparison is a second look after the first candidate disclosed aggregate misses. Both frozen extractors saw the same sealed renderings; only aggregate metrics were retained.",
+  "splits": {
+    "development": {
+      "digest": "78c3787a990fe7201ae26bb504d43e3a2f7ebda18b1c8d4c1a3c0fc4e4ce415c",
+      "before": {
+        "overall": {
+          "cases": 14,
+          "docs": 112,
+          "uzp_f1": 0.9728793998845932,
+          "strict_f1": 0.9667149059334298,
+          "routed": 110,
+          "exact": 90,
+          "rejected": 28,
+          "negatives": 28,
+          "counts": {
+            "tp": 843,
+            "fp": 5,
+            "fn": 42,
+            "tn": 164
+          }
+        },
+        "per_family": {
+          "early_letter": {
+            "cases": 2,
+            "docs": 4,
+            "uzp_f1": 0.9767441860465116,
+            "strict_f1": 0.9166666666666666,
+            "routed": 4,
+            "exact": 2,
+            "rejected": 0,
+            "negatives": 0,
+            "counts": {
+              "tp": 21,
+              "fp": 1,
+              "fn": 0,
+              "tn": 2
+            }
+          }
+        },
+        "per_view": {
+          "early_letter/native": {
+            "cases": 2,
+            "docs": 2,
+            "uzp_f1": 1.0,
+            "strict_f1": 1.0,
+            "routed": 2,
+            "exact": 2,
+            "rejected": 0,
+            "negatives": 0,
+            "counts": {
+              "tp": 11,
+              "fp": 0,
+              "fn": 0,
+              "tn": 1
+            }
+          },
+          "early_letter/scan": {
+            "cases": 2,
+            "docs": 2,
+            "uzp_f1": 0.9523809523809523,
+            "strict_f1": 0.8333333333333334,
+            "routed": 2,
+            "exact": 0,
+            "rejected": 0,
+            "negatives": 0,
+            "counts": {
+              "tp": 10,
+              "fp": 1,
+              "fn": 0,
+              "tn": 1
+            }
+          }
+        },
+        "target_fields": {
+          "early_letter": {
+            "przelew_bankowy.data_operacji": {
+              "tp": 4,
+              "fp": 0,
+              "fn": 0,
+              "tn": 0,
+              "uzp_f1": 1.0
+            },
+            "przelew_bankowy.kwota": {
+              "tp": 4,
+              "fp": 0,
+              "fn": 0,
+              "tn": 0,
+              "uzp_f1": 1.0
+            },
+            "przelew_bankowy.na_rachunek": {
+              "tp": 4,
+              "fp": 0,
+              "fn": 0,
+              "tn": 0,
+              "uzp_f1": 1.0
+            },
+            "przelew_bankowy.numer_transakcji": {
+              "tp": 1,
+              "fp": 1,
+              "fn": 0,
+              "tn": 2,
+              "uzp_f1": 0.6666666666666666
+            },
+            "przelew_bankowy.tytul": {
+              "tp": 4,
+              "fp": 0,
+              "fn": 0,
+              "tn": 0,
+              "uzp_f1": 1.0
+            },
+            "przelew_bankowy.z_rachunku": {
+              "tp": 4,
+              "fp": 0,
+              "fn": 0,
+              "tn": 0,
+              "uzp_f1": 1.0
+            }
+          }
+        },
+        "class_f1": {
+          "odwolanie": 0.987535953978907,
+          "pelnomocnictwo": 0.9468085106382979,
+          "przelew": 0.9554140127388535
+        },
+        "macro_f1_classes": 0.9632528257853528,
+        "missing_or_invalid": 0
+      },
+      "after": {
+        "overall": {
+          "cases": 14,
+          "docs": 112,
+          "uzp_f1": 0.9728793998845932,
+          "strict_f1": 0.9667149059334298,
+          "routed": 110,
+          "exact": 90,
+          "rejected": 28,
+          "negatives": 28,
+          "counts": {
+            "tp": 843,
+            "fp": 5,
+            "fn": 42,
+            "tn": 164
+          }
+        },
+        "per_family": {
+          "early_letter": {
+            "cases": 2,
+            "docs": 4,
+            "uzp_f1": 0.9767441860465116,
+            "strict_f1": 0.9166666666666666,
+            "routed": 4,
+            "exact": 2,
+            "rejected": 0,
+            "negatives": 0,
+            "counts": {
+              "tp": 21,
+              "fp": 1,
+              "fn": 0,
+              "tn": 2
+            }
+          }
+        },
+        "per_view": {
+          "early_letter/native": {
+            "cases": 2,
+            "docs": 2,
+            "uzp_f1": 1.0,
+            "strict_f1": 1.0,
+            "routed": 2,
+            "exact": 2,
+            "rejected": 0,
+            "negatives": 0,
+            "counts": {
+              "tp": 11,
+              "fp": 0,
+              "fn": 0,
+              "tn": 1
+            }
+          },
+          "early_letter/scan": {
+            "cases": 2,
+            "docs": 2,
+            "uzp_f1": 0.9523809523809523,
+            "strict_f1": 0.8333333333333334,
+            "routed": 2,
+            "exact": 0,
+            "rejected": 0,
+            "negatives": 0,
+            "counts": {
+              "tp": 10,
+              "fp": 1,
+              "fn": 0,
+              "tn": 1
+            }
+          }
+        },
+        "target_fields": {
+          "early_letter": {
+            "przelew_bankowy.data_operacji": {
+              "tp": 4,
+              "fp": 0,
+              "fn": 0,
+              "tn": 0,
+              "uzp_f1": 1.0
+            },
+            "przelew_bankowy.kwota": {
+              "tp": 4,
+              "fp": 0,
+              "fn": 0,
+              "tn": 0,
+              "uzp_f1": 1.0
+            },
+            "przelew_bankowy.na_rachunek": {
+              "tp": 4,
+              "fp": 0,
+              "fn": 0,
+              "tn": 0,
+              "uzp_f1": 1.0
+            },
+            "przelew_bankowy.numer_transakcji": {
+              "tp": 1,
+              "fp": 1,
+              "fn": 0,
+              "tn": 2,
+              "uzp_f1": 0.6666666666666666
+            },
+            "przelew_bankowy.tytul": {
+              "tp": 4,
+              "fp": 0,
+              "fn": 0,
+              "tn": 0,
+              "uzp_f1": 1.0
+            },
+            "przelew_bankowy.z_rachunku": {
+              "tp": 4,
+              "fp": 0,
+              "fn": 0,
+              "tn": 0,
+              "uzp_f1": 1.0
+            }
+          }
+        },
+        "class_f1": {
+          "odwolanie": 0.987535953978907,
+          "pelnomocnictwo": 0.9468085106382979,
+          "przelew": 0.9554140127388535
+        },
+        "macro_f1_classes": 0.9632528257853528,
+        "missing_or_invalid": 0
+      },
+      "families_with_changed_counts_or_scores": []
+    },
+    "reserved": {
+      "digest": "0b0dd6dab52ebf8a2c745f3c52fb516bb51b23de14c4383e310988d2305b3895",
+      "before": {
+        "overall": {
+          "cases": 12,
+          "docs": 96,
+          "uzp_f1": 0.7923371647509578,
+          "strict_f1": 0.7704918032786885,
+          "routed": 82,
+          "exact": 41,
+          "rejected": 24,
+          "negatives": 24,
+          "counts": {
+            "tp": 517,
+            "fp": 11,
+            "fn": 260,
+            "tn": 162
+          }
+        },
+        "per_family": {
+          "scan_history": {
+            "cases": 2,
+            "docs": 4,
+            "uzp_f1": 0.0,
+            "strict_f1": 0.0,
+            "routed": 0,
+            "exact": 0,
+            "rejected": 0,
+            "negatives": 0,
+            "counts": {
+              "tp": 0,
+              "fp": 0,
+              "fn": 24,
+              "tn": 0
+            }
+          },
+          "scan_operation": {
+            "cases": 2,
+            "docs": 4,
+            "uzp_f1": 0.0,
+            "strict_f1": 0.0,
+            "routed": 0,
+            "exact": 0,
+            "rejected": 0,
+            "negatives": 0,
+            "counts": {
+              "tp": 0,
+              "fp": 0,
+              "fn": 20,
+              "tn": 4
+            }
+          },
+          "scan_order": {
+            "cases": 2,
+            "docs": 4,
+            "uzp_f1": 0.0,
+            "strict_f1": 0.0,
+            "routed": 0,
+            "exact": 0,
+            "rejected": 0,
+            "negatives": 0,
+            "counts": {
+              "tp": 0,
+              "fp": 0,
+              "fn": 24,
+              "tn": 0
+            }
+          }
+        },
+        "per_view": {
+          "scan_history/native": {
+            "cases": 2,
+            "docs": 2,
+            "uzp_f1": 0.0,
+            "strict_f1": 0.0,
+            "routed": 0,
+            "exact": 0,
+            "rejected": 0,
+            "negatives": 0,
+            "counts": {
+              "tp": 0,
+              "fp": 0,
+              "fn": 12,
+              "tn": 0
+            }
+          },
+          "scan_history/scan": {
+            "cases": 2,
+            "docs": 2,
+            "uzp_f1": 0.0,
+            "strict_f1": 0.0,
+            "routed": 0,
+            "exact": 0,
+            "rejected": 0,
+            "negatives": 0,
+            "counts": {
+              "tp": 0,
+              "fp": 0,
+              "fn": 12,
+              "tn": 0
+            }
+          },
+          "scan_operation/native": {
+            "cases": 2,
+            "docs": 2,
+            "uzp_f1": 0.0,
+            "strict_f1": 0.0,
+            "routed": 0,
+            "exact": 0,
+            "rejected": 0,
+            "negatives": 0,
+            "counts": {
+              "tp": 0,
+              "fp": 0,
+              "fn": 10,
+              "tn": 2
+            }
+          },
+          "scan_operation/scan": {
+            "cases": 2,
+            "docs": 2,
+            "uzp_f1": 0.0,
+            "strict_f1": 0.0,
+            "routed": 0,
+            "exact": 0,
+            "rejected": 0,
+            "negatives": 0,
+            "counts": {
+              "tp": 0,
+              "fp": 0,
+              "fn": 10,
+              "tn": 2
+            }
+          },
+          "scan_order/native": {
+            "cases": 2,
+            "docs": 2,
+            "uzp_f1": 0.0,
+            "strict_f1": 0.0,
+            "routed": 0,
+            "exact": 0,
+            "rejected": 0,
+            "negatives": 0,
+            "counts": {
+              "tp": 0,
+              "fp": 0,
+              "fn": 12,
+              "tn": 0
+            }
+          },
+          "scan_order/scan": {
+            "cases": 2,
+            "docs": 2,
+            "uzp_f1": 0.0,
+            "strict_f1": 0.0,
+            "routed": 0,
+            "exact": 0,
+            "rejected": 0,
+            "negatives": 0,
+            "counts": {
+              "tp": 0,
+              "fp": 0,
+              "fn": 12,
+              "tn": 0
+            }
+          }
+        },
+        "target_fields": {
+          "scan_history": {
+            "przelew_bankowy.data_operacji": {
+              "tp": 0,
+              "fp": 0,
+              "fn": 4,
+              "tn": 0,
+              "uzp_f1": 0.0
+            },
+            "przelew_bankowy.kwota": {
+              "tp": 0,
+              "fp": 0,
+              "fn": 4,
+              "tn": 0,
+              "uzp_f1": 0.0
+            },
+            "przelew_bankowy.na_rachunek": {
+              "tp": 0,
+              "fp": 0,
+              "fn": 4,
+              "tn": 0,
+              "uzp_f1": 0.0
+            },
+            "przelew_bankowy.numer_transakcji": {
+              "tp": 0,
+              "fp": 0,
+              "fn": 4,
+              "tn": 0,
+              "uzp_f1": 0.0
+            },
+            "przelew_bankowy.tytul": {
+              "tp": 0,
+              "fp": 0,
+              "fn": 4,
+              "tn": 0,
+              "uzp_f1": 0.0
+            },
+            "przelew_bankowy.z_rachunku": {
+              "tp": 0,
+              "fp": 0,
+              "fn": 4,
+              "tn": 0,
+              "uzp_f1": 0.0
+            }
+          },
+          "scan_operation": {
+            "przelew_bankowy.data_operacji": {
+              "tp": 0,
+              "fp": 0,
+              "fn": 4,
+              "tn": 0,
+              "uzp_f1": 0.0
+            },
+            "przelew_bankowy.kwota": {
+              "tp": 0,
+              "fp": 0,
+              "fn": 4,
+              "tn": 0,
+              "uzp_f1": 0.0
+            },
+            "przelew_bankowy.na_rachunek": {
+              "tp": 0,
+              "fp": 0,
+              "fn": 4,
+              "tn": 0,
+              "uzp_f1": 0.0
+            },
+            "przelew_bankowy.numer_transakcji": {
+              "tp": 0,
+              "fp": 0,
+              "fn": 0,
+              "tn": 4,
+              "uzp_f1": null
+            },
+            "przelew_bankowy.tytul": {
+              "tp": 0,
+              "fp": 0,
+              "fn": 4,
+              "tn": 0,
+              "uzp_f1": 0.0
+            },
+            "przelew_bankowy.z_rachunku": {
+              "tp": 0,
+              "fp": 0,
+              "fn": 4,
+              "tn": 0,
+              "uzp_f1": 0.0
+            }
+          },
+          "scan_order": {
+            "przelew_bankowy.data_operacji": {
+              "tp": 0,
+              "fp": 0,
+              "fn": 4,
+              "tn": 0,
+              "uzp_f1": 0.0
+            },
+            "przelew_bankowy.kwota": {
+              "tp": 0,
+              "fp": 0,
+              "fn": 4,
+              "tn": 0,
+              "uzp_f1": 0.0
+            },
+            "przelew_bankowy.na_rachunek": {
+              "tp": 0,
+              "fp": 0,
+              "fn": 4,
+              "tn": 0,
+              "uzp_f1": 0.0
+            },
+            "przelew_bankowy.numer_transakcji": {
+              "tp": 0,
+              "fp": 0,
+              "fn": 4,
+              "tn": 0,
+              "uzp_f1": 0.0
+            },
+            "przelew_bankowy.tytul": {
+              "tp": 0,
+              "fp": 0,
+              "fn": 4,
+              "tn": 0,
+              "uzp_f1": 0.0
+            },
+            "przelew_bankowy.z_rachunku": {
+              "tp": 0,
+              "fp": 0,
+              "fn": 4,
+              "tn": 0,
+              "uzp_f1": 0.0
+            }
+          }
+        },
+        "class_f1": {
+          "odwolanie": 0.866581956797967,
+          "pelnomocnictwo": 0.7469879518072289,
+          "przelew": 0.5591397849462365
+        },
+        "macro_f1_classes": 0.7242365645171441,
+        "missing_or_invalid": 0
+      },
+      "after": {
+        "overall": {
+          "cases": 12,
+          "docs": 96,
+          "uzp_f1": 0.8159278737791135,
+          "strict_f1": 0.786697247706422,
+          "routed": 88,
+          "exact": 41,
+          "rejected": 24,
+          "negatives": 24,
+          "counts": {
+            "tp": 543,
+            "fp": 13,
+            "fn": 232,
+            "tn": 162
+          }
+        },
+        "per_family": {
+          "scan_history": {
+            "cases": 2,
+            "docs": 4,
+            "uzp_f1": 0.5882352941176471,
+            "strict_f1": 0.5555555555555556,
+            "routed": 2,
+            "exact": 0,
+            "rejected": 0,
+            "negatives": 0,
+            "counts": {
+              "tp": 10,
+              "fp": 0,
+              "fn": 14,
+              "tn": 0
+            }
+          },
+          "scan_operation": {
+            "cases": 2,
+            "docs": 4,
+            "uzp_f1": 0.5714285714285714,
+            "strict_f1": 0.5555555555555556,
+            "routed": 2,
+            "exact": 0,
+            "rejected": 0,
+            "negatives": 0,
+            "counts": {
+              "tp": 8,
+              "fp": 2,
+              "fn": 10,
+              "tn": 4
+            }
+          },
+          "scan_order": {
+            "cases": 2,
+            "docs": 4,
+            "uzp_f1": 0.5,
+            "strict_f1": 0.4444444444444444,
+            "routed": 2,
+            "exact": 0,
+            "rejected": 0,
+            "negatives": 0,
+            "counts": {
+              "tp": 8,
+              "fp": 0,
+              "fn": 16,
+              "tn": 0
+            }
+          }
+        },
+        "per_view": {
+          "scan_history/native": {
+            "cases": 2,
+            "docs": 2,
+            "uzp_f1": 0.9090909090909091,
+            "strict_f1": 0.8333333333333334,
+            "routed": 2,
+            "exact": 0,
+            "rejected": 0,
+            "negatives": 0,
+            "counts": {
+              "tp": 10,
+              "fp": 0,
+              "fn": 2,
+              "tn": 0
+            }
+          },
+          "scan_history/scan": {
+            "cases": 2,
+            "docs": 2,
+            "uzp_f1": 0.0,
+            "strict_f1": 0.0,
+            "routed": 0,
+            "exact": 0,
+            "rejected": 0,
+            "negatives": 0,
+            "counts": {
+              "tp": 0,
+              "fp": 0,
+              "fn": 12,
+              "tn": 0
+            }
+          },
+          "scan_operation/native": {
+            "cases": 2,
+            "docs": 2,
+            "uzp_f1": 0.8888888888888888,
+            "strict_f1": 0.8333333333333334,
+            "routed": 2,
+            "exact": 0,
+            "rejected": 0,
+            "negatives": 0,
+            "counts": {
+              "tp": 8,
+              "fp": 2,
+              "fn": 0,
+              "tn": 2
+            }
+          },
+          "scan_operation/scan": {
+            "cases": 2,
+            "docs": 2,
+            "uzp_f1": 0.0,
+            "strict_f1": 0.0,
+            "routed": 0,
+            "exact": 0,
+            "rejected": 0,
+            "negatives": 0,
+            "counts": {
+              "tp": 0,
+              "fp": 0,
+              "fn": 10,
+              "tn": 2
+            }
+          },
+          "scan_order/native": {
+            "cases": 2,
+            "docs": 2,
+            "uzp_f1": 0.8,
+            "strict_f1": 0.6666666666666666,
+            "routed": 2,
+            "exact": 0,
+            "rejected": 0,
+            "negatives": 0,
+            "counts": {
+              "tp": 8,
+              "fp": 0,
+              "fn": 4,
+              "tn": 0
+            }
+          },
+          "scan_order/scan": {
+            "cases": 2,
+            "docs": 2,
+            "uzp_f1": 0.0,
+            "strict_f1": 0.0,
+            "routed": 0,
+            "exact": 0,
+            "rejected": 0,
+            "negatives": 0,
+            "counts": {
+              "tp": 0,
+              "fp": 0,
+              "fn": 12,
+              "tn": 0
+            }
+          }
+        },
+        "target_fields": {
+          "scan_history": {
+            "przelew_bankowy.data_operacji": {
+              "tp": 2,
+              "fp": 0,
+              "fn": 2,
+              "tn": 0,
+              "uzp_f1": 0.6666666666666666
+            },
+            "przelew_bankowy.kwota": {
+              "tp": 0,
+              "fp": 0,
+              "fn": 4,
+              "tn": 0,
+              "uzp_f1": 0.0
+            },
+            "przelew_bankowy.na_rachunek": {
+              "tp": 2,
+              "fp": 0,
+              "fn": 2,
+              "tn": 0,
+              "uzp_f1": 0.6666666666666666
+            },
+            "przelew_bankowy.numer_transakcji": {
+              "tp": 2,
+              "fp": 0,
+              "fn": 2,
+              "tn": 0,
+              "uzp_f1": 0.6666666666666666
+            },
+            "przelew_bankowy.tytul": {
+              "tp": 2,
+              "fp": 0,
+              "fn": 2,
+              "tn": 0,
+              "uzp_f1": 0.6666666666666666
+            },
+            "przelew_bankowy.z_rachunku": {
+              "tp": 2,
+              "fp": 0,
+              "fn": 2,
+              "tn": 0,
+              "uzp_f1": 0.6666666666666666
+            }
+          },
+          "scan_operation": {
+            "przelew_bankowy.data_operacji": {
+              "tp": 2,
+              "fp": 0,
+              "fn": 2,
+              "tn": 0,
+              "uzp_f1": 0.6666666666666666
+            },
+            "przelew_bankowy.kwota": {
+              "tp": 2,
+              "fp": 0,
+              "fn": 2,
+              "tn": 0,
+              "uzp_f1": 0.6666666666666666
+            },
+            "przelew_bankowy.na_rachunek": {
+              "tp": 2,
+              "fp": 0,
+              "fn": 2,
+              "tn": 0,
+              "uzp_f1": 0.6666666666666666
+            },
+            "przelew_bankowy.numer_transakcji": {
+              "tp": 0,
+              "fp": 0,
+              "fn": 0,
+              "tn": 4,
+              "uzp_f1": null
+            },
+            "przelew_bankowy.tytul": {
+              "tp": 0,
+              "fp": 2,
+              "fn": 2,
+              "tn": 0,
+              "uzp_f1": 0.0
+            },
+            "przelew_bankowy.z_rachunku": {
+              "tp": 2,
+              "fp": 0,
+              "fn": 2,
+              "tn": 0,
+              "uzp_f1": 0.6666666666666666
+            }
+          },
+          "scan_order": {
+            "przelew_bankowy.data_operacji": {
+              "tp": 0,
+              "fp": 0,
+              "fn": 4,
+              "tn": 0,
+              "uzp_f1": 0.0
+            },
+            "przelew_bankowy.kwota": {
+              "tp": 2,
+              "fp": 0,
+              "fn": 2,
+              "tn": 0,
+              "uzp_f1": 0.6666666666666666
+            },
+            "przelew_bankowy.na_rachunek": {
+              "tp": 0,
+              "fp": 0,
+              "fn": 4,
+              "tn": 0,
+              "uzp_f1": 0.0
+            },
+            "przelew_bankowy.numer_transakcji": {
+              "tp": 2,
+              "fp": 0,
+              "fn": 2,
+              "tn": 0,
+              "uzp_f1": 0.6666666666666666
+            },
+            "przelew_bankowy.tytul": {
+              "tp": 2,
+              "fp": 0,
+              "fn": 2,
+              "tn": 0,
+              "uzp_f1": 0.6666666666666666
+            },
+            "przelew_bankowy.z_rachunku": {
+              "tp": 2,
+              "fp": 0,
+              "fn": 2,
+              "tn": 0,
+              "uzp_f1": 0.6666666666666666
+            }
+          }
+        },
+        "class_f1": {
+          "odwolanie": 0.866581956797967,
+          "pelnomocnictwo": 0.7469879518072289,
+          "przelew": 0.7358490566037735
+        },
+        "macro_f1_classes": 0.7831396550696565,
+        "missing_or_invalid": 0
+      },
+      "families_with_changed_counts_or_scores": [
+        "scan_history",
+        "scan_operation",
+        "scan_order"
+      ]
+    }
+  },
+  "training": {
+    "docs": 196,
+    "byte_identical": 196,
+    "micro_f1": 1.0,
+    "micro_f1_strict": 1.0,
+    "negatives_empty": 1.0,
+    "classification_accuracy": 1.0
+  },
+  "organizer_150_pdf_run": {
+    "revision": "b5cdc5b192d089ac01737e2b622d2624125bf707",
+    "jobs": 2,
+    "native_byte_reference": "a84258d, identical to #112 final for all 196 (published gate)",
+    "pdfs": 150,
+    "native_training_pdfs": 120,
+    "organizer_scan_pdfs": 30,
+    "training_byte_identical": 120,
+    "organizer_scans_exact": 29,
+    "scan_uzp_f1": 1.0,
+    "scan_strict_f1": 0.9974226804123711,
+    "seconds": 144.66,
+    "outputs": 150
+  },
+  "real_development": {
+    "dev1": {
+      "before": {
+        "docs": 22,
+        "micro_f1": 0.9285714285714286,
+        "micro_f1_strict": 0.8821138211382114,
+        "macro_f1_classes": 0.9012626262626263,
+        "per_class_f1": {
+          "odwolanie": 0.9454545454545454,
+          "pelnomocnictwo": 0.9583333333333334,
+          "przelew": 0.8
+        },
+        "routing_by_class": {
+          "negatywny": {
+            "correct": 7,
+            "total": 7
+          },
+          "odwolanie": {
+            "correct": 8,
+            "total": 8
+          },
+          "pelnomocnictwo": {
+            "correct": 3,
+            "total": 3
+          },
+          "przelew": {
+            "correct": 4,
+            "total": 4
+          }
+        },
+        "exact": 10,
+        "counts": {
+          "tp": 143,
+          "fp": 10,
+          "fn": 12,
+          "tn": 82
+        },
+        "seconds": 149.55
+      },
+      "after": {
+        "docs": 22,
+        "micro_f1": 0.9285714285714286,
+        "micro_f1_strict": 0.8821138211382114,
+        "macro_f1_classes": 0.9012626262626263,
+        "per_class_f1": {
+          "odwolanie": 0.9454545454545454,
+          "pelnomocnictwo": 0.9583333333333334,
+          "przelew": 0.8
+        },
+        "routing_by_class": {
+          "negatywny": {
+            "correct": 7,
+            "total": 7
+          },
+          "odwolanie": {
+            "correct": 8,
+            "total": 8
+          },
+          "pelnomocnictwo": {
+            "correct": 3,
+            "total": 3
+          },
+          "przelew": {
+            "correct": 4,
+            "total": 4
+          }
+        },
+        "exact": 10,
+        "counts": {
+          "tp": 143,
+          "fp": 10,
+          "fn": 12,
+          "tn": 82
+        },
+        "seconds": 158.58
+      },
+      "docs": 22,
+      "identical": 22
+    },
+    "dev2": {
+      "before": {
+        "docs": 39,
+        "micro_f1": 0.9243697478991597,
+        "micro_f1_strict": 0.8951406649616368,
+        "macro_f1_classes": 0.948527346879887,
+        "per_class_f1": {
+          "odwolanie": 0.8976897689768977,
+          "pelnomocnictwo": 0.9836065573770492,
+          "przelew": 0.9642857142857143
+        },
+        "routing_by_class": {
+          "negatywny": {
+            "correct": 11,
+            "total": 11
+          },
+          "odwolanie": {
+            "correct": 13,
+            "total": 13
+          },
+          "pelnomocnictwo": {
+            "correct": 5,
+            "total": 5
+          },
+          "przelew": {
+            "correct": 10,
+            "total": 10
+          }
+        },
+        "exact": 22,
+        "counts": {
+          "tp": 220,
+          "fp": 12,
+          "fn": 24,
+          "tn": 138
+        },
+        "seconds": 143.01
+      },
+      "after": {
+        "docs": 39,
+        "micro_f1": 0.9243697478991597,
+        "micro_f1_strict": 0.8951406649616368,
+        "macro_f1_classes": 0.948527346879887,
+        "per_class_f1": {
+          "odwolanie": 0.8976897689768977,
+          "pelnomocnictwo": 0.9836065573770492,
+          "przelew": 0.9642857142857143
+        },
+        "routing_by_class": {
+          "negatywny": {
+            "correct": 11,
+            "total": 11
+          },
+          "odwolanie": {
+            "correct": 13,
+            "total": 13
+          },
+          "pelnomocnictwo": {
+            "correct": 5,
+            "total": 5
+          },
+          "przelew": {
+            "correct": 10,
+            "total": 10
+          }
+        },
+        "exact": 22,
+        "counts": {
+          "tp": 220,
+          "fp": 12,
+          "fn": 24,
+          "tn": 138
+        },
+        "seconds": 125.1
+      },
+      "docs": 39,
+      "identical": 39
+    }
+  },
+  "independent_native_controls": {
+    "keyless": {
+      "before": {
+        "positive_routes": [
+          0,
+          0,
+          0
+        ],
+        "empty_negatives": 6,
+        "negatives": 6
+      },
+      "after": {
+        "positive_routes": [
+          1,
+          1,
+          1
+        ],
+        "empty_negatives": 6,
+        "negatives": 6
+      }
+    },
+    "keyed": {
+      "before": {
+        "positive_routes": [
+          0,
+          0,
+          0
+        ],
+        "empty_negatives": 6,
+        "negatives": 6
+      },
+      "after": {
+        "positive_routes": [
+          1,
+          1,
+          1
+        ],
+        "empty_negatives": 6,
+        "negatives": 6
+      }
+    },
+    "positive_family_order": [
+      "history",
+      "operation",
+      "order"
+    ]
+  },
+  "variants": {
+    "published_baseline": {
+      "docs": 240,
+      "seed": 63059,
+      "dataset_sha256": "53414e5959d93426f1553cc36fcbe86968fca23edb80a959740654790b20dd03",
+      "micro_f1": 0.9512258064516129,
+      "micro_f1_strict": 0.9264413518886679,
+      "per_class_f1": {
+        "odwolanie": 0.9574924860455131,
+        "pelnomocnictwo": 0.9373549883990719,
+        "przelew": 0.9473684210526315
+      },
+      "classification_accuracy": 1.0,
+      "negatives_empty": 1.0,
+      "outputs_complete": 1.0
+    },
+    "candidate": {
+      "docs": 240,
+      "seed": 63059,
+      "dataset_sha256": "53414e5959d93426f1553cc36fcbe86968fca23edb80a959740654790b20dd03",
+      "micro_f1": 0.9512258064516129,
+      "micro_f1_strict": 0.9264413518886679,
+      "per_class_f1": {
+        "odwolanie": 0.9574924860455131,
+        "pelnomocnictwo": 0.9373549883990719,
+        "przelew": 0.9473684210526315
+      },
+      "classification_accuracy": 1.0,
+      "negatives_empty": 1.0,
+      "outputs_complete": 1.0
+    },
+    "changed_field_counts": {},
+    "new_fallback_consultations": 86,
+    "new_fallback_acceptances": 0,
+    "make_exit": 0
+  },
+  "tests_passed": 2455,
+  "main_integration": {
+    "main": "027e2d66115bda09374690754b5492875c2605a0",
+    "product": "ed7e06e3033a060fcad96968d72cb051dfdb75f4",
+    "changes_after_blind_comparison": [
+      "appeal descriptive captions",
+      "sole-trader mandate grantors"
+    ],
+    "receipt_path_changed_after_freeze": false,
+    "training": {
+      "docs": 196,
+      "byte_identical": 196,
+      "uzp_f1": 1.0,
+      "strict_f1": 1.0,
+      "clean": true
+    },
+    "first_integration_tests": 2481,
+    "final_integration_focused_tests": 99
+  }
+}

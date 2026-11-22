@@ -1,0 +1,2938 @@
+{
+  "independent_candidate_commit": "fab0adfd40e5369c122bb12cb6b702bbeaecce94",
+  "main_commit": "27d5e12816f7fcdf587d0e8c701ea2a75b2bf2b6",
+  "gate_main_commit": "b2fd9c6a9f043e4abfc7794f7b643976b53aa857",
+  "frozen_product_sha256": {
+    "kio2json/appeal_scan_parties.py": "8a5568f72cb5164d056a35cf622e0bb3b696fdf1046ee59143bb82a6337d029a",
+    "kio2json/ocr_orientation.py": "b80c4e7168c5f46a25a5006c34307010e8a880e6823b5c9cabf7283c31f68a88",
+    "kio2json/pdf_text.py": "0e24d93a92f8c3c97c3bb690fa9c63799f33be9f692f78f7e07e92f3bf4631c1",
+    "kio2json/pipeline.py": "41adabe1a6909bcd79c1354cca96334f2acfa4da144aba73c47565bbd6c2915c",
+    "kio2json/receipt_layout.py": "29f2b1473f7e3c18179bc2b58c6b472dc1a16ed53a932da37eb3563095f231e5",
+    "kio2json/text_layer_repair.py": "6c03e0f300dc180cbef5dc0921526c5b8ac9326a0ea88994f5360fc92cdc6f70"
+  },
+  "source_cpu": "macOS Apple M1, keyless, jobs=2; sampled process-tree RSS. CPU is cumulative CLI subprocess user+system time.",
+  "gate_data": {
+    "main": {
+      "training": {
+        "n": 196,
+        "exact": 196,
+        "micro_f1": 1.0,
+        "micro_f1_strict": 1.0,
+        "classification_accuracy": 1.0,
+        "per_class_f1": {
+          "odwolanie": 1.0,
+          "pelnomocnictwo": 1.0,
+          "przelew": 1.0
+        },
+        "seconds": 39.79,
+        "rss_mib": 510.6
+      },
+      "scans": {
+        "n": 30,
+        "exact": 29,
+        "micro_f1": 1.0,
+        "micro_f1_strict": 0.9974226804123711,
+        "classification_accuracy": 1.0,
+        "per_class_f1": {
+          "odwolanie": 1.0,
+          "pelnomocnictwo": 1.0,
+          "przelew": 1.0
+        },
+        "seconds": 149.67,
+        "rss_mib": 824.7
+      },
+      "serial": {
+        "rechecked": 1,
+        "n": 30,
+        "exact": 29,
+        "micro_f1": 1.0,
+        "micro_f1_strict": 0.9974226804123711,
+        "classification_accuracy": 1.0,
+        "per_class_f1": {
+          "odwolanie": 1.0,
+          "pelnomocnictwo": 1.0,
+          "przelew": 1.0
+        }
+      }
+    },
+    "candidate": {
+      "training": {
+        "n": 196,
+        "exact": 196,
+        "micro_f1": 1.0,
+        "micro_f1_strict": 1.0,
+        "classification_accuracy": 1.0,
+        "per_class_f1": {
+          "odwolanie": 1.0,
+          "pelnomocnictwo": 1.0,
+          "przelew": 1.0
+        },
+        "seconds": 50.07,
+        "rss_mib": 564.9
+      },
+      "scans": {
+        "n": 30,
+        "exact": 29,
+        "micro_f1": 1.0,
+        "micro_f1_strict": 0.9974226804123711,
+        "classification_accuracy": 1.0,
+        "per_class_f1": {
+          "odwolanie": 1.0,
+          "pelnomocnictwo": 1.0,
+          "przelew": 1.0
+        },
+        "seconds": 184.27,
+        "rss_mib": 956.2
+      },
+      "serial": {
+        "rechecked": 1,
+        "n": 30,
+        "exact": 29,
+        "micro_f1": 1.0,
+        "micro_f1_strict": 0.9974226804123711,
+        "classification_accuracy": 1.0,
+        "per_class_f1": {
+          "odwolanie": 1.0,
+          "pelnomocnictwo": 1.0,
+          "przelew": 1.0
+        }
+      },
+      "runtime": {
+        "seconds": 127.81,
+        "rss_mib": 1154.4,
+        "outputs": 150
+      }
+    },
+    "training_bytes_identical": 196,
+    "organizer_raw_byte_parity": 30,
+    "organizer_serial_byte_parity": 30,
+    "upright_byte_parity": 9,
+    "upright_by_source": {
+      "upright/przyklad_02/odwolanie.pdf": {
+        "bytes_identical": true,
+        "main_route": "odwolanie",
+        "candidate_route": "odwolanie",
+        "main_exact": true,
+        "candidate_exact": true
+      },
+      "layer_faithful/przyklad_02/odwolanie.pdf": {
+        "bytes_identical": true,
+        "main_route": "odwolanie",
+        "candidate_route": "odwolanie",
+        "main_exact": true,
+        "candidate_exact": true
+      },
+      "upright/przyklad_01/pelnomocnictwo.pdf": {
+        "bytes_identical": true,
+        "main_route": "pelnomocnictwo",
+        "candidate_route": "pelnomocnictwo",
+        "main_exact": true,
+        "candidate_exact": true
+      },
+      "layer_faithful/przyklad_01/pelnomocnictwo.pdf": {
+        "bytes_identical": true,
+        "main_route": "pelnomocnictwo",
+        "candidate_route": "pelnomocnictwo",
+        "main_exact": true,
+        "candidate_exact": true
+      },
+      "upright/przyklad_01/przelew.pdf": {
+        "bytes_identical": true,
+        "main_route": "przelew",
+        "candidate_route": "przelew",
+        "main_exact": false,
+        "candidate_exact": false
+      },
+      "layer_faithful/przyklad_01/przelew.pdf": {
+        "bytes_identical": true,
+        "main_route": "przelew",
+        "candidate_route": "przelew",
+        "main_exact": true,
+        "candidate_exact": true
+      },
+      "upright/skany/odwolania/0001/0001.pdf": {
+        "bytes_identical": true,
+        "main_route": "odwolanie",
+        "candidate_route": "odwolanie",
+        "main_exact": false,
+        "candidate_exact": false
+      },
+      "upright/skany/pelnomocnictwa/0001/0001.pdf": {
+        "bytes_identical": true,
+        "main_route": "pelnomocnictwo",
+        "candidate_route": "pelnomocnictwo",
+        "main_exact": false,
+        "candidate_exact": false
+      },
+      "upright/skany/potwierdzenia/0001/0001.pdf": {
+        "bytes_identical": true,
+        "main_route": "przelew",
+        "candidate_route": "przelew",
+        "main_exact": true,
+        "candidate_exact": true
+      }
+    },
+    "publication_training_bytes_identical": 196,
+    "publication_training": {
+      "n": 196,
+      "exact": 196,
+      "micro_f1": 1.0,
+      "micro_f1_strict": 1.0,
+      "classification_accuracy": 1.0,
+      "per_class_f1": {
+        "odwolanie": 1.0,
+        "pelnomocnictwo": 1.0,
+        "przelew": 1.0
+      },
+      "seconds": 22.92,
+      "rss_mib": 844.6
+    }
+  },
+  "development": {
+    "main": {
+      "dataset_sha256": "486c5ca0cba973389b42ab8939c25de80b54aaf377cefa1728b489f696c2a7c4",
+      "docs": 39,
+      "seconds": 102.88290570816025,
+      "cli_exit": 0,
+      "per_variant": {
+        "upright": {
+          "docs": 6,
+          "valid_outputs": 6,
+          "uzp_f1": 0.9841269841269841,
+          "exact": 3,
+          "routed": 6
+        },
+        "pixel_90": {
+          "docs": 6,
+          "valid_outputs": 6,
+          "uzp_f1": 0.0,
+          "exact": 0,
+          "routed": 0
+        },
+        "pixel_180": {
+          "docs": 6,
+          "valid_outputs": 6,
+          "uzp_f1": 0.0,
+          "exact": 0,
+          "routed": 0
+        },
+        "pixel_270": {
+          "docs": 6,
+          "valid_outputs": 6,
+          "uzp_f1": 0.9152542372881356,
+          "exact": 1,
+          "routed": 5
+        },
+        "pdf_rotate_90": {
+          "docs": 6,
+          "valid_outputs": 6,
+          "uzp_f1": 0.9152542372881356,
+          "exact": 1,
+          "routed": 5
+        },
+        "mixed_first_90": {
+          "docs": 2,
+          "valid_outputs": 2,
+          "uzp_f1": 0.0,
+          "exact": 0,
+          "routed": 0
+        },
+        "layer_faithful": {
+          "docs": 3,
+          "valid_outputs": 3,
+          "uzp_f1": 1.0,
+          "exact": 3,
+          "routed": 3
+        },
+        "layer_first_marker": {
+          "docs": 1,
+          "valid_outputs": 1,
+          "uzp_f1": 1.0,
+          "exact": 1,
+          "routed": 1
+        },
+        "layer_nip_digit": {
+          "docs": 1,
+          "valid_outputs": 1,
+          "uzp_f1": 0.9230769230769231,
+          "exact": 0,
+          "routed": 1
+        },
+        "layer_account_digit": {
+          "docs": 1,
+          "valid_outputs": 1,
+          "uzp_f1": 0.0,
+          "exact": 0,
+          "routed": 0
+        },
+        "layer_shift_line": {
+          "docs": 1,
+          "valid_outputs": 1,
+          "uzp_f1": 1.0,
+          "exact": 1,
+          "routed": 1
+        }
+      },
+      "items": [
+        {
+          "id": "case_0001",
+          "variant": "upright",
+          "source": "przyklad_02/odwolanie.pdf",
+          "expected": "odwolanie",
+          "route": "odwolanie",
+          "routed": true,
+          "exact": true,
+          "digest": "94cc6ac6b585778ac6c8a34bde5a4fc0cdaa07bbb0d2502e96f47b393333063f",
+          "uzp": 1.0
+        },
+        {
+          "id": "case_0002",
+          "variant": "pixel_90",
+          "source": "przyklad_02/odwolanie.pdf",
+          "expected": "odwolanie",
+          "route": "negatywny",
+          "routed": false,
+          "exact": false,
+          "digest": "ca3d163bab055381827226140568f3bef7eaac187cebd76878e0b63e9e442356",
+          "uzp": 0.0
+        },
+        {
+          "id": "case_0003",
+          "variant": "pixel_180",
+          "source": "przyklad_02/odwolanie.pdf",
+          "expected": "odwolanie",
+          "route": "negatywny",
+          "routed": false,
+          "exact": false,
+          "digest": "ca3d163bab055381827226140568f3bef7eaac187cebd76878e0b63e9e442356",
+          "uzp": 0.0
+        },
+        {
+          "id": "case_0004",
+          "variant": "pixel_270",
+          "source": "przyklad_02/odwolanie.pdf",
+          "expected": "odwolanie",
+          "route": "odwolanie",
+          "routed": true,
+          "exact": false,
+          "digest": "79aaa9031032b769897afcd510b4a2d816ea6954cf90165114d2aac490e1c373",
+          "uzp": 0.9743589743589743
+        },
+        {
+          "id": "case_0005",
+          "variant": "pdf_rotate_90",
+          "source": "przyklad_02/odwolanie.pdf",
+          "expected": "odwolanie",
+          "route": "odwolanie",
+          "routed": true,
+          "exact": false,
+          "digest": "79aaa9031032b769897afcd510b4a2d816ea6954cf90165114d2aac490e1c373",
+          "uzp": 0.9743589743589743
+        },
+        {
+          "id": "case_0006",
+          "variant": "mixed_first_90",
+          "source": "przyklad_02/odwolanie.pdf",
+          "expected": "odwolanie",
+          "route": "negatywny",
+          "routed": false,
+          "exact": false,
+          "digest": "ca3d163bab055381827226140568f3bef7eaac187cebd76878e0b63e9e442356",
+          "uzp": 0.0
+        },
+        {
+          "id": "case_0007",
+          "variant": "layer_faithful",
+          "source": "przyklad_02/odwolanie.pdf",
+          "expected": "odwolanie",
+          "route": "odwolanie",
+          "routed": true,
+          "exact": true,
+          "digest": "94cc6ac6b585778ac6c8a34bde5a4fc0cdaa07bbb0d2502e96f47b393333063f",
+          "uzp": 1.0
+        },
+        {
+          "id": "case_0008",
+          "variant": "layer_first_marker",
+          "source": "przyklad_02/odwolanie.pdf",
+          "expected": "odwolanie",
+          "route": "odwolanie",
+          "routed": true,
+          "exact": true,
+          "digest": "94cc6ac6b585778ac6c8a34bde5a4fc0cdaa07bbb0d2502e96f47b393333063f",
+          "uzp": 1.0
+        },
+        {
+          "id": "case_0009",
+          "variant": "upright",
+          "source": "przyklad_01/pelnomocnictwo.pdf",
+          "expected": "pelnomocnictwo",
+          "route": "pelnomocnictwo",
+          "routed": true,
+          "exact": true,
+          "digest": "a31d5f4271b885eb64414898c1bc656cfc6efe1f3d4e86730b5566ebc7304cc2",
+          "uzp": 1.0
+        },
+        {
+          "id": "case_0010",
+          "variant": "pixel_90",
+          "source": "przyklad_01/pelnomocnictwo.pdf",
+          "expected": "pelnomocnictwo",
+          "route": "negatywny",
+          "routed": false,
+          "exact": false,
+          "digest": "ca3d163bab055381827226140568f3bef7eaac187cebd76878e0b63e9e442356",
+          "uzp": 0.0
+        },
+        {
+          "id": "case_0011",
+          "variant": "pixel_180",
+          "source": "przyklad_01/pelnomocnictwo.pdf",
+          "expected": "pelnomocnictwo",
+          "route": "negatywny",
+          "routed": false,
+          "exact": false,
+          "digest": "ca3d163bab055381827226140568f3bef7eaac187cebd76878e0b63e9e442356",
+          "uzp": 0.0
+        },
+        {
+          "id": "case_0012",
+          "variant": "pixel_270",
+          "source": "przyklad_01/pelnomocnictwo.pdf",
+          "expected": "pelnomocnictwo",
+          "route": "pelnomocnictwo",
+          "routed": true,
+          "exact": true,
+          "digest": "a31d5f4271b885eb64414898c1bc656cfc6efe1f3d4e86730b5566ebc7304cc2",
+          "uzp": 1.0
+        },
+        {
+          "id": "case_0013",
+          "variant": "pdf_rotate_90",
+          "source": "przyklad_01/pelnomocnictwo.pdf",
+          "expected": "pelnomocnictwo",
+          "route": "pelnomocnictwo",
+          "routed": true,
+          "exact": true,
+          "digest": "a31d5f4271b885eb64414898c1bc656cfc6efe1f3d4e86730b5566ebc7304cc2",
+          "uzp": 1.0
+        },
+        {
+          "id": "case_0014",
+          "variant": "layer_faithful",
+          "source": "przyklad_01/pelnomocnictwo.pdf",
+          "expected": "pelnomocnictwo",
+          "route": "pelnomocnictwo",
+          "routed": true,
+          "exact": true,
+          "digest": "a31d5f4271b885eb64414898c1bc656cfc6efe1f3d4e86730b5566ebc7304cc2",
+          "uzp": 1.0
+        },
+        {
+          "id": "case_0015",
+          "variant": "layer_nip_digit",
+          "source": "przyklad_01/pelnomocnictwo.pdf",
+          "expected": "pelnomocnictwo",
+          "route": "pelnomocnictwo",
+          "routed": true,
+          "exact": false,
+          "digest": "effdf75c4218439f191c3f62387482cb8f2669c78a676cfe27be5bb319d0769f",
+          "uzp": 0.9230769230769231
+        },
+        {
+          "id": "case_0016",
+          "variant": "upright",
+          "source": "przyklad_01/przelew.pdf",
+          "expected": "przelew",
+          "route": "przelew",
+          "routed": true,
+          "exact": false,
+          "digest": "68e15683ecc657e2203fdd087934081751ccb38283f2aeb8de85c10cc2ca0471",
+          "uzp": 0.8
+        },
+        {
+          "id": "case_0017",
+          "variant": "pixel_90",
+          "source": "przyklad_01/przelew.pdf",
+          "expected": "przelew",
+          "route": "negatywny",
+          "routed": false,
+          "exact": false,
+          "digest": "ca3d163bab055381827226140568f3bef7eaac187cebd76878e0b63e9e442356",
+          "uzp": 0.0
+        },
+        {
+          "id": "case_0018",
+          "variant": "pixel_180",
+          "source": "przyklad_01/przelew.pdf",
+          "expected": "przelew",
+          "route": "negatywny",
+          "routed": false,
+          "exact": false,
+          "digest": "ca3d163bab055381827226140568f3bef7eaac187cebd76878e0b63e9e442356",
+          "uzp": 0.0
+        },
+        {
+          "id": "case_0019",
+          "variant": "pixel_270",
+          "source": "przyklad_01/przelew.pdf",
+          "expected": "przelew",
+          "route": "przelew",
+          "routed": true,
+          "exact": false,
+          "digest": "68e15683ecc657e2203fdd087934081751ccb38283f2aeb8de85c10cc2ca0471",
+          "uzp": 0.8
+        },
+        {
+          "id": "case_0020",
+          "variant": "pdf_rotate_90",
+          "source": "przyklad_01/przelew.pdf",
+          "expected": "przelew",
+          "route": "przelew",
+          "routed": true,
+          "exact": false,
+          "digest": "68e15683ecc657e2203fdd087934081751ccb38283f2aeb8de85c10cc2ca0471",
+          "uzp": 0.8
+        },
+        {
+          "id": "case_0021",
+          "variant": "layer_faithful",
+          "source": "przyklad_01/przelew.pdf",
+          "expected": "przelew",
+          "route": "przelew",
+          "routed": true,
+          "exact": true,
+          "digest": "00e3ec518629a361f4e8d94e06e6007e010987284da7ecdfb1b536507484b352",
+          "uzp": 1.0
+        },
+        {
+          "id": "case_0022",
+          "variant": "layer_account_digit",
+          "source": "przyklad_01/przelew.pdf",
+          "expected": "przelew",
+          "route": "negatywny",
+          "routed": false,
+          "exact": false,
+          "digest": "ca3d163bab055381827226140568f3bef7eaac187cebd76878e0b63e9e442356",
+          "uzp": 0.0
+        },
+        {
+          "id": "case_0023",
+          "variant": "layer_shift_line",
+          "source": "przyklad_01/przelew.pdf",
+          "expected": "przelew",
+          "route": "przelew",
+          "routed": true,
+          "exact": true,
+          "digest": "00e3ec518629a361f4e8d94e06e6007e010987284da7ecdfb1b536507484b352",
+          "uzp": 1.0
+        },
+        {
+          "id": "case_0024",
+          "variant": "upright",
+          "source": "skany/odwolania/0001/0001.pdf",
+          "expected": "odwolanie",
+          "route": "odwolanie",
+          "routed": true,
+          "exact": false,
+          "digest": "2fd74562c220beb05642f68fca8759e02fe3f179df78015fb90818ec5d10daf6",
+          "uzp": 1.0
+        },
+        {
+          "id": "case_0025",
+          "variant": "pixel_90",
+          "source": "skany/odwolania/0001/0001.pdf",
+          "expected": "odwolanie",
+          "route": "negatywny",
+          "routed": false,
+          "exact": false,
+          "digest": "ca3d163bab055381827226140568f3bef7eaac187cebd76878e0b63e9e442356",
+          "uzp": 0.0
+        },
+        {
+          "id": "case_0026",
+          "variant": "pixel_180",
+          "source": "skany/odwolania/0001/0001.pdf",
+          "expected": "odwolanie",
+          "route": "negatywny",
+          "routed": false,
+          "exact": false,
+          "digest": "ca3d163bab055381827226140568f3bef7eaac187cebd76878e0b63e9e442356",
+          "uzp": 0.0
+        },
+        {
+          "id": "case_0027",
+          "variant": "pixel_270",
+          "source": "skany/odwolania/0001/0001.pdf",
+          "expected": "odwolanie",
+          "route": "odwolanie",
+          "routed": true,
+          "exact": false,
+          "digest": "c1d07ed88ac3fc569ee73c901c94d1e443a6ff7593ba33875eddf7e67b9af784",
+          "uzp": 0.9696969696969697
+        },
+        {
+          "id": "case_0028",
+          "variant": "pdf_rotate_90",
+          "source": "skany/odwolania/0001/0001.pdf",
+          "expected": "odwolanie",
+          "route": "odwolanie",
+          "routed": true,
+          "exact": false,
+          "digest": "c1d07ed88ac3fc569ee73c901c94d1e443a6ff7593ba33875eddf7e67b9af784",
+          "uzp": 0.9696969696969697
+        },
+        {
+          "id": "case_0029",
+          "variant": "mixed_first_90",
+          "source": "skany/odwolania/0001/0001.pdf",
+          "expected": "odwolanie",
+          "route": "negatywny",
+          "routed": false,
+          "exact": false,
+          "digest": "ca3d163bab055381827226140568f3bef7eaac187cebd76878e0b63e9e442356",
+          "uzp": 0.0
+        },
+        {
+          "id": "case_0030",
+          "variant": "upright",
+          "source": "skany/pelnomocnictwa/0001/0001.pdf",
+          "expected": "pelnomocnictwo",
+          "route": "pelnomocnictwo",
+          "routed": true,
+          "exact": false,
+          "digest": "4fed133d4bbad371b452844a967cefec2f695600c24e1db6ff0d6d863df0e042",
+          "uzp": 1.0
+        },
+        {
+          "id": "case_0031",
+          "variant": "pixel_90",
+          "source": "skany/pelnomocnictwa/0001/0001.pdf",
+          "expected": "pelnomocnictwo",
+          "route": "negatywny",
+          "routed": false,
+          "exact": false,
+          "digest": "ca3d163bab055381827226140568f3bef7eaac187cebd76878e0b63e9e442356",
+          "uzp": 0.0
+        },
+        {
+          "id": "case_0032",
+          "variant": "pixel_180",
+          "source": "skany/pelnomocnictwa/0001/0001.pdf",
+          "expected": "pelnomocnictwo",
+          "route": "negatywny",
+          "routed": false,
+          "exact": false,
+          "digest": "ca3d163bab055381827226140568f3bef7eaac187cebd76878e0b63e9e442356",
+          "uzp": 0.0
+        },
+        {
+          "id": "case_0033",
+          "variant": "pixel_270",
+          "source": "skany/pelnomocnictwa/0001/0001.pdf",
+          "expected": "pelnomocnictwo",
+          "route": "pelnomocnictwo",
+          "routed": true,
+          "exact": false,
+          "digest": "4fed133d4bbad371b452844a967cefec2f695600c24e1db6ff0d6d863df0e042",
+          "uzp": 1.0
+        },
+        {
+          "id": "case_0034",
+          "variant": "pdf_rotate_90",
+          "source": "skany/pelnomocnictwa/0001/0001.pdf",
+          "expected": "pelnomocnictwo",
+          "route": "pelnomocnictwo",
+          "routed": true,
+          "exact": false,
+          "digest": "4fed133d4bbad371b452844a967cefec2f695600c24e1db6ff0d6d863df0e042",
+          "uzp": 1.0
+        },
+        {
+          "id": "case_0035",
+          "variant": "upright",
+          "source": "skany/potwierdzenia/0001/0001.pdf",
+          "expected": "przelew",
+          "route": "przelew",
+          "routed": true,
+          "exact": true,
+          "digest": "adf17b88cb02b2e4b6d23ea436ee802acf130030976dc05cf33ec10eaf502c8b",
+          "uzp": 1.0
+        },
+        {
+          "id": "case_0036",
+          "variant": "pixel_90",
+          "source": "skany/potwierdzenia/0001/0001.pdf",
+          "expected": "przelew",
+          "route": "negatywny",
+          "routed": false,
+          "exact": false,
+          "digest": "ca3d163bab055381827226140568f3bef7eaac187cebd76878e0b63e9e442356",
+          "uzp": 0.0
+        },
+        {
+          "id": "case_0037",
+          "variant": "pixel_180",
+          "source": "skany/potwierdzenia/0001/0001.pdf",
+          "expected": "przelew",
+          "route": "negatywny",
+          "routed": false,
+          "exact": false,
+          "digest": "ca3d163bab055381827226140568f3bef7eaac187cebd76878e0b63e9e442356",
+          "uzp": 0.0
+        },
+        {
+          "id": "case_0038",
+          "variant": "pixel_270",
+          "source": "skany/potwierdzenia/0001/0001.pdf",
+          "expected": "przelew",
+          "route": "negatywny",
+          "routed": false,
+          "exact": false,
+          "digest": "ca3d163bab055381827226140568f3bef7eaac187cebd76878e0b63e9e442356",
+          "uzp": 0.0
+        },
+        {
+          "id": "case_0039",
+          "variant": "pdf_rotate_90",
+          "source": "skany/potwierdzenia/0001/0001.pdf",
+          "expected": "przelew",
+          "route": "negatywny",
+          "routed": false,
+          "exact": false,
+          "digest": "ca3d163bab055381827226140568f3bef7eaac187cebd76878e0b63e9e442356",
+          "uzp": 0.0
+        }
+      ]
+    },
+    "candidate": {
+      "dataset_sha256": "486c5ca0cba973389b42ab8939c25de80b54aaf377cefa1728b489f696c2a7c4",
+      "docs": 39,
+      "seconds": 140.39318379107863,
+      "cli_exit": 0,
+      "per_variant": {
+        "upright": {
+          "docs": 6,
+          "valid_outputs": 6,
+          "uzp_f1": 0.9841269841269841,
+          "exact": 3,
+          "routed": 6
+        },
+        "pixel_90": {
+          "docs": 6,
+          "valid_outputs": 6,
+          "uzp_f1": 0.19718309859154928,
+          "exact": 1,
+          "routed": 1
+        },
+        "pixel_180": {
+          "docs": 6,
+          "valid_outputs": 6,
+          "uzp_f1": 0.5777777777777777,
+          "exact": 1,
+          "routed": 2
+        },
+        "pixel_270": {
+          "docs": 6,
+          "valid_outputs": 6,
+          "uzp_f1": 0.9152542372881356,
+          "exact": 1,
+          "routed": 5
+        },
+        "pdf_rotate_90": {
+          "docs": 6,
+          "valid_outputs": 6,
+          "uzp_f1": 0.9152542372881356,
+          "exact": 1,
+          "routed": 5
+        },
+        "mixed_first_90": {
+          "docs": 2,
+          "valid_outputs": 2,
+          "uzp_f1": 0.0,
+          "exact": 0,
+          "routed": 0
+        },
+        "layer_faithful": {
+          "docs": 3,
+          "valid_outputs": 3,
+          "uzp_f1": 1.0,
+          "exact": 3,
+          "routed": 3
+        },
+        "layer_first_marker": {
+          "docs": 1,
+          "valid_outputs": 1,
+          "uzp_f1": 1.0,
+          "exact": 1,
+          "routed": 1
+        },
+        "layer_nip_digit": {
+          "docs": 1,
+          "valid_outputs": 1,
+          "uzp_f1": 1.0,
+          "exact": 1,
+          "routed": 1
+        },
+        "layer_account_digit": {
+          "docs": 1,
+          "valid_outputs": 1,
+          "uzp_f1": 1.0,
+          "exact": 1,
+          "routed": 1
+        },
+        "layer_shift_line": {
+          "docs": 1,
+          "valid_outputs": 1,
+          "uzp_f1": 1.0,
+          "exact": 1,
+          "routed": 1
+        }
+      },
+      "items": [
+        {
+          "id": "case_0001",
+          "variant": "upright",
+          "source": "przyklad_02/odwolanie.pdf",
+          "expected": "odwolanie",
+          "route": "odwolanie",
+          "routed": true,
+          "exact": true,
+          "digest": "94cc6ac6b585778ac6c8a34bde5a4fc0cdaa07bbb0d2502e96f47b393333063f",
+          "uzp": 1.0
+        },
+        {
+          "id": "case_0002",
+          "variant": "pixel_90",
+          "source": "przyklad_02/odwolanie.pdf",
+          "expected": "odwolanie",
+          "route": "negatywny",
+          "routed": false,
+          "exact": false,
+          "digest": "ca3d163bab055381827226140568f3bef7eaac187cebd76878e0b63e9e442356",
+          "uzp": 0.0
+        },
+        {
+          "id": "case_0003",
+          "variant": "pixel_180",
+          "source": "przyklad_02/odwolanie.pdf",
+          "expected": "odwolanie",
+          "route": "odwolanie",
+          "routed": true,
+          "exact": false,
+          "digest": "79aaa9031032b769897afcd510b4a2d816ea6954cf90165114d2aac490e1c373",
+          "uzp": 0.9743589743589743
+        },
+        {
+          "id": "case_0004",
+          "variant": "pixel_270",
+          "source": "przyklad_02/odwolanie.pdf",
+          "expected": "odwolanie",
+          "route": "odwolanie",
+          "routed": true,
+          "exact": false,
+          "digest": "79aaa9031032b769897afcd510b4a2d816ea6954cf90165114d2aac490e1c373",
+          "uzp": 0.9743589743589743
+        },
+        {
+          "id": "case_0005",
+          "variant": "pdf_rotate_90",
+          "source": "przyklad_02/odwolanie.pdf",
+          "expected": "odwolanie",
+          "route": "odwolanie",
+          "routed": true,
+          "exact": false,
+          "digest": "79aaa9031032b769897afcd510b4a2d816ea6954cf90165114d2aac490e1c373",
+          "uzp": 0.9743589743589743
+        },
+        {
+          "id": "case_0006",
+          "variant": "mixed_first_90",
+          "source": "przyklad_02/odwolanie.pdf",
+          "expected": "odwolanie",
+          "route": "negatywny",
+          "routed": false,
+          "exact": false,
+          "digest": "ca3d163bab055381827226140568f3bef7eaac187cebd76878e0b63e9e442356",
+          "uzp": 0.0
+        },
+        {
+          "id": "case_0007",
+          "variant": "layer_faithful",
+          "source": "przyklad_02/odwolanie.pdf",
+          "expected": "odwolanie",
+          "route": "odwolanie",
+          "routed": true,
+          "exact": true,
+          "digest": "94cc6ac6b585778ac6c8a34bde5a4fc0cdaa07bbb0d2502e96f47b393333063f",
+          "uzp": 1.0
+        },
+        {
+          "id": "case_0008",
+          "variant": "layer_first_marker",
+          "source": "przyklad_02/odwolanie.pdf",
+          "expected": "odwolanie",
+          "route": "odwolanie",
+          "routed": true,
+          "exact": true,
+          "digest": "94cc6ac6b585778ac6c8a34bde5a4fc0cdaa07bbb0d2502e96f47b393333063f",
+          "uzp": 1.0
+        },
+        {
+          "id": "case_0009",
+          "variant": "upright",
+          "source": "przyklad_01/pelnomocnictwo.pdf",
+          "expected": "pelnomocnictwo",
+          "route": "pelnomocnictwo",
+          "routed": true,
+          "exact": true,
+          "digest": "a31d5f4271b885eb64414898c1bc656cfc6efe1f3d4e86730b5566ebc7304cc2",
+          "uzp": 1.0
+        },
+        {
+          "id": "case_0010",
+          "variant": "pixel_90",
+          "source": "przyklad_01/pelnomocnictwo.pdf",
+          "expected": "pelnomocnictwo",
+          "route": "pelnomocnictwo",
+          "routed": true,
+          "exact": true,
+          "digest": "a31d5f4271b885eb64414898c1bc656cfc6efe1f3d4e86730b5566ebc7304cc2",
+          "uzp": 1.0
+        },
+        {
+          "id": "case_0011",
+          "variant": "pixel_180",
+          "source": "przyklad_01/pelnomocnictwo.pdf",
+          "expected": "pelnomocnictwo",
+          "route": "pelnomocnictwo",
+          "routed": true,
+          "exact": true,
+          "digest": "a31d5f4271b885eb64414898c1bc656cfc6efe1f3d4e86730b5566ebc7304cc2",
+          "uzp": 1.0
+        },
+        {
+          "id": "case_0012",
+          "variant": "pixel_270",
+          "source": "przyklad_01/pelnomocnictwo.pdf",
+          "expected": "pelnomocnictwo",
+          "route": "pelnomocnictwo",
+          "routed": true,
+          "exact": true,
+          "digest": "a31d5f4271b885eb64414898c1bc656cfc6efe1f3d4e86730b5566ebc7304cc2",
+          "uzp": 1.0
+        },
+        {
+          "id": "case_0013",
+          "variant": "pdf_rotate_90",
+          "source": "przyklad_01/pelnomocnictwo.pdf",
+          "expected": "pelnomocnictwo",
+          "route": "pelnomocnictwo",
+          "routed": true,
+          "exact": true,
+          "digest": "a31d5f4271b885eb64414898c1bc656cfc6efe1f3d4e86730b5566ebc7304cc2",
+          "uzp": 1.0
+        },
+        {
+          "id": "case_0014",
+          "variant": "layer_faithful",
+          "source": "przyklad_01/pelnomocnictwo.pdf",
+          "expected": "pelnomocnictwo",
+          "route": "pelnomocnictwo",
+          "routed": true,
+          "exact": true,
+          "digest": "a31d5f4271b885eb64414898c1bc656cfc6efe1f3d4e86730b5566ebc7304cc2",
+          "uzp": 1.0
+        },
+        {
+          "id": "case_0015",
+          "variant": "layer_nip_digit",
+          "source": "przyklad_01/pelnomocnictwo.pdf",
+          "expected": "pelnomocnictwo",
+          "route": "pelnomocnictwo",
+          "routed": true,
+          "exact": true,
+          "digest": "a31d5f4271b885eb64414898c1bc656cfc6efe1f3d4e86730b5566ebc7304cc2",
+          "uzp": 1.0
+        },
+        {
+          "id": "case_0016",
+          "variant": "upright",
+          "source": "przyklad_01/przelew.pdf",
+          "expected": "przelew",
+          "route": "przelew",
+          "routed": true,
+          "exact": false,
+          "digest": "68e15683ecc657e2203fdd087934081751ccb38283f2aeb8de85c10cc2ca0471",
+          "uzp": 0.8
+        },
+        {
+          "id": "case_0017",
+          "variant": "pixel_90",
+          "source": "przyklad_01/przelew.pdf",
+          "expected": "przelew",
+          "route": "negatywny",
+          "routed": false,
+          "exact": false,
+          "digest": "ca3d163bab055381827226140568f3bef7eaac187cebd76878e0b63e9e442356",
+          "uzp": 0.0
+        },
+        {
+          "id": "case_0018",
+          "variant": "pixel_180",
+          "source": "przyklad_01/przelew.pdf",
+          "expected": "przelew",
+          "route": "negatywny",
+          "routed": false,
+          "exact": false,
+          "digest": "ca3d163bab055381827226140568f3bef7eaac187cebd76878e0b63e9e442356",
+          "uzp": 0.0
+        },
+        {
+          "id": "case_0019",
+          "variant": "pixel_270",
+          "source": "przyklad_01/przelew.pdf",
+          "expected": "przelew",
+          "route": "przelew",
+          "routed": true,
+          "exact": false,
+          "digest": "68e15683ecc657e2203fdd087934081751ccb38283f2aeb8de85c10cc2ca0471",
+          "uzp": 0.8
+        },
+        {
+          "id": "case_0020",
+          "variant": "pdf_rotate_90",
+          "source": "przyklad_01/przelew.pdf",
+          "expected": "przelew",
+          "route": "przelew",
+          "routed": true,
+          "exact": false,
+          "digest": "68e15683ecc657e2203fdd087934081751ccb38283f2aeb8de85c10cc2ca0471",
+          "uzp": 0.8
+        },
+        {
+          "id": "case_0021",
+          "variant": "layer_faithful",
+          "source": "przyklad_01/przelew.pdf",
+          "expected": "przelew",
+          "route": "przelew",
+          "routed": true,
+          "exact": true,
+          "digest": "00e3ec518629a361f4e8d94e06e6007e010987284da7ecdfb1b536507484b352",
+          "uzp": 1.0
+        },
+        {
+          "id": "case_0022",
+          "variant": "layer_account_digit",
+          "source": "przyklad_01/przelew.pdf",
+          "expected": "przelew",
+          "route": "przelew",
+          "routed": true,
+          "exact": true,
+          "digest": "00e3ec518629a361f4e8d94e06e6007e010987284da7ecdfb1b536507484b352",
+          "uzp": 1.0
+        },
+        {
+          "id": "case_0023",
+          "variant": "layer_shift_line",
+          "source": "przyklad_01/przelew.pdf",
+          "expected": "przelew",
+          "route": "przelew",
+          "routed": true,
+          "exact": true,
+          "digest": "00e3ec518629a361f4e8d94e06e6007e010987284da7ecdfb1b536507484b352",
+          "uzp": 1.0
+        },
+        {
+          "id": "case_0024",
+          "variant": "upright",
+          "source": "skany/odwolania/0001/0001.pdf",
+          "expected": "odwolanie",
+          "route": "odwolanie",
+          "routed": true,
+          "exact": false,
+          "digest": "2fd74562c220beb05642f68fca8759e02fe3f179df78015fb90818ec5d10daf6",
+          "uzp": 1.0
+        },
+        {
+          "id": "case_0025",
+          "variant": "pixel_90",
+          "source": "skany/odwolania/0001/0001.pdf",
+          "expected": "odwolanie",
+          "route": "negatywny",
+          "routed": false,
+          "exact": false,
+          "digest": "ca3d163bab055381827226140568f3bef7eaac187cebd76878e0b63e9e442356",
+          "uzp": 0.0
+        },
+        {
+          "id": "case_0026",
+          "variant": "pixel_180",
+          "source": "skany/odwolania/0001/0001.pdf",
+          "expected": "odwolanie",
+          "route": "negatywny",
+          "routed": false,
+          "exact": false,
+          "digest": "ca3d163bab055381827226140568f3bef7eaac187cebd76878e0b63e9e442356",
+          "uzp": 0.0
+        },
+        {
+          "id": "case_0027",
+          "variant": "pixel_270",
+          "source": "skany/odwolania/0001/0001.pdf",
+          "expected": "odwolanie",
+          "route": "odwolanie",
+          "routed": true,
+          "exact": false,
+          "digest": "c1d07ed88ac3fc569ee73c901c94d1e443a6ff7593ba33875eddf7e67b9af784",
+          "uzp": 0.9696969696969697
+        },
+        {
+          "id": "case_0028",
+          "variant": "pdf_rotate_90",
+          "source": "skany/odwolania/0001/0001.pdf",
+          "expected": "odwolanie",
+          "route": "odwolanie",
+          "routed": true,
+          "exact": false,
+          "digest": "c1d07ed88ac3fc569ee73c901c94d1e443a6ff7593ba33875eddf7e67b9af784",
+          "uzp": 0.9696969696969697
+        },
+        {
+          "id": "case_0029",
+          "variant": "mixed_first_90",
+          "source": "skany/odwolania/0001/0001.pdf",
+          "expected": "odwolanie",
+          "route": "negatywny",
+          "routed": false,
+          "exact": false,
+          "digest": "ca3d163bab055381827226140568f3bef7eaac187cebd76878e0b63e9e442356",
+          "uzp": 0.0
+        },
+        {
+          "id": "case_0030",
+          "variant": "upright",
+          "source": "skany/pelnomocnictwa/0001/0001.pdf",
+          "expected": "pelnomocnictwo",
+          "route": "pelnomocnictwo",
+          "routed": true,
+          "exact": false,
+          "digest": "4fed133d4bbad371b452844a967cefec2f695600c24e1db6ff0d6d863df0e042",
+          "uzp": 1.0
+        },
+        {
+          "id": "case_0031",
+          "variant": "pixel_90",
+          "source": "skany/pelnomocnictwa/0001/0001.pdf",
+          "expected": "pelnomocnictwo",
+          "route": "negatywny",
+          "routed": false,
+          "exact": false,
+          "digest": "ca3d163bab055381827226140568f3bef7eaac187cebd76878e0b63e9e442356",
+          "uzp": 0.0
+        },
+        {
+          "id": "case_0032",
+          "variant": "pixel_180",
+          "source": "skany/pelnomocnictwa/0001/0001.pdf",
+          "expected": "pelnomocnictwo",
+          "route": "negatywny",
+          "routed": false,
+          "exact": false,
+          "digest": "ca3d163bab055381827226140568f3bef7eaac187cebd76878e0b63e9e442356",
+          "uzp": 0.0
+        },
+        {
+          "id": "case_0033",
+          "variant": "pixel_270",
+          "source": "skany/pelnomocnictwa/0001/0001.pdf",
+          "expected": "pelnomocnictwo",
+          "route": "pelnomocnictwo",
+          "routed": true,
+          "exact": false,
+          "digest": "4fed133d4bbad371b452844a967cefec2f695600c24e1db6ff0d6d863df0e042",
+          "uzp": 1.0
+        },
+        {
+          "id": "case_0034",
+          "variant": "pdf_rotate_90",
+          "source": "skany/pelnomocnictwa/0001/0001.pdf",
+          "expected": "pelnomocnictwo",
+          "route": "pelnomocnictwo",
+          "routed": true,
+          "exact": false,
+          "digest": "4fed133d4bbad371b452844a967cefec2f695600c24e1db6ff0d6d863df0e042",
+          "uzp": 1.0
+        },
+        {
+          "id": "case_0035",
+          "variant": "upright",
+          "source": "skany/potwierdzenia/0001/0001.pdf",
+          "expected": "przelew",
+          "route": "przelew",
+          "routed": true,
+          "exact": true,
+          "digest": "adf17b88cb02b2e4b6d23ea436ee802acf130030976dc05cf33ec10eaf502c8b",
+          "uzp": 1.0
+        },
+        {
+          "id": "case_0036",
+          "variant": "pixel_90",
+          "source": "skany/potwierdzenia/0001/0001.pdf",
+          "expected": "przelew",
+          "route": "negatywny",
+          "routed": false,
+          "exact": false,
+          "digest": "ca3d163bab055381827226140568f3bef7eaac187cebd76878e0b63e9e442356",
+          "uzp": 0.0
+        },
+        {
+          "id": "case_0037",
+          "variant": "pixel_180",
+          "source": "skany/potwierdzenia/0001/0001.pdf",
+          "expected": "przelew",
+          "route": "negatywny",
+          "routed": false,
+          "exact": false,
+          "digest": "ca3d163bab055381827226140568f3bef7eaac187cebd76878e0b63e9e442356",
+          "uzp": 0.0
+        },
+        {
+          "id": "case_0038",
+          "variant": "pixel_270",
+          "source": "skany/potwierdzenia/0001/0001.pdf",
+          "expected": "przelew",
+          "route": "negatywny",
+          "routed": false,
+          "exact": false,
+          "digest": "ca3d163bab055381827226140568f3bef7eaac187cebd76878e0b63e9e442356",
+          "uzp": 0.0
+        },
+        {
+          "id": "case_0039",
+          "variant": "pdf_rotate_90",
+          "source": "skany/potwierdzenia/0001/0001.pdf",
+          "expected": "przelew",
+          "route": "negatywny",
+          "routed": false,
+          "exact": false,
+          "digest": "ca3d163bab055381827226140568f3bef7eaac187cebd76878e0b63e9e442356",
+          "uzp": 0.0
+        }
+      ]
+    }
+  },
+  "acceptance_criteria": {
+    "rotation_mean_uzp": 0.8898217366073555,
+    "source_uzp": 0.9770992366412213,
+    "rotation_pass": false,
+    "text_id_name_errors_source": 0,
+    "text_id_name_errors": {
+      "T1": 13,
+      "T2": 15,
+      "T3": 0,
+      "T4": 92
+    },
+    "text_pass": false,
+    "source_byte_parity": 17,
+    "new_route_losses_vs_own_source": {
+      "R1": 0,
+      "R2": 5,
+      "R3": 0,
+      "R4": 0,
+      "R5": 0,
+      "T1": 0,
+      "T2": 0,
+      "T3": 18,
+      "T4": 0
+    },
+    "route_losses_vs_main_same_input": {
+      "source": 0,
+      "R1": 0,
+      "R2": 0,
+      "R3": 0,
+      "R4": 0,
+      "R5": 0,
+      "T1": 0,
+      "T2": 0,
+      "T3": 0,
+      "T4": 0
+    },
+    "routes_pass": false,
+    "passed": false,
+    "added_cpu_seconds_per_transformed_pdf": 0.9158950617283952
+  },
+  "independent": {
+    "main": {
+      "variants": {
+        "source": {
+          "n": 18,
+          "uzp": 0.9744897959183674,
+          "exact": 9,
+          "routed": 18,
+          "inapplicable": 0,
+          "wrong_nonnull_in_layer": 0,
+          "wrong_ids_names": 0,
+          "wrong_ids_names_in_layer": 0,
+          "cpu_seconds": 20.117,
+          "seconds": 57.434,
+          "cli_exit": 0,
+          "valid": 18,
+          "classes": {
+            "odwolanie": {
+              "n": 6,
+              "uzp": 0.9783549783549783,
+              "exact": 1,
+              "routed": 6,
+              "inapplicable": 0,
+              "wrong_nonnull_in_layer": 0,
+              "wrong_ids_names": 0,
+              "wrong_ids_names_in_layer": 0
+            },
+            "pelnomocnictwo": {
+              "n": 6,
+              "uzp": 0.9782608695652174,
+              "exact": 5,
+              "routed": 6,
+              "inapplicable": 0,
+              "wrong_nonnull_in_layer": 0,
+              "wrong_ids_names": 0,
+              "wrong_ids_names_in_layer": 0
+            },
+            "przelew": {
+              "n": 6,
+              "uzp": 0.9565217391304348,
+              "exact": 3,
+              "routed": 6,
+              "inapplicable": 0,
+              "wrong_nonnull_in_layer": 0,
+              "wrong_ids_names": 0,
+              "wrong_ids_names_in_layer": 0
+            }
+          }
+        },
+        "R1": {
+          "n": 18,
+          "uzp": 0.9308510638297872,
+          "exact": 5,
+          "routed": 17,
+          "inapplicable": 0,
+          "wrong_nonnull_in_layer": 0,
+          "wrong_ids_names": 2,
+          "wrong_ids_names_in_layer": 0,
+          "cpu_seconds": 38.53,
+          "seconds": 82.37,
+          "cli_exit": 0,
+          "valid": 18,
+          "classes": {
+            "odwolanie": {
+              "n": 6,
+              "uzp": 0.9511111111111111,
+              "exact": 0,
+              "routed": 6,
+              "inapplicable": 0,
+              "wrong_nonnull_in_layer": 0,
+              "wrong_ids_names": 0,
+              "wrong_ids_names_in_layer": 0
+            },
+            "pelnomocnictwo": {
+              "n": 6,
+              "uzp": 0.9782608695652174,
+              "exact": 5,
+              "routed": 6,
+              "inapplicable": 0,
+              "wrong_nonnull_in_layer": 0,
+              "wrong_ids_names": 0,
+              "wrong_ids_names_in_layer": 0
+            },
+            "przelew": {
+              "n": 6,
+              "uzp": 0.7796610169491526,
+              "exact": 0,
+              "routed": 5,
+              "inapplicable": 0,
+              "wrong_nonnull_in_layer": 0,
+              "wrong_ids_names": 2,
+              "wrong_ids_names_in_layer": 0
+            }
+          }
+        },
+        "R2": {
+          "n": 18,
+          "uzp": 0.0,
+          "exact": 0,
+          "routed": 0,
+          "inapplicable": 0,
+          "wrong_nonnull_in_layer": 0,
+          "wrong_ids_names": 0,
+          "wrong_ids_names_in_layer": 0,
+          "cpu_seconds": 34.312,
+          "seconds": 78.194,
+          "cli_exit": 0,
+          "valid": 18,
+          "classes": {
+            "odwolanie": {
+              "n": 6,
+              "uzp": 0.0,
+              "exact": 0,
+              "routed": 0,
+              "inapplicable": 0,
+              "wrong_nonnull_in_layer": 0,
+              "wrong_ids_names": 0,
+              "wrong_ids_names_in_layer": 0
+            },
+            "pelnomocnictwo": {
+              "n": 6,
+              "uzp": 0.0,
+              "exact": 0,
+              "routed": 0,
+              "inapplicable": 0,
+              "wrong_nonnull_in_layer": 0,
+              "wrong_ids_names": 0,
+              "wrong_ids_names_in_layer": 0
+            },
+            "przelew": {
+              "n": 6,
+              "uzp": 0.0,
+              "exact": 0,
+              "routed": 0,
+              "inapplicable": 0,
+              "wrong_nonnull_in_layer": 0,
+              "wrong_ids_names": 0,
+              "wrong_ids_names_in_layer": 0
+            }
+          }
+        },
+        "R3": {
+          "n": 18,
+          "uzp": 0.0,
+          "exact": 0,
+          "routed": 0,
+          "inapplicable": 0,
+          "wrong_nonnull_in_layer": 0,
+          "wrong_ids_names": 0,
+          "wrong_ids_names_in_layer": 0,
+          "cpu_seconds": 36.573,
+          "seconds": 100.485,
+          "cli_exit": 0,
+          "valid": 18,
+          "classes": {
+            "odwolanie": {
+              "n": 6,
+              "uzp": 0.0,
+              "exact": 0,
+              "routed": 0,
+              "inapplicable": 0,
+              "wrong_nonnull_in_layer": 0,
+              "wrong_ids_names": 0,
+              "wrong_ids_names_in_layer": 0
+            },
+            "pelnomocnictwo": {
+              "n": 6,
+              "uzp": 0.0,
+              "exact": 0,
+              "routed": 0,
+              "inapplicable": 0,
+              "wrong_nonnull_in_layer": 0,
+              "wrong_ids_names": 0,
+              "wrong_ids_names_in_layer": 0
+            },
+            "przelew": {
+              "n": 6,
+              "uzp": 0.0,
+              "exact": 0,
+              "routed": 0,
+              "inapplicable": 0,
+              "wrong_nonnull_in_layer": 0,
+              "wrong_ids_names": 0,
+              "wrong_ids_names_in_layer": 0
+            }
+          }
+        },
+        "R4": {
+          "n": 18,
+          "uzp": 0.9251336898395722,
+          "exact": 6,
+          "routed": 17,
+          "inapplicable": 0,
+          "wrong_nonnull_in_layer": 0,
+          "wrong_ids_names": 3,
+          "wrong_ids_names_in_layer": 0,
+          "cpu_seconds": 38.378,
+          "seconds": 95.982,
+          "cli_exit": 0,
+          "valid": 18,
+          "classes": {
+            "odwolanie": {
+              "n": 6,
+              "uzp": 0.9417040358744395,
+              "exact": 1,
+              "routed": 6,
+              "inapplicable": 0,
+              "wrong_nonnull_in_layer": 0,
+              "wrong_ids_names": 1,
+              "wrong_ids_names_in_layer": 0
+            },
+            "pelnomocnictwo": {
+              "n": 6,
+              "uzp": 0.9782608695652174,
+              "exact": 5,
+              "routed": 6,
+              "inapplicable": 0,
+              "wrong_nonnull_in_layer": 0,
+              "wrong_ids_names": 0,
+              "wrong_ids_names_in_layer": 0
+            },
+            "przelew": {
+              "n": 6,
+              "uzp": 0.7796610169491526,
+              "exact": 0,
+              "routed": 5,
+              "inapplicable": 0,
+              "wrong_nonnull_in_layer": 0,
+              "wrong_ids_names": 2,
+              "wrong_ids_names_in_layer": 0
+            }
+          }
+        },
+        "R5": {
+          "n": 18,
+          "uzp": 0.9365079365079365,
+          "exact": 5,
+          "routed": 18,
+          "inapplicable": 0,
+          "wrong_nonnull_in_layer": 0,
+          "wrong_ids_names": 3,
+          "wrong_ids_names_in_layer": 0,
+          "cpu_seconds": 57.412,
+          "seconds": 184.388,
+          "cli_exit": 0,
+          "valid": 18,
+          "classes": {
+            "odwolanie": {
+              "n": 6,
+              "uzp": 0.9464285714285714,
+              "exact": 1,
+              "routed": 6,
+              "inapplicable": 0,
+              "wrong_nonnull_in_layer": 0,
+              "wrong_ids_names": 1,
+              "wrong_ids_names_in_layer": 0
+            },
+            "pelnomocnictwo": {
+              "n": 6,
+              "uzp": 0.9555555555555556,
+              "exact": 4,
+              "routed": 6,
+              "inapplicable": 0,
+              "wrong_nonnull_in_layer": 0,
+              "wrong_ids_names": 0,
+              "wrong_ids_names_in_layer": 0
+            },
+            "przelew": {
+              "n": 6,
+              "uzp": 0.875,
+              "exact": 0,
+              "routed": 6,
+              "inapplicable": 0,
+              "wrong_nonnull_in_layer": 0,
+              "wrong_ids_names": 2,
+              "wrong_ids_names_in_layer": 0
+            }
+          }
+        },
+        "T1": {
+          "n": 18,
+          "uzp": 0.7781155015197568,
+          "exact": 0,
+          "routed": 18,
+          "inapplicable": 0,
+          "wrong_nonnull_in_layer": 21,
+          "wrong_ids_names": 20,
+          "wrong_ids_names_in_layer": 18,
+          "cpu_seconds": 3.664,
+          "seconds": 16.636,
+          "cli_exit": 0,
+          "valid": 18,
+          "classes": {
+            "odwolanie": {
+              "n": 6,
+              "uzp": 0.7446808510638298,
+              "exact": 0,
+              "routed": 6,
+              "inapplicable": 0,
+              "wrong_nonnull_in_layer": 8,
+              "wrong_ids_names": 7,
+              "wrong_ids_names_in_layer": 7
+            },
+            "pelnomocnictwo": {
+              "n": 6,
+              "uzp": 0.7631578947368421,
+              "exact": 0,
+              "routed": 6,
+              "inapplicable": 0,
+              "wrong_nonnull_in_layer": 7,
+              "wrong_ids_names": 7,
+              "wrong_ids_names_in_layer": 7
+            },
+            "przelew": {
+              "n": 6,
+              "uzp": 0.8923076923076924,
+              "exact": 0,
+              "routed": 6,
+              "inapplicable": 0,
+              "wrong_nonnull_in_layer": 6,
+              "wrong_ids_names": 6,
+              "wrong_ids_names_in_layer": 4
+            }
+          }
+        },
+        "T2": {
+          "n": 18,
+          "uzp": 0.7891566265060241,
+          "exact": 3,
+          "routed": 18,
+          "inapplicable": 6,
+          "wrong_nonnull_in_layer": 18,
+          "wrong_ids_names": 15,
+          "wrong_ids_names_in_layer": 15,
+          "cpu_seconds": 3.552,
+          "seconds": 13.22,
+          "cli_exit": 0,
+          "valid": 18,
+          "classes": {
+            "odwolanie": {
+              "n": 6,
+              "uzp": 0.7311827956989247,
+              "exact": 0,
+              "routed": 6,
+              "inapplicable": 0,
+              "wrong_nonnull_in_layer": 10,
+              "wrong_ids_names": 9,
+              "wrong_ids_names_in_layer": 9
+            },
+            "pelnomocnictwo": {
+              "n": 6,
+              "uzp": 0.7466666666666667,
+              "exact": 0,
+              "routed": 6,
+              "inapplicable": 0,
+              "wrong_nonnull_in_layer": 6,
+              "wrong_ids_names": 6,
+              "wrong_ids_names_in_layer": 6
+            },
+            "przelew": {
+              "n": 6,
+              "uzp": 0.9859154929577465,
+              "exact": 3,
+              "routed": 6,
+              "inapplicable": 6,
+              "wrong_nonnull_in_layer": 2,
+              "wrong_ids_names": 0,
+              "wrong_ids_names_in_layer": 0
+            }
+          }
+        },
+        "T3": {
+          "n": 18,
+          "uzp": 0.0,
+          "exact": 0,
+          "routed": 0,
+          "inapplicable": 0,
+          "wrong_nonnull_in_layer": 0,
+          "wrong_ids_names": 0,
+          "wrong_ids_names_in_layer": 0,
+          "cpu_seconds": 3.262,
+          "seconds": 13.567,
+          "cli_exit": 0,
+          "valid": 18,
+          "classes": {
+            "odwolanie": {
+              "n": 6,
+              "uzp": 0.0,
+              "exact": 0,
+              "routed": 0,
+              "inapplicable": 0,
+              "wrong_nonnull_in_layer": 0,
+              "wrong_ids_names": 0,
+              "wrong_ids_names_in_layer": 0
+            },
+            "pelnomocnictwo": {
+              "n": 6,
+              "uzp": 0.0,
+              "exact": 0,
+              "routed": 0,
+              "inapplicable": 0,
+              "wrong_nonnull_in_layer": 0,
+              "wrong_ids_names": 0,
+              "wrong_ids_names_in_layer": 0
+            },
+            "przelew": {
+              "n": 6,
+              "uzp": 0.0,
+              "exact": 0,
+              "routed": 0,
+              "inapplicable": 0,
+              "wrong_nonnull_in_layer": 0,
+              "wrong_ids_names": 0,
+              "wrong_ids_names_in_layer": 0
+            }
+          }
+        },
+        "T4": {
+          "n": 18,
+          "uzp": 0.16326530612244897,
+          "exact": 0,
+          "routed": 18,
+          "inapplicable": 0,
+          "wrong_nonnull_in_layer": 123,
+          "wrong_ids_names": 93,
+          "wrong_ids_names_in_layer": 88,
+          "cpu_seconds": 3.874,
+          "seconds": 17.118,
+          "cli_exit": 0,
+          "valid": 18,
+          "classes": {
+            "odwolanie": {
+              "n": 6,
+              "uzp": 0.16216216216216217,
+              "exact": 0,
+              "routed": 6,
+              "inapplicable": 0,
+              "wrong_nonnull_in_layer": 72,
+              "wrong_ids_names": 52,
+              "wrong_ids_names_in_layer": 52
+            },
+            "pelnomocnictwo": {
+              "n": 6,
+              "uzp": 0.2033898305084746,
+              "exact": 0,
+              "routed": 6,
+              "inapplicable": 0,
+              "wrong_nonnull_in_layer": 29,
+              "wrong_ids_names": 29,
+              "wrong_ids_names_in_layer": 29
+            },
+            "przelew": {
+              "n": 6,
+              "uzp": 0.10526315789473684,
+              "exact": 0,
+              "routed": 6,
+              "inapplicable": 0,
+              "wrong_nonnull_in_layer": 22,
+              "wrong_ids_names": 12,
+              "wrong_ids_names_in_layer": 7
+            }
+          }
+        }
+      },
+      "sha256": "7d76c47cfbc43e337f068de21bec60fa38dd3adb6be31f1b2cb520ce44322d91"
+    },
+    "candidate": {
+      "variants": {
+        "source": {
+          "n": 18,
+          "uzp": 0.9770992366412213,
+          "exact": 10,
+          "routed": 18,
+          "inapplicable": 0,
+          "wrong_nonnull_in_layer": 0,
+          "wrong_ids_names": 0,
+          "wrong_ids_names_in_layer": 0,
+          "cpu_seconds": 20.955,
+          "seconds": 56.995,
+          "cli_exit": 0,
+          "valid": 18,
+          "classes": {
+            "odwolanie": {
+              "n": 6,
+              "uzp": 0.9783549783549783,
+              "exact": 1,
+              "routed": 6,
+              "inapplicable": 0,
+              "wrong_nonnull_in_layer": 0,
+              "wrong_ids_names": 0,
+              "wrong_ids_names_in_layer": 0
+            },
+            "pelnomocnictwo": {
+              "n": 6,
+              "uzp": 0.9782608695652174,
+              "exact": 5,
+              "routed": 6,
+              "inapplicable": 0,
+              "wrong_nonnull_in_layer": 0,
+              "wrong_ids_names": 0,
+              "wrong_ids_names_in_layer": 0
+            },
+            "przelew": {
+              "n": 6,
+              "uzp": 0.9714285714285714,
+              "exact": 4,
+              "routed": 6,
+              "inapplicable": 0,
+              "wrong_nonnull_in_layer": 0,
+              "wrong_ids_names": 0,
+              "wrong_ids_names_in_layer": 0
+            }
+          }
+        },
+        "R1": {
+          "n": 18,
+          "uzp": 0.9393139841688655,
+          "exact": 5,
+          "routed": 18,
+          "inapplicable": 0,
+          "wrong_nonnull_in_layer": 0,
+          "wrong_ids_names": 2,
+          "wrong_ids_names_in_layer": 0,
+          "cpu_seconds": 50.094,
+          "seconds": 118.011,
+          "cli_exit": 0,
+          "valid": 18,
+          "classes": {
+            "odwolanie": {
+              "n": 6,
+              "uzp": 0.9511111111111111,
+              "exact": 0,
+              "routed": 6,
+              "inapplicable": 0,
+              "wrong_nonnull_in_layer": 0,
+              "wrong_ids_names": 0,
+              "wrong_ids_names_in_layer": 0
+            },
+            "pelnomocnictwo": {
+              "n": 6,
+              "uzp": 0.9782608695652174,
+              "exact": 5,
+              "routed": 6,
+              "inapplicable": 0,
+              "wrong_nonnull_in_layer": 0,
+              "wrong_ids_names": 0,
+              "wrong_ids_names_in_layer": 0
+            },
+            "przelew": {
+              "n": 6,
+              "uzp": 0.8387096774193549,
+              "exact": 0,
+              "routed": 6,
+              "inapplicable": 0,
+              "wrong_nonnull_in_layer": 0,
+              "wrong_ids_names": 2,
+              "wrong_ids_names_in_layer": 0
+            }
+          }
+        },
+        "R2": {
+          "n": 18,
+          "uzp": 0.7032258064516129,
+          "exact": 4,
+          "routed": 13,
+          "inapplicable": 0,
+          "wrong_nonnull_in_layer": 0,
+          "wrong_ids_names": 2,
+          "wrong_ids_names_in_layer": 0,
+          "cpu_seconds": 47.999,
+          "seconds": 121.632,
+          "cli_exit": 0,
+          "valid": 18,
+          "classes": {
+            "odwolanie": {
+              "n": 6,
+              "uzp": 0.6358381502890174,
+              "exact": 0,
+              "routed": 3,
+              "inapplicable": 0,
+              "wrong_nonnull_in_layer": 0,
+              "wrong_ids_names": 0,
+              "wrong_ids_names_in_layer": 0
+            },
+            "pelnomocnictwo": {
+              "n": 6,
+              "uzp": 0.7297297297297297,
+              "exact": 4,
+              "routed": 4,
+              "inapplicable": 0,
+              "wrong_nonnull_in_layer": 0,
+              "wrong_ids_names": 0,
+              "wrong_ids_names_in_layer": 0
+            },
+            "przelew": {
+              "n": 6,
+              "uzp": 0.8571428571428571,
+              "exact": 0,
+              "routed": 6,
+              "inapplicable": 0,
+              "wrong_nonnull_in_layer": 0,
+              "wrong_ids_names": 2,
+              "wrong_ids_names_in_layer": 0
+            }
+          }
+        },
+        "R3": {
+          "n": 18,
+          "uzp": 0.928,
+          "exact": 6,
+          "routed": 18,
+          "inapplicable": 0,
+          "wrong_nonnull_in_layer": 0,
+          "wrong_ids_names": 1,
+          "wrong_ids_names_in_layer": 0,
+          "cpu_seconds": 45.368,
+          "seconds": 77.495,
+          "cli_exit": 0,
+          "valid": 18,
+          "classes": {
+            "odwolanie": {
+              "n": 6,
+              "uzp": 0.9321266968325792,
+              "exact": 1,
+              "routed": 6,
+              "inapplicable": 0,
+              "wrong_nonnull_in_layer": 0,
+              "wrong_ids_names": 0,
+              "wrong_ids_names_in_layer": 0
+            },
+            "pelnomocnictwo": {
+              "n": 6,
+              "uzp": 0.9782608695652174,
+              "exact": 5,
+              "routed": 6,
+              "inapplicable": 0,
+              "wrong_nonnull_in_layer": 0,
+              "wrong_ids_names": 0,
+              "wrong_ids_names_in_layer": 0
+            },
+            "przelew": {
+              "n": 6,
+              "uzp": 0.8387096774193549,
+              "exact": 0,
+              "routed": 6,
+              "inapplicable": 0,
+              "wrong_nonnull_in_layer": 0,
+              "wrong_ids_names": 1,
+              "wrong_ids_names_in_layer": 0
+            }
+          }
+        },
+        "R4": {
+          "n": 18,
+          "uzp": 0.9336870026525199,
+          "exact": 6,
+          "routed": 18,
+          "inapplicable": 0,
+          "wrong_nonnull_in_layer": 0,
+          "wrong_ids_names": 3,
+          "wrong_ids_names_in_layer": 0,
+          "cpu_seconds": 42.246,
+          "seconds": 51.409,
+          "cli_exit": 0,
+          "valid": 18,
+          "classes": {
+            "odwolanie": {
+              "n": 6,
+              "uzp": 0.9464285714285714,
+              "exact": 1,
+              "routed": 6,
+              "inapplicable": 0,
+              "wrong_nonnull_in_layer": 0,
+              "wrong_ids_names": 1,
+              "wrong_ids_names_in_layer": 0
+            },
+            "pelnomocnictwo": {
+              "n": 6,
+              "uzp": 0.9782608695652174,
+              "exact": 5,
+              "routed": 6,
+              "inapplicable": 0,
+              "wrong_nonnull_in_layer": 0,
+              "wrong_ids_names": 0,
+              "wrong_ids_names_in_layer": 0
+            },
+            "przelew": {
+              "n": 6,
+              "uzp": 0.819672131147541,
+              "exact": 0,
+              "routed": 6,
+              "inapplicable": 0,
+              "wrong_nonnull_in_layer": 0,
+              "wrong_ids_names": 2,
+              "wrong_ids_names_in_layer": 0
+            }
+          }
+        },
+        "R5": {
+          "n": 18,
+          "uzp": 0.9448818897637795,
+          "exact": 5,
+          "routed": 18,
+          "inapplicable": 0,
+          "wrong_nonnull_in_layer": 0,
+          "wrong_ids_names": 3,
+          "wrong_ids_names_in_layer": 0,
+          "cpu_seconds": 63.411,
+          "seconds": 115.696,
+          "cli_exit": 0,
+          "valid": 18,
+          "classes": {
+            "odwolanie": {
+              "n": 6,
+              "uzp": 0.9464285714285714,
+              "exact": 1,
+              "routed": 6,
+              "inapplicable": 0,
+              "wrong_nonnull_in_layer": 0,
+              "wrong_ids_names": 1,
+              "wrong_ids_names_in_layer": 0
+            },
+            "pelnomocnictwo": {
+              "n": 6,
+              "uzp": 0.9555555555555556,
+              "exact": 4,
+              "routed": 6,
+              "inapplicable": 0,
+              "wrong_nonnull_in_layer": 0,
+              "wrong_ids_names": 0,
+              "wrong_ids_names_in_layer": 0
+            },
+            "przelew": {
+              "n": 6,
+              "uzp": 0.9253731343283582,
+              "exact": 0,
+              "routed": 6,
+              "inapplicable": 0,
+              "wrong_nonnull_in_layer": 0,
+              "wrong_ids_names": 2,
+              "wrong_ids_names_in_layer": 0
+            }
+          }
+        },
+        "T1": {
+          "n": 18,
+          "uzp": 0.8035714285714286,
+          "exact": 1,
+          "routed": 18,
+          "inapplicable": 0,
+          "wrong_nonnull_in_layer": 14,
+          "wrong_ids_names": 13,
+          "wrong_ids_names_in_layer": 11,
+          "cpu_seconds": 24.231,
+          "seconds": 48.029,
+          "cli_exit": 0,
+          "valid": 18,
+          "classes": {
+            "odwolanie": {
+              "n": 6,
+              "uzp": 0.7643979057591623,
+              "exact": 0,
+              "routed": 6,
+              "inapplicable": 0,
+              "wrong_nonnull_in_layer": 5,
+              "wrong_ids_names": 4,
+              "wrong_ids_names_in_layer": 4
+            },
+            "pelnomocnictwo": {
+              "n": 6,
+              "uzp": 0.810126582278481,
+              "exact": 0,
+              "routed": 6,
+              "inapplicable": 0,
+              "wrong_nonnull_in_layer": 4,
+              "wrong_ids_names": 4,
+              "wrong_ids_names_in_layer": 4
+            },
+            "przelew": {
+              "n": 6,
+              "uzp": 0.9090909090909091,
+              "exact": 1,
+              "routed": 6,
+              "inapplicable": 0,
+              "wrong_nonnull_in_layer": 5,
+              "wrong_ids_names": 5,
+              "wrong_ids_names_in_layer": 3
+            }
+          }
+        },
+        "T2": {
+          "n": 18,
+          "uzp": 0.7891566265060241,
+          "exact": 3,
+          "routed": 18,
+          "inapplicable": 6,
+          "wrong_nonnull_in_layer": 18,
+          "wrong_ids_names": 15,
+          "wrong_ids_names_in_layer": 15,
+          "cpu_seconds": 14.203,
+          "seconds": 25.88,
+          "cli_exit": 0,
+          "valid": 18,
+          "classes": {
+            "odwolanie": {
+              "n": 6,
+              "uzp": 0.7311827956989247,
+              "exact": 0,
+              "routed": 6,
+              "inapplicable": 0,
+              "wrong_nonnull_in_layer": 10,
+              "wrong_ids_names": 9,
+              "wrong_ids_names_in_layer": 9
+            },
+            "pelnomocnictwo": {
+              "n": 6,
+              "uzp": 0.7466666666666667,
+              "exact": 0,
+              "routed": 6,
+              "inapplicable": 0,
+              "wrong_nonnull_in_layer": 6,
+              "wrong_ids_names": 6,
+              "wrong_ids_names_in_layer": 6
+            },
+            "przelew": {
+              "n": 6,
+              "uzp": 0.9859154929577465,
+              "exact": 3,
+              "routed": 6,
+              "inapplicable": 6,
+              "wrong_nonnull_in_layer": 2,
+              "wrong_ids_names": 0,
+              "wrong_ids_names_in_layer": 0
+            }
+          }
+        },
+        "T3": {
+          "n": 18,
+          "uzp": 0.0,
+          "exact": 0,
+          "routed": 0,
+          "inapplicable": 0,
+          "wrong_nonnull_in_layer": 0,
+          "wrong_ids_names": 0,
+          "wrong_ids_names_in_layer": 0,
+          "cpu_seconds": 38.005,
+          "seconds": 73.247,
+          "cli_exit": 0,
+          "valid": 18,
+          "classes": {
+            "odwolanie": {
+              "n": 6,
+              "uzp": 0.0,
+              "exact": 0,
+              "routed": 0,
+              "inapplicable": 0,
+              "wrong_nonnull_in_layer": 0,
+              "wrong_ids_names": 0,
+              "wrong_ids_names_in_layer": 0
+            },
+            "pelnomocnictwo": {
+              "n": 6,
+              "uzp": 0.0,
+              "exact": 0,
+              "routed": 0,
+              "inapplicable": 0,
+              "wrong_nonnull_in_layer": 0,
+              "wrong_ids_names": 0,
+              "wrong_ids_names_in_layer": 0
+            },
+            "przelew": {
+              "n": 6,
+              "uzp": 0.0,
+              "exact": 0,
+              "routed": 0,
+              "inapplicable": 0,
+              "wrong_nonnull_in_layer": 0,
+              "wrong_ids_names": 0,
+              "wrong_ids_names_in_layer": 0
+            }
+          }
+        },
+        "T4": {
+          "n": 18,
+          "uzp": 0.16326530612244897,
+          "exact": 0,
+          "routed": 18,
+          "inapplicable": 0,
+          "wrong_nonnull_in_layer": 118,
+          "wrong_ids_names": 92,
+          "wrong_ids_names_in_layer": 86,
+          "cpu_seconds": 42.375,
+          "seconds": 77.121,
+          "cli_exit": 0,
+          "valid": 18,
+          "classes": {
+            "odwolanie": {
+              "n": 6,
+              "uzp": 0.16216216216216217,
+              "exact": 0,
+              "routed": 6,
+              "inapplicable": 0,
+              "wrong_nonnull_in_layer": 71,
+              "wrong_ids_names": 52,
+              "wrong_ids_names_in_layer": 51
+            },
+            "pelnomocnictwo": {
+              "n": 6,
+              "uzp": 0.2033898305084746,
+              "exact": 0,
+              "routed": 6,
+              "inapplicable": 0,
+              "wrong_nonnull_in_layer": 29,
+              "wrong_ids_names": 29,
+              "wrong_ids_names_in_layer": 29
+            },
+            "przelew": {
+              "n": 6,
+              "uzp": 0.10526315789473684,
+              "exact": 0,
+              "routed": 6,
+              "inapplicable": 0,
+              "wrong_nonnull_in_layer": 18,
+              "wrong_ids_names": 11,
+              "wrong_ids_names_in_layer": 6
+            }
+          }
+        }
+      },
+      "sha256": "7d76c47cfbc43e337f068de21bec60fa38dd3adb6be31f1b2cb520ce44322d91"
+    }
+  },
+  "paired_candidate_commit": "057bd7dad40770d3e52f5995e31ca161926eff19",
+  "publication_includes_main": "e45e3c4",
+  "development_before_upright_gate": {
+    "main_27d5e12": {
+      "dataset_sha256": "486c5ca0cba973389b42ab8939c25de80b54aaf377cefa1728b489f696c2a7c4",
+      "docs": 39,
+      "seconds": 136.47337879193947,
+      "cli_exit": 0,
+      "per_variant": {
+        "upright": {
+          "docs": 6,
+          "valid_outputs": 6,
+          "uzp_f1": 0.9841269841269841,
+          "exact": 3,
+          "routed": 6
+        },
+        "pixel_90": {
+          "docs": 6,
+          "valid_outputs": 6,
+          "uzp_f1": 0.0,
+          "exact": 0,
+          "routed": 0
+        },
+        "pixel_180": {
+          "docs": 6,
+          "valid_outputs": 6,
+          "uzp_f1": 0.0,
+          "exact": 0,
+          "routed": 0
+        },
+        "pixel_270": {
+          "docs": 6,
+          "valid_outputs": 6,
+          "uzp_f1": 0.9152542372881356,
+          "exact": 1,
+          "routed": 5
+        },
+        "pdf_rotate_90": {
+          "docs": 6,
+          "valid_outputs": 6,
+          "uzp_f1": 0.9152542372881356,
+          "exact": 1,
+          "routed": 5
+        },
+        "mixed_first_90": {
+          "docs": 2,
+          "valid_outputs": 2,
+          "uzp_f1": 0.0,
+          "exact": 0,
+          "routed": 0
+        },
+        "layer_faithful": {
+          "docs": 3,
+          "valid_outputs": 3,
+          "uzp_f1": 1.0,
+          "exact": 3,
+          "routed": 3
+        },
+        "layer_first_marker": {
+          "docs": 1,
+          "valid_outputs": 1,
+          "uzp_f1": 1.0,
+          "exact": 1,
+          "routed": 1
+        },
+        "layer_nip_digit": {
+          "docs": 1,
+          "valid_outputs": 1,
+          "uzp_f1": 0.9230769230769231,
+          "exact": 0,
+          "routed": 1
+        },
+        "layer_account_digit": {
+          "docs": 1,
+          "valid_outputs": 1,
+          "uzp_f1": 0.0,
+          "exact": 0,
+          "routed": 0
+        },
+        "layer_shift_line": {
+          "docs": 1,
+          "valid_outputs": 1,
+          "uzp_f1": 1.0,
+          "exact": 1,
+          "routed": 1
+        }
+      }
+    },
+    "fab0adf": {
+      "dataset_sha256": "486c5ca0cba973389b42ab8939c25de80b54aaf377cefa1728b489f696c2a7c4",
+      "docs": 39,
+      "seconds": 549.8355524172075,
+      "cli_exit": 0,
+      "per_variant": {
+        "upright": {
+          "docs": 6,
+          "valid_outputs": 6,
+          "uzp_f1": 0.9508196721311475,
+          "exact": 3,
+          "routed": 5
+        },
+        "pixel_90": {
+          "docs": 6,
+          "valid_outputs": 6,
+          "uzp_f1": 0.9421487603305785,
+          "exact": 1,
+          "routed": 5
+        },
+        "pixel_180": {
+          "docs": 6,
+          "valid_outputs": 6,
+          "uzp_f1": 0.9421487603305785,
+          "exact": 2,
+          "routed": 5
+        },
+        "pixel_270": {
+          "docs": 6,
+          "valid_outputs": 6,
+          "uzp_f1": 0.976,
+          "exact": 2,
+          "routed": 6
+        },
+        "pdf_rotate_90": {
+          "docs": 6,
+          "valid_outputs": 6,
+          "uzp_f1": 0.976,
+          "exact": 2,
+          "routed": 6
+        },
+        "mixed_first_90": {
+          "docs": 2,
+          "valid_outputs": 2,
+          "uzp_f1": 0.9863013698630136,
+          "exact": 0,
+          "routed": 2
+        },
+        "layer_faithful": {
+          "docs": 3,
+          "valid_outputs": 3,
+          "uzp_f1": 1.0,
+          "exact": 3,
+          "routed": 3
+        },
+        "layer_first_marker": {
+          "docs": 1,
+          "valid_outputs": 1,
+          "uzp_f1": 1.0,
+          "exact": 1,
+          "routed": 1
+        },
+        "layer_nip_digit": {
+          "docs": 1,
+          "valid_outputs": 1,
+          "uzp_f1": 1.0,
+          "exact": 1,
+          "routed": 1
+        },
+        "layer_account_digit": {
+          "docs": 1,
+          "valid_outputs": 1,
+          "uzp_f1": 1.0,
+          "exact": 1,
+          "routed": 1
+        },
+        "layer_shift_line": {
+          "docs": 1,
+          "valid_outputs": 1,
+          "uzp_f1": 1.0,
+          "exact": 1,
+          "routed": 1
+        }
+      }
+    }
+  },
+  "upright_diagnosis": {
+    "case_0001": {
+      "src": "przyklad_02/odwolanie.pdf",
+      "pages": [
+        {
+          "number": 1,
+          "old_angle": 0,
+          "old_osd": [
+            {
+              "deg": 0,
+              "confidence": 8.39
+            }
+          ],
+          "full_preview_osd": {
+            "degree": 0,
+            "confidence": 8.68
+          }
+        },
+        {
+          "number": 2,
+          "old_angle": 0,
+          "old_osd": [
+            {
+              "deg": 0,
+              "confidence": 6.69
+            }
+          ],
+          "full_preview_osd": {
+            "degree": 0,
+            "confidence": 5.93
+          }
+        }
+      ]
+    },
+    "case_0009": {
+      "src": "przyklad_01/pelnomocnictwo.pdf",
+      "pages": [
+        {
+          "number": 1,
+          "old_angle": 0,
+          "old_osd": [
+            {
+              "deg": 0,
+              "confidence": 6.69
+            }
+          ],
+          "full_preview_osd": {
+            "degree": 0,
+            "confidence": 9.7
+          }
+        }
+      ]
+    },
+    "case_0016": {
+      "src": "przyklad_01/przelew.pdf",
+      "pages": [
+        {
+          "number": 1,
+          "old_angle": 0,
+          "old_osd": [
+            {
+              "deg": 0,
+              "confidence": 4.59
+            }
+          ],
+          "full_preview_osd": {
+            "degree": 0,
+            "confidence": 4.89
+          },
+          "probe_scores": [
+            66,
+            17
+          ],
+          "turn_on_first_probe_timeout": 180
+        }
+      ],
+      "expired_route": "przelew"
+    },
+    "case_0024": {
+      "src": "skany/odwolania/0001/0001.pdf",
+      "pages": [
+        {
+          "number": 1,
+          "old_angle": 0,
+          "old_osd": [
+            {
+              "deg": 0,
+              "confidence": 3.45
+            }
+          ],
+          "full_preview_osd": {
+            "degree": 0,
+            "confidence": 8.3
+          },
+          "probe_scores": [
+            55,
+            0
+          ],
+          "turn_on_first_probe_timeout": 0
+        },
+        {
+          "number": 2,
+          "old_angle": 0,
+          "old_osd": [
+            {
+              "deg": 0,
+              "confidence": 5.34
+            }
+          ],
+          "full_preview_osd": {
+            "degree": 0,
+            "confidence": 4.64
+          }
+        },
+        {
+          "number": 3,
+          "old_angle": 0,
+          "old_osd": [
+            {
+              "deg": 0,
+              "confidence": 8.89
+            }
+          ],
+          "full_preview_osd": {
+            "degree": 0,
+            "confidence": 7.46
+          }
+        }
+      ],
+      "expired_route": "odwolanie"
+    },
+    "case_0030": {
+      "src": "skany/pelnomocnictwa/0001/0001.pdf",
+      "pages": [
+        {
+          "number": 1,
+          "old_angle": 0,
+          "old_osd": [
+            {
+              "deg": 0,
+              "confidence": 6.82
+            }
+          ],
+          "full_preview_osd": {
+            "degree": 0,
+            "confidence": 5.92
+          }
+        }
+      ],
+      "expired_route": "pelnomocnictwo"
+    },
+    "case_0035": {
+      "src": "skany/potwierdzenia/0001/0001.pdf",
+      "pages": [
+        {
+          "number": 1,
+          "old_angle": 0,
+          "old_osd": [
+            {
+              "deg": 0,
+              "confidence": 1.35
+            }
+          ],
+          "full_preview_osd": {
+            "degree": 0,
+            "confidence": 1.83
+          },
+          "probe_scores": [
+            29,
+            5
+          ],
+          "turn_on_first_probe_timeout": 0
+        }
+      ],
+      "expired_route": "przelew"
+    }
+  },
+  "reproduced_upright_regression": {
+    "public_source": "przyklad_01/przelew.pdf",
+    "case": "case_0016",
+    "fresh_route": "przelew",
+    "timed_out_first_direction_route": "negatywny",
+    "empty": true
+  },
+  "publication_product_tree": "f76374aae19749c53db1135d7e86ce78d053d22c",
+  "method": {
+    "source_sample": "Seed 2211; four fixed variant PDFs and two linked development PDFs in each of three classes. Sorted native paths, fixed schedule seed, neutral one-document folders.",
+    "R1": "All pages rotated clockwise 90 degrees in original media box.",
+    "R2": "All pages rotated clockwise 270 degrees in original media box.",
+    "R3": "Only page one rotated 180 degrees.",
+    "R4": "Last page rotated clockwise 90 degrees, with 1.5 degree skew on every page.",
+    "R5": "Pixels rotated clockwise 90 degrees in a transposed media box with /Rotate 270, upright when displayed.",
+    "T1": "One digit changed in the first NIP, KRS or bank account.",
+    "T2": "The first two printed party-name words swapped and one character dropped. Six receipts have no printed party name, retain the faithful overlay, and remain in the denominator.",
+    "T3": "All words joined on one invisible line.",
+    "T4": "Invisible transcript of the next sampled document of the same class; visible pixels are unchanged.",
+    "render": "200 dpi grayscale; quarter-turns fit into the unchanged display page. Only R5 carries a rotation flag in transformed files.",
+    "wrong_nonnull_in_layer": "Counts predicted non-null field/value pairs absent at that reference path and literally present in the hidden transcript, ignoring punctuation, whitespace and case. Text overlap is an upper bound on causal attribution.",
+    "wrong_ids_names": "All extra non-null account, registry, PESEL and party/person name values; compared with each build\u2019s source baseline. Counts use the repo leaf normalization.",
+    "scoring": "Per-item exact JSON and routing with organizer UZP proxy, independently scored once per revision; byte comparison uses complete CLI JSONs. Positive scoring retains missing outputs in the denominator."
+  },
+  "per_item": {
+    "main": [
+      {"source": 0,"profile": "fixed/31/two-column","variant": "source","kind": "odwolanie","uzp": 0.975609756097561,"exact": false,"routed": true,"output_valid": true,"applied": true,"wrong_nonnull_in_layer": 0,"wrong_ids_names": 0,"wrong_ids_names_in_layer": 0,"byte_sha256": "572b21e94197d1b19d04b8fa323e855cb3c5db1ec6c2c727f0da41ec07ae3de7"},
+      {"source": 1,"profile": "fixed/0/single-column","variant": "source","kind": "odwolanie","uzp": 0.9743589743589743,"exact": false,"routed": true,"output_valid": true,"applied": true,"wrong_nonnull_in_layer": 0,"wrong_ids_names": 0,"wrong_ids_names_in_layer": 0,"byte_sha256": "f4a0f833a26097b6989413ca470197caad79abb1d7d39ff9d2f40f04d74f5e65"},
+      {"source": 2,"profile": "fixed/42/single-column","variant": "source","kind": "odwolanie","uzp": 0.9743589743589743,"exact": false,"routed": true,"output_valid": true,"applied": true,"wrong_nonnull_in_layer": 0,"wrong_ids_names": 0,"wrong_ids_names_in_layer": 0,"byte_sha256": "a1a8df5ba54c6afb7317bcd892fe82c71c115be5d90e1aa72f344e2e1810ef2b"},
+      {"source": 3,"profile": "fixed/20/scan","variant": "source","kind": "odwolanie","uzp": 0.9473684210526315,"exact": false,"routed": true,"output_valid": true,"applied": true,"wrong_nonnull_in_layer": 0,"wrong_ids_names": 0,"wrong_ids_names_in_layer": 0,"byte_sha256": "b2b1bf1fcdfd503a919d70e795a0d8a161b2c8bbea2ae3f31de6a8e8dfedec71"},
+      {"source": 4,"profile": "fixed/54/single-column","variant": "source","kind": "pelnomocnictwo","uzp": 1.0,"exact": true,"routed": true,"output_valid": true,"applied": true,"wrong_nonnull_in_layer": 0,"wrong_ids_names": 0,"wrong_ids_names_in_layer": 0,"byte_sha256": "b4cda857f7495d8db697b9944fa083e4542804b4edfea928e9949c1436d2ba6d"},
+      {"source": 5,"profile": "fixed/12/single-column","variant": "source","kind": "pelnomocnictwo","uzp": 1.0,"exact": true,"routed": true,"output_valid": true,"applied": true,"wrong_nonnull_in_layer": 0,"wrong_ids_names": 0,"wrong_ids_names_in_layer": 0,"byte_sha256": "7e4aa6b8ee19d8933441f77599b2d5229cadb4ee8cf972ab346c76e7deb07b05"},
+      {"source": 6,"profile": "fixed/42/single-column","variant": "source","kind": "pelnomocnictwo","uzp": 1.0,"exact": true,"routed": true,"output_valid": true,"applied": true,"wrong_nonnull_in_layer": 0,"wrong_ids_names": 0,"wrong_ids_names_in_layer": 0,"byte_sha256": "055b099edde9ae24912359bc4ac27daf296aba8536402396d62917cdd2a142c8"},
+      {"source": 7,"profile": "fixed/43/two-column","variant": "source","kind": "pelnomocnictwo","uzp": 0.9166666666666666,"exact": false,"routed": true,"output_valid": true,"applied": true,"wrong_nonnull_in_layer": 0,"wrong_ids_names": 0,"wrong_ids_names_in_layer": 0,"byte_sha256": "ef2880eae5a71a3f06858a35ebe83dd209ff6694b198f5036ff5e16f35bf1c6f"},
+      {"source": 8,"profile": "fixed/26/scan","variant": "source","kind": "przelew","uzp": 0.9090909090909091,"exact": false,"routed": true,"output_valid": true,"applied": true,"wrong_nonnull_in_layer": 0,"wrong_ids_names": 0,"wrong_ids_names_in_layer": 0,"byte_sha256": "52910dac5a87f13be8caeafcb3b277f5e70d3985b6821008a8d928d4f6824092"},
+      {"source": 9,"profile": "fixed/20/scan","variant": "source","kind": "przelew","uzp": 1.0,"exact": true,"routed": true,"output_valid": true,"applied": true,"wrong_nonnull_in_layer": 0,"wrong_ids_names": 0,"wrong_ids_names_in_layer": 0,"byte_sha256": "8d8be079776d93b3a47beefbad6b093d3a6eaffc4fe7742b462fd12b7d6c76ee"},
+      {"source": 10,"profile": "fixed/19/two-column","variant": "source","kind": "przelew","uzp": 0.9090909090909091,"exact": false,"routed": true,"output_valid": true,"applied": true,"wrong_nonnull_in_layer": 0,"wrong_ids_names": 0,"wrong_ids_names_in_layer": 0,"byte_sha256": "fcd57549e9218fefb75784c5e5677435b190ec1dd611cc022a6388c256d842b3"},
+      {"source": 11,"profile": "fixed/8/scan","variant": "source","kind": "przelew","uzp": 0.9090909090909091,"exact": false,"routed": true,"output_valid": true,"applied": true,"wrong_nonnull_in_layer": 0,"wrong_ids_names": 0,"wrong_ids_names_in_layer": 0,"byte_sha256": "1338e63ed486254431df68dfc8b216749c73059a36fcb2a95c72984f5a7562b5"},
+      {"source": 12,"profile": "linked/early-modular/scan","variant": "source","kind": "odwolanie","uzp": 1.0,"exact": false,"routed": true,"output_valid": true,"applied": true,"wrong_nonnull_in_layer": 0,"wrong_ids_names": 0,"wrong_ids_names_in_layer": 0,"byte_sha256": "0fbd0657425a4acd12bfa5aa0a62cb56b3c8a02c5f6266189646a0bbda121f44"},
+      {"source": 13,"profile": "linked/early-modular/native","variant": "source","kind": "odwolanie","uzp": 1.0,"exact": true,"routed": true,"output_valid": true,"applied": true,"wrong_nonnull_in_layer": 0,"wrong_ids_names": 0,"wrong_ids_names_in_layer": 0,"byte_sha256": "e7a1424e7ebeb7f69f0f4729c762f20dec9c011a0e5825b4e979e9e80c1b96bd"},
+      {"source": 14,"profile": "linked/early-register/scan","variant": "source","kind": "pelnomocnictwo","uzp": 1.0,"exact": true,"routed": true,"output_valid": true,"applied": true,"wrong_nonnull_in_layer": 0,"wrong_ids_names": 0,"wrong_ids_names_in_layer": 0,"byte_sha256": "7688d8e5f2624a792d7abdec62583fda8e8e0a1c2f4034f2f1f94ce5632d7c91"},
+      {"source": 15,"profile": "linked/early-procedural/native","variant": "source","kind": "pelnomocnictwo","uzp": 1.0,"exact": true,"routed": true,"output_valid": true,"applied": true,"wrong_nonnull_in_layer": 0,"wrong_ids_names": 0,"wrong_ids_names_in_layer": 0,"byte_sha256": "b9fc9869f7bad28886dc6a42bde7157bb3c3d454bc38717cf4240a4b43fa01bd"},
+      {"source": 16,"profile": "linked/early_order/native","variant": "source","kind": "przelew","uzp": 1.0,"exact": true,"routed": true,"output_valid": true,"applied": true,"wrong_nonnull_in_layer": 0,"wrong_ids_names": 0,"wrong_ids_names_in_layer": 0,"byte_sha256": "332f459ab3e9e70ed1f07f1b1e9e81208e423277a7994ee003336a10580221d2"},
+      {"source": 17,"profile": "linked/early_cards/native","variant": "source","kind": "przelew","uzp": 1.0,"exact": true,"routed": true,"output_valid": true,"applied": true,"wrong_nonnull_in_layer": 0,"wrong_ids_names": 0,"wrong_ids_names_in_layer": 0,"byte_sha256": "4546d0af7bc22d70670750d827784eb38548cded0424713624f5b76c3e8766dc"},
+      {"source": 0,"profile": "fixed/31/two-column","variant": "R1","kind": "odwolanie","uzp": 0.8648648648648649,"exact": false,"routed": true,"output_valid": true,"applied": true,"wrong_nonnull_in_layer": 0,"wrong_ids_names": 0,"wrong_ids_names_in_layer": 0},
+      {"source": 1,"profile": "fixed/0/single-column","variant": "R1","kind": "odwolanie","uzp": 0.9473684210526315,"exact": false,"routed": true,"output_valid": true,"applied": true,"wrong_nonnull_in_layer": 0,"wrong_ids_names": 0,"wrong_ids_names_in_layer": 0},
+      {"source": 2,"profile": "fixed/42/single-column","variant": "R1","kind": "odwolanie","uzp": 0.9473684210526315,"exact": false,"routed": true,"output_valid": true,"applied": true,"wrong_nonnull_in_layer": 0,"wrong_ids_names": 0,"wrong_ids_names_in_layer": 0},
+      {"source": 3,"profile": "fixed/20/scan","variant": "R1","kind": "odwolanie","uzp": 0.9473684210526315,"exact": false,"routed": true,"output_valid": true,"applied": true,"wrong_nonnull_in_layer": 0,"wrong_ids_names": 0,"wrong_ids_names_in_layer": 0},
+      {"source": 4,"profile": "fixed/54/single-column","variant": "R1","kind": "pelnomocnictwo","uzp": 1.0,"exact": true,"routed": true,"output_valid": true,"applied": true,"wrong_nonnull_in_layer": 0,"wrong_ids_names": 0,"wrong_ids_names_in_layer": 0},
+      {"source": 5,"profile": "fixed/12/single-column","variant": "R1","kind": "pelnomocnictwo","uzp": 1.0,"exact": true,"routed": true,"output_valid": true,"applied": true,"wrong_nonnull_in_layer": 0,"wrong_ids_names": 0,"wrong_ids_names_in_layer": 0},
+      {"source": 6,"profile": "fixed/42/single-column","variant": "R1","kind": "pelnomocnictwo","uzp": 1.0,"exact": true,"routed": true,"output_valid": true,"applied": true,"wrong_nonnull_in_layer": 0,"wrong_ids_names": 0,"wrong_ids_names_in_layer": 0},
+      {"source": 7,"profile": "fixed/43/two-column","variant": "R1","kind": "pelnomocnictwo","uzp": 0.9166666666666666,"exact": false,"routed": true,"output_valid": true,"applied": true,"wrong_nonnull_in_layer": 0,"wrong_ids_names": 0,"wrong_ids_names_in_layer": 0},
+      {"source": 8,"profile": "fixed/26/scan","variant": "R1","kind": "przelew","uzp": 0.8,"exact": false,"routed": true,"output_valid": true,"applied": true,"wrong_nonnull_in_layer": 0,"wrong_ids_names": 0,"wrong_ids_names_in_layer": 0},
+      {"source": 9,"profile": "fixed/20/scan","variant": "R1","kind": "przelew","uzp": 0.8,"exact": false,"routed": true,"output_valid": true,"applied": true,"wrong_nonnull_in_layer": 0,"wrong_ids_names": 0,"wrong_ids_names_in_layer": 0},
+      {"source": 10,"profile": "fixed/19/two-column","variant": "R1","kind": "przelew","uzp": 0.8,"exact": false,"routed": true,"output_valid": true,"applied": true,"wrong_nonnull_in_layer": 0,"wrong_ids_names": 2,"wrong_ids_names_in_layer": 0},
+      {"source": 11,"profile": "fixed/8/scan","variant": "R1","kind": "przelew","uzp": 0.9090909090909091,"exact": false,"routed": true,"output_valid": true,"applied": true,"wrong_nonnull_in_layer": 0,"wrong_ids_names": 0,"wrong_ids_names_in_layer": 0},
+      {"source": 12,"profile": "linked/early-modular/scan","variant": "R1","kind": "odwolanie","uzp": 1.0,"exact": false,"routed": true,"output_valid": true,"applied": true,"wrong_nonnull_in_layer": 0,"wrong_ids_names": 0,"wrong_ids_names_in_layer": 0},
+      {"source": 13,"profile": "linked/early-modular/native","variant": "R1","kind": "odwolanie","uzp": 1.0,"exact": false,"routed": true,"output_valid": true,"applied": true,"wrong_nonnull_in_layer": 0,"wrong_ids_names": 0,"wrong_ids_names_in_layer": 0},
+      {"source": 14,"profile": "linked/early-register/scan","variant": "R1","kind": "pelnomocnictwo","uzp": 1.0,"exact": true,"routed": true,"output_valid": true,"applied": true,"wrong_nonnull_in_layer": 0,"wrong_ids_names": 0,"wrong_ids_names_in_layer": 0},
+      {"source": 15,"profile": "linked/early-procedural/native","variant": "R1","kind": "pelnomocnictwo","uzp": 1.0,"exact": true,"routed": true,"output_valid": true,"applied": true,"wrong_nonnull_in_layer": 0,"wrong_ids_names": 0,"wrong_ids_names_in_layer": 0},
+      {"source": 16,"profile": "linked/early_order/native","variant": "R1","kind": "przelew","uzp": 0.0,"exact": false,"routed": false,"output_valid": true,"applied": true,"wrong_nonnull_in_layer": 0,"wrong_ids_names": 0,"wrong_ids_names_in_layer": 0},
+      {"source": 17,"profile": "linked/early_cards/native","variant": "R1","kind": "przelew","uzp": 1.0,"exact": false,"routed": true,"output_valid": true,"applied": true,"wrong_nonnull_in_layer": 0,"wrong_ids_names": 0,"wrong_ids_names_in_layer": 0},
+      {"source": 0,"profile": "fixed/31/two-column","variant": "R2","kind": "odwolanie","uzp": 0.0,"exact": false,"routed": false,"output_valid": true,"applied": true,"wrong_nonnull_in_layer": 0,"wrong_ids_names": 0,"wrong_ids_names_in_layer": 0},
+      {"source": 1,"profile": "fixed/0/single-column","variant": "R2","kind": "odwolanie","uzp": 0.0,"exact": false,"routed": false,"output_valid": true,"applied": true,"wrong_nonnull_in_layer": 0,"wrong_ids_names": 0,"wrong_ids_names_in_layer": 0},
+      {"source": 2,"profile": "fixed/42/single-column","variant": "R2","kind": "odwolanie","uzp": 0.0,"exact": false,"routed": false,"output_valid": true,"applied": true,"wrong_nonnull_in_layer": 0,"wrong_ids_names": 0,"wrong_ids_names_in_layer": 0},
+      {"source": 3,"profile": "fixed/20/scan","variant": "R2","kind": "odwolanie","uzp": 0.0,"exact": false,"routed": false,"output_valid": true,"applied": true,"wrong_nonnull_in_layer": 0,"wrong_ids_names": 0,"wrong_ids_names_in_layer": 0},
+      {"source": 4,"profile": "fixed/54/single-column","variant": "R2","kind": "pelnomocnictwo","uzp": 0.0,"exact": false,"routed": false,"output_valid": true,"applied": true,"wrong_nonnull_in_layer": 0,"wrong_ids_names": 0,"wrong_ids_names_in_layer": 0},
+      {"source": 5,"profile": "fixed/12/single-column","variant": "R2","kind": "pelnomocnictwo","uzp": 0.0,"exact": false,"routed": false,"output_valid": true,"applied": true,"wrong_nonnull_in_layer": 0,"wrong_ids_names": 0,"wrong_ids_names_in_layer": 0},
+      {"source": 6,"profile": "fixed/42/single-column","variant": "R2","kind": "pelnomocnictwo","uzp": 0.0,"exact": false,"routed": false,"output_valid": true,"applied": true,"wrong_nonnull_in_layer": 0,"wrong_ids_names": 0,"wrong_ids_names_in_layer": 0},
+      {"source": 7,"profile": "fixed/43/two-column","variant": "R2","kind": "pelnomocnictwo","uzp": 0.0,"exact": false,"routed": false,"output_valid": true,"applied": true,"wrong_nonnull_in_layer": 0,"wrong_ids_names": 0,"wrong_ids_names_in_layer": 0},
+      {"source": 8,"profile": "fixed/26/scan","variant": "R2","kind": "przelew","uzp": 0.0,"exact": false,"routed": false,"output_valid": true,"applied": true,"wrong_nonnull_in_layer": 0,"wrong_ids_names": 0,"wrong_ids_names_in_layer": 0},
+      {"source": 9,"profile": "fixed/20/scan","variant": "R2","kind": "przelew","uzp": 0.0,"exact": false,"routed": false,"output_valid": true,"applied": true,"wrong_nonnull_in_layer": 0,"wrong_ids_names": 0,"wrong_ids_names_in_layer": 0},
+      {"source": 10,"profile": "fixed/19/two-column","variant": "R2","kind": "przelew","uzp": 0.0,"exact": false,"routed": false,"output_valid": true,"applied": true,"wrong_nonnull_in_layer": 0,"wrong_ids_names": 0,"wrong_ids_names_in_layer": 0},
+      {"source": 11,"profile": "fixed/8/scan","variant": "R2","kind": "przelew","uzp": 0.0,"exact": false,"routed": false,"output_valid": true,"applied": true,"wrong_nonnull_in_layer": 0,"wrong_ids_names": 0,"wrong_ids_names_in_layer": 0},
+      {"source": 12,"profile": "linked/early-modular/scan","variant": "R2","kind": "odwolanie","uzp": 0.0,"exact": false,"routed": false,"output_valid": true,"applied": true,"wrong_nonnull_in_layer": 0,"wrong_ids_names": 0,"wrong_ids_names_in_layer": 0},
+      {"source": 13,"profile": "linked/early-modular/native","variant": "R2","kind": "odwolanie","uzp": 0.0,"exact": false,"routed": false,"output_valid": true,"applied": true,"wrong_nonnull_in_layer": 0,"wrong_ids_names": 0,"wrong_ids_names_in_layer": 0},
+      {"source": 14,"profile": "linked/early-register/scan","variant": "R2","kind": "pelnomocnictwo","uzp": 0.0,"exact": false,"routed": false,"output_valid": true,"applied": true,"wrong_nonnull_in_layer": 0,"wrong_ids_names": 0,"wrong_ids_names_in_layer": 0},
+      {"source": 15,"profile": "linked/early-procedural/native","variant": "R2","kind": "pelnomocnictwo","uzp": 0.0,"exact": false,"routed": false,"output_valid": true,"applied": true,"wrong_nonnull_in_layer": 0,"wrong_ids_names": 0,"wrong_ids_names_in_layer": 0},
+      {"source": 16,"profile": "linked/early_order/native","variant": "R2","kind": "przelew","uzp": 0.0,"exact": false,"routed": false,"output_valid": true,"applied": true,"wrong_nonnull_in_layer": 0,"wrong_ids_names": 0,"wrong_ids_names_in_layer": 0},
+      {"source": 17,"profile": "linked/early_cards/native","variant": "R2","kind": "przelew","uzp": 0.0,"exact": false,"routed": false,"output_valid": true,"applied": true,"wrong_nonnull_in_layer": 0,"wrong_ids_names": 0,"wrong_ids_names_in_layer": 0},
+      {"source": 0,"profile": "fixed/31/two-column","variant": "R3","kind": "odwolanie","uzp": 0.0,"exact": false,"routed": false,"output_valid": true,"applied": true,"wrong_nonnull_in_layer": 0,"wrong_ids_names": 0,"wrong_ids_names_in_layer": 0},
+      {"source": 1,"profile": "fixed/0/single-column","variant": "R3","kind": "odwolanie","uzp": 0.0,"exact": false,"routed": false,"output_valid": true,"applied": true,"wrong_nonnull_in_layer": 0,"wrong_ids_names": 0,"wrong_ids_names_in_layer": 0},
+      {"source": 2,"profile": "fixed/42/single-column","variant": "R3","kind": "odwolanie","uzp": 0.0,"exact": false,"routed": false,"output_valid": true,"applied": true,"wrong_nonnull_in_layer": 0,"wrong_ids_names": 0,"wrong_ids_names_in_layer": 0},
+      {"source": 3,"profile": "fixed/20/scan","variant": "R3","kind": "odwolanie","uzp": 0.0,"exact": false,"routed": false,"output_valid": true,"applied": true,"wrong_nonnull_in_layer": 0,"wrong_ids_names": 0,"wrong_ids_names_in_layer": 0},
+      {"source": 4,"profile": "fixed/54/single-column","variant": "R3","kind": "pelnomocnictwo","uzp": 0.0,"exact": false,"routed": false,"output_valid": true,"applied": true,"wrong_nonnull_in_layer": 0,"wrong_ids_names": 0,"wrong_ids_names_in_layer": 0},
+      {"source": 5,"profile": "fixed/12/single-column","variant": "R3","kind": "pelnomocnictwo","uzp": 0.0,"exact": false,"routed": false,"output_valid": true,"applied": true,"wrong_nonnull_in_layer": 0,"wrong_ids_names": 0,"wrong_ids_names_in_layer": 0},
+      {"source": 6,"profile": "fixed/42/single-column","variant": "R3","kind": "pelnomocnictwo","uzp": 0.0,"exact": false,"routed": false,"output_valid": true,"applied": true,"wrong_nonnull_in_layer": 0,"wrong_ids_names": 0,"wrong_ids_names_in_layer": 0},
+      {"source": 7,"profile": "fixed/43/two-column","variant": "R3","kind": "pelnomocnictwo","uzp": 0.0,"exact": false,"routed": false,"output_valid": true,"applied": true,"wrong_nonnull_in_layer": 0,"wrong_ids_names": 0,"wrong_ids_names_in_layer": 0},
+      {"source": 8,"profile": "fixed/26/scan","variant": "R3","kind": "przelew","uzp": 0.0,"exact": false,"routed": false,"output_valid": true,"applied": true,"wrong_nonnull_in_layer": 0,"wrong_ids_names": 0,"wrong_ids_names_in_layer": 0},
+      {"source": 9,"profile": "fixed/20/scan","variant": "R3","kind": "przelew","uzp": 0.0,"exact": false,"routed": false,"output_valid": true,"applied": true,"wrong_nonnull_in_layer": 0,"wrong_ids_names": 0,"wrong_ids_names_in_layer": 0},
+      {"source": 10,"profile": "fixed/19/two-column","variant": "R3","kind": "przelew","uzp": 0.0,"exact": false,"routed": false,"output_valid": true,"applied": true,"wrong_nonnull_in_layer": 0,"wrong_ids_names": 0,"wrong_ids_names_in_layer": 0},
+      {"source": 11,"profile": "fixed/8/scan","variant": "R3","kind": "przelew","uzp": 0.0,"exact": false,"routed": false,"output_valid": true,"applied": true,"wrong_nonnull_in_layer": 0,"wrong_ids_names": 0,"wrong_ids_names_in_layer": 0},
+      {"source": 12,"profile": "linked/early-modular/scan","variant": "R3","kind": "odwolanie","uzp": 0.0,"exact": false,"routed": false,"output_valid": true,"applied": true,"wrong_nonnull_in_layer": 0,"wrong_ids_names": 0,"wrong_ids_names_in_layer": 0},
+      {"source": 13,"profile": "linked/early-modular/native","variant": "R3","kind": "odwolanie","uzp": 0.0,"exact": false,"routed": false,"output_valid": true,"applied": true,"wrong_nonnull_in_layer": 0,"wrong_ids_names": 0,"wrong_ids_names_in_layer": 0},
+      {"source": 14,"profile": "linked/early-register/scan","variant": "R3","kind": "pelnomocnictwo","uzp": 0.0,"exact": false,"routed": false,"output_valid": true,"applied": true,"wrong_nonnull_in_layer": 0,"wrong_ids_names": 0,"wrong_ids_names_in_layer": 0},
+      {"source": 15,"profile": "linked/early-procedural/native","variant": "R3","kind": "pelnomocnictwo","uzp": 0.0,"exact": false,"routed": false,"output_valid": true,"applied": true,"wrong_nonnull_in_layer": 0,"wrong_ids_names": 0,"wrong_ids_names_in_layer": 0},
+      {"source": 16,"profile": "linked/early_order/native","variant": "R3","kind": "przelew","uzp": 0.0,"exact": false,"routed": false,"output_valid": true,"applied": true,"wrong_nonnull_in_layer": 0,"wrong_ids_names": 0,"wrong_ids_names_in_layer": 0},
+      {"source": 17,"profile": "linked/early_cards/native","variant": "R3","kind": "przelew","uzp": 0.0,"exact": false,"routed": false,"output_valid": true,"applied": true,"wrong_nonnull_in_layer": 0,"wrong_ids_names": 0,"wrong_ids_names_in_layer": 0},
+      {"source": 0,"profile": "fixed/31/two-column","variant": "R4","kind": "odwolanie","uzp": 0.8648648648648649,"exact": false,"routed": true,"output_valid": true,"applied": true,"wrong_nonnull_in_layer": 0,"wrong_ids_names": 0,"wrong_ids_names_in_layer": 0},
+      {"source": 1,"profile": "fixed/0/single-column","variant": "R4","kind": "odwolanie","uzp": 0.9473684210526315,"exact": false,"routed": true,"output_valid": true,"applied": true,"wrong_nonnull_in_layer": 0,"wrong_ids_names": 1,"wrong_ids_names_in_layer": 0},
+      {"source": 2,"profile": "fixed/42/single-column","variant": "R4","kind": "odwolanie","uzp": 0.918918918918919,"exact": false,"routed": true,"output_valid": true,"applied": true,"wrong_nonnull_in_layer": 0,"wrong_ids_names": 0,"wrong_ids_names_in_layer": 0},
+      {"source": 3,"profile": "fixed/20/scan","variant": "R4","kind": "odwolanie","uzp": 0.9473684210526315,"exact": false,"routed": true,"output_valid": true,"applied": true,"wrong_nonnull_in_layer": 0,"wrong_ids_names": 0,"wrong_ids_names_in_layer": 0},
+      {"source": 4,"profile": "fixed/54/single-column","variant": "R4","kind": "pelnomocnictwo","uzp": 1.0,"exact": true,"routed": true,"output_valid": true,"applied": true,"wrong_nonnull_in_layer": 0,"wrong_ids_names": 0,"wrong_ids_names_in_layer": 0},
+      {"source": 5,"profile": "fixed/12/single-column","variant": "R4","kind": "pelnomocnictwo","uzp": 1.0,"exact": true,"routed": true,"output_valid": true,"applied": true,"wrong_nonnull_in_layer": 0,"wrong_ids_names": 0,"wrong_ids_names_in_layer": 0},
+      {"source": 6,"profile": "fixed/42/single-column","variant": "R4","kind": "pelnomocnictwo","uzp": 1.0,"exact": true,"routed": true,"output_valid": true,"applied": true,"wrong_nonnull_in_layer": 0,"wrong_ids_names": 0,"wrong_ids_names_in_layer": 0},
+      {"source": 7,"profile": "fixed/43/two-column","variant": "R4","kind": "pelnomocnictwo","uzp": 0.9166666666666666,"exact": false,"routed": true,"output_valid": true,"applied": true,"wrong_nonnull_in_layer": 0,"wrong_ids_names": 0,"wrong_ids_names_in_layer": 0},
+      {"source": 8,"profile": "fixed/26/scan","variant": "R4","kind": "przelew","uzp": 0.8,"exact": false,"routed": true,"output_valid": true,"applied": true,"wrong_nonnull_in_layer": 0,"wrong_ids_names": 0,"wrong_ids_names_in_layer": 0},
+      {"source": 9,"profile": "fixed/20/scan","variant": "R4","kind": "przelew","uzp": 0.8,"exact": false,"routed": true,"output_valid": true,"applied": true,"wrong_nonnull_in_layer": 0,"wrong_ids_names": 0,"wrong_ids_names_in_layer": 0},
+      {"source": 10,"profile": "fixed/19/two-column","variant": "R4","kind": "przelew","uzp": 0.8,"exact": false,"routed": true,"output_valid": true,"applied": true,"wrong_nonnull_in_layer": 0,"wrong_ids_names": 2,"wrong_ids_names_in_layer": 0},
+      {"source": 11,"profile": "fixed/8/scan","variant": "R4","kind": "przelew","uzp": 0.9090909090909091,"exact": false,"routed": true,"output_valid": true,"applied": true,"wrong_nonnull_in_layer": 0,"wrong_ids_names": 0,"wrong_ids_names_in_layer": 0},
+      {"source": 12,"profile": "linked/early-modular/scan","variant": "R4","kind": "odwolanie","uzp": 0.9743589743589743,"exact": false,"routed": true,"output_valid": true,"applied": true,"wrong_nonnull_in_layer": 0,"wrong_ids_names": 0,"wrong_ids_names_in_layer": 0},
+      {"source": 13,"profile": "linked/early-modular/native","variant": "R4","kind": "odwolanie","uzp": 1.0,"exact": true,"routed": true,"output_valid": true,"applied": true,"wrong_nonnull_in_layer": 0,"wrong_ids_names": 0,"wrong_ids_names_in_layer": 0},
+      {"source": 14,"profile": "linked/early-register/scan","variant": "R4","kind": "pelnomocnictwo","uzp": 1.0,"exact": true,"routed": true,"output_valid": true,"applied": true,"wrong_nonnull_in_layer": 0,"wrong_ids_names": 0,"wrong_ids_names_in_layer": 0},
+      {"source": 15,"profile": "linked/early-procedural/native","variant": "R4","kind": "pelnomocnictwo","uzp": 1.0,"exact": true,"routed": true,"output_valid": true,"applied": true,"wrong_nonnull_in_layer": 0,"wrong_ids_names": 0,"wrong_ids_names_in_layer": 0},
+      {"source": 16,"profile": "linked/early_order/native","variant": "R4","kind": "przelew","uzp": 0.0,"exact": false,"routed": false,"output_valid": true,"applied": true,"wrong_nonnull_in_layer": 0,"wrong_ids_names": 0,"wrong_ids_names_in_layer": 0},
+      {"source": 17,"profile": "linked/early_cards/native","variant": "R4","kind": "przelew","uzp": 1.0,"exact": false,"routed": true,"output_valid": true,"applied": true,"wrong_nonnull_in_layer": 0,"wrong_ids_names": 0,"wrong_ids_names_in_layer": 0},
+      {"source": 0,"profile": "fixed/31/two-column","variant": "R5","kind": "odwolanie","uzp": 0.8947368421052632,"exact": false,"routed": true,"output_valid": true,"applied": true,"wrong_nonnull_in_layer": 0,"wrong_ids_names": 0,"wrong_ids_names_in_layer": 0},
+      {"source": 1,"profile": "fixed/0/single-column","variant": "R5","kind": "odwolanie","uzp": 0.9473684210526315,"exact": false,"routed": true,"output_valid": true,"applied": true,"wrong_nonnull_in_layer": 0,"wrong_ids_names": 1,"wrong_ids_names_in_layer": 0},
+      {"source": 2,"profile": "fixed/42/single-column","variant": "R5","kind": "odwolanie","uzp": 0.8888888888888888,"exact": false,"routed": true,"output_valid": true,"applied": true,"wrong_nonnull_in_layer": 0,"wrong_ids_names": 0,"wrong_ids_names_in_layer": 0},
+      {"source": 3,"profile": "fixed/20/scan","variant": "R5","kind": "odwolanie","uzp": 0.9473684210526315,"exact": false,"routed": true,"output_valid": true,"applied": true,"wrong_nonnull_in_layer": 0,"wrong_ids_names": 0,"wrong_ids_names_in_layer": 0},
+      {"source": 4,"profile": "fixed/54/single-column","variant": "R5","kind": "pelnomocnictwo","uzp": 1.0,"exact": true,"routed": true,"output_valid": true,"applied": true,"wrong_nonnull_in_layer": 0,"wrong_ids_names": 0,"wrong_ids_names_in_layer": 0},
+      {"source": 5,"profile": "fixed/12/single-column","variant": "R5","kind": "pelnomocnictwo","uzp": 1.0,"exact": true,"routed": true,"output_valid": true,"applied": true,"wrong_nonnull_in_layer": 0,"wrong_ids_names": 0,"wrong_ids_names_in_layer": 0},
+      {"source": 6,"profile": "fixed/42/single-column","variant": "R5","kind": "pelnomocnictwo","uzp": 1.0,"exact": true,"routed": true,"output_valid": true,"applied": true,"wrong_nonnull_in_layer": 0,"wrong_ids_names": 0,"wrong_ids_names_in_layer": 0},
+      {"source": 7,"profile": "fixed/43/two-column","variant": "R5","kind": "pelnomocnictwo","uzp": 0.9166666666666666,"exact": false,"routed": true,"output_valid": true,"applied": true,"wrong_nonnull_in_layer": 0,"wrong_ids_names": 0,"wrong_ids_names_in_layer": 0},
+      {"source": 8,"profile": "fixed/26/scan","variant": "R5","kind": "przelew","uzp": 0.8,"exact": false,"routed": true,"output_valid": true,"applied": true,"wrong_nonnull_in_layer": 0,"wrong_ids_names": 0,"wrong_ids_names_in_layer": 0},
+      {"source": 9,"profile": "fixed/20/scan","variant": "R5","kind": "przelew","uzp": 0.8,"exact": false,"routed": true,"output_valid": true,"applied": true,"wrong_nonnull_in_layer": 0,"wrong_ids_names": 0,"wrong_ids_names_in_layer": 0},
+      {"source": 10,"profile": "fixed/19/two-column","variant": "R5","kind": "przelew","uzp": 0.8,"exact": false,"routed": true,"output_valid": true,"applied": true,"wrong_nonnull_in_layer": 0,"wrong_ids_names": 2,"wrong_ids_names_in_layer": 0},
+      {"source": 11,"profile": "fixed/8/scan","variant": "R5","kind": "przelew","uzp": 0.9090909090909091,"exact": false,"routed": true,"output_valid": true,"applied": true,"wrong_nonnull_in_layer": 0,"wrong_ids_names": 0,"wrong_ids_names_in_layer": 0},
+      {"source": 12,"profile": "linked/early-modular/scan","variant": "R5","kind": "odwolanie","uzp": 1.0,"exact": false,"routed": true,"output_valid": true,"applied": true,"wrong_nonnull_in_layer": 0,"wrong_ids_names": 0,"wrong_ids_names_in_layer": 0},
+      {"source": 13,"profile": "linked/early-modular/native","variant": "R5","kind": "odwolanie","uzp": 1.0,"exact": true,"routed": true,"output_valid": true,"applied": true,"wrong_nonnull_in_layer": 0,"wrong_ids_names": 0,"wrong_ids_names_in_layer": 0},
+      {"source": 14,"profile": "linked/early-register/scan","variant": "R5","kind": "pelnomocnictwo","uzp": 1.0,"exact": true,"routed": true,"output_valid": true,"applied": true,"wrong_nonnull_in_layer": 0,"wrong_ids_names": 0,"wrong_ids_names_in_layer": 0},
+      {"source": 15,"profile": "linked/early-procedural/native","variant": "R5","kind": "pelnomocnictwo","uzp": 0.8571428571428571,"exact": false,"routed": true,"output_valid": true,"applied": true,"wrong_nonnull_in_layer": 0,"wrong_ids_names": 0,"wrong_ids_names_in_layer": 0},
+      {"source": 16,"profile": "linked/early_order/native","variant": "R5","kind": "przelew","uzp": 1.0,"exact": false,"routed": true,"output_valid": true,"applied": true,"wrong_nonnull_in_layer": 0,"wrong_ids_names": 0,"wrong_ids_names_in_layer": 0},
+      {"source": 17,"profile": "linked/early_cards/native","variant": "R5","kind": "przelew","uzp": 0.9090909090909091,"exact": false,"routed": true,"output_valid": true,"applied": true,"wrong_nonnull_in_layer": 0,"wrong_ids_names": 0,"wrong_ids_names_in_layer": 0},
+      {"source": 0,"profile": "fixed/31/two-column","variant": "T1","kind": "odwolanie","uzp": 0.8333333333333334,"exact": false,"routed": true,"output_valid": true,"applied": true,"wrong_nonnull_in_layer": 2,"wrong_ids_names": 2,"wrong_ids_names_in_layer": 2},
+      {"source": 1,"profile": "fixed/0/single-column","variant": "T1","kind": "odwolanie","uzp": 0.8235294117647058,"exact": false,"routed": true,"output_valid": true,"applied": true,"wrong_nonnull_in_layer": 2,"wrong_ids_names": 2,"wrong_ids_names_in_layer": 2},
+      {"source": 2,"profile": "fixed/42/single-column","variant": "T1","kind": "odwolanie","uzp": 0.8235294117647058,"exact": false,"routed": true,"output_valid": true,"applied": true,"wrong_nonnull_in_layer": 2,"wrong_ids_names": 2,"wrong_ids_names_in_layer": 2},
+      {"source": 3,"profile": "fixed/20/scan","variant": "T1","kind": "odwolanie","uzp": 0.75,"exact": false,"routed": true,"output_valid": true,"applied": true,"wrong_nonnull_in_layer": 1,"wrong_ids_names": 1,"wrong_ids_names_in_layer": 1},
+      {"source": 4,"profile": "fixed/54/single-column","variant": "T1","kind": "pelnomocnictwo","uzp": 0.8,"exact": false,"routed": true,"output_valid": true,"applied": true,"wrong_nonnull_in_layer": 1,"wrong_ids_names": 1,"wrong_ids_names_in_layer": 1},
+      {"source": 5,"profile": "fixed/12/single-column","variant": "T1","kind": "pelnomocnictwo","uzp": 0.8,"exact": false,"routed": true,"output_valid": true,"applied": true,"wrong_nonnull_in_layer": 1,"wrong_ids_names": 1,"wrong_ids_names_in_layer": 1},
+      {"source": 6,"profile": "fixed/42/single-column","variant": "T1","kind": "pelnomocnictwo","uzp": 0.7272727272727273,"exact": false,"routed": true,"output_valid": true,"applied": true,"wrong_nonnull_in_layer": 1,"wrong_ids_names": 1,"wrong_ids_names_in_layer": 1},
+      {"source": 7,"profile": "fixed/43/two-column","variant": "T1","kind": "pelnomocnictwo","uzp": 0.8695652173913043,"exact": false,"routed": true,"output_valid": true,"applied": true,"wrong_nonnull_in_layer": 1,"wrong_ids_names": 1,"wrong_ids_names_in_layer": 1},
+      {"source": 8,"profile": "fixed/26/scan","variant": "T1","kind": "przelew","uzp": 0.9090909090909091,"exact": false,"routed": true,"output_valid": true,"applied": true,"wrong_nonnull_in_layer": 1,"wrong_ids_names": 1,"wrong_ids_names_in_layer": 0},
+      {"source": 9,"profile": "fixed/20/scan","variant": "T1","kind": "przelew","uzp": 0.9090909090909091,"exact": false,"routed": true,"output_valid": true,"applied": true,"wrong_nonnull_in_layer": 1,"wrong_ids_names": 1,"wrong_ids_names_in_layer": 1},
+      {"source": 10,"profile": "fixed/19/two-column","variant": "T1","kind": "przelew","uzp": 0.8,"exact": false,"routed": true,"output_valid": true,"applied": true,"wrong_nonnull_in_layer": 2,"wrong_ids_names": 1,"wrong_ids_names_in_layer": 1},
+      {"source": 11,"profile": "fixed/8/scan","variant": "T1","kind": "przelew","uzp": 0.9090909090909091,"exact": false,"routed": true,"output_valid": true,"applied": true,"wrong_nonnull_in_layer": 1,"wrong_ids_names": 1,"wrong_ids_names_in_layer": 1},
+      {"source": 12,"profile": "linked/early-modular/scan","variant": "T1","kind": "odwolanie","uzp": 0.5714285714285714,"exact": false,"routed": true,"output_valid": true,"applied": true,"wrong_nonnull_in_layer": 1,"wrong_ids_names": 0,"wrong_ids_names_in_layer": 0},
+      {"source": 13,"profile": "linked/early-modular/native","variant": "T1","kind": "odwolanie","uzp": 0.5833333333333334,"exact": false,"routed": true,"output_valid": true,"applied": true,"wrong_nonnull_in_layer": 0,"wrong_ids_names": 0,"wrong_ids_names_in_layer": 0},
+      {"source": 14,"profile": "linked/early-register/scan","variant": "T1","kind": "pelnomocnictwo","uzp": 0.8333333333333334,"exact": false,"routed": true,"output_valid": true,"applied": true,"wrong_nonnull_in_layer": 1,"wrong_ids_names": 1,"wrong_ids_names_in_layer": 1},
+      {"source": 15,"profile": "linked/early-procedural/native","variant": "T1","kind": "pelnomocnictwo","uzp": 0.4,"exact": false,"routed": true,"output_valid": true,"applied": true,"wrong_nonnull_in_layer": 2,"wrong_ids_names": 2,"wrong_ids_names_in_layer": 2},
+      {"source": 16,"profile": "linked/early_order/native","variant": "T1","kind": "przelew","uzp": 0.9090909090909091,"exact": false,"routed": true,"output_valid": true,"applied": true,"wrong_nonnull_in_layer": 1,"wrong_ids_names": 1,"wrong_ids_names_in_layer": 1},
+      {"source": 17,"profile": "linked/early_cards/native","variant": "T1","kind": "przelew","uzp": 0.9090909090909091,"exact": false,"routed": true,"output_valid": true,"applied": true,"wrong_nonnull_in_layer": 0,"wrong_ids_names": 1,"wrong_ids_names_in_layer": 0},
+      {"source": 0,"profile": "fixed/31/two-column","variant": "T2","kind": "odwolanie","uzp": 0.8333333333333334,"exact": false,"routed": true,"output_valid": true,"applied": true,"wrong_nonnull_in_layer": 2,"wrong_ids_names": 2,"wrong_ids_names_in_layer": 2},
+      {"source": 1,"profile": "fixed/0/single-column","variant": "T2","kind": "odwolanie","uzp": 0.8235294117647058,"exact": false,"routed": true,"output_valid": true,"applied": true,"wrong_nonnull_in_layer": 2,"wrong_ids_names": 2,"wrong_ids_names_in_layer": 2},
+      {"source": 2,"profile": "fixed/42/single-column","variant": "T2","kind": "odwolanie","uzp": 0.8235294117647058,"exact": false,"routed": true,"output_valid": true,"applied": true,"wrong_nonnull_in_layer": 2,"wrong_ids_names": 2,"wrong_ids_names_in_layer": 2},
+      {"source": 3,"profile": "fixed/20/scan","variant": "T2","kind": "odwolanie","uzp": 0.75,"exact": false,"routed": true,"output_valid": true,"applied": true,"wrong_nonnull_in_layer": 1,"wrong_ids_names": 1,"wrong_ids_names_in_layer": 1},
+      {"source": 4,"profile": "fixed/54/single-column","variant": "T2","kind": "pelnomocnictwo","uzp": 0.8,"exact": false,"routed": true,"output_valid": true,"applied": true,"wrong_nonnull_in_layer": 1,"wrong_ids_names": 1,"wrong_ids_names_in_layer": 1},
+      {"source": 5,"profile": "fixed/12/single-column","variant": "T2","kind": "pelnomocnictwo","uzp": 0.8,"exact": false,"routed": true,"output_valid": true,"applied": true,"wrong_nonnull_in_layer": 1,"wrong_ids_names": 1,"wrong_ids_names_in_layer": 1},
+      {"source": 6,"profile": "fixed/42/single-column","variant": "T2","kind": "pelnomocnictwo","uzp": 0.7272727272727273,"exact": false,"routed": true,"output_valid": true,"applied": true,"wrong_nonnull_in_layer": 1,"wrong_ids_names": 1,"wrong_ids_names_in_layer": 1},
+      {"source": 7,"profile": "fixed/43/two-column","variant": "T2","kind": "pelnomocnictwo","uzp": 0.8695652173913043,"exact": false,"routed": true,"output_valid": true,"applied": true,"wrong_nonnull_in_layer": 1,"wrong_ids_names": 1,"wrong_ids_names_in_layer": 1},
+      {"source": 8,"profile": "fixed/26/scan","variant": "T2","kind": "przelew","uzp": 1.0,"exact": false,"routed": true,"output_valid": true,"applied": false,"wrong_nonnull_in_layer": 1,"wrong_ids_names": 0,"wrong_ids_names_in_layer": 0},
+      {"source": 9,"profile": "fixed/20/scan","variant": "T2","kind": "przelew","uzp": 1.0,"exact": true,"routed": true,"output_valid": true,"applied": false,"wrong_nonnull_in_layer": 0,"wrong_ids_names": 0,"wrong_ids_names_in_layer": 0},
+      {"source": 10,"profile": "fixed/19/two-column","variant": "T2","kind": "przelew","uzp": 0.9090909090909091,"exact": false,"routed": true,"output_valid": true,"applied": false,"wrong_nonnull_in_layer": 1,"wrong_ids_names": 0,"wrong_ids_names_in_layer": 0},
+      {"source": 11,"profile": "fixed/8/scan","variant": "T2","kind": "przelew","uzp": 1.0,"exact": false,"routed": true,"output_valid": true,"applied": false,"wrong_nonnull_in_layer": 0,"wrong_ids_names": 0,"wrong_ids_names_in_layer": 0},
+      {"source": 12,"profile": "linked/early-modular/scan","variant": "T2","kind": "odwolanie","uzp": 0.5185185185185185,"exact": false,"routed": true,"output_valid": true,"applied": true,"wrong_nonnull_in_layer": 2,"wrong_ids_names": 1,"wrong_ids_names_in_layer": 1},
+      {"source": 13,"profile": "linked/early-modular/native","variant": "T2","kind": "odwolanie","uzp": 0.5217391304347826,"exact": false,"routed": true,"output_valid": true,"applied": true,"wrong_nonnull_in_layer": 1,"wrong_ids_names": 1,"wrong_ids_names_in_layer": 1},
+      {"source": 14,"profile": "linked/early-register/scan","variant": "T2","kind": "pelnomocnictwo","uzp": 0.6,"exact": false,"routed": true,"output_valid": true,"applied": true,"wrong_nonnull_in_layer": 1,"wrong_ids_names": 1,"wrong_ids_names_in_layer": 1},
+      {"source": 15,"profile": "linked/early-procedural/native","variant": "T2","kind": "pelnomocnictwo","uzp": 0.5454545454545454,"exact": false,"routed": true,"output_valid": true,"applied": true,"wrong_nonnull_in_layer": 1,"wrong_ids_names": 1,"wrong_ids_names_in_layer": 1},
+      {"source": 16,"profile": "linked/early_order/native","variant": "T2","kind": "przelew","uzp": 1.0,"exact": true,"routed": true,"output_valid": true,"applied": false,"wrong_nonnull_in_layer": 0,"wrong_ids_names": 0,"wrong_ids_names_in_layer": 0},
+      {"source": 17,"profile": "linked/early_cards/native","variant": "T2","kind": "przelew","uzp": 1.0,"exact": true,"routed": true,"output_valid": true,"applied": false,"wrong_nonnull_in_layer": 0,"wrong_ids_names": 0,"wrong_ids_names_in_layer": 0},
+      {"source": 0,"profile": "fixed/31/two-column","variant": "T3","kind": "odwolanie","uzp": 0.0,"exact": false,"routed": false,"output_valid": true,"applied": true,"wrong_nonnull_in_layer": 0,"wrong_ids_names": 0,"wrong_ids_names_in_layer": 0},
+      {"source": 1,"profile": "fixed/0/single-column","variant": "T3","kind": "odwolanie","uzp": 0.0,"exact": false,"routed": false,"output_valid": true,"applied": true,"wrong_nonnull_in_layer": 0,"wrong_ids_names": 0,"wrong_ids_names_in_layer": 0},
+      {"source": 2,"profile": "fixed/42/single-column","variant": "T3","kind": "odwolanie","uzp": 0.0,"exact": false,"routed": false,"output_valid": true,"applied": true,"wrong_nonnull_in_layer": 0,"wrong_ids_names": 0,"wrong_ids_names_in_layer": 0},
+      {"source": 3,"profile": "fixed/20/scan","variant": "T3","kind": "odwolanie","uzp": 0.0,"exact": false,"routed": false,"output_valid": true,"applied": true,"wrong_nonnull_in_layer": 0,"wrong_ids_names": 0,"wrong_ids_names_in_layer": 0},
+      {"source": 4,"profile": "fixed/54/single-column","variant": "T3","kind": "pelnomocnictwo","uzp": 0.0,"exact": false,"routed": false,"output_valid": true,"applied": true,"wrong_nonnull_in_layer": 0,"wrong_ids_names": 0,"wrong_ids_names_in_layer": 0},
+      {"source": 5,"profile": "fixed/12/single-column","variant": "T3","kind": "pelnomocnictwo","uzp": 0.0,"exact": false,"routed": false,"output_valid": true,"applied": true,"wrong_nonnull_in_layer": 0,"wrong_ids_names": 0,"wrong_ids_names_in_layer": 0},
+      {"source": 6,"profile": "fixed/42/single-column","variant": "T3","kind": "pelnomocnictwo","uzp": 0.0,"exact": false,"routed": false,"output_valid": true,"applied": true,"wrong_nonnull_in_layer": 0,"wrong_ids_names": 0,"wrong_ids_names_in_layer": 0},
+      {"source": 7,"profile": "fixed/43/two-column","variant": "T3","kind": "pelnomocnictwo","uzp": 0.0,"exact": false,"routed": false,"output_valid": true,"applied": true,"wrong_nonnull_in_layer": 0,"wrong_ids_names": 0,"wrong_ids_names_in_layer": 0},
+      {"source": 8,"profile": "fixed/26/scan","variant": "T3","kind": "przelew","uzp": 0.0,"exact": false,"routed": false,"output_valid": true,"applied": true,"wrong_nonnull_in_layer": 0,"wrong_ids_names": 0,"wrong_ids_names_in_layer": 0},
+      {"source": 9,"profile": "fixed/20/scan","variant": "T3","kind": "przelew","uzp": 0.0,"exact": false,"routed": false,"output_valid": true,"applied": true,"wrong_nonnull_in_layer": 0,"wrong_ids_names": 0,"wrong_ids_names_in_layer": 0},
+      {"source": 10,"profile": "fixed/19/two-column","variant": "T3","kind": "przelew","uzp": 0.0,"exact": false,"routed": false,"output_valid": true,"applied": true,"wrong_nonnull_in_layer": 0,"wrong_ids_names": 0,"wrong_ids_names_in_layer": 0},
+      {"source": 11,"profile": "fixed/8/scan","variant": "T3","kind": "przelew","uzp": 0.0,"exact": false,"routed": false,"output_valid": true,"applied": true,"wrong_nonnull_in_layer": 0,"wrong_ids_names": 0,"wrong_ids_names_in_layer": 0},
+      {"source": 12,"profile": "linked/early-modular/scan","variant": "T3","kind": "odwolanie","uzp": 0.0,"exact": false,"routed": false,"output_valid": true,"applied": true,"wrong_nonnull_in_layer": 0,"wrong_ids_names": 0,"wrong_ids_names_in_layer": 0},
+      {"source": 13,"profile": "linked/early-modular/native","variant": "T3","kind": "odwolanie","uzp": 0.0,"exact": false,"routed": false,"output_valid": true,"applied": true,"wrong_nonnull_in_layer": 0,"wrong_ids_names": 0,"wrong_ids_names_in_layer": 0},
+      {"source": 14,"profile": "linked/early-register/scan","variant": "T3","kind": "pelnomocnictwo","uzp": 0.0,"exact": false,"routed": false,"output_valid": true,"applied": true,"wrong_nonnull_in_layer": 0,"wrong_ids_names": 0,"wrong_ids_names_in_layer": 0},
+      {"source": 15,"profile": "linked/early-procedural/native","variant": "T3","kind": "pelnomocnictwo","uzp": 0.0,"exact": false,"routed": false,"output_valid": true,"applied": true,"wrong_nonnull_in_layer": 0,"wrong_ids_names": 0,"wrong_ids_names_in_layer": 0},
+      {"source": 16,"profile": "linked/early_order/native","variant": "T3","kind": "przelew","uzp": 0.0,"exact": false,"routed": false,"output_valid": true,"applied": true,"wrong_nonnull_in_layer": 0,"wrong_ids_names": 0,"wrong_ids_names_in_layer": 0},
+      {"source": 17,"profile": "linked/early_cards/native","variant": "T3","kind": "przelew","uzp": 0.0,"exact": false,"routed": false,"output_valid": true,"applied": true,"wrong_nonnull_in_layer": 0,"wrong_ids_names": 0,"wrong_ids_names_in_layer": 0},
+      {"source": 0,"profile": "fixed/31/two-column","variant": "T4","kind": "odwolanie","uzp": 0.17391304347826086,"exact": false,"routed": true,"output_valid": true,"applied": true,"wrong_nonnull_in_layer": 12,"wrong_ids_names": 10,"wrong_ids_names_in_layer": 10},
+      {"source": 1,"profile": "fixed/0/single-column","variant": "T4","kind": "odwolanie","uzp": 0.25,"exact": false,"routed": true,"output_valid": true,"applied": true,"wrong_nonnull_in_layer": 12,"wrong_ids_names": 10,"wrong_ids_names_in_layer": 10},
+      {"source": 2,"profile": "fixed/42/single-column","variant": "T4","kind": "odwolanie","uzp": 0.09090909090909091,"exact": false,"routed": true,"output_valid": true,"applied": true,"wrong_nonnull_in_layer": 12,"wrong_ids_names": 10,"wrong_ids_names_in_layer": 10},
+      {"source": 3,"profile": "fixed/20/scan","variant": "T4","kind": "odwolanie","uzp": 0.09090909090909091,"exact": false,"routed": true,"output_valid": true,"applied": true,"wrong_nonnull_in_layer": 7,"wrong_ids_names": 3,"wrong_ids_names_in_layer": 3},
+      {"source": 4,"profile": "fixed/54/single-column","variant": "T4","kind": "pelnomocnictwo","uzp": 0.2857142857142857,"exact": false,"routed": true,"output_valid": true,"applied": true,"wrong_nonnull_in_layer": 4,"wrong_ids_names": 4,"wrong_ids_names_in_layer": 4},
+      {"source": 5,"profile": "fixed/12/single-column","variant": "T4","kind": "pelnomocnictwo","uzp": 0.2857142857142857,"exact": false,"routed": true,"output_valid": true,"applied": true,"wrong_nonnull_in_layer": 4,"wrong_ids_names": 4,"wrong_ids_names_in_layer": 4},
+      {"source": 6,"profile": "fixed/42/single-column","variant": "T4","kind": "pelnomocnictwo","uzp": 0.14285714285714285,"exact": false,"routed": true,"output_valid": true,"applied": true,"wrong_nonnull_in_layer": 9,"wrong_ids_names": 9,"wrong_ids_names_in_layer": 9},
+      {"source": 7,"profile": "fixed/43/two-column","variant": "T4","kind": "pelnomocnictwo","uzp": 0.14285714285714285,"exact": false,"routed": true,"output_valid": true,"applied": true,"wrong_nonnull_in_layer": 5,"wrong_ids_names": 5,"wrong_ids_names_in_layer": 5},
+      {"source": 8,"profile": "fixed/26/scan","variant": "T4","kind": "przelew","uzp": 0.0,"exact": false,"routed": true,"output_valid": true,"applied": true,"wrong_nonnull_in_layer": 4,"wrong_ids_names": 2,"wrong_ids_names_in_layer": 1},
+      {"source": 9,"profile": "fixed/20/scan","variant": "T4","kind": "przelew","uzp": 0.2857142857142857,"exact": false,"routed": true,"output_valid": true,"applied": true,"wrong_nonnull_in_layer": 3,"wrong_ids_names": 2,"wrong_ids_names_in_layer": 1},
+      {"source": 10,"profile": "fixed/19/two-column","variant": "T4","kind": "przelew","uzp": 0.2857142857142857,"exact": false,"routed": true,"output_valid": true,"applied": true,"wrong_nonnull_in_layer": 3,"wrong_ids_names": 2,"wrong_ids_names_in_layer": 2},
+      {"source": 11,"profile": "fixed/8/scan","variant": "T4","kind": "przelew","uzp": 0.0,"exact": false,"routed": true,"output_valid": true,"applied": true,"wrong_nonnull_in_layer": 5,"wrong_ids_names": 2,"wrong_ids_names_in_layer": 2},
+      {"source": 12,"profile": "linked/early-modular/scan","variant": "T4","kind": "odwolanie","uzp": 0.3333333333333333,"exact": false,"routed": true,"output_valid": true,"applied": true,"wrong_nonnull_in_layer": 4,"wrong_ids_names": 1,"wrong_ids_names_in_layer": 1},
+      {"source": 13,"profile": "linked/early-modular/native","variant": "T4","kind": "odwolanie","uzp": 0.06060606060606061,"exact": false,"routed": true,"output_valid": true,"applied": true,"wrong_nonnull_in_layer": 25,"wrong_ids_names": 18,"wrong_ids_names_in_layer": 18},
+      {"source": 14,"profile": "linked/early-register/scan","variant": "T4","kind": "pelnomocnictwo","uzp": 0.25,"exact": false,"routed": true,"output_valid": true,"applied": true,"wrong_nonnull_in_layer": 3,"wrong_ids_names": 3,"wrong_ids_names_in_layer": 3},
+      {"source": 15,"profile": "linked/early-procedural/native","variant": "T4","kind": "pelnomocnictwo","uzp": 0.2222222222222222,"exact": false,"routed": true,"output_valid": true,"applied": true,"wrong_nonnull_in_layer": 4,"wrong_ids_names": 4,"wrong_ids_names_in_layer": 4},
+      {"source": 16,"profile": "linked/early_order/native","variant": "T4","kind": "przelew","uzp": 0.0,"exact": false,"routed": true,"output_valid": true,"applied": true,"wrong_nonnull_in_layer": 4,"wrong_ids_names": 2,"wrong_ids_names_in_layer": 1},
+      {"source": 17,"profile": "linked/early_cards/native","variant": "T4","kind": "przelew","uzp": 0.0,"exact": false,"routed": true,"output_valid": true,"applied": true,"wrong_nonnull_in_layer": 3,"wrong_ids_names": 2,"wrong_ids_names_in_layer": 0}
+    ],
+    "candidate": [
+      {"source": 0,"profile": "fixed/31/two-column","variant": "source","kind": "odwolanie","uzp": 0.975609756097561,"exact": false,"routed": true,"output_valid": true,"applied": true,"wrong_nonnull_in_layer": 0,"wrong_ids_names": 0,"wrong_ids_names_in_layer": 0,"byte_sha256": "572b21e94197d1b19d04b8fa323e855cb3c5db1ec6c2c727f0da41ec07ae3de7"},
+      {"source": 1,"profile": "fixed/0/single-column","variant": "source","kind": "odwolanie","uzp": 0.9743589743589743,"exact": false,"routed": true,"output_valid": true,"applied": true,"wrong_nonnull_in_layer": 0,"wrong_ids_names": 0,"wrong_ids_names_in_layer": 0,"byte_sha256": "f4a0f833a26097b6989413ca470197caad79abb1d7d39ff9d2f40f04d74f5e65"},
+      {"source": 2,"profile": "fixed/42/single-column","variant": "source","kind": "odwolanie","uzp": 0.9743589743589743,"exact": false,"routed": true,"output_valid": true,"applied": true,"wrong_nonnull_in_layer": 0,"wrong_ids_names": 0,"wrong_ids_names_in_layer": 0,"byte_sha256": "a1a8df5ba54c6afb7317bcd892fe82c71c115be5d90e1aa72f344e2e1810ef2b"},
+      {"source": 3,"profile": "fixed/20/scan","variant": "source","kind": "odwolanie","uzp": 0.9473684210526315,"exact": false,"routed": true,"output_valid": true,"applied": true,"wrong_nonnull_in_layer": 0,"wrong_ids_names": 0,"wrong_ids_names_in_layer": 0,"byte_sha256": "b2b1bf1fcdfd503a919d70e795a0d8a161b2c8bbea2ae3f31de6a8e8dfedec71"},
+      {"source": 4,"profile": "fixed/54/single-column","variant": "source","kind": "pelnomocnictwo","uzp": 1.0,"exact": true,"routed": true,"output_valid": true,"applied": true,"wrong_nonnull_in_layer": 0,"wrong_ids_names": 0,"wrong_ids_names_in_layer": 0,"byte_sha256": "b4cda857f7495d8db697b9944fa083e4542804b4edfea928e9949c1436d2ba6d"},
+      {"source": 5,"profile": "fixed/12/single-column","variant": "source","kind": "pelnomocnictwo","uzp": 1.0,"exact": true,"routed": true,"output_valid": true,"applied": true,"wrong_nonnull_in_layer": 0,"wrong_ids_names": 0,"wrong_ids_names_in_layer": 0,"byte_sha256": "7e4aa6b8ee19d8933441f77599b2d5229cadb4ee8cf972ab346c76e7deb07b05"},
+      {"source": 6,"profile": "fixed/42/single-column","variant": "source","kind": "pelnomocnictwo","uzp": 1.0,"exact": true,"routed": true,"output_valid": true,"applied": true,"wrong_nonnull_in_layer": 0,"wrong_ids_names": 0,"wrong_ids_names_in_layer": 0,"byte_sha256": "055b099edde9ae24912359bc4ac27daf296aba8536402396d62917cdd2a142c8"},
+      {"source": 7,"profile": "fixed/43/two-column","variant": "source","kind": "pelnomocnictwo","uzp": 0.9166666666666666,"exact": false,"routed": true,"output_valid": true,"applied": true,"wrong_nonnull_in_layer": 0,"wrong_ids_names": 0,"wrong_ids_names_in_layer": 0,"byte_sha256": "ef2880eae5a71a3f06858a35ebe83dd209ff6694b198f5036ff5e16f35bf1c6f"},
+      {"source": 8,"profile": "fixed/26/scan","variant": "source","kind": "przelew","uzp": 0.9090909090909091,"exact": false,"routed": true,"output_valid": true,"applied": true,"wrong_nonnull_in_layer": 0,"wrong_ids_names": 0,"wrong_ids_names_in_layer": 0,"byte_sha256": "52910dac5a87f13be8caeafcb3b277f5e70d3985b6821008a8d928d4f6824092"},
+      {"source": 9,"profile": "fixed/20/scan","variant": "source","kind": "przelew","uzp": 1.0,"exact": true,"routed": true,"output_valid": true,"applied": true,"wrong_nonnull_in_layer": 0,"wrong_ids_names": 0,"wrong_ids_names_in_layer": 0,"byte_sha256": "8d8be079776d93b3a47beefbad6b093d3a6eaffc4fe7742b462fd12b7d6c76ee"},
+      {"source": 10,"profile": "fixed/19/two-column","variant": "source","kind": "przelew","uzp": 0.9090909090909091,"exact": false,"routed": true,"output_valid": true,"applied": true,"wrong_nonnull_in_layer": 0,"wrong_ids_names": 0,"wrong_ids_names_in_layer": 0,"byte_sha256": "fcd57549e9218fefb75784c5e5677435b190ec1dd611cc022a6388c256d842b3"},
+      {"source": 11,"profile": "fixed/8/scan","variant": "source","kind": "przelew","uzp": 1.0,"exact": true,"routed": true,"output_valid": true,"applied": true,"wrong_nonnull_in_layer": 0,"wrong_ids_names": 0,"wrong_ids_names_in_layer": 0,"byte_sha256": "ebb8f26f2a865152d0d41ae1b7d43275677ecc779ac6cc3c009b966f7468eb35"},
+      {"source": 12,"profile": "linked/early-modular/scan","variant": "source","kind": "odwolanie","uzp": 1.0,"exact": false,"routed": true,"output_valid": true,"applied": true,"wrong_nonnull_in_layer": 0,"wrong_ids_names": 0,"wrong_ids_names_in_layer": 0,"byte_sha256": "0fbd0657425a4acd12bfa5aa0a62cb56b3c8a02c5f6266189646a0bbda121f44"},
+      {"source": 13,"profile": "linked/early-modular/native","variant": "source","kind": "odwolanie","uzp": 1.0,"exact": true,"routed": true,"output_valid": true,"applied": true,"wrong_nonnull_in_layer": 0,"wrong_ids_names": 0,"wrong_ids_names_in_layer": 0,"byte_sha256": "e7a1424e7ebeb7f69f0f4729c762f20dec9c011a0e5825b4e979e9e80c1b96bd"},
+      {"source": 14,"profile": "linked/early-register/scan","variant": "source","kind": "pelnomocnictwo","uzp": 1.0,"exact": true,"routed": true,"output_valid": true,"applied": true,"wrong_nonnull_in_layer": 0,"wrong_ids_names": 0,"wrong_ids_names_in_layer": 0,"byte_sha256": "7688d8e5f2624a792d7abdec62583fda8e8e0a1c2f4034f2f1f94ce5632d7c91"},
+      {"source": 15,"profile": "linked/early-procedural/native","variant": "source","kind": "pelnomocnictwo","uzp": 1.0,"exact": true,"routed": true,"output_valid": true,"applied": true,"wrong_nonnull_in_layer": 0,"wrong_ids_names": 0,"wrong_ids_names_in_layer": 0,"byte_sha256": "b9fc9869f7bad28886dc6a42bde7157bb3c3d454bc38717cf4240a4b43fa01bd"},
+      {"source": 16,"profile": "linked/early_order/native","variant": "source","kind": "przelew","uzp": 1.0,"exact": true,"routed": true,"output_valid": true,"applied": true,"wrong_nonnull_in_layer": 0,"wrong_ids_names": 0,"wrong_ids_names_in_layer": 0,"byte_sha256": "332f459ab3e9e70ed1f07f1b1e9e81208e423277a7994ee003336a10580221d2"},
+      {"source": 17,"profile": "linked/early_cards/native","variant": "source","kind": "przelew","uzp": 1.0,"exact": true,"routed": true,"output_valid": true,"applied": true,"wrong_nonnull_in_layer": 0,"wrong_ids_names": 0,"wrong_ids_names_in_layer": 0,"byte_sha256": "4546d0af7bc22d70670750d827784eb38548cded0424713624f5b76c3e8766dc"},
+      {"source": 0,"profile": "fixed/31/two-column","variant": "R1","kind": "odwolanie","uzp": 0.8648648648648649,"exact": false,"routed": true,"output_valid": true,"applied": true,"wrong_nonnull_in_layer": 0,"wrong_ids_names": 0,"wrong_ids_names_in_layer": 0},
+      {"source": 1,"profile": "fixed/0/single-column","variant": "R1","kind": "odwolanie","uzp": 0.9473684210526315,"exact": false,"routed": true,"output_valid": true,"applied": true,"wrong_nonnull_in_layer": 0,"wrong_ids_names": 0,"wrong_ids_names_in_layer": 0},
+      {"source": 2,"profile": "fixed/42/single-column","variant": "R1","kind": "odwolanie","uzp": 0.9473684210526315,"exact": false,"routed": true,"output_valid": true,"applied": true,"wrong_nonnull_in_layer": 0,"wrong_ids_names": 0,"wrong_ids_names_in_layer": 0},
+      {"source": 3,"profile": "fixed/20/scan","variant": "R1","kind": "odwolanie","uzp": 0.9473684210526315,"exact": false,"routed": true,"output_valid": true,"applied": true,"wrong_nonnull_in_layer": 0,"wrong_ids_names": 0,"wrong_ids_names_in_layer": 0},
+      {"source": 4,"profile": "fixed/54/single-column","variant": "R1","kind": "pelnomocnictwo","uzp": 1.0,"exact": true,"routed": true,"output_valid": true,"applied": true,"wrong_nonnull_in_layer": 0,"wrong_ids_names": 0,"wrong_ids_names_in_layer": 0},
+      {"source": 5,"profile": "fixed/12/single-column","variant": "R1","kind": "pelnomocnictwo","uzp": 1.0,"exact": true,"routed": true,"output_valid": true,"applied": true,"wrong_nonnull_in_layer": 0,"wrong_ids_names": 0,"wrong_ids_names_in_layer": 0},
+      {"source": 6,"profile": "fixed/42/single-column","variant": "R1","kind": "pelnomocnictwo","uzp": 1.0,"exact": true,"routed": true,"output_valid": true,"applied": true,"wrong_nonnull_in_layer": 0,"wrong_ids_names": 0,"wrong_ids_names_in_layer": 0},
+      {"source": 7,"profile": "fixed/43/two-column","variant": "R1","kind": "pelnomocnictwo","uzp": 0.9166666666666666,"exact": false,"routed": true,"output_valid": true,"applied": true,"wrong_nonnull_in_layer": 0,"wrong_ids_names": 0,"wrong_ids_names_in_layer": 0},
+      {"source": 8,"profile": "fixed/26/scan","variant": "R1","kind": "przelew","uzp": 0.8,"exact": false,"routed": true,"output_valid": true,"applied": true,"wrong_nonnull_in_layer": 0,"wrong_ids_names": 0,"wrong_ids_names_in_layer": 0},
+      {"source": 9,"profile": "fixed/20/scan","variant": "R1","kind": "przelew","uzp": 0.8,"exact": false,"routed": true,"output_valid": true,"applied": true,"wrong_nonnull_in_layer": 0,"wrong_ids_names": 0,"wrong_ids_names_in_layer": 0},
+      {"source": 10,"profile": "fixed/19/two-column","variant": "R1","kind": "przelew","uzp": 0.6666666666666666,"exact": false,"routed": true,"output_valid": true,"applied": true,"wrong_nonnull_in_layer": 0,"wrong_ids_names": 2,"wrong_ids_names_in_layer": 0},
+      {"source": 11,"profile": "fixed/8/scan","variant": "R1","kind": "przelew","uzp": 0.9090909090909091,"exact": false,"routed": true,"output_valid": true,"applied": true,"wrong_nonnull_in_layer": 0,"wrong_ids_names": 0,"wrong_ids_names_in_layer": 0},
+      {"source": 12,"profile": "linked/early-modular/scan","variant": "R1","kind": "odwolanie","uzp": 1.0,"exact": false,"routed": true,"output_valid": true,"applied": true,"wrong_nonnull_in_layer": 0,"wrong_ids_names": 0,"wrong_ids_names_in_layer": 0},
+      {"source": 13,"profile": "linked/early-modular/native","variant": "R1","kind": "odwolanie","uzp": 1.0,"exact": false,"routed": true,"output_valid": true,"applied": true,"wrong_nonnull_in_layer": 0,"wrong_ids_names": 0,"wrong_ids_names_in_layer": 0},
+      {"source": 14,"profile": "linked/early-register/scan","variant": "R1","kind": "pelnomocnictwo","uzp": 1.0,"exact": true,"routed": true,"output_valid": true,"applied": true,"wrong_nonnull_in_layer": 0,"wrong_ids_names": 0,"wrong_ids_names_in_layer": 0},
+      {"source": 15,"profile": "linked/early-procedural/native","variant": "R1","kind": "pelnomocnictwo","uzp": 1.0,"exact": true,"routed": true,"output_valid": true,"applied": true,"wrong_nonnull_in_layer": 0,"wrong_ids_names": 0,"wrong_ids_names_in_layer": 0},
+      {"source": 16,"profile": "linked/early_order/native","variant": "R1","kind": "przelew","uzp": 0.9090909090909091,"exact": false,"routed": true,"output_valid": true,"applied": true,"wrong_nonnull_in_layer": 0,"wrong_ids_names": 0,"wrong_ids_names_in_layer": 0},
+      {"source": 17,"profile": "linked/early_cards/native","variant": "R1","kind": "przelew","uzp": 0.9090909090909091,"exact": false,"routed": true,"output_valid": true,"applied": true,"wrong_nonnull_in_layer": 0,"wrong_ids_names": 0,"wrong_ids_names_in_layer": 0},
+      {"source": 0,"profile": "fixed/31/two-column","variant": "R2","kind": "odwolanie","uzp": 0.0,"exact": false,"routed": false,"output_valid": true,"applied": true,"wrong_nonnull_in_layer": 0,"wrong_ids_names": 0,"wrong_ids_names_in_layer": 0},
+      {"source": 1,"profile": "fixed/0/single-column","variant": "R2","kind": "odwolanie","uzp": 0.0,"exact": false,"routed": false,"output_valid": true,"applied": true,"wrong_nonnull_in_layer": 0,"wrong_ids_names": 0,"wrong_ids_names_in_layer": 0},
+      {"source": 2,"profile": "fixed/42/single-column","variant": "R2","kind": "odwolanie","uzp": 0.0,"exact": false,"routed": false,"output_valid": true,"applied": true,"wrong_nonnull_in_layer": 0,"wrong_ids_names": 0,"wrong_ids_names_in_layer": 0},
+      {"source": 3,"profile": "fixed/20/scan","variant": "R2","kind": "odwolanie","uzp": 0.9473684210526315,"exact": false,"routed": true,"output_valid": true,"applied": true,"wrong_nonnull_in_layer": 0,"wrong_ids_names": 0,"wrong_ids_names_in_layer": 0},
+      {"source": 4,"profile": "fixed/54/single-column","variant": "R2","kind": "pelnomocnictwo","uzp": 1.0,"exact": true,"routed": true,"output_valid": true,"applied": true,"wrong_nonnull_in_layer": 0,"wrong_ids_names": 0,"wrong_ids_names_in_layer": 0},
+      {"source": 5,"profile": "fixed/12/single-column","variant": "R2","kind": "pelnomocnictwo","uzp": 1.0,"exact": true,"routed": true,"output_valid": true,"applied": true,"wrong_nonnull_in_layer": 0,"wrong_ids_names": 0,"wrong_ids_names_in_layer": 0},
+      {"source": 6,"profile": "fixed/42/single-column","variant": "R2","kind": "pelnomocnictwo","uzp": 1.0,"exact": true,"routed": true,"output_valid": true,"applied": true,"wrong_nonnull_in_layer": 0,"wrong_ids_names": 0,"wrong_ids_names_in_layer": 0},
+      {"source": 7,"profile": "fixed/43/two-column","variant": "R2","kind": "pelnomocnictwo","uzp": 0.0,"exact": false,"routed": false,"output_valid": true,"applied": true,"wrong_nonnull_in_layer": 0,"wrong_ids_names": 0,"wrong_ids_names_in_layer": 0},
+      {"source": 8,"profile": "fixed/26/scan","variant": "R2","kind": "przelew","uzp": 0.8,"exact": false,"routed": true,"output_valid": true,"applied": true,"wrong_nonnull_in_layer": 0,"wrong_ids_names": 0,"wrong_ids_names_in_layer": 0},
+      {"source": 9,"profile": "fixed/20/scan","variant": "R2","kind": "przelew","uzp": 0.8,"exact": false,"routed": true,"output_valid": true,"applied": true,"wrong_nonnull_in_layer": 0,"wrong_ids_names": 0,"wrong_ids_names_in_layer": 0},
+      {"source": 10,"profile": "fixed/19/two-column","variant": "R2","kind": "przelew","uzp": 0.6666666666666666,"exact": false,"routed": true,"output_valid": true,"applied": true,"wrong_nonnull_in_layer": 0,"wrong_ids_names": 2,"wrong_ids_names_in_layer": 0},
+      {"source": 11,"profile": "fixed/8/scan","variant": "R2","kind": "przelew","uzp": 0.9090909090909091,"exact": false,"routed": true,"output_valid": true,"applied": true,"wrong_nonnull_in_layer": 0,"wrong_ids_names": 0,"wrong_ids_names_in_layer": 0},
+      {"source": 12,"profile": "linked/early-modular/scan","variant": "R2","kind": "odwolanie","uzp": 1.0,"exact": false,"routed": true,"output_valid": true,"applied": true,"wrong_nonnull_in_layer": 0,"wrong_ids_names": 0,"wrong_ids_names_in_layer": 0},
+      {"source": 13,"profile": "linked/early-modular/native","variant": "R2","kind": "odwolanie","uzp": 1.0,"exact": false,"routed": true,"output_valid": true,"applied": true,"wrong_nonnull_in_layer": 0,"wrong_ids_names": 0,"wrong_ids_names_in_layer": 0},
+      {"source": 14,"profile": "linked/early-register/scan","variant": "R2","kind": "pelnomocnictwo","uzp": 0.0,"exact": false,"routed": false,"output_valid": true,"applied": true,"wrong_nonnull_in_layer": 0,"wrong_ids_names": 0,"wrong_ids_names_in_layer": 0},
+      {"source": 15,"profile": "linked/early-procedural/native","variant": "R2","kind": "pelnomocnictwo","uzp": 1.0,"exact": true,"routed": true,"output_valid": true,"applied": true,"wrong_nonnull_in_layer": 0,"wrong_ids_names": 0,"wrong_ids_names_in_layer": 0},
+      {"source": 16,"profile": "linked/early_order/native","variant": "R2","kind": "przelew","uzp": 1.0,"exact": false,"routed": true,"output_valid": true,"applied": true,"wrong_nonnull_in_layer": 0,"wrong_ids_names": 0,"wrong_ids_names_in_layer": 0},
+      {"source": 17,"profile": "linked/early_cards/native","variant": "R2","kind": "przelew","uzp": 0.9090909090909091,"exact": false,"routed": true,"output_valid": true,"applied": true,"wrong_nonnull_in_layer": 0,"wrong_ids_names": 0,"wrong_ids_names_in_layer": 0},
+      {"source": 0,"profile": "fixed/31/two-column","variant": "R3","kind": "odwolanie","uzp": 0.8648648648648649,"exact": false,"routed": true,"output_valid": true,"applied": true,"wrong_nonnull_in_layer": 0,"wrong_ids_names": 0,"wrong_ids_names_in_layer": 0},
+      {"source": 1,"profile": "fixed/0/single-column","variant": "R3","kind": "odwolanie","uzp": 0.918918918918919,"exact": false,"routed": true,"output_valid": true,"applied": true,"wrong_nonnull_in_layer": 0,"wrong_ids_names": 0,"wrong_ids_names_in_layer": 0},
+      {"source": 2,"profile": "fixed/42/single-column","variant": "R3","kind": "odwolanie","uzp": 0.918918918918919,"exact": false,"routed": true,"output_valid": true,"applied": true,"wrong_nonnull_in_layer": 0,"wrong_ids_names": 0,"wrong_ids_names_in_layer": 0},
+      {"source": 3,"profile": "fixed/20/scan","variant": "R3","kind": "odwolanie","uzp": 0.918918918918919,"exact": false,"routed": true,"output_valid": true,"applied": true,"wrong_nonnull_in_layer": 0,"wrong_ids_names": 0,"wrong_ids_names_in_layer": 0},
+      {"source": 4,"profile": "fixed/54/single-column","variant": "R3","kind": "pelnomocnictwo","uzp": 1.0,"exact": true,"routed": true,"output_valid": true,"applied": true,"wrong_nonnull_in_layer": 0,"wrong_ids_names": 0,"wrong_ids_names_in_layer": 0},
+      {"source": 5,"profile": "fixed/12/single-column","variant": "R3","kind": "pelnomocnictwo","uzp": 1.0,"exact": true,"routed": true,"output_valid": true,"applied": true,"wrong_nonnull_in_layer": 0,"wrong_ids_names": 0,"wrong_ids_names_in_layer": 0},
+      {"source": 6,"profile": "fixed/42/single-column","variant": "R3","kind": "pelnomocnictwo","uzp": 1.0,"exact": true,"routed": true,"output_valid": true,"applied": true,"wrong_nonnull_in_layer": 0,"wrong_ids_names": 0,"wrong_ids_names_in_layer": 0},
+      {"source": 7,"profile": "fixed/43/two-column","variant": "R3","kind": "pelnomocnictwo","uzp": 0.9166666666666666,"exact": false,"routed": true,"output_valid": true,"applied": true,"wrong_nonnull_in_layer": 0,"wrong_ids_names": 0,"wrong_ids_names_in_layer": 0},
+      {"source": 8,"profile": "fixed/26/scan","variant": "R3","kind": "przelew","uzp": 0.8,"exact": false,"routed": true,"output_valid": true,"applied": true,"wrong_nonnull_in_layer": 0,"wrong_ids_names": 0,"wrong_ids_names_in_layer": 0},
+      {"source": 9,"profile": "fixed/20/scan","variant": "R3","kind": "przelew","uzp": 0.8,"exact": false,"routed": true,"output_valid": true,"applied": true,"wrong_nonnull_in_layer": 0,"wrong_ids_names": 0,"wrong_ids_names_in_layer": 0},
+      {"source": 10,"profile": "fixed/19/two-column","variant": "R3","kind": "przelew","uzp": 0.6666666666666666,"exact": false,"routed": true,"output_valid": true,"applied": true,"wrong_nonnull_in_layer": 0,"wrong_ids_names": 1,"wrong_ids_names_in_layer": 0},
+      {"source": 11,"profile": "fixed/8/scan","variant": "R3","kind": "przelew","uzp": 0.9090909090909091,"exact": false,"routed": true,"output_valid": true,"applied": true,"wrong_nonnull_in_layer": 0,"wrong_ids_names": 0,"wrong_ids_names_in_layer": 0},
+      {"source": 12,"profile": "linked/early-modular/scan","variant": "R3","kind": "odwolanie","uzp": 1.0,"exact": true,"routed": true,"output_valid": true,"applied": true,"wrong_nonnull_in_layer": 0,"wrong_ids_names": 0,"wrong_ids_names_in_layer": 0},
+      {"source": 13,"profile": "linked/early-modular/native","variant": "R3","kind": "odwolanie","uzp": 0.9696969696969697,"exact": false,"routed": true,"output_valid": true,"applied": true,"wrong_nonnull_in_layer": 0,"wrong_ids_names": 0,"wrong_ids_names_in_layer": 0},
+      {"source": 14,"profile": "linked/early-register/scan","variant": "R3","kind": "pelnomocnictwo","uzp": 1.0,"exact": true,"routed": true,"output_valid": true,"applied": true,"wrong_nonnull_in_layer": 0,"wrong_ids_names": 0,"wrong_ids_names_in_layer": 0},
+      {"source": 15,"profile": "linked/early-procedural/native","variant": "R3","kind": "pelnomocnictwo","uzp": 1.0,"exact": true,"routed": true,"output_valid": true,"applied": true,"wrong_nonnull_in_layer": 0,"wrong_ids_names": 0,"wrong_ids_names_in_layer": 0},
+      {"source": 16,"profile": "linked/early_order/native","variant": "R3","kind": "przelew","uzp": 1.0,"exact": false,"routed": true,"output_valid": true,"applied": true,"wrong_nonnull_in_layer": 0,"wrong_ids_names": 0,"wrong_ids_names_in_layer": 0},
+      {"source": 17,"profile": "linked/early_cards/native","variant": "R3","kind": "przelew","uzp": 0.8,"exact": false,"routed": true,"output_valid": true,"applied": true,"wrong_nonnull_in_layer": 0,"wrong_ids_names": 0,"wrong_ids_names_in_layer": 0},
+      {"source": 0,"profile": "fixed/31/two-column","variant": "R4","kind": "odwolanie","uzp": 0.8648648648648649,"exact": false,"routed": true,"output_valid": true,"applied": true,"wrong_nonnull_in_layer": 0,"wrong_ids_names": 0,"wrong_ids_names_in_layer": 0},
+      {"source": 1,"profile": "fixed/0/single-column","variant": "R4","kind": "odwolanie","uzp": 0.9473684210526315,"exact": false,"routed": true,"output_valid": true,"applied": true,"wrong_nonnull_in_layer": 0,"wrong_ids_names": 1,"wrong_ids_names_in_layer": 0},
+      {"source": 2,"profile": "fixed/42/single-column","variant": "R4","kind": "odwolanie","uzp": 0.9473684210526315,"exact": false,"routed": true,"output_valid": true,"applied": true,"wrong_nonnull_in_layer": 0,"wrong_ids_names": 0,"wrong_ids_names_in_layer": 0},
+      {"source": 3,"profile": "fixed/20/scan","variant": "R4","kind": "odwolanie","uzp": 0.9473684210526315,"exact": false,"routed": true,"output_valid": true,"applied": true,"wrong_nonnull_in_layer": 0,"wrong_ids_names": 0,"wrong_ids_names_in_layer": 0},
+      {"source": 4,"profile": "fixed/54/single-column","variant": "R4","kind": "pelnomocnictwo","uzp": 1.0,"exact": true,"routed": true,"output_valid": true,"applied": true,"wrong_nonnull_in_layer": 0,"wrong_ids_names": 0,"wrong_ids_names_in_layer": 0},
+      {"source": 5,"profile": "fixed/12/single-column","variant": "R4","kind": "pelnomocnictwo","uzp": 1.0,"exact": true,"routed": true,"output_valid": true,"applied": true,"wrong_nonnull_in_layer": 0,"wrong_ids_names": 0,"wrong_ids_names_in_layer": 0},
+      {"source": 6,"profile": "fixed/42/single-column","variant": "R4","kind": "pelnomocnictwo","uzp": 1.0,"exact": true,"routed": true,"output_valid": true,"applied": true,"wrong_nonnull_in_layer": 0,"wrong_ids_names": 0,"wrong_ids_names_in_layer": 0},
+      {"source": 7,"profile": "fixed/43/two-column","variant": "R4","kind": "pelnomocnictwo","uzp": 0.9166666666666666,"exact": false,"routed": true,"output_valid": true,"applied": true,"wrong_nonnull_in_layer": 0,"wrong_ids_names": 0,"wrong_ids_names_in_layer": 0},
+      {"source": 8,"profile": "fixed/26/scan","variant": "R4","kind": "przelew","uzp": 0.8,"exact": false,"routed": true,"output_valid": true,"applied": true,"wrong_nonnull_in_layer": 0,"wrong_ids_names": 0,"wrong_ids_names_in_layer": 0},
+      {"source": 9,"profile": "fixed/20/scan","variant": "R4","kind": "przelew","uzp": 0.8,"exact": false,"routed": true,"output_valid": true,"applied": true,"wrong_nonnull_in_layer": 0,"wrong_ids_names": 0,"wrong_ids_names_in_layer": 0},
+      {"source": 10,"profile": "fixed/19/two-column","variant": "R4","kind": "przelew","uzp": 0.6666666666666666,"exact": false,"routed": true,"output_valid": true,"applied": true,"wrong_nonnull_in_layer": 0,"wrong_ids_names": 2,"wrong_ids_names_in_layer": 0},
+      {"source": 11,"profile": "fixed/8/scan","variant": "R4","kind": "przelew","uzp": 0.9090909090909091,"exact": false,"routed": true,"output_valid": true,"applied": true,"wrong_nonnull_in_layer": 0,"wrong_ids_names": 0,"wrong_ids_names_in_layer": 0},
+      {"source": 12,"profile": "linked/early-modular/scan","variant": "R4","kind": "odwolanie","uzp": 0.9743589743589743,"exact": false,"routed": true,"output_valid": true,"applied": true,"wrong_nonnull_in_layer": 0,"wrong_ids_names": 0,"wrong_ids_names_in_layer": 0},
+      {"source": 13,"profile": "linked/early-modular/native","variant": "R4","kind": "odwolanie","uzp": 1.0,"exact": true,"routed": true,"output_valid": true,"applied": true,"wrong_nonnull_in_layer": 0,"wrong_ids_names": 0,"wrong_ids_names_in_layer": 0},
+      {"source": 14,"profile": "linked/early-register/scan","variant": "R4","kind": "pelnomocnictwo","uzp": 1.0,"exact": true,"routed": true,"output_valid": true,"applied": true,"wrong_nonnull_in_layer": 0,"wrong_ids_names": 0,"wrong_ids_names_in_layer": 0},
+      {"source": 15,"profile": "linked/early-procedural/native","variant": "R4","kind": "pelnomocnictwo","uzp": 1.0,"exact": true,"routed": true,"output_valid": true,"applied": true,"wrong_nonnull_in_layer": 0,"wrong_ids_names": 0,"wrong_ids_names_in_layer": 0},
+      {"source": 16,"profile": "linked/early_order/native","variant": "R4","kind": "przelew","uzp": 0.8,"exact": false,"routed": true,"output_valid": true,"applied": true,"wrong_nonnull_in_layer": 0,"wrong_ids_names": 0,"wrong_ids_names_in_layer": 0},
+      {"source": 17,"profile": "linked/early_cards/native","variant": "R4","kind": "przelew","uzp": 0.9090909090909091,"exact": false,"routed": true,"output_valid": true,"applied": true,"wrong_nonnull_in_layer": 0,"wrong_ids_names": 0,"wrong_ids_names_in_layer": 0},
+      {"source": 0,"profile": "fixed/31/two-column","variant": "R5","kind": "odwolanie","uzp": 0.8947368421052632,"exact": false,"routed": true,"output_valid": true,"applied": true,"wrong_nonnull_in_layer": 0,"wrong_ids_names": 0,"wrong_ids_names_in_layer": 0},
+      {"source": 1,"profile": "fixed/0/single-column","variant": "R5","kind": "odwolanie","uzp": 0.9473684210526315,"exact": false,"routed": true,"output_valid": true,"applied": true,"wrong_nonnull_in_layer": 0,"wrong_ids_names": 1,"wrong_ids_names_in_layer": 0},
+      {"source": 2,"profile": "fixed/42/single-column","variant": "R5","kind": "odwolanie","uzp": 0.8888888888888888,"exact": false,"routed": true,"output_valid": true,"applied": true,"wrong_nonnull_in_layer": 0,"wrong_ids_names": 0,"wrong_ids_names_in_layer": 0},
+      {"source": 3,"profile": "fixed/20/scan","variant": "R5","kind": "odwolanie","uzp": 0.9473684210526315,"exact": false,"routed": true,"output_valid": true,"applied": true,"wrong_nonnull_in_layer": 0,"wrong_ids_names": 0,"wrong_ids_names_in_layer": 0},
+      {"source": 4,"profile": "fixed/54/single-column","variant": "R5","kind": "pelnomocnictwo","uzp": 1.0,"exact": true,"routed": true,"output_valid": true,"applied": true,"wrong_nonnull_in_layer": 0,"wrong_ids_names": 0,"wrong_ids_names_in_layer": 0},
+      {"source": 5,"profile": "fixed/12/single-column","variant": "R5","kind": "pelnomocnictwo","uzp": 1.0,"exact": true,"routed": true,"output_valid": true,"applied": true,"wrong_nonnull_in_layer": 0,"wrong_ids_names": 0,"wrong_ids_names_in_layer": 0},
+      {"source": 6,"profile": "fixed/42/single-column","variant": "R5","kind": "pelnomocnictwo","uzp": 1.0,"exact": true,"routed": true,"output_valid": true,"applied": true,"wrong_nonnull_in_layer": 0,"wrong_ids_names": 0,"wrong_ids_names_in_layer": 0},
+      {"source": 7,"profile": "fixed/43/two-column","variant": "R5","kind": "pelnomocnictwo","uzp": 0.9166666666666666,"exact": false,"routed": true,"output_valid": true,"applied": true,"wrong_nonnull_in_layer": 0,"wrong_ids_names": 0,"wrong_ids_names_in_layer": 0},
+      {"source": 8,"profile": "fixed/26/scan","variant": "R5","kind": "przelew","uzp": 0.9090909090909091,"exact": false,"routed": true,"output_valid": true,"applied": true,"wrong_nonnull_in_layer": 0,"wrong_ids_names": 0,"wrong_ids_names_in_layer": 0},
+      {"source": 9,"profile": "fixed/20/scan","variant": "R5","kind": "przelew","uzp": 0.9090909090909091,"exact": false,"routed": true,"output_valid": true,"applied": true,"wrong_nonnull_in_layer": 0,"wrong_ids_names": 0,"wrong_ids_names_in_layer": 0},
+      {"source": 10,"profile": "fixed/19/two-column","variant": "R5","kind": "przelew","uzp": 0.8,"exact": false,"routed": true,"output_valid": true,"applied": true,"wrong_nonnull_in_layer": 0,"wrong_ids_names": 2,"wrong_ids_names_in_layer": 0},
+      {"source": 11,"profile": "fixed/8/scan","variant": "R5","kind": "przelew","uzp": 1.0,"exact": false,"routed": true,"output_valid": true,"applied": true,"wrong_nonnull_in_layer": 0,"wrong_ids_names": 0,"wrong_ids_names_in_layer": 0},
+      {"source": 12,"profile": "linked/early-modular/scan","variant": "R5","kind": "odwolanie","uzp": 1.0,"exact": false,"routed": true,"output_valid": true,"applied": true,"wrong_nonnull_in_layer": 0,"wrong_ids_names": 0,"wrong_ids_names_in_layer": 0},
+      {"source": 13,"profile": "linked/early-modular/native","variant": "R5","kind": "odwolanie","uzp": 1.0,"exact": true,"routed": true,"output_valid": true,"applied": true,"wrong_nonnull_in_layer": 0,"wrong_ids_names": 0,"wrong_ids_names_in_layer": 0},
+      {"source": 14,"profile": "linked/early-register/scan","variant": "R5","kind": "pelnomocnictwo","uzp": 1.0,"exact": true,"routed": true,"output_valid": true,"applied": true,"wrong_nonnull_in_layer": 0,"wrong_ids_names": 0,"wrong_ids_names_in_layer": 0},
+      {"source": 15,"profile": "linked/early-procedural/native","variant": "R5","kind": "pelnomocnictwo","uzp": 0.8571428571428571,"exact": false,"routed": true,"output_valid": true,"applied": true,"wrong_nonnull_in_layer": 0,"wrong_ids_names": 0,"wrong_ids_names_in_layer": 0},
+      {"source": 16,"profile": "linked/early_order/native","variant": "R5","kind": "przelew","uzp": 1.0,"exact": false,"routed": true,"output_valid": true,"applied": true,"wrong_nonnull_in_layer": 0,"wrong_ids_names": 0,"wrong_ids_names_in_layer": 0},
+      {"source": 17,"profile": "linked/early_cards/native","variant": "R5","kind": "przelew","uzp": 0.9090909090909091,"exact": false,"routed": true,"output_valid": true,"applied": true,"wrong_nonnull_in_layer": 0,"wrong_ids_names": 0,"wrong_ids_names_in_layer": 0},
+      {"source": 0,"profile": "fixed/31/two-column","variant": "T1","kind": "odwolanie","uzp": 0.8648648648648649,"exact": false,"routed": true,"output_valid": true,"applied": true,"wrong_nonnull_in_layer": 1,"wrong_ids_names": 1,"wrong_ids_names_in_layer": 1},
+      {"source": 1,"profile": "fixed/0/single-column","variant": "T1","kind": "odwolanie","uzp": 0.8571428571428571,"exact": false,"routed": true,"output_valid": true,"applied": true,"wrong_nonnull_in_layer": 1,"wrong_ids_names": 1,"wrong_ids_names_in_layer": 1},
+      {"source": 2,"profile": "fixed/42/single-column","variant": "T1","kind": "odwolanie","uzp": 0.8235294117647058,"exact": false,"routed": true,"output_valid": true,"applied": true,"wrong_nonnull_in_layer": 2,"wrong_ids_names": 2,"wrong_ids_names_in_layer": 2},
+      {"source": 3,"profile": "fixed/20/scan","variant": "T1","kind": "odwolanie","uzp": 0.7878787878787878,"exact": false,"routed": true,"output_valid": true,"applied": true,"wrong_nonnull_in_layer": 0,"wrong_ids_names": 0,"wrong_ids_names_in_layer": 0},
+      {"source": 4,"profile": "fixed/54/single-column","variant": "T1","kind": "pelnomocnictwo","uzp": 0.9090909090909091,"exact": false,"routed": true,"output_valid": true,"applied": true,"wrong_nonnull_in_layer": 0,"wrong_ids_names": 0,"wrong_ids_names_in_layer": 0},
+      {"source": 5,"profile": "fixed/12/single-column","variant": "T1","kind": "pelnomocnictwo","uzp": 0.9090909090909091,"exact": false,"routed": true,"output_valid": true,"applied": true,"wrong_nonnull_in_layer": 0,"wrong_ids_names": 0,"wrong_ids_names_in_layer": 0},
+      {"source": 6,"profile": "fixed/42/single-column","variant": "T1","kind": "pelnomocnictwo","uzp": 0.8333333333333334,"exact": false,"routed": true,"output_valid": true,"applied": true,"wrong_nonnull_in_layer": 0,"wrong_ids_names": 0,"wrong_ids_names_in_layer": 0},
+      {"source": 7,"profile": "fixed/43/two-column","variant": "T1","kind": "pelnomocnictwo","uzp": 0.8695652173913043,"exact": false,"routed": true,"output_valid": true,"applied": true,"wrong_nonnull_in_layer": 1,"wrong_ids_names": 1,"wrong_ids_names_in_layer": 1},
+      {"source": 8,"profile": "fixed/26/scan","variant": "T1","kind": "przelew","uzp": 0.9090909090909091,"exact": false,"routed": true,"output_valid": true,"applied": true,"wrong_nonnull_in_layer": 1,"wrong_ids_names": 1,"wrong_ids_names_in_layer": 0},
+      {"source": 9,"profile": "fixed/20/scan","variant": "T1","kind": "przelew","uzp": 0.9090909090909091,"exact": false,"routed": true,"output_valid": true,"applied": true,"wrong_nonnull_in_layer": 1,"wrong_ids_names": 1,"wrong_ids_names_in_layer": 1},
+      {"source": 10,"profile": "fixed/19/two-column","variant": "T1","kind": "przelew","uzp": 0.8,"exact": false,"routed": true,"output_valid": true,"applied": true,"wrong_nonnull_in_layer": 2,"wrong_ids_names": 1,"wrong_ids_names_in_layer": 1},
+      {"source": 11,"profile": "fixed/8/scan","variant": "T1","kind": "przelew","uzp": 0.9090909090909091,"exact": false,"routed": true,"output_valid": true,"applied": true,"wrong_nonnull_in_layer": 1,"wrong_ids_names": 1,"wrong_ids_names_in_layer": 1},
+      {"source": 12,"profile": "linked/early-modular/scan","variant": "T1","kind": "odwolanie","uzp": 0.5714285714285714,"exact": false,"routed": true,"output_valid": true,"applied": true,"wrong_nonnull_in_layer": 1,"wrong_ids_names": 0,"wrong_ids_names_in_layer": 0},
+      {"source": 13,"profile": "linked/early-modular/native","variant": "T1","kind": "odwolanie","uzp": 0.5833333333333334,"exact": false,"routed": true,"output_valid": true,"applied": true,"wrong_nonnull_in_layer": 0,"wrong_ids_names": 0,"wrong_ids_names_in_layer": 0},
+      {"source": 14,"profile": "linked/early-register/scan","variant": "T1","kind": "pelnomocnictwo","uzp": 0.8333333333333334,"exact": false,"routed": true,"output_valid": true,"applied": true,"wrong_nonnull_in_layer": 1,"wrong_ids_names": 1,"wrong_ids_names_in_layer": 1},
+      {"source": 15,"profile": "linked/early-procedural/native","variant": "T1","kind": "pelnomocnictwo","uzp": 0.4,"exact": false,"routed": true,"output_valid": true,"applied": true,"wrong_nonnull_in_layer": 2,"wrong_ids_names": 2,"wrong_ids_names_in_layer": 2},
+      {"source": 16,"profile": "linked/early_order/native","variant": "T1","kind": "przelew","uzp": 1.0,"exact": true,"routed": true,"output_valid": true,"applied": true,"wrong_nonnull_in_layer": 0,"wrong_ids_names": 0,"wrong_ids_names_in_layer": 0},
+      {"source": 17,"profile": "linked/early_cards/native","variant": "T1","kind": "przelew","uzp": 0.9090909090909091,"exact": false,"routed": true,"output_valid": true,"applied": true,"wrong_nonnull_in_layer": 0,"wrong_ids_names": 1,"wrong_ids_names_in_layer": 0},
+      {"source": 0,"profile": "fixed/31/two-column","variant": "T2","kind": "odwolanie","uzp": 0.8333333333333334,"exact": false,"routed": true,"output_valid": true,"applied": true,"wrong_nonnull_in_layer": 2,"wrong_ids_names": 2,"wrong_ids_names_in_layer": 2},
+      {"source": 1,"profile": "fixed/0/single-column","variant": "T2","kind": "odwolanie","uzp": 0.8235294117647058,"exact": false,"routed": true,"output_valid": true,"applied": true,"wrong_nonnull_in_layer": 2,"wrong_ids_names": 2,"wrong_ids_names_in_layer": 2},
+      {"source": 2,"profile": "fixed/42/single-column","variant": "T2","kind": "odwolanie","uzp": 0.8235294117647058,"exact": false,"routed": true,"output_valid": true,"applied": true,"wrong_nonnull_in_layer": 2,"wrong_ids_names": 2,"wrong_ids_names_in_layer": 2},
+      {"source": 3,"profile": "fixed/20/scan","variant": "T2","kind": "odwolanie","uzp": 0.75,"exact": false,"routed": true,"output_valid": true,"applied": true,"wrong_nonnull_in_layer": 1,"wrong_ids_names": 1,"wrong_ids_names_in_layer": 1},
+      {"source": 4,"profile": "fixed/54/single-column","variant": "T2","kind": "pelnomocnictwo","uzp": 0.8,"exact": false,"routed": true,"output_valid": true,"applied": true,"wrong_nonnull_in_layer": 1,"wrong_ids_names": 1,"wrong_ids_names_in_layer": 1},
+      {"source": 5,"profile": "fixed/12/single-column","variant": "T2","kind": "pelnomocnictwo","uzp": 0.8,"exact": false,"routed": true,"output_valid": true,"applied": true,"wrong_nonnull_in_layer": 1,"wrong_ids_names": 1,"wrong_ids_names_in_layer": 1},
+      {"source": 6,"profile": "fixed/42/single-column","variant": "T2","kind": "pelnomocnictwo","uzp": 0.7272727272727273,"exact": false,"routed": true,"output_valid": true,"applied": true,"wrong_nonnull_in_layer": 1,"wrong_ids_names": 1,"wrong_ids_names_in_layer": 1},
+      {"source": 7,"profile": "fixed/43/two-column","variant": "T2","kind": "pelnomocnictwo","uzp": 0.8695652173913043,"exact": false,"routed": true,"output_valid": true,"applied": true,"wrong_nonnull_in_layer": 1,"wrong_ids_names": 1,"wrong_ids_names_in_layer": 1},
+      {"source": 8,"profile": "fixed/26/scan","variant": "T2","kind": "przelew","uzp": 1.0,"exact": false,"routed": true,"output_valid": true,"applied": false,"wrong_nonnull_in_layer": 1,"wrong_ids_names": 0,"wrong_ids_names_in_layer": 0},
+      {"source": 9,"profile": "fixed/20/scan","variant": "T2","kind": "przelew","uzp": 1.0,"exact": true,"routed": true,"output_valid": true,"applied": false,"wrong_nonnull_in_layer": 0,"wrong_ids_names": 0,"wrong_ids_names_in_layer": 0},
+      {"source": 10,"profile": "fixed/19/two-column","variant": "T2","kind": "przelew","uzp": 0.9090909090909091,"exact": false,"routed": true,"output_valid": true,"applied": false,"wrong_nonnull_in_layer": 1,"wrong_ids_names": 0,"wrong_ids_names_in_layer": 0},
+      {"source": 11,"profile": "fixed/8/scan","variant": "T2","kind": "przelew","uzp": 1.0,"exact": false,"routed": true,"output_valid": true,"applied": false,"wrong_nonnull_in_layer": 0,"wrong_ids_names": 0,"wrong_ids_names_in_layer": 0},
+      {"source": 12,"profile": "linked/early-modular/scan","variant": "T2","kind": "odwolanie","uzp": 0.5185185185185185,"exact": false,"routed": true,"output_valid": true,"applied": true,"wrong_nonnull_in_layer": 2,"wrong_ids_names": 1,"wrong_ids_names_in_layer": 1},
+      {"source": 13,"profile": "linked/early-modular/native","variant": "T2","kind": "odwolanie","uzp": 0.5217391304347826,"exact": false,"routed": true,"output_valid": true,"applied": true,"wrong_nonnull_in_layer": 1,"wrong_ids_names": 1,"wrong_ids_names_in_layer": 1},
+      {"source": 14,"profile": "linked/early-register/scan","variant": "T2","kind": "pelnomocnictwo","uzp": 0.6,"exact": false,"routed": true,"output_valid": true,"applied": true,"wrong_nonnull_in_layer": 1,"wrong_ids_names": 1,"wrong_ids_names_in_layer": 1},
+      {"source": 15,"profile": "linked/early-procedural/native","variant": "T2","kind": "pelnomocnictwo","uzp": 0.5454545454545454,"exact": false,"routed": true,"output_valid": true,"applied": true,"wrong_nonnull_in_layer": 1,"wrong_ids_names": 1,"wrong_ids_names_in_layer": 1},
+      {"source": 16,"profile": "linked/early_order/native","variant": "T2","kind": "przelew","uzp": 1.0,"exact": true,"routed": true,"output_valid": true,"applied": false,"wrong_nonnull_in_layer": 0,"wrong_ids_names": 0,"wrong_ids_names_in_layer": 0},
+      {"source": 17,"profile": "linked/early_cards/native","variant": "T2","kind": "przelew","uzp": 1.0,"exact": true,"routed": true,"output_valid": true,"applied": false,"wrong_nonnull_in_layer": 0,"wrong_ids_names": 0,"wrong_ids_names_in_layer": 0},
+      {"source": 0,"profile": "fixed/31/two-column","variant": "T3","kind": "odwolanie","uzp": 0.0,"exact": false,"routed": false,"output_valid": true,"applied": true,"wrong_nonnull_in_layer": 0,"wrong_ids_names": 0,"wrong_ids_names_in_layer": 0},
+      {"source": 1,"profile": "fixed/0/single-column","variant": "T3","kind": "odwolanie","uzp": 0.0,"exact": false,"routed": false,"output_valid": true,"applied": true,"wrong_nonnull_in_layer": 0,"wrong_ids_names": 0,"wrong_ids_names_in_layer": 0},
+      {"source": 2,"profile": "fixed/42/single-column","variant": "T3","kind": "odwolanie","uzp": 0.0,"exact": false,"routed": false,"output_valid": true,"applied": true,"wrong_nonnull_in_layer": 0,"wrong_ids_names": 0,"wrong_ids_names_in_layer": 0},
+      {"source": 3,"profile": "fixed/20/scan","variant": "T3","kind": "odwolanie","uzp": 0.0,"exact": false,"routed": false,"output_valid": true,"applied": true,"wrong_nonnull_in_layer": 0,"wrong_ids_names": 0,"wrong_ids_names_in_layer": 0},
+      {"source": 4,"profile": "fixed/54/single-column","variant": "T3","kind": "pelnomocnictwo","uzp": 0.0,"exact": false,"routed": false,"output_valid": true,"applied": true,"wrong_nonnull_in_layer": 0,"wrong_ids_names": 0,"wrong_ids_names_in_layer": 0},
+      {"source": 5,"profile": "fixed/12/single-column","variant": "T3","kind": "pelnomocnictwo","uzp": 0.0,"exact": false,"routed": false,"output_valid": true,"applied": true,"wrong_nonnull_in_layer": 0,"wrong_ids_names": 0,"wrong_ids_names_in_layer": 0},
+      {"source": 6,"profile": "fixed/42/single-column","variant": "T3","kind": "pelnomocnictwo","uzp": 0.0,"exact": false,"routed": false,"output_valid": true,"applied": true,"wrong_nonnull_in_layer": 0,"wrong_ids_names": 0,"wrong_ids_names_in_layer": 0},
+      {"source": 7,"profile": "fixed/43/two-column","variant": "T3","kind": "pelnomocnictwo","uzp": 0.0,"exact": false,"routed": false,"output_valid": true,"applied": true,"wrong_nonnull_in_layer": 0,"wrong_ids_names": 0,"wrong_ids_names_in_layer": 0},
+      {"source": 8,"profile": "fixed/26/scan","variant": "T3","kind": "przelew","uzp": 0.0,"exact": false,"routed": false,"output_valid": true,"applied": true,"wrong_nonnull_in_layer": 0,"wrong_ids_names": 0,"wrong_ids_names_in_layer": 0},
+      {"source": 9,"profile": "fixed/20/scan","variant": "T3","kind": "przelew","uzp": 0.0,"exact": false,"routed": false,"output_valid": true,"applied": true,"wrong_nonnull_in_layer": 0,"wrong_ids_names": 0,"wrong_ids_names_in_layer": 0},
+      {"source": 10,"profile": "fixed/19/two-column","variant": "T3","kind": "przelew","uzp": 0.0,"exact": false,"routed": false,"output_valid": true,"applied": true,"wrong_nonnull_in_layer": 0,"wrong_ids_names": 0,"wrong_ids_names_in_layer": 0},
+      {"source": 11,"profile": "fixed/8/scan","variant": "T3","kind": "przelew","uzp": 0.0,"exact": false,"routed": false,"output_valid": true,"applied": true,"wrong_nonnull_in_layer": 0,"wrong_ids_names": 0,"wrong_ids_names_in_layer": 0},
+      {"source": 12,"profile": "linked/early-modular/scan","variant": "T3","kind": "odwolanie","uzp": 0.0,"exact": false,"routed": false,"output_valid": true,"applied": true,"wrong_nonnull_in_layer": 0,"wrong_ids_names": 0,"wrong_ids_names_in_layer": 0},
+      {"source": 13,"profile": "linked/early-modular/native","variant": "T3","kind": "odwolanie","uzp": 0.0,"exact": false,"routed": false,"output_valid": true,"applied": true,"wrong_nonnull_in_layer": 0,"wrong_ids_names": 0,"wrong_ids_names_in_layer": 0},
+      {"source": 14,"profile": "linked/early-register/scan","variant": "T3","kind": "pelnomocnictwo","uzp": 0.0,"exact": false,"routed": false,"output_valid": true,"applied": true,"wrong_nonnull_in_layer": 0,"wrong_ids_names": 0,"wrong_ids_names_in_layer": 0},
+      {"source": 15,"profile": "linked/early-procedural/native","variant": "T3","kind": "pelnomocnictwo","uzp": 0.0,"exact": false,"routed": false,"output_valid": true,"applied": true,"wrong_nonnull_in_layer": 0,"wrong_ids_names": 0,"wrong_ids_names_in_layer": 0},
+      {"source": 16,"profile": "linked/early_order/native","variant": "T3","kind": "przelew","uzp": 0.0,"exact": false,"routed": false,"output_valid": true,"applied": true,"wrong_nonnull_in_layer": 0,"wrong_ids_names": 0,"wrong_ids_names_in_layer": 0},
+      {"source": 17,"profile": "linked/early_cards/native","variant": "T3","kind": "przelew","uzp": 0.0,"exact": false,"routed": false,"output_valid": true,"applied": true,"wrong_nonnull_in_layer": 0,"wrong_ids_names": 0,"wrong_ids_names_in_layer": 0},
+      {"source": 0,"profile": "fixed/31/two-column","variant": "T4","kind": "odwolanie","uzp": 0.17391304347826086,"exact": false,"routed": true,"output_valid": true,"applied": true,"wrong_nonnull_in_layer": 11,"wrong_ids_names": 10,"wrong_ids_names_in_layer": 9},
+      {"source": 1,"profile": "fixed/0/single-column","variant": "T4","kind": "odwolanie","uzp": 0.25,"exact": false,"routed": true,"output_valid": true,"applied": true,"wrong_nonnull_in_layer": 12,"wrong_ids_names": 10,"wrong_ids_names_in_layer": 10},
+      {"source": 2,"profile": "fixed/42/single-column","variant": "T4","kind": "odwolanie","uzp": 0.09090909090909091,"exact": false,"routed": true,"output_valid": true,"applied": true,"wrong_nonnull_in_layer": 12,"wrong_ids_names": 10,"wrong_ids_names_in_layer": 10},
+      {"source": 3,"profile": "fixed/20/scan","variant": "T4","kind": "odwolanie","uzp": 0.09090909090909091,"exact": false,"routed": true,"output_valid": true,"applied": true,"wrong_nonnull_in_layer": 7,"wrong_ids_names": 3,"wrong_ids_names_in_layer": 3},
+      {"source": 4,"profile": "fixed/54/single-column","variant": "T4","kind": "pelnomocnictwo","uzp": 0.2857142857142857,"exact": false,"routed": true,"output_valid": true,"applied": true,"wrong_nonnull_in_layer": 4,"wrong_ids_names": 4,"wrong_ids_names_in_layer": 4},
+      {"source": 5,"profile": "fixed/12/single-column","variant": "T4","kind": "pelnomocnictwo","uzp": 0.2857142857142857,"exact": false,"routed": true,"output_valid": true,"applied": true,"wrong_nonnull_in_layer": 4,"wrong_ids_names": 4,"wrong_ids_names_in_layer": 4},
+      {"source": 6,"profile": "fixed/42/single-column","variant": "T4","kind": "pelnomocnictwo","uzp": 0.14285714285714285,"exact": false,"routed": true,"output_valid": true,"applied": true,"wrong_nonnull_in_layer": 9,"wrong_ids_names": 9,"wrong_ids_names_in_layer": 9},
+      {"source": 7,"profile": "fixed/43/two-column","variant": "T4","kind": "pelnomocnictwo","uzp": 0.14285714285714285,"exact": false,"routed": true,"output_valid": true,"applied": true,"wrong_nonnull_in_layer": 5,"wrong_ids_names": 5,"wrong_ids_names_in_layer": 5},
+      {"source": 8,"profile": "fixed/26/scan","variant": "T4","kind": "przelew","uzp": 0.0,"exact": false,"routed": true,"output_valid": true,"applied": true,"wrong_nonnull_in_layer": 1,"wrong_ids_names": 1,"wrong_ids_names_in_layer": 0},
+      {"source": 9,"profile": "fixed/20/scan","variant": "T4","kind": "przelew","uzp": 0.2857142857142857,"exact": false,"routed": true,"output_valid": true,"applied": true,"wrong_nonnull_in_layer": 2,"wrong_ids_names": 2,"wrong_ids_names_in_layer": 1},
+      {"source": 10,"profile": "fixed/19/two-column","variant": "T4","kind": "przelew","uzp": 0.2857142857142857,"exact": false,"routed": true,"output_valid": true,"applied": true,"wrong_nonnull_in_layer": 3,"wrong_ids_names": 2,"wrong_ids_names_in_layer": 2},
+      {"source": 11,"profile": "fixed/8/scan","variant": "T4","kind": "przelew","uzp": 0.0,"exact": false,"routed": true,"output_valid": true,"applied": true,"wrong_nonnull_in_layer": 5,"wrong_ids_names": 2,"wrong_ids_names_in_layer": 2},
+      {"source": 12,"profile": "linked/early-modular/scan","variant": "T4","kind": "odwolanie","uzp": 0.3333333333333333,"exact": false,"routed": true,"output_valid": true,"applied": true,"wrong_nonnull_in_layer": 4,"wrong_ids_names": 1,"wrong_ids_names_in_layer": 1},
+      {"source": 13,"profile": "linked/early-modular/native","variant": "T4","kind": "odwolanie","uzp": 0.06060606060606061,"exact": false,"routed": true,"output_valid": true,"applied": true,"wrong_nonnull_in_layer": 25,"wrong_ids_names": 18,"wrong_ids_names_in_layer": 18},
+      {"source": 14,"profile": "linked/early-register/scan","variant": "T4","kind": "pelnomocnictwo","uzp": 0.25,"exact": false,"routed": true,"output_valid": true,"applied": true,"wrong_nonnull_in_layer": 3,"wrong_ids_names": 3,"wrong_ids_names_in_layer": 3},
+      {"source": 15,"profile": "linked/early-procedural/native","variant": "T4","kind": "pelnomocnictwo","uzp": 0.2222222222222222,"exact": false,"routed": true,"output_valid": true,"applied": true,"wrong_nonnull_in_layer": 4,"wrong_ids_names": 4,"wrong_ids_names_in_layer": 4},
+      {"source": 16,"profile": "linked/early_order/native","variant": "T4","kind": "przelew","uzp": 0.0,"exact": false,"routed": true,"output_valid": true,"applied": true,"wrong_nonnull_in_layer": 4,"wrong_ids_names": 2,"wrong_ids_names_in_layer": 1},
+      {"source": 17,"profile": "linked/early_cards/native","variant": "T4","kind": "przelew","uzp": 0.0,"exact": false,"routed": true,"output_valid": true,"applied": true,"wrong_nonnull_in_layer": 3,"wrong_ids_names": 2,"wrong_ids_names_in_layer": 0}
+    ]
+  }
+}
