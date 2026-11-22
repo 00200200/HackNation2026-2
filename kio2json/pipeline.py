@@ -14,9 +14,10 @@ from .classify import incomplete_booking_scan, resembles_appeal_heading
 from .engines import extract
 from .grant_certificates import add_certificate_signers
 from .model_pages import AlternateOCR
-from .ocr_accounts import AccountEvidence, account_evidence, normalize_receipt
+from .ocr_accounts import AccountEvidence, account_evidence, disputed_account_cells, normalize_receipt
 from .ocr_budget import RereadExpired, document_budget, remaining_ms
-from .ocr_grant_register import verified_pages
+from .ocr_choices import verify_cells
+from .ocr_grant_register import disputed_register_cells, verified_pages
 from .ocr_signatures import recover_board_stamp
 from .pdf_text import (
     DEFAULT_OCR_ENGINE,
@@ -135,6 +136,8 @@ def _document_rules(definition, pdf_path, pages, ocr_pages, boxes, engine, selec
             title = reread_title(pdf_path, boxes, fields["tytul"])
             if title is not None:
                 fields["tytul"] = title
+        if rules_first and boxes:
+            verify_cells(pdf_path, disputed_account_cells, record, boxes)
         return record
     if definition.extractor is appeal.extract:
         if ocr_pages and rules_first:
@@ -145,6 +148,8 @@ def _document_rules(definition, pdf_path, pages, ocr_pages, boxes, engine, selec
         else:
             record = appeal.extract(join_pages(pages))
         apply_appeal_blocks(record, blocks)
+        if rules_first and boxes:
+            verify_cells(pdf_path, disputed_register_cells, record, boxes)
         return record
     if definition.extractor is power_of_attorney.extract:
         if ocr_pages:
@@ -153,6 +158,8 @@ def _document_rules(definition, pdf_path, pages, ocr_pages, boxes, engine, selec
         else:
             record = power_of_attorney.extract(join_pages(pages))
         power_of_attorney.apply_grant_blocks(record, blocks, join_pages(pages))
+        if rules_first and boxes:
+            verify_cells(pdf_path, disputed_register_cells, record, boxes)
         if definition.profile.mode == "RL":
             _grant_signers(pdf_path, record, pages, ocr_pages, engine)
         return record
