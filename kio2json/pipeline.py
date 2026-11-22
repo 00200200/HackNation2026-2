@@ -17,13 +17,20 @@ from .appeal_layout import (
     read_role_columns,
     restore_party_columns,
 )
+from .appeal_subject import unlabelled_title
 from .case_repair import Reading, printed_readings
 from .class_config import DocumentClass, load_classes, route
 from .classify import incomplete_booking_scan, resembles_appeal_heading
 from .engines import extract
 from .grant_certificates import add_certificate_signers
 from .model_pages import AlternateOCR
-from .ocr_accounts import AccountEvidence, account_evidence, disputed_account_cells, normalize_receipt
+from .ocr_accounts import (
+    AccountEvidence,
+    account_evidence,
+    disputed_account_cells,
+    normalize_receipt,
+    repair_receipt_layout,
+)
 from .ocr_budget import RereadExpired, document_budget, remaining_ms
 from .ocr_choices import verify_cells
 from .ocr_grant_register import disputed_register_cells, verified_pages
@@ -94,10 +101,14 @@ def _read_receipt(
         return pages, definition, accounts
     original = pages
     fields = {}
-    if scanned and (definition is not None or incomplete_booking_scan(pages[0])):
-        if boxes:
-            pages = recover_account_crops(pdf_path, pages, boxes)
-        pages = [normalize_receipt(pages[0]), *pages[1:]]
+    if definition is not None or incomplete_booking_scan(pages[0]):
+        if scanned:
+            if boxes:
+                pages = recover_account_crops(pdf_path, pages, boxes)
+            pages = [normalize_receipt(pages[0]), *pages[1:]]
+        else:
+            # The checksum substitution corrects OCR digits only; a text layer keeps its accounts as printed.
+            pages = [repair_receipt_layout(pages[0]), *pages[1:]]
     if has_detached_labels(pages, ocr=scanned):
         fields = receipt_cell_fields(boxes, ocr=scanned)
         # Keep the complete title already bound to a native label, including wrapped lines.
@@ -172,7 +183,12 @@ def _document_rules(definition, pdf_path, pages, ocr_pages, all_boxes, engine, s
             record = ocr_extract.extract_appeal(pages, ocr_pages)
         else:
             record = appeal.extract(join_pages(pages))
+        procurement = record["ZamowieniePubliczne"]
+        if procurement["tytul"] is None and (reference := procurement["numer_postepowania"]):
+            procurement["tytul"] = unlabelled_title([box.layout_box for box in all_boxes], reference)
         apply_appeal_blocks(record, blocks)
+        if not ocr_pages:
+            ocr_extract.complete_text_appeal(record, pages)
         if not ocr_pages and len(pages) == MAX_PAGES:
             appeal.complete_signed_filing(record, pdf_path, len(pages))
         if rules_first and boxes:
@@ -184,6 +200,7 @@ def _document_rules(definition, pdf_path, pages, ocr_pages, all_boxes, engine, s
             record = ocr_extract.extract_power_of_attorney(grant_pages, ocr_pages)
         else:
             record = power_of_attorney.extract(join_pages(pages))
+            ocr_extract.read_grant_declaration(pages, record)
         power_of_attorney.apply_grant_blocks(record, blocks, join_pages(pages))
         if rules_first and boxes:
             verify_cells(pdf_path, disputed_register_cells, record, boxes)

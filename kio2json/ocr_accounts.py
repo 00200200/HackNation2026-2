@@ -170,7 +170,8 @@ def account_evidence(text: str) -> AccountEvidence:
     return AccountEvidence(sender, recipient, len(numbers), masked_pair, frozenset(declared | printed.keys()))
 
 
-# Normalize only complete account tokens and calendar dates read by OCR on a receipt.
+# Receipt repairs touch only complete account tokens and valid calendar dates. `repair_receipt_layout` runs on every
+# receipt, the checksum substitution of `normalize_receipt` on OCR text only.
 # An inserted stroke can split an otherwise complete printed account. Only remove
 # it in an explicit account cell when the remaining 26 digits verify unchanged.
 SLASH_ACCOUNT = re.compile(
@@ -179,14 +180,25 @@ SLASH_ACCOUNT = re.compile(
 OCR_DATE = re.compile(r"(?<!\d)(\d{2})\.(\d{2})(\d{4})(?!\d)")
 
 
+def _verified_account(match: re.Match) -> str:
+    if not complete_account_match(match):
+        return match[0]
+    compact = "".join(match[1].split())
+    if valid_account(compact):
+        return match[0]
+    return validated_account(compact) or "?"
+
+
 def normalize_receipt(text: str) -> str:
-    def number(match: re.Match) -> str:
-        if not complete_account_match(match):
-            return match[0]
-        compact = "".join(match[1].split())
-        if valid_account(compact):
-            return match[0]
-        return validated_account(compact) or "?"
+    """OCR receipt text: the layout repairs, then every complete account token checked against its checksum."""
+    return OCR_ACCOUNT_RE.sub(_verified_account, repair_receipt_layout(text))
+
+
+def repair_receipt_layout(text: str) -> str:
+    """Repair the layout of a booking printout.
+
+    Accounts stay as printed, except that a stray stroke inside an account cell is removed when the remaining 26
+    digits verify."""
 
     def remove_stroke(match: re.Match) -> str:
         digits = match[2].replace("/", "")
@@ -229,7 +241,7 @@ def normalize_receipt(text: str) -> str:
     text = re.sub(r"(?im)^rachunk(?= odbiorcy\b)", "Rachunek", text)
     text = re.sub(rf"(?im)^data[ :]+({DATE})[ \t]*\nwykonania\b", r"Data wykonania: \1", text)
     text = re.sub(r"(?im)^[+| \t]*numer[ :]+(\d+)[ \t]*\ntransakcji[ |\t]*$", r"Numer transakcji: \1", text)
-    return OCR_ACCOUNT_RE.sub(number, OCR_DATE.sub(date, normalize_booking_rows(text)))
+    return OCR_DATE.sub(date, normalize_booking_rows(text))
 
 
 def disputed_account_cells(record, boxes):
