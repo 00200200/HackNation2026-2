@@ -4,10 +4,11 @@ import re
 
 from rapidfuzz.distance import Levenshtein
 
-from . import bank_transfer, power_of_attorney
+from . import bank_transfer, delivery_proofs, power_of_attorney
 from .accounts import account_identity, account_matches, valid_account
 from .appeal_charges import FILING
 from .common import DATE, to_iso
+from .delivery_proofs import POLISH_FOLD
 from .ocr_accounts import AccountEvidence, account_evidence
 from .ocr_booking import INTERLEAVED_DEBIT, ORDER_TYPE
 from .receipt_layout import booking_heading
@@ -56,8 +57,6 @@ EXECUTION_ATTESTATION = re.compile(
 )
 
 
-# Compare Polish cues after folding, while keeping the original text for value extraction.
-POLISH_FOLD = str.maketrans("ąćęłńóśźż", "acelnoszz")
 COVER_HEADING = re.compile(r"^pismo przewodnie\b", re.IGNORECASE)
 OTHER_FILING = re.compile(
     r"^(?:odpowiedz na odwolanie|(?:zgloszenie )?przystapieni[ea] do postepowania|"
@@ -464,6 +463,19 @@ def _settled_history(page: str, accounts: AccountEvidence | None, *, require_sel
 def classify(pages: list[str], *, ocr_accounts: AccountEvidence | None = None) -> str | None:
     if not pages:
         return None
+    body = delivery_proofs.message_pages(pages)
+    if body is not None:
+        # A transmitted attachment title, even on its own line, proves no filing.
+        if label := delivery_proofs.filing_act(body):
+            return label
+        # The bank classifier already requires transaction evidence. Restrict it
+        # to message rows and derive any required accounts from those rows.
+        accounts = account_evidence(body[0]) if ocr_accounts is not None else None
+        return "bank_transfer" if _classify(body, ocr_accounts=accounts) == "bank_transfer" else None
+    return _classify(pages, ocr_accounts=ocr_accounts)
+
+
+def _classify(pages: list[str], *, ocr_accounts: AccountEvidence | None) -> str | None:
     head = "\n".join(pages[:2])
     folded = head.casefold().translate(POLISH_FOLD)
     scan_filing = ocr_accounts is not None and FILING.search(pages[0])
