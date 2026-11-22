@@ -1,0 +1,867 @@
+{
+  "grammar_freeze": "28a9ce996c5bff820bf0ec07f2de8300a21e4929",
+  "initial_main": "4f33ee3c6a340bb3403ac81187c2303c45351023",
+  "final_gate_base": "725765b075a8361f2519002f95f50825b5aa9ed3",
+  "final_gate_commit": "c2925007246df3c802361d4114d83e2daf29deac",
+  "accepted_heldout_gain": false,
+  "profile": "Keyless rules, two workers. Organizer scan differences individually repeated with one worker.",
+  "known_headings": {
+    "main": {
+      "pairs": {
+        "routed": 5,
+        "app_name": 3,
+        "buyer_names": 3,
+        "app_complete": 3,
+        "buyer_complete": 3,
+        "complete_both": 2,
+        "heading_acceptance": 2,
+        "wrong_leads": 0,
+        "wrong_counsel": 0
+      },
+      "negatives": {
+        "routed": 5,
+        "app_name": 5,
+        "buyer_names": 5,
+        "app_complete": 1,
+        "buyer_complete": 5,
+        "complete_both": 1,
+        "heading_acceptance": 5,
+        "wrong_leads": 0,
+        "wrong_counsel": 0
+      }
+    },
+    "frozen": {
+      "pairs": {
+        "routed": 5,
+        "app_name": 5,
+        "buyer_names": 5,
+        "app_complete": 5,
+        "buyer_complete": 5,
+        "complete_both": 5,
+        "heading_acceptance": 5,
+        "wrong_leads": 0,
+        "wrong_counsel": 0
+      },
+      "negatives": {
+        "routed": 5,
+        "app_name": 5,
+        "buyer_names": 5,
+        "app_complete": 2,
+        "buyer_complete": 5,
+        "complete_both": 2,
+        "heading_acceptance": 5,
+        "wrong_leads": 0,
+        "wrong_counsel": 0
+      }
+    }
+  },
+  "older_controls": {
+    "original": {
+      "routed": 8,
+      "exact": 8,
+      "app": 8,
+      "auth": 8,
+      "owners": 8,
+      "correct_owner": 8,
+      "wrong_counsel": 0
+    },
+    "sham": {
+      "routed": 8,
+      "exact": 8,
+      "app": 8,
+      "auth": 8,
+      "owners": 8,
+      "correct_owner": 8,
+      "wrong_counsel": 0
+    },
+    "genitive": {
+      "routed": 8,
+      "exact": 8,
+      "app": 8,
+      "auth": 8,
+      "owners": 8,
+      "correct_owner": 8,
+      "wrong_counsel": 0
+    },
+    "blind0": {
+      "routed": 8,
+      "exact": 8,
+      "app": 8,
+      "auth": 8,
+      "owners": 8,
+      "correct_owner": 8,
+      "wrong_counsel": 0
+    },
+    "blind1": {
+      "routed": 8,
+      "exact": 8,
+      "app": 8,
+      "auth": 8,
+      "owners": 8,
+      "correct_owner": 8,
+      "wrong_counsel": 0
+    }
+  },
+  "independent_panel": {
+    "method": "One native Polish-language PDF for each independently written caption pair or adverse heading. Invented names, addresses, identifiers, two counsel links, a non-first consortium leader and three joint authorities. One pass per revision, after freeze.",
+    "baseline_and_frozen_scores_identical": true,
+    "correct_complete_pairs": 1,
+    "positive_pairs": 6,
+    "correct_complete_appellants": 3,
+    "correct_complete_authority_lists": 3,
+    "present_counsel_correct": 2,
+    "present_counsel_total": 2,
+    "explicit_joint_leads_correct": 0,
+    "explicit_joint_leads_total": 1,
+    "negative_headings_passed": 5,
+    "new_opponent_records": 0,
+    "new_counsel_links": 0,
+    "new_lead_records": 0,
+    "columns": [
+      "routed_appeal",
+      "appellant_names",
+      "authority_names",
+      "appellant_registry_and_owner",
+      "authority_registry_and_owner",
+      "appellant_counsel_and_owner",
+      "lead_set",
+      "complete_appellant_list",
+      "complete_authority_list",
+      "document_party_pass"
+    ],
+    "scores_on_both_revisions": {
+      "pair-1": [
+        1,
+        0,
+        0,
+        0,
+        0,
+        0,
+        1,
+        0,
+        0,
+        0
+      ],
+      "pair-2": [
+        1,
+        1,
+        0,
+        1,
+        0,
+        1,
+        1,
+        1,
+        0,
+        0
+      ],
+      "pair-3": [
+        1,
+        0,
+        1,
+        0,
+        1,
+        0,
+        1,
+        0,
+        1,
+        0
+      ],
+      "pair-4": [
+        1,
+        0,
+        1,
+        0,
+        1,
+        0,
+        1,
+        0,
+        1,
+        0
+      ],
+      "pair-5": [
+        1,
+        1,
+        0,
+        1,
+        0,
+        1,
+        0,
+        1,
+        0,
+        0
+      ],
+      "pair-6": [
+        1,
+        1,
+        1,
+        1,
+        1,
+        1,
+        1,
+        1,
+        1,
+        1
+      ],
+      "negative-1": [
+        1,
+        1,
+        1,
+        1,
+        1,
+        1,
+        1,
+        1,
+        1,
+        1
+      ],
+      "negative-2": [
+        1,
+        1,
+        1,
+        1,
+        1,
+        1,
+        1,
+        1,
+        1,
+        1
+      ],
+      "negative-3": [
+        1,
+        1,
+        1,
+        1,
+        1,
+        1,
+        1,
+        1,
+        1,
+        1
+      ],
+      "negative-4": [
+        1,
+        1,
+        1,
+        1,
+        1,
+        1,
+        1,
+        1,
+        1,
+        1
+      ],
+      "negative-5": [
+        1,
+        1,
+        1,
+        1,
+        1,
+        1,
+        1,
+        1,
+        1,
+        1
+      ]
+    }
+  },
+  "training": {
+    "micro_f1": 1.0,
+    "micro_f1_strict": 1.0,
+    "docs": 196,
+    "exact_and_byte_identical": 196,
+    "commit": "c2925007246df3c802361d4114d83e2daf29deac"
+  },
+  "organizer_scans": {
+    "batch": {
+      "micro_f1": 1.0,
+      "micro_f1_strict": 0.9974226804123711,
+      "n": 30,
+      "exact": 29,
+      "routing": {
+        "odwolanie": [
+          10,
+          10
+        ],
+        "pelnomocnictwo": [
+          10,
+          10
+        ],
+        "przelew": [
+          10,
+          10
+        ]
+      }
+    },
+    "serial_repeat": {
+      "exact": 29,
+      "reruns": [
+        [
+          27,
+          false
+        ]
+      ],
+      "micro_f1": 1.0,
+      "micro_f1_strict": 0.9974226804123711,
+      "classification_accuracy": 1.0
+    }
+  },
+  "mixed_150": {
+    "peak_sampled_tree_mib": 1042.5,
+    "docs": 150,
+    "seconds": 144.95339420903474,
+    "jobs": 2,
+    "scans": 30
+  },
+  "known_variant_lead_counts": {
+    "tp": 0,
+    "fp": 0,
+    "fn": 6,
+    "tn": 57,
+    "f1": 0.0
+  },
+  "cases": {
+    "original_main": {
+      "all": {
+        "docs": 208,
+        "exact": 85,
+        "uzp_f1": 0.7190839694656489,
+        "strict_f1": 0.6616915422885572,
+        "routed": 188,
+        "rejected": 52
+      },
+      "development": {
+        "docs": 112,
+        "exact": 52,
+        "uzp_f1": 0.7698686938493434,
+        "strict_f1": 0.7026476578411406,
+        "routed": 106,
+        "rejected": 28
+      },
+      "reserved": {
+        "docs": 96,
+        "exact": 33,
+        "uzp_f1": 0.6564364876385337,
+        "strict_f1": 0.6130592503022975,
+        "routed": 82,
+        "rejected": 24
+      }
+    },
+    "frozen": {
+      "all": {
+        "docs": 208,
+        "exact": 85,
+        "uzp_f1": 0.7190839694656489,
+        "strict_f1": 0.6616915422885572,
+        "routed": 188,
+        "rejected": 52
+      },
+      "development": {
+        "docs": 112,
+        "exact": 52,
+        "uzp_f1": 0.7698686938493434,
+        "strict_f1": 0.7026476578411406,
+        "routed": 106,
+        "rejected": 28
+      },
+      "reserved": {
+        "docs": 96,
+        "exact": 33,
+        "uzp_f1": 0.6564364876385337,
+        "strict_f1": 0.6130592503022975,
+        "routed": 82,
+        "rejected": 24
+      }
+    },
+    "main_112": {
+      "all": {
+        "docs": 208,
+        "exact": 129,
+        "uzp_f1": 0.8876367252237322,
+        "strict_f1": 0.8719723183391004,
+        "routed": 188,
+        "rejected": 52
+      },
+      "development": {
+        "docs": 112,
+        "exact": 88,
+        "uzp_f1": 0.9602803738317757,
+        "strict_f1": 0.956564177647633,
+        "routed": 106,
+        "rejected": 28
+      },
+      "reserved": {
+        "docs": 96,
+        "exact": 41,
+        "uzp_f1": 0.7923371647509578,
+        "strict_f1": 0.7704918032786885,
+        "routed": 82,
+        "rejected": 24
+      }
+    },
+    "after_112": {
+      "all": {
+        "docs": 208,
+        "exact": 129,
+        "uzp_f1": 0.8876367252237322,
+        "strict_f1": 0.8719723183391004,
+        "routed": 188,
+        "rejected": 52
+      },
+      "development": {
+        "docs": 112,
+        "exact": 88,
+        "uzp_f1": 0.9602803738317757,
+        "strict_f1": 0.956564177647633,
+        "routed": 106,
+        "rejected": 28
+      },
+      "reserved": {
+        "docs": 96,
+        "exact": 41,
+        "uzp_f1": 0.7923371647509578,
+        "strict_f1": 0.7704918032786885,
+        "routed": 82,
+        "rejected": 24
+      }
+    },
+    "integrated_main_113": {
+      "development": {
+        "docs": 112,
+        "routed": 110,
+        "exact": 90,
+        "uzp_f1": 0.9728793998845932,
+        "strict_f1": 0.9667149059334298,
+        "rejected": 28,
+        "negatives": 28
+      },
+      "reserved": {
+        "docs": 96,
+        "routed": 82,
+        "exact": 41,
+        "uzp_f1": 0.7923371647509578,
+        "strict_f1": 0.7704918032786885,
+        "rejected": 24,
+        "negatives": 24
+      }
+    },
+    "final": {
+      "all": {
+        "docs": 208,
+        "exact": 131,
+        "uzp_f1": 0.8953258722843976,
+        "strict_f1": 0.8780745834435335,
+        "routed": 192,
+        "rejected": 52
+      },
+      "development": {
+        "docs": 112,
+        "exact": 90,
+        "uzp_f1": 0.9728793998845932,
+        "strict_f1": 0.9667149059334298,
+        "routed": 110,
+        "rejected": 28
+      },
+      "reserved": {
+        "docs": 96,
+        "exact": 41,
+        "uzp_f1": 0.7923371647509578,
+        "strict_f1": 0.7704918032786885,
+        "routed": 82,
+        "rejected": 24
+      }
+    }
+  },
+  "variants": {
+    "initial_stored": {
+      "micro_f1": 0.9124966550709125,
+      "micro_f1_strict": 0.8742997983419225,
+      "per_class_f1": {
+        "odwolanie": 0.8918302145139206,
+        "pelnomocnictwo": 0.9373549883990719,
+        "przelew": 0.9473684210526315
+      },
+      "classification_accuracy": 1.0,
+      "negatives_empty": 1.0
+    },
+    "initial_main_rerun": {
+      "micro_f1": 0.9110396570203644,
+      "micro_f1_strict": 0.8720591530360744,
+      "per_class_f1": {
+        "odwolanie": 0.8918302145139206,
+        "pelnomocnictwo": 0.9373549883990719,
+        "przelew": 0.9396170839469808
+      },
+      "classification_accuracy": 1.0,
+      "negatives_empty": 1.0
+    },
+    "frozen": {
+      "micro_f1": 0.9110396570203644,
+      "micro_f1_strict": 0.8720591530360744,
+      "per_class_f1": {
+        "odwolanie": 0.8918302145139206,
+        "pelnomocnictwo": 0.9373549883990719,
+        "przelew": 0.9396170839469808
+      },
+      "classification_accuracy": 1.0,
+      "negatives_empty": 1.0
+    },
+    "verified_main_112": {
+      "micro_f1": 0.908993288590604,
+      "micro_f1_strict": 0.8689222496078871,
+      "per_class_f1": {
+        "odwolanie": 0.891324200913242,
+        "pelnomocnictwo": 0.9373549883990719,
+        "przelew": 0.9301634472511144
+      },
+      "classification_accuracy": 1.0,
+      "negatives_empty": 1.0
+    },
+    "after_112": {
+      "micro_f1": 0.9087003222341569,
+      "micro_f1_strict": 0.8684741205467175,
+      "per_class_f1": {
+        "odwolanie": 0.891324200913242,
+        "pelnomocnictwo": 0.9373549883990719,
+        "przelew": 0.9285714285714286
+      },
+      "classification_accuracy": 1.0,
+      "negatives_empty": 1.0
+    },
+    "stored_main_120": {
+      "micro_f1": 0.9512258064516129,
+      "micro_f1_strict": 0.9264413518886679,
+      "per_class_f1": {
+        "odwolanie": 0.9574924860455131,
+        "pelnomocnictwo": 0.9373549883990719,
+        "przelew": 0.9473684210526315
+      },
+      "classification_accuracy": 1.0,
+      "negatives_empty": 1.0
+    },
+    "after_120": {
+      "micro_f1": 0.949599379684673,
+      "micro_f1_strict": 0.923790589794566,
+      "per_class_f1": {
+        "odwolanie": 0.9570446735395189,
+        "pelnomocnictwo": 0.9373549883990719,
+        "przelew": 0.9396170839469808
+      },
+      "classification_accuracy": 1.0,
+      "negatives_empty": 1.0
+    },
+    "final": {
+      "micro_f1": 0.9512258064516129,
+      "micro_f1_strict": 0.9264413518886679,
+      "per_class_f1": {
+        "odwolanie": 0.9574924860455131,
+        "pelnomocnictwo": 0.9373549883990719,
+        "przelew": 0.9473684210526315
+      },
+      "classification_accuracy": 1.0,
+      "negatives_empty": 1.0
+    },
+    "final_passed_command": true,
+    "final_field_differences_vs_stored": {}
+  },
+  "real_dev": {
+    "c1": {
+      "frozen": {
+        "micro_f1": 0.9255663430420712,
+        "micro_f1_strict": 0.8780487804878049,
+        "n": 22,
+        "exact": 10,
+        "macro_f1_classes": 0.8998366013071896,
+        "per_class_f1": {
+          "odwolanie": 0.9411764705882353,
+          "pelnomocnictwo": 0.9583333333333334,
+          "przelew": 0.8
+        },
+        "routing": {
+          "odwolanie": [
+            8,
+            8
+          ],
+          "pelnomocnictwo": [
+            3,
+            3
+          ],
+          "negatywny": [
+            7,
+            7
+          ],
+          "przelew": [
+            4,
+            4
+          ]
+        }
+      },
+      "after_112": {
+        "micro_f1": 0.9255663430420712,
+        "micro_f1_strict": 0.8780487804878049,
+        "n": 22,
+        "exact": 10,
+        "macro_f1_classes": 0.8998366013071896,
+        "per_class_f1": {
+          "odwolanie": 0.9411764705882353,
+          "pelnomocnictwo": 0.9583333333333334,
+          "przelew": 0.8
+        },
+        "routing": {
+          "odwolanie": [
+            8,
+            8
+          ],
+          "pelnomocnictwo": [
+            3,
+            3
+          ],
+          "negatywny": [
+            7,
+            7
+          ],
+          "przelew": [
+            4,
+            4
+          ]
+        }
+      },
+      "final": {
+        "micro_f1": 0.9285714285714286,
+        "micro_f1_strict": 0.8821138211382114,
+        "n": 22,
+        "exact": 10,
+        "macro_f1_classes": 0.9012626262626263,
+        "per_class_f1": {
+          "odwolanie": 0.9454545454545454,
+          "pelnomocnictwo": 0.9583333333333334,
+          "przelew": 0.8
+        },
+        "routing": {
+          "odwolanie": [
+            8,
+            8
+          ],
+          "pelnomocnictwo": [
+            3,
+            3
+          ],
+          "przelew": [
+            4,
+            4
+          ],
+          "negatywny": [
+            7,
+            7
+          ]
+        }
+      },
+      "final_files_identical_to_freeze": 21,
+      "residual_field_errors": {
+        "Odwolujacy[].pelnomocnik.nazwa": 2,
+        "Odwolujacy[].pelnomocnik.imie_nazwisko": 2,
+        "Zamawiajacy[].nazwa": 2,
+        "przelew_bankowy.na_rachunek": 2,
+        "przelew_bankowy.tytul": 2,
+        "przelew_bankowy.kwota": 2,
+        "Odwolujacy[].przez-pelnomocnika": 1,
+        "Odwolujacy[].regon": 1,
+        "Odwolujacy[].nazwa": 1,
+        "Odwolujacy[].krs": 1,
+        "ZamowieniePubliczne.numer_postepowania": 1,
+        "OdwolanieKIO.czynnosc_dzien": 1,
+        "mocodawca[].podpisujacy[].imie_nazwisko": 1,
+        "pelnomocnicy[].imie_nazwisko": 1,
+        "przelew_bankowy.numer_transakcji": 1,
+        "przelew_bankowy.z_rachunku": 1
+      }
+    },
+    "c2": {
+      "frozen": {
+        "micro_f1": 0.9243697478991597,
+        "micro_f1_strict": 0.8951406649616368,
+        "n": 39,
+        "exact": 22,
+        "macro_f1_classes": 0.948527346879887,
+        "per_class_f1": {
+          "odwolanie": 0.8976897689768977,
+          "pelnomocnictwo": 0.9836065573770492,
+          "przelew": 0.9642857142857143
+        },
+        "routing": {
+          "odwolanie": [
+            13,
+            13
+          ],
+          "negatywny": [
+            11,
+            11
+          ],
+          "pelnomocnictwo": [
+            5,
+            5
+          ],
+          "przelew": [
+            10,
+            10
+          ]
+        }
+      },
+      "after_112": {
+        "micro_f1": 0.9243697478991597,
+        "micro_f1_strict": 0.8951406649616368,
+        "n": 39,
+        "exact": 22,
+        "macro_f1_classes": 0.948527346879887,
+        "per_class_f1": {
+          "odwolanie": 0.8976897689768977,
+          "pelnomocnictwo": 0.9836065573770492,
+          "przelew": 0.9642857142857143
+        },
+        "routing": {
+          "odwolanie": [
+            13,
+            13
+          ],
+          "pelnomocnictwo": [
+            5,
+            5
+          ],
+          "negatywny": [
+            11,
+            11
+          ],
+          "przelew": [
+            10,
+            10
+          ]
+        }
+      },
+      "final": {
+        "micro_f1": 0.9243697478991597,
+        "micro_f1_strict": 0.8951406649616368,
+        "n": 39,
+        "exact": 22,
+        "macro_f1_classes": 0.948527346879887,
+        "per_class_f1": {
+          "odwolanie": 0.8976897689768977,
+          "pelnomocnictwo": 0.9836065573770492,
+          "przelew": 0.9642857142857143
+        },
+        "routing": {
+          "odwolanie": [
+            13,
+            13
+          ],
+          "negatywny": [
+            11,
+            11
+          ],
+          "przelew": [
+            10,
+            10
+          ],
+          "pelnomocnictwo": [
+            5,
+            5
+          ]
+        }
+      },
+      "final_files_identical_to_freeze": 39,
+      "residual_field_errors": {
+        "Odwolujacy[].przez-pelnomocnika": 5,
+        "Odwolujacy[].pelnomocnik.imie_nazwisko": 5,
+        "ZamowieniePubliczne.tytul": 5,
+        "Odwolujacy[].pelnomocnik.nazwa": 4,
+        "OdwolanieKIO.czynnosc_dzien": 4,
+        "Odwolujacy[].pelnomocnik.mail": 2,
+        "Zamawiajacy[].nazwa": 2,
+        "przelew_bankowy.tytul": 2,
+        "Odwolujacy[].nip": 1,
+        "Odwolujacy[].regon": 1,
+        "Odwolujacy[].nazwa": 1,
+        "ZamowieniePubliczne.numer_ted": 1,
+        "mocodawca[].podpisujacy[].imie_nazwisko": 1,
+        "przelew_bankowy.z_rachunku": 1,
+        "przelew_bankowy.na_rachunek": 1
+      }
+    }
+  },
+  "corpus_1_blind_once_before_112": {
+    "n": 17,
+    "exact": 7,
+    "micro_f1": 0.9202898550724637,
+    "micro_f1_strict": 0.9022869022869023,
+    "macro_f1_classes": 0.925964425964426,
+    "per_class_f1": {
+      "odwolanie": 0.918918918918919,
+      "pelnomocnictwo": 0.9743589743589743,
+      "przelew": 0.8846153846153846
+    },
+    "routing_by_class": {
+      "odwolanie": {
+        "correct": 5,
+        "total": 5
+      },
+      "pelnomocnictwo": {
+        "correct": 3,
+        "total": 3
+      },
+      "przelew": {
+        "correct": 5,
+        "total": 5
+      },
+      "negatywny": {
+        "correct": 4,
+        "total": 4
+      }
+    },
+    "counts": {
+      "tp": 127,
+      "fp": 6,
+      "fn": 16,
+      "tn": 92
+    },
+    "counts_strict": {
+      "tp": 217,
+      "fp": 23,
+      "fn": 24
+    }
+  },
+  "premerge_corpus_1_total": {
+    "micro_f1": 0.9230769230769231,
+    "micro_f1_strict": 0.8900308324768756,
+    "n": 39,
+    "exact": 17
+  },
+  "caption_time_ms": {
+    "scope": "One short evidenced appeal card per call, ten invented headings, 100 repetitions. Milliseconds on a shared M1.",
+    "before": {
+      "cold_wall_ms": 8.652583,
+      "cold_cpu_ms": 0.088,
+      "repetitions": 1000,
+      "wall": {
+        "p50_ms": 0.016875,
+        "p95_ms": 0.07462295
+      },
+      "cpu": {
+        "p50_ms": 0.017,
+        "p95_ms": 0.05
+      }
+    },
+    "frozen": {
+      "cold_wall_ms": 737.34575,
+      "cold_cpu_ms": 74.723,
+      "repetitions": 1000,
+      "wall": {
+        "p50_ms": 0.056563,
+        "p95_ms": 5.91408895
+      },
+      "cpu": {
+        "p50_ms": 0.056,
+        "p95_ms": 0.144
+      }
+    }
+  },
+  "case_dataset_sha256": "9a0290871b89fa10c691c4e6f84d84764bb0929bd72ac4be6419782a8bf0f1aa",
+  "variants_dataset_sha256": "53414e5959d93426f1553cc36fcbe86968fca23edb80a959740654790b20dd03"
+}
