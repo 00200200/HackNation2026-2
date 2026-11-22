@@ -1,0 +1,29 @@
+<section id="architecture" class="light" data-transition="fade">
+<div class="hdr"><p>Zadanie UZP: Odwołania2json</p><p class="r">HackNation 2026</p></div>
+<h2 class="in" style="--i:0;">Jeden potok dla CLI, GUI i&nbsp;API.</h2>
+<div style="flex:1; display:flex; flex-direction:column; justify-content:center; gap:20px;">
+<div class="row in" style="--i:1; gap:16px;">
+<div class="node" style="flex:1;"><p class="a">CLI</p><p class="b">python -m kio2json</p></div>
+<div class="node" style="flex:1;"><p class="a">GUI</p><p class="b">python -m kio2json.gui</p></div>
+<div class="node" style="flex:1;"><p class="a">Strona i&nbsp;API</p><p class="b">docker compose up gui</p></div>
+</div>
+<p class="mono in" style="--i:1; color:#666666; text-align:center;">każde wejście woła tę samą funkcję: batch.read_document</p>
+<div class="row in" style="--i:2; gap:12px; align-items:stretch;">
+<div class="card" style="gap:10px; padding:28px;"><p class="num">01</p><h3 style="font-size:32px;">Odczyt stron</h3><p class="desc" style="font-size:24px;">Tekst z&nbsp;PDF przez pdfplumber. Strona bez tekstu idzie do OCR: Tesseract na CPU.</p></div>
+<div style="flex:none; align-self:center; font-family:var(--mono); font-size:32px; color:#999999;">→</div>
+<div class="card" style="gap:10px; padding:28px;"><p class="num">02</p><h3 style="font-size:32px;">Klasa z&nbsp;treści</h3><p class="desc" style="font-size:24px;">Nagłówki i&nbsp;cechy pierwszych stron. Nazwa pliku nie gra roli.</p></div>
+<div style="flex:none; align-self:center; font-family:var(--mono); font-size:32px; color:#999999;">→</div>
+<div class="card" style="gap:10px; padding:28px;"><p class="num">03</p><h3 style="font-size:32px;">Pola</h3><p class="desc" style="font-size:24px;">Reguły dla trzech klas UZP. Na skanach czytamy bloki i&nbsp;kolumny z&nbsp;pozycji słów.</p></div>
+<div style="flex:none; align-self:center; font-family:var(--mono); font-size:32px; color:#999999;">→</div>
+<div class="card" style="gap:10px; padding:28px;"><p class="num">04</p><h3 style="font-size:32px;">Normalizacja i&nbsp;zapis</h3><p class="desc" style="font-size:24px;">Daty, kwoty, NIP, KRS, PESEL, rachunki. JSON o&nbsp;nazwie PDF-u, {} dla innych.</p></div>
+</div>
+<div class="row in" style="--i:3; gap:16px;">
+<div class="card" style="gap:8px; padding:24px 28px; border:1px dashed rgba(0,0,0,0.25); background:#ffffff;"><p class="mono" style="color:#000000;">config/classes/*.toml</p><p class="desc" style="font-size:24px;">Klasa: wzorce rozpoznania, pola, normalizatory, kolejność silników.</p></div>
+<div class="card" style="gap:8px; padding:24px 28px; border:1px dashed rgba(0,0,0,0.25); background:#ffffff;"><p class="mono" style="color:#000000;">limity czasu</p><p class="desc" style="font-size:24px;">OCR: 180&nbsp;s na stronę, po przekroczeniu jedna ponowna próba w&nbsp;150&nbsp;dpi, do 300&nbsp;s dodatkowych odczytów na dokument, wspólny limit partii.</p></div>
+<div class="card" style="gap:8px; padding:24px 28px; border:1px dashed rgba(0,0,0,0.25); background:#ffffff;"><p class="mono" style="color:#000000;">evals/</p><p class="desc" style="font-size:24px;">F1 pole po polu, na danych UZP i&nbsp;własnych.</p></div>
+</div>
+<p class="mono in" style="--i:4; font-size:20px; color:#666666;">Komponenty zewnętrzne i&nbsp;ich licencje: slajd 11.</p>
+</div>
+<div class="ftr"><div class="brand"><svg aria-label="Logo doc2json" width="40" height="40" viewBox="0 0 64 64" style="width:40px; height:40px;"><rect width="64" height="64" rx="15" fill="#000"/><g fill="none" stroke="#fff" stroke-width="4.5" stroke-linecap="round" stroke-linejoin="round"><path d="M24 15c-4.5 0-5.5 2-5.5 6v6c0 3-1.5 5-4.5 5 3 0 4.5 2 4.5 5v6c0 4 1 6 5.5 6"/><path d="M40 15c4.5 0 5.5 2 5.5 6v6c0 3 1.5 5 4.5 5-3 0-4.5 2-4.5 5v6c0 4-1 6-5.5 6"/><path d="M28 27h8M28 37h5"/></g></svg><p>doc2json</p></div><p class="src">Pełny schemat: docs/pipeline/pipeline.pdf</p><p class="pg">05 / 12</p></div>
+<aside>CLI, GUI i strona z API wołają tę samą funkcję. Dla GUI sprawdziliśmy, że pliki z pobranego ZIP-a są identyczne z wynikiem CLI. Najpierw czytamy tekst z PDF. Strony bez tekstu idą do Tesseracta, który instaluje się przez pip i działa na CPU. Klasę rozpoznajemy z treści pierwszych stron, a reguły rozpoznania i listę pól trzyma plik TOML danej klasy. Ekstraktory trzech klas UZP są w Pythonie i czytają układ dokumentu, na przykład bloki stron i kolumny potwierdzeń przelewu. Na końcu normalizujemy daty, kwoty i identyfikatory i zapisujemy JSON. UZP przewiduje 45 minut na 150 PDF-ów. Na współdzielonym Apple M1 dwa procesy odczytały 120 natywnych PDF-ów i 30 skanów w 300 sekund. Model językowy jest opcjonalny i domyślnie wyłączony. Wyniki porównań zapisujemy w evals. Biblioteki open source i ich licencje są na slajdzie 11, bo Regulamin w § 4 ust. 1 wymaga wskazania rozwiązań zewnętrznych w prezentacji.</aside>
+</section>
