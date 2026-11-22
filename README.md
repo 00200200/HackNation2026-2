@@ -353,6 +353,12 @@ With these limits, eight busy loops and `--jobs 1`, the CLI processed the 150-PD
 The mix contained two copies of each organizer scan and 90 training PDFs. This timing preceded the
 final change to handling expired optional page reads. [Measurements and output digests](evals/results/adaptive-ocr-budget.json)
 
+With the 180-second primary watchdog, two workers processed all 226 public PDFs in 160.75 seconds.
+Every output matched `328f705` byte for byte. In a separate serial run on three scans, suspending the
+OCR worker for 65 seconds during the first page caused one document failure with the old watchdog.
+The new watchdog finished in 83.76 seconds including the pause, and all three outputs matched their
+ordinary readings. [Watchdog measurements](evals/results/first-pass-watchdog.json)
+
 In the earlier runtime-only experiment on a 16 GiB M1 MacBook Air, four workers processed 30 organizer scans in 37.15 seconds and a mix of
 60 scans and 90 training PDFs in 74.42 seconds. Peak sampled process-tree RSS for the mix was
 1,504 MiB. All 226 training and scan outputs matched sequential main (`5297660`) byte for byte.
