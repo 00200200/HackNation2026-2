@@ -89,8 +89,8 @@ Install Docker with Compose v2.24 or later. From the repository root, place case
 docker compose run --rm cli
 ```
 
-The first build downloads the Python dependencies from PyPI. The Polish and English OCR data ship in the repository
-(`kio2json/tessdata/`), so nothing else is fetched.
+The first build pulls the `python:3.13-slim` base image and downloads the Python dependencies from PyPI. The Polish
+and English OCR data ship in the repository (`kio2json/tessdata/`).
 Each input PDF gets a matching file under `output/<case>/`. To upload PDFs in a browser, run:
 
 ```sh
@@ -101,6 +101,9 @@ Open <http://127.0.0.1:8000> for the upload page or <http://127.0.0.1:8000/api/d
 the API. Press Ctrl+C to stop the server. Both services use local extraction by default.
 To enable a model, copy `.env.example` to `.env`, fill in the three endpoint settings,
 and rerun the service. Keep the key in the ignored `.env` file.
+
+The image is built for x86-64, because two dependencies, libsass and morfeusz2, have no Linux ARM wheels. Docker Desktop
+on Apple Silicon runs it under emulation, which is slower.
 
 Both services read the host's `config/classes/` directory. See the
 [pipeline architecture](#how-it-works), [class configuration example](#enable-the-fourth-class)
