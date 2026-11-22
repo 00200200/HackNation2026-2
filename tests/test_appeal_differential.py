@@ -21,6 +21,20 @@ DEFINITIONS = load_classes()
 ABSENT = "<absent>"
 INTENDED_CHANGES = [
     (
+        "r11-R4b",
+        "/output/Odwolujacy/0/nazwa",
+        "Luneta I. STAN FAKTYCZNY Opis przebiegu postępowania.",
+        "Luneta",
+        "The numbered facts section ends the appellant name.",
+    ),
+    (
+        "r11-R4d",
+        "/output/Odwolujacy/0/nazwa",
+        "Luneta III. OKOLICZNOŚCI SPRAWY Składamy poniższe wyjaśnienia.",
+        "Luneta",
+        "The next numbered section contains case circumstances.",
+    ),
+    (
         "r11-R3c",
         "/output/OdwolanieKIO/czynnosc_dzien",
         "2028-04-14",

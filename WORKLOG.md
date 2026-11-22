@@ -10,7 +10,7 @@ variables unset. Keyed runs can use a second OCR reading and recover a failed do
 
 The opt-in small-model profile uses Mistral’s regional API, compact source spans and bounded PDF workers. [Provider comparison](docs/small-model-providers.md)
 
-The batch CLI defaults to up to four PDF workers, with one thread per Tesseract instance and up to three concurrent page reads per PDF. The first OCR pass supplies layout word boxes, and optional OCR has up to 300 seconds per document. A shared batch cutoff stops rereads after 27 minutes for 150 PDFs.
+The batch CLI defaults to up to four PDF workers, with one thread per Tesseract instance and up to three concurrent page reads per PDF. The first OCR pass supplies layout word boxes, and optional OCR has up to 300 seconds per document. A shared batch cutoff stops rereads after 27 minutes for 150 PDFs. Required OCR has a 180-second page watchdog and can retry a stalled page once at 150 dpi.
 
 The local viewer flags disagreements between an appeal, its mandate and its receipt. The CLI and viewer can use independently printed sibling values to repair a damaged reading within one case folder.
 
@@ -123,9 +123,15 @@ Two and four grant JSONs matched exactly. The ten organizer grants remained exac
 
 ## Log
 
+- 22.11.2026 · Codex · Raised the required page watchdog from 60 to 180 seconds and added one 150-dpi retry within the remaining OCR budget. Regression tests cover timeout recovery, immediate engine errors, budget exhaustion and word-box coordinates after resizing.
+
 - 22.11.2026 · Codex · Added case warnings and opt-in sibling OCR repair for #61. All 304 keyless outputs matched main byte for byte. UZP F1 stayed at 0.9231 on corpus 1 all, 0.9221 on corpus 1 dev and 0.9244 on corpus 2 dev. Training scored 1.000 with 196 exact outputs. The 30 singleton scans had 29 exact outputs and UZP F1 of 1.000. [Paired case measurements](evals/results/case-siblings.json)
 
 - 22.11.2026 · Codex · Grouped appeal and mandate word boxes by printed role and column. Added regressions for wrapped names, repeated stationery, extra appointees and principal-specific signatures.
+- 22.11.2026 · Claude · #54 review follow-ups: the README names both PyPI hosts (`pypi.org`, `files.pythonhosted.org`) instead of "no other host"; `tests/test_batch_runtime.py` writes its fixture files as UTF-8, because a CP1252 Windows locale cannot encode the Polish literal in the worker fixture. `kio2json/` has no text-mode `open`, `read_text` or `write_text` without an encoding. 59 sites in `tests/` and 7 in `evals/` still use the locale default; they only matter for a Windows run of the tests, not for the Linux evaluation VM. `.gitattributes` marks the vendored `.traineddata` files binary so no checkout can rewrite them, and the stale `packaging/**` path filter is gone from `jury-batch.yml`. Merged `main` again (#74, `pdf_text.py` conflict: kept `OCRWord` and the tessdata constants).
+- 22.11.2026 · Claude · Took over #54: merged `main` (`3eccb41`, with the Compose files from #68; `api.Dockerfile` has no `COPY packaging` line any more), reworded the README install sentence after CodeRabbit, fixed the Docker section's claim that the build downloads OCR data, rechecked at `d14da55` (ruff clean, 1738 tests, eval-quick 1.000). Fresh py3.13 venv: `pip install -r requirements.txt` from another directory rc=0, 80 packages, 520 MiB; its CLI and `uv run` wrote byte-identical JSON for `input/case1` and three organizer scans. Every pin has a manylinux x86_64 wheel; `libsass` has no Linux aarch64 wheel, so `docker compose build` on an arm64 host needs a compiler or `platform: linux/amd64` (#60). No Docker on this machine and GitHub Actions is blocked by billing, so container byte parity is still unchecked.
+- 22.11.2026 · Claude · Handoff fix/install-deps (#44/#45): code done at de49710; fresh py3.13 venv `pip install -r requirements.txt` from another directory rc=0, 80 pkgs, site-packages 642 → 519 MiB (main: raw.githubusercontent.com timeout, 133 pkgs); make check 1704+2 passed; eval-quick 1.000 clean; CLI identical on cases 01/13/27/38/50. Left: judge PASS, stamp, push, PR.
+- 21.11.2026 · Claude · #44/#45: vendored the pinned pol/eng tessdata in `kio2json/tessdata/` (SHA-256 checked at first OCR use), dropped the local `packaging/` wheel so pip needs only PyPI from any directory; `pydantic-ai-slim[openai]` replaces `pydantic-ai`, requirements.txt 134 → 81 packages without anthropic, google-genai, logfire or pydantic-evals.
 
 - 21.11.2026 · Codex · Added native span output for small models, local source validation and a bounded parallel CLI. Verified the native schema on the quantized local model and both regional API releases.
 
@@ -202,6 +208,8 @@ Two and four grant JSONs matched exactly. The ten organizer grants remained exac
 
 - 21.11.2026 · Integrated #27 and #34 with streamed upload limits and a disposable OCR process per document. The request deadline includes upload and queue time.
 
+- 22.11.2026 · Codex · Fixed appeal party boundaries at numbered headings, parenthesized page counters over scans, labelled OCR receipt accounts and explicit grantor signature blocks. The remaining round-three routing and role errors are tracked in #1.
+
 ## Frontend branch snapshot before API integration
 
 Public landing https://doc2json.pl (`frontend/`, static nginx, monochrome) runs on the team VPS as `doc2json-web`
@@ -235,3 +243,5 @@ These runs used local rules with the three endpoint variables unset. The two loc
 - 22.11.2026 · Codex · Added local jury Compose services and the signed task rules for #60. Compose configuration validated. Docker Desktop did not answer its health probe, so container byte parity is pending.
 
 - 22.11.2026 · Codex · Prepared the VM installation and offline rehearsal for #66 and refreshed the organizer instructions to `eadffbc`. [Rehearsal measurements](evals/results/vm-2vcpu.json)
+
+- 22.11.2026 · Codex · Synced the rule fixes in #75 with main at `b9c2c7f`, preserving the printed account prefix during OCR slash repair.

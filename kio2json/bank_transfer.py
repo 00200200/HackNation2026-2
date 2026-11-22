@@ -187,10 +187,11 @@ def _field_text(text: str) -> str:
 
 # Printed role fields apply to both text and scans. Only the OCR adapter repairs digits.
 ROLE_NOUN = r"(?:rachun(?:ek|ku)|kont[oa]|IBAN)"
+ACCOUNT_CURRENCY = r"(?:[ \t]*\(PLN\))?"
 DIRECT_ROLE = re.compile(
     rf"(?im)^(?:(?:(?:numer|nr\.?)\s+)?{ROLE_NOUN}\s+)?"
     r"(?:(?P<sender>nadawc[ay]|zleceniodawc[ay]|płatnik(?:a)?|obciąż(?:an|on)[ey]|źródłow[ey]|z (?:rachunku|konta))"
-    r"|(?P<recipient>odbiorc[ay]|beneficjent(?:a)?|uzna(?:wan|n)[ey]|docelow[ey]|na (?:rachunek|konto)))\b"
+    rf"|(?P<recipient>odbiorc[ay]|beneficjent(?:a)?|uzna(?:wan|n)[ey]|docelow[ey]|na (?:rachunek|konto)))\b{ACCOUNT_CURRENCY}"
 )
 MASK = re.compile(r"(?i)(?:PL[ \t]*)?(?=[0-9x* .-]*[x*])[0-9x*][0-9x* .-]{2,}[0-9x*]")
 PARTY_SECTION = re.compile(r"(?i)^(?:dane\s+|rachunek\s+|konto\s+)?(właściciel\w*|posiadacz\w*|kontrahent\w*)\b")

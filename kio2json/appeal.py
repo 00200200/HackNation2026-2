@@ -71,7 +71,10 @@ PARTY_FIELD = re.compile(
     r"^(?:KRS|NIP|REGON|reprezentowan\w* przez|adres do korespondencji|tel\.|e-mail)\b", re.IGNORECASE
 )
 SECTION_LABEL = re.compile(r"^[^\W\d_][\w ()./-]{0,80}:")
-BODY_HEADING = re.compile(r"^(?:uzasadnienie|dowody|żądania|zarzuty|zarzut nr \d+|wnioski|załączniki)\b", re.IGNORECASE)
+BODY_HEADING = re.compile(
+    r"^(?:[IVXLCDM]+[.)]\s+)?(?:stan faktyczny|okoliczności sprawy|uzasadnienie|dowody|żądania|zarzuty|zarzut nr \d+|wnioski|załączniki)\b",
+    re.IGNORECASE,
+)
 
 
 def _ends_party(line: str) -> bool:
