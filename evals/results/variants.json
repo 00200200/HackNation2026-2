@@ -1,0 +1,418 @@
+{
+  "seed": 63059,
+  "cases": 60,
+  "docs": 240,
+  "dataset_sha256": "53414e5959d93426f1553cc36fcbe86968fca23edb80a959740654790b20dd03",
+  "commit": "6b34bc53d0f56dbabf7c752136f87c25ca5bf758",
+  "command": "uv run python -m kio2json --input {input} --output {output} --jobs 2",
+  "chunk_cases": 5,
+  "seconds_per_doc": 1.7866280856057226,
+  "micro_f1": 0.2960167714884696,
+  "micro_f1_strict": 0.28602305475504325,
+  "counts_strict": {
+    "tp": 397,
+    "fp": 63,
+    "fn": 1919
+  },
+  "macro_f1_documents": 0.35566151713210536,
+  "macro_f1_classes": 0.40487754267066806,
+  "macro_f1_class_count": 3,
+  "macro_f1_fields": 0.1962152085455804,
+  "micro_f1_non_null": 0.2885165508786269,
+  "per_class_f1": {
+    "odwolanie": 0.0,
+    "pelnomocnictwo": 0.5529225908372828,
+    "przelew": 0.6617100371747212
+  },
+  "classification_accuracy": 0.5555555555555556,
+  "negatives_empty": 1.0,
+  "outputs_complete": 1.0,
+  "counts": {
+    "tp": 353,
+    "fp": 48,
+    "fn": 1631,
+    "tn": 284
+  },
+  "per_field": {
+    "OdwolanieKIO.czynnosc_dzien": {
+      "tp": 0,
+      "fp": 0,
+      "fn": 60,
+      "tn": 0,
+      "f1": 0.0
+    },
+    "OdwolanieKIO.czynnosc_opis": {
+      "tp": 0,
+      "fp": 0,
+      "fn": 60,
+      "tn": 0,
+      "f1": 0.0
+    },
+    "OdwolanieKIO.czynnosc_powod_id": {
+      "tp": 0,
+      "fp": 0,
+      "fn": 60,
+      "tn": 0,
+      "f1": 0.0
+    },
+    "OdwolanieKIO.data": {
+      "tp": 0,
+      "fp": 0,
+      "fn": 45,
+      "tn": 15,
+      "f1": 0.0
+    },
+    "OdwolanieKIO.miejscowosc": {
+      "tp": 0,
+      "fp": 0,
+      "fn": 45,
+      "tn": 15,
+      "f1": 0.0
+    },
+    "Odwolujacy[].krs": {
+      "tp": 0,
+      "fp": 0,
+      "fn": 56,
+      "tn": 4,
+      "f1": 0.0
+    },
+    "Odwolujacy[].nazwa": {
+      "tp": 0,
+      "fp": 0,
+      "fn": 60,
+      "tn": 0,
+      "f1": 0.0
+    },
+    "Odwolujacy[].nip": {
+      "tp": 0,
+      "fp": 0,
+      "fn": 60,
+      "tn": 0,
+      "f1": 0.0
+    },
+    "Odwolujacy[].pelnomocnik.imie_nazwisko": {
+      "tp": 0,
+      "fp": 0,
+      "fn": 60,
+      "tn": 0,
+      "f1": 0.0
+    },
+    "Odwolujacy[].pelnomocnik.mail": {
+      "tp": 0,
+      "fp": 0,
+      "fn": 60,
+      "tn": 0,
+      "f1": 0.0
+    },
+    "Odwolujacy[].pelnomocnik.nazwa": {
+      "tp": 0,
+      "fp": 0,
+      "fn": 60,
+      "tn": 0,
+      "f1": 0.0
+    },
+    "Odwolujacy[].przez-pelnomocnika": {
+      "tp": 0,
+      "fp": 0,
+      "fn": 60,
+      "tn": 0,
+      "f1": 0.0
+    },
+    "Odwolujacy[].regon": {
+      "tp": 0,
+      "fp": 0,
+      "fn": 60,
+      "tn": 0,
+      "f1": 0.0
+    },
+    "Zamawiajacy[].krs": {
+      "tp": 0,
+      "fp": 0,
+      "fn": 58,
+      "tn": 5,
+      "f1": 0.0
+    },
+    "Zamawiajacy[].nazwa": {
+      "tp": 0,
+      "fp": 0,
+      "fn": 63,
+      "tn": 0,
+      "f1": 0.0
+    },
+    "Zamawiajacy[].nip": {
+      "tp": 0,
+      "fp": 0,
+      "fn": 63,
+      "tn": 0,
+      "f1": 0.0
+    },
+    "Zamawiajacy[].prowadzacy_postepowanie": {
+      "tp": 0,
+      "fp": 0,
+      "fn": 6,
+      "tn": 57,
+      "f1": 0.0
+    },
+    "Zamawiajacy[].regon": {
+      "tp": 0,
+      "fp": 0,
+      "fn": 63,
+      "tn": 0,
+      "f1": 0.0
+    },
+    "ZamowieniePubliczne.numer_bzp": {
+      "tp": 0,
+      "fp": 0,
+      "fn": 48,
+      "tn": 12,
+      "f1": 0.0
+    },
+    "ZamowieniePubliczne.numer_postepowania": {
+      "tp": 0,
+      "fp": 0,
+      "fn": 60,
+      "tn": 0,
+      "f1": 0.0
+    },
+    "ZamowieniePubliczne.numer_ted": {
+      "tp": 0,
+      "fp": 0,
+      "fn": 47,
+      "tn": 13,
+      "f1": 0.0
+    },
+    "ZamowieniePubliczne.tytul": {
+      "tp": 0,
+      "fp": 0,
+      "fn": 60,
+      "tn": 0,
+      "f1": 0.0
+    },
+    "mocodawca[].data.imie_nazwisko": {
+      "tp": 0,
+      "fp": 0,
+      "fn": 4,
+      "tn": 62,
+      "f1": 0.0
+    },
+    "mocodawca[].data.krs": {
+      "tp": 44,
+      "fp": 0,
+      "fn": 18,
+      "tn": 4,
+      "f1": 0.8301886792452831
+    },
+    "mocodawca[].data.nazwa": {
+      "tp": 43,
+      "fp": 1,
+      "fn": 22,
+      "tn": 0,
+      "f1": 0.7889908256880734
+    },
+    "mocodawca[].data.nip": {
+      "tp": 44,
+      "fp": 0,
+      "fn": 22,
+      "tn": 0,
+      "f1": 0.8
+    },
+    "mocodawca[].data.typ": {
+      "tp": 44,
+      "fp": 0,
+      "fn": 22,
+      "tn": 0,
+      "f1": 0.8
+    },
+    "mocodawca[].podpisujacy[].imie_nazwisko": {
+      "tp": 0,
+      "fp": 0,
+      "fn": 95,
+      "tn": 0,
+      "f1": 0.0
+    },
+    "pelnomocnicy[].imie_nazwisko": {
+      "tp": 0,
+      "fp": 0,
+      "fn": 98,
+      "tn": 0,
+      "f1": 0.0
+    },
+    "pelnomocnicy[].pesel": {
+      "tp": 0,
+      "fp": 0,
+      "fn": 1,
+      "tn": 97,
+      "f1": 0.0
+    },
+    "przelew_bankowy.data_operacji": {
+      "tp": 40,
+      "fp": 0,
+      "fn": 20,
+      "tn": 0,
+      "f1": 0.8
+    },
+    "przelew_bankowy.kwota": {
+      "tp": 40,
+      "fp": 0,
+      "fn": 20,
+      "tn": 0,
+      "f1": 0.8
+    },
+    "przelew_bankowy.na_rachunek": {
+      "tp": 18,
+      "fp": 16,
+      "fn": 26,
+      "tn": 0,
+      "f1": 0.46153846153846156
+    },
+    "przelew_bankowy.numer_transakcji": {
+      "tp": 40,
+      "fp": 0,
+      "fn": 20,
+      "tn": 0,
+      "f1": 0.8
+    },
+    "przelew_bankowy.tytul": {
+      "tp": 26,
+      "fp": 14,
+      "fn": 20,
+      "tn": 0,
+      "f1": 0.6046511627906976
+    },
+    "przelew_bankowy.z_rachunku": {
+      "tp": 14,
+      "fp": 17,
+      "fn": 29,
+      "tn": 0,
+      "f1": 0.3783783783783784
+    }
+  },
+  "per_variant": {
+    "alternative-formats": {
+      "docs": 30,
+      "micro_f1": 0.20833333333333334,
+      "per_class_f1": {
+        "odwolanie": 0.0,
+        "pelnomocnictwo": 0.6779661016949152,
+        "przelew": 0.0
+      },
+      "counts": {
+        "tp": 40,
+        "fp": 0,
+        "fn": 304,
+        "tn": 46
+      }
+    },
+    "reordered": {
+      "docs": 30,
+      "micro_f1": 0.3497536945812808,
+      "per_class_f1": {
+        "odwolanie": 0.0,
+        "pelnomocnictwo": 0.5106382978723404,
+        "przelew": 0.8785046728971962
+      },
+      "counts": {
+        "tp": 71,
+        "fp": 13,
+        "fn": 251,
+        "tn": 48
+      }
+    },
+    "scan": {
+      "docs": 30,
+      "micro_f1": 0.3961352657004831,
+      "per_class_f1": {
+        "odwolanie": 0.0,
+        "pelnomocnictwo": 0.6782608695652174,
+        "przelew": 0.8349514563106796
+      },
+      "counts": {
+        "tp": 82,
+        "fp": 3,
+        "fn": 247,
+        "tn": 50
+      }
+    },
+    "single-column": {
+      "docs": 30,
+      "micro_f1": 0.41904761904761906,
+      "per_class_f1": {
+        "odwolanie": 0.0,
+        "pelnomocnictwo": 0.7207207207207207,
+        "przelew": 0.8888888888888888
+      },
+      "counts": {
+        "tp": 88,
+        "fp": 12,
+        "fn": 232,
+        "tn": 45
+      }
+    },
+    "synonyms": {
+      "docs": 30,
+      "micro_f1": 0.1693121693121693,
+      "per_class_f1": {
+        "odwolanie": 0.0,
+        "pelnomocnictwo": 0.5714285714285714,
+        "przelew": 0.0
+      },
+      "counts": {
+        "tp": 32,
+        "fp": 0,
+        "fn": 314,
+        "tn": 48
+      }
+    },
+    "two-column": {
+      "docs": 30,
+      "micro_f1": 0.20887728459530025,
+      "per_class_f1": {
+        "odwolanie": 0.0,
+        "pelnomocnictwo": 0.0,
+        "przelew": 0.8
+      },
+      "counts": {
+        "tp": 40,
+        "fp": 20,
+        "fn": 283,
+        "tn": 47
+      }
+    }
+  },
+  "negative_families": {
+    "bzp": {
+      "docs": 10,
+      "empty": 10
+    },
+    "invoice": {
+      "docs": 10,
+      "empty": 10
+    },
+    "pro-forma": {
+      "docs": 10,
+      "empty": 10
+    },
+    "request": {
+      "docs": 10,
+      "empty": 10
+    },
+    "ruling": {
+      "docs": 10,
+      "empty": 10
+    },
+    "ted": {
+      "docs": 10,
+      "empty": 10
+    }
+  },
+  "weakest_first": [
+    "synonyms",
+    "alternative-formats",
+    "two-column",
+    "reordered",
+    "scan",
+    "single-column"
+  ],
+  "extractor_main_commit": "f7f3ee97951817e9899c949f2078b1d9075b6846",
+  "dirty": true
+}

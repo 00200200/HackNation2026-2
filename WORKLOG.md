@@ -19,6 +19,14 @@ behind the faktczyfejk Caddy; deploy in `docs/deploy.md`. Its upload calls `kio2
 
 ## Last eval
 
+The fixed-seed benchmark re-rendered the facts from all 60 synthetic cases and generated 60 look-alike negatives. The keyless extractor was main at `f7f3ee9`, scored with the issue #59 metric.
+
+| Dataset | PDFs | UZP micro F1 | Strict micro F1 | Appeal F1 | Power F1 | Transfer F1 | Empty negatives |
+|---|---:|---:|---:|---:|---:|---:|---:|
+| Generated layouts | 240 | 0.2960 | 0.2860 | 0.0000 | 0.5529 | 0.6617 | 60/60 |
+
+Weakest positive profiles were label synonyms (0.1693), alternative formats (0.2083) and two columns (0.2089). Appeal F1 was zero in all six profiles. The benchmark uses short, newly authored forms built from the training facts. Profile scores also reflect their different case samples. [Ranked layouts and field scores](evals/results/variants.json)
+
 Round 3 raised rules-only micro F1 from 0.8607 to 0.8900 on corpus 1 (39 PDFs) and from 0.8789 to 0.8926 on corpus 2 dev (39 PDFs). Four recovered payment receipts brought routing to 78/78, including the 22 negatives. One appeal timed out in the initial corpus 1 run (0.8812) and returned its baseline bytes in an isolated rerun. All 30 organizer scan outputs and 196 synthetic training outputs matched the baseline byte for byte. Organizer scans scored 0.9974 with 29/30 exact, and synthetic F1 was 1.000. [Field counts, intermediate runs and timing](evals/results/round3.json)
 
 In the earlier small-model experiment the profile used evidence-gated routing, selective native gap filling and first-charge verification. Against the rules at `eabbb31`, it raised strict micro F1 on the 91-PDF development pool from .5858 to .7146. A fresh 150-PDF CLI run took 335.64 seconds and scored .7208 micro F1 on its 91-PDF development subset. All 196 organizer training outputs matched the rules byte for byte in keyed and keyless runs. [Per-field results and timing](evals/results/small-model.json)
@@ -182,3 +190,5 @@ These runs used local rules with the three endpoint variables unset. The two loc
 - 21.11.2026 · Codex · Round 3 traced 130 field errors on 78 real development PDFs. Recovered identifiers from matching party records, checked damaged company names against declarations and read debit amounts across bank columns. The single-field Ministral whitespace trial lost one correct title in 12 calls and was dropped.
 
 - 22.11.2026 · Codex · Implemented the UZP scorer and retained historical strict micro F1 on `feat/uzp-metric` (#59).
+
+- 22.11.2026 · Codex · Added the seeded layout regression gate and measured main at `f7f3ee9` on 240 generated PDFs for issue #63.

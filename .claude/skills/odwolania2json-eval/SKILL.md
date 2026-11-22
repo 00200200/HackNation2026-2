@@ -28,6 +28,7 @@ check `git diff data/uzp`, commit it, and compare F1 only between runs on the sa
 uv run python -m evals.run --quick                       # przyklad_01-05, _24 + 3 negatives; before a push
 uv run python -m evals.run                               # all 60 cases + all negatives; before submitting
 uv run python -m evals.run --pred output/                # score an existing output tree (original file names)
+make eval-variants                                        # seeded layout and negative regression gate for rule changes
 make eval-real HN_REAL_SPLIT=dev                         # local corpus, override with HN_REAL_CORPUS
 uv run python -m evals.run --corpus "$corpus" --split test
 uv run python -m evals.run --corpus "$corpus" --split dev --detail-out "$corpus/dev-detail.json"
@@ -114,6 +115,8 @@ the negatives directory).
   "training data (synthetic)". Never present them as the test-set score.
 
 ## Pre-push gate
+
+- For a rule change, run the dev splits and `make eval-variants`. Compare the candidate on the fixed 60-case layout set against the committed baseline. Record regressions and the weakest profiles in the change review.
 
 - Product code changed (anything outside `docs/`, `data/`, Markdown, `.claude/`, `.githooks/`, `.github/`,
   `.gitignore`, `LICENSE`, `evals/results/`): commit, then run at least `--quick` on the committed state. Once

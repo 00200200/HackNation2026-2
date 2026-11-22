@@ -256,11 +256,11 @@ def stage(cases: dict[str, dict[str, dict]], data: Path, input_dir: Path) -> dic
     return names
 
 
-def run_app(cmd: str, input_dir: Path, output_dir: Path) -> tuple[float, str | None]:
+def run_app(cmd: str, input_dir: Path, output_dir: Path, *, env: dict | None = None) -> tuple[float, str | None]:
     args = [a.format(input=input_dir, output=output_dir) for a in shlex.split(cmd)]
     start = time.monotonic()
     try:
-        proc = subprocess.run(args, check=False, cwd=ROOT, capture_output=True, text=True, timeout=TIMEOUT_S)
+        proc = subprocess.run(args, check=False, cwd=ROOT, capture_output=True, text=True, timeout=TIMEOUT_S, env=env)
     except (OSError, subprocess.TimeoutExpired) as exc:
         return time.monotonic() - start, f"{type(exc).__name__}: {exc}"
     error = None if proc.returncode == 0 else f"exit {proc.returncode}: {proc.stderr.strip()[-2000:]}"
@@ -392,6 +392,11 @@ def private_output(path: Path):
 def main() -> int:
     parser = argparse.ArgumentParser(description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter)
     mode_args = parser.add_mutually_exclusive_group()
+    mode_args.add_argument("--variants", type=int, metavar="N", help="generate and score N synthetic case variants")
+    parser.add_argument("--variant-baseline", type=Path, help="gate on a previous report for the same variant set")
+    parser.add_argument(
+        "--variant-out", type=Path, help="variant report destination (default evals/results/variants.json)"
+    )
     mode_args.add_argument("--quick", action="store_true", help="dev subset: 6 cases + 3 negatives")
     mode_args.add_argument("--organizer-scans", action="store_true", help="score the organizer’s labelled scan set")
     mode_args.add_argument("--corpus", type=Path, help="corpus with separate cases/ and gold/ trees")
@@ -411,6 +416,26 @@ def main() -> int:
 
 
 def evaluate(args: argparse.Namespace, parser: argparse.ArgumentParser) -> int:
+    if args.variants is not None:
+        if args.variants < 1 or args.pred or args.detail_out or args.split:
+            parser.error("--variants requires a positive count and runs the extractor on generated inputs")
+        from evals.variants import evaluate_variants
+
+        cmd = DEFAULT_CMD + " --jobs 2" if args.cmd == DEFAULT_CMD else args.cmd
+        destination = args.variant_out or RESULTS.with_name("variants.json")
+        if args.variant_baseline:
+            destination = args.variant_out or ROOT / ".cache" / "variants-current.json"
+            if destination.resolve() == args.variant_baseline.resolve():
+                parser.error("the candidate report and baseline need distinct paths")
+        return evaluate_variants(
+            args.variants,
+            args.data or DATA,
+            cmd,
+            destination,
+            args.variant_baseline,
+        )
+    if args.variant_out or args.variant_baseline:
+        parser.error("--variant-out and --variant-baseline require --variants")
     if (args.detail_out or args.split) and not args.corpus:
         parser.error("--detail-out and --split require --corpus")
     if args.corpus:
