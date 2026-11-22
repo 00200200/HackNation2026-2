@@ -1,0 +1,1850 @@
+{
+ "commit": "67ed80b9dc09299024b22851d86e0ff6c11b4634",
+ "dirty": false,
+ "timestamp": "2026-11-22T03:34:58+00:00",
+ "seed": 2026,
+ "documents": 30,
+ "seconds_per_doc": 0.7970417987000019,
+ "cmd": "uv run python -m kio2json --input {input} --output {output}",
+ "environment": "no model endpoint (KIO_LLM_BASE_URL, KIO_LLM_MODEL and KIO_LLM_API_KEY empty, even if a .env holds them); KIO_OCR_ENGINE, KIO_CLASSES_DIR, KIO_CASE_REPAIR and UV_ENV_FILE not set; neutral case folders",
+ "metric": "micro_f1 is the organizer formula of evals/metrics.py (UZP #59); loss.routing + loss.fields = 1 - micro_f1",
+ "variants": {
+  "delivered": {
+   "spec": {
+    "dpi": null,
+    "encoding": "jpeg",
+    "skew": 0.0,
+    "noise": 0.0,
+    "mixed": false
+   },
+   "seconds": 23.8,
+   "app_error": null,
+   "docs": 30,
+   "no_output": 0,
+   "micro_f1": 1.0,
+   "micro_f1_strict": 0.9974226804123711,
+   "per_class_f1": {
+    "odwolanie": 1.0,
+    "pelnomocnictwo": 1.0,
+    "przelew": 1.0
+   },
+   "loss": {
+    "routing": 0.0,
+    "fields": 0.0,
+    "routing_errors": 0,
+    "field_errors": 0
+   },
+   "routing": {
+    "odwolanie": {
+     "odwolanie": 10
+    },
+    "pelnomocnictwo": {
+     "pelnomocnictwo": 10
+    },
+    "przelew": {
+     "przelew": 10
+    }
+   },
+   "misrouted": [],
+   "failing_fields": []
+  },
+  "rerender": {
+   "spec": {
+    "dpi": 200,
+    "encoding": "jpeg",
+    "skew": 0.0,
+    "noise": 0.0,
+    "mixed": false
+   },
+   "seconds": 24.6,
+   "app_error": null,
+   "docs": 30,
+   "no_output": 0,
+   "micro_f1": 0.9326424870466321,
+   "micro_f1_strict": 0.9100671140939597,
+   "per_class_f1": {
+    "odwolanie": 0.9401197604790419,
+    "pelnomocnictwo": 0.9803921568627451,
+    "przelew": 0.8260869565217391
+   },
+   "loss": {
+    "routing": 0.025906735751295335,
+    "fields": 0.04145077720207254,
+    "routing_errors": 15,
+    "field_errors": 24
+   },
+   "routing": {
+    "odwolanie": {
+     "odwolanie": 10
+    },
+    "pelnomocnictwo": {
+     "pelnomocnictwo": 10
+    },
+    "przelew": {
+     "przelew": 7,
+     "negatywny": 3
+    }
+   },
+   "misrouted": [
+    {
+     "doc": "rerender/skany/potwierdzenia/0003",
+     "class": "przelew",
+     "routed_as": "negatywny"
+    },
+    {
+     "doc": "rerender/skany/potwierdzenia/0007",
+     "class": "przelew",
+     "routed_as": "negatywny"
+    },
+    {
+     "doc": "rerender/skany/potwierdzenia/0008",
+     "class": "przelew",
+     "routed_as": "negatywny"
+    }
+   ],
+   "failing_fields": [
+    {
+     "path": "Zamawiajacy[].nazwa",
+     "tp": 8,
+     "fp": 1,
+     "fn": 2
+    },
+    {
+     "path": "Odwolujacy[].pelnomocnik.mail",
+     "tp": 6,
+     "fp": 1,
+     "fn": 2
+    },
+    {
+     "path": "ZamowieniePubliczne.tytul",
+     "tp": 8,
+     "fp": 1,
+     "fn": 1
+    },
+    {
+     "path": "Zamawiajacy[].prowadzacy_postepowanie",
+     "tp": 0,
+     "fp": 0,
+     "fn": 2
+    },
+    {
+     "path": "Zamawiajacy[].nip",
+     "tp": 6,
+     "fp": 0,
+     "fn": 2
+    },
+    {
+     "path": "ZamowieniePubliczne.numer_postepowania",
+     "tp": 9,
+     "fp": 1,
+     "fn": 0
+    },
+    {
+     "path": "Zamawiajacy[].regon",
+     "tp": 2,
+     "fp": 0,
+     "fn": 1
+    },
+    {
+     "path": "OdwolanieKIO.miejscowosc",
+     "tp": 9,
+     "fp": 0,
+     "fn": 1
+    }
+   ]
+  },
+  "dpi-150": {
+   "spec": {
+    "dpi": 150,
+    "encoding": "jpeg",
+    "skew": 0.0,
+    "noise": 0.0,
+    "mixed": false
+   },
+   "seconds": 25.0,
+   "app_error": null,
+   "docs": 30,
+   "no_output": 0,
+   "micro_f1": 0.9220103986135182,
+   "micro_f1_strict": 0.8877005347593583,
+   "per_class_f1": {
+    "odwolanie": 0.9376854599406528,
+    "pelnomocnictwo": 0.9166666666666666,
+    "przelew": 0.875
+   },
+   "loss": {
+    "routing": 0.01733102253032929,
+    "fields": 0.060658578856152515,
+    "routing_errors": 10,
+    "field_errors": 35
+   },
+   "routing": {
+    "odwolanie": {
+     "odwolanie": 10
+    },
+    "pelnomocnictwo": {
+     "pelnomocnictwo": 10
+    },
+    "przelew": {
+     "przelew": 8,
+     "negatywny": 2
+    }
+   },
+   "misrouted": [
+    {
+     "doc": "dpi-150/skany/potwierdzenia/0007",
+     "class": "przelew",
+     "routed_as": "negatywny"
+    },
+    {
+     "doc": "dpi-150/skany/potwierdzenia/0008",
+     "class": "przelew",
+     "routed_as": "negatywny"
+    }
+   ],
+   "failing_fields": [
+    {
+     "path": "pelnomocnicy[].imie_nazwisko",
+     "tp": 13,
+     "fp": 0,
+     "fn": 4
+    },
+    {
+     "path": "Odwolujacy[].pelnomocnik.mail",
+     "tp": 6,
+     "fp": 1,
+     "fn": 2
+    },
+    {
+     "path": "mocodawca[].podpisujacy[].imie_nazwisko",
+     "tp": 11,
+     "fp": 0,
+     "fn": 3
+    },
+    {
+     "path": "Zamawiajacy[].nazwa",
+     "tp": 10,
+     "fp": 1,
+     "fn": 1
+    },
+    {
+     "path": "OdwolanieKIO.miejscowosc",
+     "tp": 8,
+     "fp": 0,
+     "fn": 2
+    },
+    {
+     "path": "OdwolanieKIO.data",
+     "tp": 8,
+     "fp": 0,
+     "fn": 2
+    },
+    {
+     "path": "Odwolujacy[].pelnomocnik.nazwa",
+     "tp": 7,
+     "fp": 0,
+     "fn": 2
+    },
+    {
+     "path": "ZamowieniePubliczne.tytul",
+     "tp": 9,
+     "fp": 1,
+     "fn": 0
+    }
+   ]
+  },
+  "dpi-300": {
+   "spec": {
+    "dpi": 300,
+    "encoding": "jpeg",
+    "skew": 0.0,
+    "noise": 0.0,
+    "mixed": false
+   },
+   "seconds": 28.2,
+   "app_error": null,
+   "docs": 30,
+   "no_output": 0,
+   "micro_f1": 0.964824120603015,
+   "micro_f1_strict": 0.9411764705882353,
+   "per_class_f1": {
+    "odwolanie": 0.9526627218934911,
+    "pelnomocnictwo": 0.9935483870967742,
+    "przelew": 0.9615384615384616
+   },
+   "loss": {
+    "routing": 0.0,
+    "fields": 0.035175879396984924,
+    "routing_errors": 0,
+    "field_errors": 21
+   },
+   "routing": {
+    "odwolanie": {
+     "odwolanie": 10
+    },
+    "pelnomocnictwo": {
+     "pelnomocnictwo": 10
+    },
+    "przelew": {
+     "przelew": 10
+    }
+   },
+   "misrouted": [],
+   "failing_fields": [
+    {
+     "path": "Odwolujacy[].pelnomocnik.nazwa",
+     "tp": 6,
+     "fp": 0,
+     "fn": 3
+    },
+    {
+     "path": "Zamawiajacy[].prowadzacy_postepowanie",
+     "tp": 0,
+     "fp": 0,
+     "fn": 2
+    },
+    {
+     "path": "Zamawiajacy[].nazwa",
+     "tp": 9,
+     "fp": 0,
+     "fn": 2
+    },
+    {
+     "path": "Odwolujacy[].przez-pelnomocnika",
+     "tp": 8,
+     "fp": 2,
+     "fn": 0
+    },
+    {
+     "path": "Odwolujacy[].pelnomocnik.mail",
+     "tp": 7,
+     "fp": 0,
+     "fn": 2
+    },
+    {
+     "path": "Odwolujacy[].pelnomocnik.imie_nazwisko",
+     "tp": 7,
+     "fp": 0,
+     "fn": 2
+    },
+    {
+     "path": "przelew_bankowy.tytul",
+     "tp": 8,
+     "fp": 1,
+     "fn": 1
+    },
+    {
+     "path": "Zamawiajacy[].nip",
+     "tp": 7,
+     "fp": 0,
+     "fn": 1
+    }
+   ]
+  },
+  "bw-200": {
+   "spec": {
+    "dpi": 200,
+    "encoding": "ccitt",
+    "skew": 0.0,
+    "noise": 0.0,
+    "mixed": false
+   },
+   "seconds": 24.2,
+   "app_error": null,
+   "docs": 30,
+   "no_output": 0,
+   "micro_f1": 0.8824593128390597,
+   "micro_f1_strict": 0.8353413654618473,
+   "per_class_f1": {
+    "odwolanie": 0.9107692307692308,
+    "pelnomocnictwo": 0.835820895522388,
+    "przelew": 0.851063829787234
+   },
+   "loss": {
+    "routing": 0.018083182640144666,
+    "fields": 0.09945750452079566,
+    "routing_errors": 10,
+    "field_errors": 55
+   },
+   "routing": {
+    "odwolanie": {
+     "odwolanie": 10
+    },
+    "pelnomocnictwo": {
+     "pelnomocnictwo": 10
+    },
+    "przelew": {
+     "przelew": 8,
+     "negatywny": 2
+    }
+   },
+   "misrouted": [
+    {
+     "doc": "bw-200/skany/potwierdzenia/0003",
+     "class": "przelew",
+     "routed_as": "negatywny"
+    },
+    {
+     "doc": "bw-200/skany/potwierdzenia/0004",
+     "class": "przelew",
+     "routed_as": "negatywny"
+    }
+   ],
+   "failing_fields": [
+    {
+     "path": "mocodawca[].podpisujacy[].imie_nazwisko",
+     "tp": 6,
+     "fp": 0,
+     "fn": 8
+    },
+    {
+     "path": "Odwolujacy[].pelnomocnik.mail",
+     "tp": 2,
+     "fp": 3,
+     "fn": 4
+    },
+    {
+     "path": "OdwolanieKIO.czynnosc_dzien",
+     "tp": 6,
+     "fp": 0,
+     "fn": 4
+    },
+    {
+     "path": "mocodawca[].data.nip",
+     "tp": 7,
+     "fp": 2,
+     "fn": 2
+    },
+    {
+     "path": "ZamowieniePubliczne.tytul",
+     "tp": 7,
+     "fp": 1,
+     "fn": 2
+    },
+    {
+     "path": "Odwolujacy[].pelnomocnik.nazwa",
+     "tp": 6,
+     "fp": 0,
+     "fn": 3
+    },
+    {
+     "path": "pelnomocnicy[].imie_nazwisko",
+     "tp": 14,
+     "fp": 1,
+     "fn": 2
+    },
+    {
+     "path": "OdwolanieKIO.czynnosc_powod_id",
+     "tp": 8,
+     "fp": 1,
+     "fn": 1
+    }
+   ]
+  },
+  "bw-300": {
+   "spec": {
+    "dpi": 300,
+    "encoding": "ccitt",
+    "skew": 0.0,
+    "noise": 0.0,
+    "mixed": false
+   },
+   "seconds": 20.7,
+   "app_error": null,
+   "docs": 30,
+   "no_output": 0,
+   "micro_f1": 0.9042553191489362,
+   "micro_f1_strict": 0.8804347826086957,
+   "per_class_f1": {
+    "odwolanie": 0.9272727272727272,
+    "pelnomocnictwo": 0.987012987012987,
+    "przelew": 0.65
+   },
+   "loss": {
+    "routing": 0.04609929078014184,
+    "fields": 0.04964539007092199,
+    "routing_errors": 26,
+    "field_errors": 28
+   },
+   "routing": {
+    "odwolanie": {
+     "odwolanie": 10
+    },
+    "pelnomocnictwo": {
+     "pelnomocnictwo": 10
+    },
+    "przelew": {
+     "przelew": 5,
+     "negatywny": 5
+    }
+   },
+   "misrouted": [
+    {
+     "doc": "bw-300/skany/potwierdzenia/0003",
+     "class": "przelew",
+     "routed_as": "negatywny"
+    },
+    {
+     "doc": "bw-300/skany/potwierdzenia/0004",
+     "class": "przelew",
+     "routed_as": "negatywny"
+    },
+    {
+     "doc": "bw-300/skany/potwierdzenia/0006",
+     "class": "przelew",
+     "routed_as": "negatywny"
+    },
+    {
+     "doc": "bw-300/skany/potwierdzenia/0007",
+     "class": "przelew",
+     "routed_as": "negatywny"
+    },
+    {
+     "doc": "bw-300/skany/potwierdzenia/0008",
+     "class": "przelew",
+     "routed_as": "negatywny"
+    }
+   ],
+   "failing_fields": [
+    {
+     "path": "Odwolujacy[].pelnomocnik.mail",
+     "tp": 5,
+     "fp": 0,
+     "fn": 4
+    },
+    {
+     "path": "ZamowieniePubliczne.tytul",
+     "tp": 7,
+     "fp": 1,
+     "fn": 2
+    },
+    {
+     "path": "ZamowieniePubliczne.numer_postepowania",
+     "tp": 8,
+     "fp": 2,
+     "fn": 0
+    },
+    {
+     "path": "Zamawiajacy[].prowadzacy_postepowanie",
+     "tp": 0,
+     "fp": 0,
+     "fn": 2
+    },
+    {
+     "path": "Zamawiajacy[].nazwa",
+     "tp": 9,
+     "fp": 0,
+     "fn": 2
+    },
+    {
+     "path": "OdwolanieKIO.miejscowosc",
+     "tp": 8,
+     "fp": 0,
+     "fn": 2
+    },
+    {
+     "path": "OdwolanieKIO.data",
+     "tp": 8,
+     "fp": 0,
+     "fn": 2
+    },
+    {
+     "path": "Zamawiajacy[].nip",
+     "tp": 7,
+     "fp": 0,
+     "fn": 1
+    }
+   ]
+  },
+  "skew-3": {
+   "spec": {
+    "dpi": 200,
+    "encoding": "jpeg",
+    "skew": -3.0,
+    "noise": 0.0,
+    "mixed": false
+   },
+   "seconds": 24.1,
+   "app_error": null,
+   "docs": 30,
+   "no_output": 0,
+   "micro_f1": 0.7906066536203522,
+   "micro_f1_strict": 0.7419354838709677,
+   "per_class_f1": {
+    "odwolanie": 0.8160535117056856,
+    "pelnomocnictwo": 0.7906976744186046,
+    "przelew": 0.6987951807228916
+   },
+   "loss": {
+    "routing": 0.08610567514677103,
+    "fields": 0.1232876712328767,
+    "routing_errors": 44,
+    "field_errors": 63
+   },
+   "routing": {
+    "odwolanie": {
+     "odwolanie": 9,
+     "negatywny": 1
+    },
+    "pelnomocnictwo": {
+     "pelnomocnictwo": 9,
+     "negatywny": 1
+    },
+    "przelew": {
+     "negatywny": 4,
+     "przelew": 6
+    }
+   },
+   "misrouted": [
+    {
+     "doc": "skew-3/skany/odwolania/0010",
+     "class": "odwolanie",
+     "routed_as": "negatywny"
+    },
+    {
+     "doc": "skew-3/skany/pelnomocnictwa/0008",
+     "class": "pelnomocnictwo",
+     "routed_as": "negatywny"
+    },
+    {
+     "doc": "skew-3/skany/potwierdzenia/0001",
+     "class": "przelew",
+     "routed_as": "negatywny"
+    },
+    {
+     "doc": "skew-3/skany/potwierdzenia/0006",
+     "class": "przelew",
+     "routed_as": "negatywny"
+    },
+    {
+     "doc": "skew-3/skany/potwierdzenia/0007",
+     "class": "przelew",
+     "routed_as": "negatywny"
+    },
+    {
+     "doc": "skew-3/skany/potwierdzenia/0008",
+     "class": "przelew",
+     "routed_as": "negatywny"
+    }
+   ],
+   "failing_fields": [
+    {
+     "path": "mocodawca[].podpisujacy[].imie_nazwisko",
+     "tp": 7,
+     "fp": 0,
+     "fn": 6
+    },
+    {
+     "path": "Odwolujacy[].przez-pelnomocnika",
+     "tp": 4,
+     "fp": 4,
+     "fn": 1
+    },
+    {
+     "path": "Odwolujacy[].pelnomocnik.nazwa",
+     "tp": 3,
+     "fp": 0,
+     "fn": 5
+    },
+    {
+     "path": "Odwolujacy[].pelnomocnik.mail",
+     "tp": 3,
+     "fp": 0,
+     "fn": 5
+    },
+    {
+     "path": "Zamawiajacy[].nazwa",
+     "tp": 6,
+     "fp": 3,
+     "fn": 1
+    },
+    {
+     "path": "Odwolujacy[].pelnomocnik.imie_nazwisko",
+     "tp": 4,
+     "fp": 0,
+     "fn": 4
+    },
+    {
+     "path": "OdwolanieKIO.czynnosc_dzien",
+     "tp": 6,
+     "fp": 0,
+     "fn": 3
+    },
+    {
+     "path": "pelnomocnicy[].imie_nazwisko",
+     "tp": 13,
+     "fp": 0,
+     "fn": 3
+    }
+   ]
+  },
+  "skew-2": {
+   "spec": {
+    "dpi": 200,
+    "encoding": "jpeg",
+    "skew": -2.0,
+    "noise": 0.0,
+    "mixed": false
+   },
+   "seconds": 21.0,
+   "app_error": null,
+   "docs": 30,
+   "no_output": 0,
+   "micro_f1": 0.8722627737226277,
+   "micro_f1_strict": 0.8232044198895028,
+   "per_class_f1": {
+    "odwolanie": 0.89375,
+    "pelnomocnictwo": 0.9090909090909091,
+    "przelew": 0.7294117647058823
+   },
+   "loss": {
+    "routing": 0.03832116788321168,
+    "fields": 0.08941605839416059,
+    "routing_errors": 21,
+    "field_errors": 49
+   },
+   "routing": {
+    "odwolanie": {
+     "odwolanie": 10
+    },
+    "pelnomocnictwo": {
+     "pelnomocnictwo": 10
+    },
+    "przelew": {
+     "przelew": 6,
+     "negatywny": 4
+    }
+   },
+   "misrouted": [
+    {
+     "doc": "skew-2/skany/potwierdzenia/0002",
+     "class": "przelew",
+     "routed_as": "negatywny"
+    },
+    {
+     "doc": "skew-2/skany/potwierdzenia/0006",
+     "class": "przelew",
+     "routed_as": "negatywny"
+    },
+    {
+     "doc": "skew-2/skany/potwierdzenia/0007",
+     "class": "przelew",
+     "routed_as": "negatywny"
+    },
+    {
+     "doc": "skew-2/skany/potwierdzenia/0008",
+     "class": "przelew",
+     "routed_as": "negatywny"
+    }
+   ],
+   "failing_fields": [
+    {
+     "path": "Odwolujacy[].pelnomocnik.mail",
+     "tp": 3,
+     "fp": 1,
+     "fn": 5
+    },
+    {
+     "path": "Odwolujacy[].przez-pelnomocnika",
+     "tp": 6,
+     "fp": 3,
+     "fn": 1
+    },
+    {
+     "path": "Odwolujacy[].pelnomocnik.nazwa",
+     "tp": 5,
+     "fp": 0,
+     "fn": 4
+    },
+    {
+     "path": "mocodawca[].podpisujacy[].imie_nazwisko",
+     "tp": 10,
+     "fp": 0,
+     "fn": 4
+    },
+    {
+     "path": "ZamowieniePubliczne.numer_postepowania",
+     "tp": 7,
+     "fp": 0,
+     "fn": 3
+    },
+    {
+     "path": "Odwolujacy[].pelnomocnik.imie_nazwisko",
+     "tp": 6,
+     "fp": 0,
+     "fn": 3
+    },
+    {
+     "path": "pelnomocnicy[].imie_nazwisko",
+     "tp": 14,
+     "fp": 0,
+     "fn": 3
+    },
+    {
+     "path": "ZamowieniePubliczne.tytul",
+     "tp": 8,
+     "fp": 2,
+     "fn": 0
+    }
+   ]
+  },
+  "skew-1": {
+   "spec": {
+    "dpi": 200,
+    "encoding": "jpeg",
+    "skew": -1.0,
+    "noise": 0.0,
+    "mixed": false
+   },
+   "seconds": 25.2,
+   "app_error": null,
+   "docs": 30,
+   "no_output": 0,
+   "micro_f1": 0.8844765342960289,
+   "micro_f1_strict": 0.8324175824175825,
+   "per_class_f1": {
+    "odwolanie": 0.9040247678018576,
+    "pelnomocnictwo": 0.9014084507042254,
+    "przelew": 0.7865168539325843
+   },
+   "loss": {
+    "routing": 0.02888086642599278,
+    "fields": 0.08664259927797834,
+    "routing_errors": 16,
+    "field_errors": 48
+   },
+   "routing": {
+    "odwolanie": {
+     "odwolanie": 10
+    },
+    "pelnomocnictwo": {
+     "pelnomocnictwo": 10
+    },
+    "przelew": {
+     "przelew": 7,
+     "negatywny": 3
+    }
+   },
+   "misrouted": [
+    {
+     "doc": "skew-1/skany/potwierdzenia/0006",
+     "class": "przelew",
+     "routed_as": "negatywny"
+    },
+    {
+     "doc": "skew-1/skany/potwierdzenia/0007",
+     "class": "przelew",
+     "routed_as": "negatywny"
+    },
+    {
+     "doc": "skew-1/skany/potwierdzenia/0008",
+     "class": "przelew",
+     "routed_as": "negatywny"
+    }
+   ],
+   "failing_fields": [
+    {
+     "path": "Odwolujacy[].pelnomocnik.mail",
+     "tp": 2,
+     "fp": 1,
+     "fn": 6
+    },
+    {
+     "path": "mocodawca[].podpisujacy[].imie_nazwisko",
+     "tp": 9,
+     "fp": 1,
+     "fn": 4
+    },
+    {
+     "path": "pelnomocnicy[].imie_nazwisko",
+     "tp": 13,
+     "fp": 0,
+     "fn": 4
+    },
+    {
+     "path": "OdwolanieKIO.czynnosc_dzien",
+     "tp": 7,
+     "fp": 0,
+     "fn": 3
+    },
+    {
+     "path": "OdwolanieKIO.czynnosc_powod_id",
+     "tp": 7,
+     "fp": 1,
+     "fn": 2
+    },
+    {
+     "path": "OdwolanieKIO.czynnosc_opis",
+     "tp": 7,
+     "fp": 1,
+     "fn": 2
+    },
+    {
+     "path": "Odwolujacy[].przez-pelnomocnika",
+     "tp": 7,
+     "fp": 2,
+     "fn": 1
+    },
+    {
+     "path": "Odwolujacy[].pelnomocnik.nazwa",
+     "tp": 6,
+     "fp": 0,
+     "fn": 3
+    }
+   ]
+  },
+  "skew+1": {
+   "spec": {
+    "dpi": 200,
+    "encoding": "jpeg",
+    "skew": 1.0,
+    "noise": 0.0,
+    "mixed": false
+   },
+   "seconds": 22.7,
+   "app_error": null,
+   "docs": 30,
+   "no_output": 0,
+   "micro_f1": 0.900709219858156,
+   "micro_f1_strict": 0.878581173260573,
+   "per_class_f1": {
+    "odwolanie": 0.9495548961424333,
+    "pelnomocnictwo": 0.8794326241134752,
+    "przelew": 0.7441860465116279
+   },
+   "loss": {
+    "routing": 0.03546099290780142,
+    "fields": 0.06382978723404255,
+    "routing_errors": 20,
+    "field_errors": 36
+   },
+   "routing": {
+    "odwolanie": {
+     "odwolanie": 10
+    },
+    "pelnomocnictwo": {
+     "pelnomocnictwo": 10
+    },
+    "przelew": {
+     "przelew": 6,
+     "negatywny": 4
+    }
+   },
+   "misrouted": [
+    {
+     "doc": "skew+1/skany/potwierdzenia/0003",
+     "class": "przelew",
+     "routed_as": "negatywny"
+    },
+    {
+     "doc": "skew+1/skany/potwierdzenia/0004",
+     "class": "przelew",
+     "routed_as": "negatywny"
+    },
+    {
+     "doc": "skew+1/skany/potwierdzenia/0007",
+     "class": "przelew",
+     "routed_as": "negatywny"
+    },
+    {
+     "doc": "skew+1/skany/potwierdzenia/0008",
+     "class": "przelew",
+     "routed_as": "negatywny"
+    }
+   ],
+   "failing_fields": [
+    {
+     "path": "Odwolujacy[].pelnomocnik.mail",
+     "tp": 4,
+     "fp": 1,
+     "fn": 4
+    },
+    {
+     "path": "mocodawca[].podpisujacy[].imie_nazwisko",
+     "tp": 10,
+     "fp": 1,
+     "fn": 4
+    },
+    {
+     "path": "ZamowieniePubliczne.numer_postepowania",
+     "tp": 7,
+     "fp": 1,
+     "fn": 2
+    },
+    {
+     "path": "pelnomocnicy[].imie_nazwisko",
+     "tp": 14,
+     "fp": 0,
+     "fn": 3
+    },
+    {
+     "path": "ZamowieniePubliczne.tytul",
+     "tp": 8,
+     "fp": 0,
+     "fn": 2
+    },
+    {
+     "path": "Zamawiajacy[].regon",
+     "tp": 1,
+     "fp": 0,
+     "fn": 2
+    },
+    {
+     "path": "Odwolujacy[].pelnomocnik.nazwa",
+     "tp": 7,
+     "fp": 0,
+     "fn": 2
+    },
+    {
+     "path": "mocodawca[].data.nip",
+     "tp": 9,
+     "fp": 0,
+     "fn": 2
+    }
+   ]
+  },
+  "skew+2": {
+   "spec": {
+    "dpi": 200,
+    "encoding": "jpeg",
+    "skew": 2.0,
+    "noise": 0.0,
+    "mixed": false
+   },
+   "seconds": 22.9,
+   "app_error": null,
+   "docs": 30,
+   "no_output": 0,
+   "micro_f1": 0.8470149253731343,
+   "micro_f1_strict": 0.8257142857142857,
+   "per_class_f1": {
+    "odwolanie": 0.89375,
+    "pelnomocnictwo": 0.8529411764705882,
+    "przelew": 0.65
+   },
+   "loss": {
+    "routing": 0.09888059701492537,
+    "fields": 0.054104477611940295,
+    "routing_errors": 53,
+    "field_errors": 29
+   },
+   "routing": {
+    "odwolanie": {
+     "odwolanie": 9,
+     "negatywny": 1
+    },
+    "pelnomocnictwo": {
+     "pelnomocnictwo": 9,
+     "negatywny": 1
+    },
+    "przelew": {
+     "przelew": 5,
+     "negatywny": 5
+    }
+   },
+   "misrouted": [
+    {
+     "doc": "skew+2/skany/odwolania/0002",
+     "class": "odwolanie",
+     "routed_as": "negatywny"
+    },
+    {
+     "doc": "skew+2/skany/pelnomocnictwa/0009",
+     "class": "pelnomocnictwo",
+     "routed_as": "negatywny"
+    },
+    {
+     "doc": "skew+2/skany/potwierdzenia/0003",
+     "class": "przelew",
+     "routed_as": "negatywny"
+    },
+    {
+     "doc": "skew+2/skany/potwierdzenia/0004",
+     "class": "przelew",
+     "routed_as": "negatywny"
+    },
+    {
+     "doc": "skew+2/skany/potwierdzenia/0007",
+     "class": "przelew",
+     "routed_as": "negatywny"
+    },
+    {
+     "doc": "skew+2/skany/potwierdzenia/0008",
+     "class": "przelew",
+     "routed_as": "negatywny"
+    },
+    {
+     "doc": "skew+2/skany/potwierdzenia/0010",
+     "class": "przelew",
+     "routed_as": "negatywny"
+    }
+   ],
+   "failing_fields": [
+    {
+     "path": "Odwolujacy[].pelnomocnik.mail",
+     "tp": 4,
+     "fp": 0,
+     "fn": 4
+    },
+    {
+     "path": "ZamowieniePubliczne.numer_postepowania",
+     "tp": 6,
+     "fp": 3,
+     "fn": 0
+    },
+    {
+     "path": "pelnomocnicy[].imie_nazwisko",
+     "tp": 12,
+     "fp": 0,
+     "fn": 3
+    },
+    {
+     "path": "ZamowieniePubliczne.tytul",
+     "tp": 7,
+     "fp": 0,
+     "fn": 2
+    },
+    {
+     "path": "Odwolujacy[].pelnomocnik.nazwa",
+     "tp": 6,
+     "fp": 0,
+     "fn": 2
+    },
+    {
+     "path": "mocodawca[].podpisujacy[].imie_nazwisko",
+     "tp": 10,
+     "fp": 0,
+     "fn": 2
+    },
+    {
+     "path": "Zamawiajacy[].prowadzacy_postepowanie",
+     "tp": 1,
+     "fp": 1,
+     "fn": 0
+    },
+    {
+     "path": "Zamawiajacy[].regon",
+     "tp": 2,
+     "fp": 0,
+     "fn": 1
+    }
+   ]
+  },
+  "skew+3": {
+   "spec": {
+    "dpi": 200,
+    "encoding": "jpeg",
+    "skew": 3.0,
+    "noise": 0.0,
+    "mixed": false
+   },
+   "seconds": 25.1,
+   "app_error": null,
+   "docs": 30,
+   "no_output": 0,
+   "micro_f1": 0.7906066536203522,
+   "micro_f1_strict": 0.7291361639824304,
+   "per_class_f1": {
+    "odwolanie": 0.8617363344051447,
+    "pelnomocnictwo": 0.8,
+    "przelew": 0.45714285714285713
+   },
+   "loss": {
+    "routing": 0.08414872798434442,
+    "fields": 0.12524461839530332,
+    "routing_errors": 43,
+    "field_errors": 64
+   },
+   "routing": {
+    "odwolanie": {
+     "odwolanie": 10
+    },
+    "pelnomocnictwo": {
+     "pelnomocnictwo": 9,
+     "negatywny": 1
+    },
+    "przelew": {
+     "przelew": 3,
+     "negatywny": 7
+    }
+   },
+   "misrouted": [
+    {
+     "doc": "skew+3/skany/pelnomocnictwa/0010",
+     "class": "pelnomocnictwo",
+     "routed_as": "negatywny"
+    },
+    {
+     "doc": "skew+3/skany/potwierdzenia/0002",
+     "class": "przelew",
+     "routed_as": "negatywny"
+    },
+    {
+     "doc": "skew+3/skany/potwierdzenia/0003",
+     "class": "przelew",
+     "routed_as": "negatywny"
+    },
+    {
+     "doc": "skew+3/skany/potwierdzenia/0004",
+     "class": "przelew",
+     "routed_as": "negatywny"
+    },
+    {
+     "doc": "skew+3/skany/potwierdzenia/0005",
+     "class": "przelew",
+     "routed_as": "negatywny"
+    },
+    {
+     "doc": "skew+3/skany/potwierdzenia/0007",
+     "class": "przelew",
+     "routed_as": "negatywny"
+    },
+    {
+     "doc": "skew+3/skany/potwierdzenia/0008",
+     "class": "przelew",
+     "routed_as": "negatywny"
+    },
+    {
+     "doc": "skew+3/skany/potwierdzenia/0010",
+     "class": "przelew",
+     "routed_as": "negatywny"
+    }
+   ],
+   "failing_fields": [
+    {
+     "path": "Odwolujacy[].pelnomocnik.mail",
+     "tp": 0,
+     "fp": 2,
+     "fn": 7
+    },
+    {
+     "path": "mocodawca[].podpisujacy[].imie_nazwisko",
+     "tp": 8,
+     "fp": 0,
+     "fn": 5
+    },
+    {
+     "path": "ZamowieniePubliczne.tytul",
+     "tp": 6,
+     "fp": 2,
+     "fn": 2
+    },
+    {
+     "path": "ZamowieniePubliczne.numer_postepowania",
+     "tp": 6,
+     "fp": 1,
+     "fn": 3
+    },
+    {
+     "path": "Zamawiajacy[].nazwa",
+     "tp": 7,
+     "fp": 2,
+     "fn": 2
+    },
+    {
+     "path": "OdwolanieKIO.data",
+     "tp": 6,
+     "fp": 0,
+     "fn": 4
+    },
+    {
+     "path": "pelnomocnicy[].imie_nazwisko",
+     "tp": 11,
+     "fp": 0,
+     "fn": 4
+    },
+    {
+     "path": "OdwolanieKIO.miejscowosc",
+     "tp": 7,
+     "fp": 0,
+     "fn": 3
+    }
+   ]
+  },
+  "noise": {
+   "spec": {
+    "dpi": 200,
+    "encoding": "jpeg",
+    "skew": 0.0,
+    "noise": 6.0,
+    "mixed": false
+   },
+   "seconds": 24.8,
+   "app_error": null,
+   "docs": 30,
+   "no_output": 0,
+   "micro_f1": 0.9307958477508651,
+   "micro_f1_strict": 0.9088471849865952,
+   "per_class_f1": {
+    "odwolanie": 0.9649122807017544,
+    "pelnomocnictwo": 0.9668874172185431,
+    "przelew": 0.7294117647058823
+   },
+   "loss": {
+    "routing": 0.03633217993079585,
+    "fields": 0.0328719723183391,
+    "routing_errors": 21,
+    "field_errors": 19
+   },
+   "routing": {
+    "odwolanie": {
+     "odwolanie": 10
+    },
+    "pelnomocnictwo": {
+     "pelnomocnictwo": 10
+    },
+    "przelew": {
+     "przelew": 6,
+     "negatywny": 4
+    }
+   },
+   "misrouted": [
+    {
+     "doc": "noise/skany/potwierdzenia/0003",
+     "class": "przelew",
+     "routed_as": "negatywny"
+    },
+    {
+     "doc": "noise/skany/potwierdzenia/0004",
+     "class": "przelew",
+     "routed_as": "negatywny"
+    },
+    {
+     "doc": "noise/skany/potwierdzenia/0005",
+     "class": "przelew",
+     "routed_as": "negatywny"
+    },
+    {
+     "doc": "noise/skany/potwierdzenia/0007",
+     "class": "przelew",
+     "routed_as": "negatywny"
+    }
+   ],
+   "failing_fields": [
+    {
+     "path": "pelnomocnicy[].imie_nazwisko",
+     "tp": 13,
+     "fp": 1,
+     "fn": 3
+    },
+    {
+     "path": "Odwolujacy[].pelnomocnik.mail",
+     "tp": 6,
+     "fp": 1,
+     "fn": 2
+    },
+    {
+     "path": "ZamowieniePubliczne.tytul",
+     "tp": 8,
+     "fp": 1,
+     "fn": 1
+    },
+    {
+     "path": "ZamowieniePubliczne.numer_postepowania",
+     "tp": 9,
+     "fp": 1,
+     "fn": 0
+    },
+    {
+     "path": "OdwolanieKIO.miejscowosc",
+     "tp": 9,
+     "fp": 0,
+     "fn": 1
+    },
+    {
+     "path": "OdwolanieKIO.data",
+     "tp": 9,
+     "fp": 0,
+     "fn": 1
+    },
+    {
+     "path": "OdwolanieKIO.czynnosc_dzien",
+     "tp": 9,
+     "fp": 0,
+     "fn": 1
+    },
+    {
+     "path": "OdwolanieKIO.czynnosc_powod_id",
+     "tp": 9,
+     "fp": 1,
+     "fn": 0
+    }
+   ]
+  },
+  "mixed-1": {
+   "spec": {
+    "dpi": null,
+    "encoding": "jpeg",
+    "skew": 0.0,
+    "noise": 0.0,
+    "mixed": true
+   },
+   "seconds": 26.2,
+   "app_error": null,
+   "docs": 30,
+   "no_output": 0,
+   "micro_f1": 0.8763636363636363,
+   "micro_f1_strict": 0.8319559228650137,
+   "per_class_f1": {
+    "odwolanie": 0.8726114649681529,
+    "pelnomocnictwo": 0.9166666666666666,
+    "przelew": 0.8260869565217391
+   },
+   "loss": {
+    "routing": 0.056363636363636366,
+    "fields": 0.06727272727272728,
+    "routing_errors": 31,
+    "field_errors": 37
+   },
+   "routing": {
+    "odwolanie": {
+     "odwolanie": 9,
+     "negatywny": 1
+    },
+    "pelnomocnictwo": {
+     "pelnomocnictwo": 10
+    },
+    "przelew": {
+     "przelew": 8,
+     "negatywny": 2
+    }
+   },
+   "misrouted": [
+    {
+     "doc": "mixed-1/skany/odwolania/0004",
+     "class": "odwolanie",
+     "routed_as": "negatywny"
+    },
+    {
+     "doc": "mixed-1/skany/potwierdzenia/0004",
+     "class": "przelew",
+     "routed_as": "negatywny"
+    },
+    {
+     "doc": "mixed-1/skany/potwierdzenia/0007",
+     "class": "przelew",
+     "routed_as": "negatywny"
+    }
+   ],
+   "failing_fields": [
+    {
+     "path": "mocodawca[].podpisujacy[].imie_nazwisko",
+     "tp": 8,
+     "fp": 1,
+     "fn": 5
+    },
+    {
+     "path": "Odwolujacy[].pelnomocnik.mail",
+     "tp": 3,
+     "fp": 0,
+     "fn": 5
+    },
+    {
+     "path": "Odwolujacy[].pelnomocnik.nazwa",
+     "tp": 5,
+     "fp": 0,
+     "fn": 3
+    },
+    {
+     "path": "pelnomocnicy[].imie_nazwisko",
+     "tp": 14,
+     "fp": 0,
+     "fn": 3
+    },
+    {
+     "path": "ZamowieniePubliczne.tytul",
+     "tp": 7,
+     "fp": 0,
+     "fn": 2
+    },
+    {
+     "path": "Odwolujacy[].przez-pelnomocnika",
+     "tp": 7,
+     "fp": 2,
+     "fn": 0
+    },
+    {
+     "path": "Odwolujacy[].pelnomocnik.imie_nazwisko",
+     "tp": 6,
+     "fp": 0,
+     "fn": 2
+    },
+    {
+     "path": "przelew_bankowy.data_operacji",
+     "tp": 6,
+     "fp": 1,
+     "fn": 1
+    }
+   ]
+  },
+  "mixed-2": {
+   "spec": {
+    "dpi": null,
+    "encoding": "jpeg",
+    "skew": 0.0,
+    "noise": 0.0,
+    "mixed": true
+   },
+   "seconds": 22.0,
+   "app_error": null,
+   "docs": 30,
+   "no_output": 0,
+   "micro_f1": 0.861878453038674,
+   "micro_f1_strict": 0.819047619047619,
+   "per_class_f1": {
+    "odwolanie": 0.879746835443038,
+    "pelnomocnictwo": 0.9387755102040817,
+    "przelew": 0.65
+   },
+   "loss": {
+    "routing": 0.03867403314917127,
+    "fields": 0.09944751381215469,
+    "routing_errors": 21,
+    "field_errors": 54
+   },
+   "routing": {
+    "odwolanie": {
+     "odwolanie": 10
+    },
+    "pelnomocnictwo": {
+     "pelnomocnictwo": 10
+    },
+    "przelew": {
+     "przelew": 6,
+     "negatywny": 4
+    }
+   },
+   "misrouted": [
+    {
+     "doc": "mixed-2/skany/potwierdzenia/0004",
+     "class": "przelew",
+     "routed_as": "negatywny"
+    },
+    {
+     "doc": "mixed-2/skany/potwierdzenia/0006",
+     "class": "przelew",
+     "routed_as": "negatywny"
+    },
+    {
+     "doc": "mixed-2/skany/potwierdzenia/0007",
+     "class": "przelew",
+     "routed_as": "negatywny"
+    },
+    {
+     "doc": "mixed-2/skany/potwierdzenia/0009",
+     "class": "przelew",
+     "routed_as": "negatywny"
+    }
+   ],
+   "failing_fields": [
+    {
+     "path": "Odwolujacy[].pelnomocnik.mail",
+     "tp": 1,
+     "fp": 1,
+     "fn": 7
+    },
+    {
+     "path": "ZamowieniePubliczne.numer_postepowania",
+     "tp": 7,
+     "fp": 0,
+     "fn": 3
+    },
+    {
+     "path": "Odwolujacy[].przez-pelnomocnika",
+     "tp": 7,
+     "fp": 2,
+     "fn": 1
+    },
+    {
+     "path": "Odwolujacy[].krs",
+     "tp": 5,
+     "fp": 1,
+     "fn": 2
+    },
+    {
+     "path": "Odwolujacy[].nazwa",
+     "tp": 7,
+     "fp": 2,
+     "fn": 1
+    },
+    {
+     "path": "Odwolujacy[].pelnomocnik.nazwa",
+     "tp": 6,
+     "fp": 0,
+     "fn": 3
+    },
+    {
+     "path": "Odwolujacy[].pelnomocnik.imie_nazwisko",
+     "tp": 6,
+     "fp": 0,
+     "fn": 3
+    },
+    {
+     "path": "mocodawca[].podpisujacy[].imie_nazwisko",
+     "tp": 11,
+     "fp": 1,
+     "fn": 2
+    }
+   ]
+  },
+  "mixed-3": {
+   "spec": {
+    "dpi": null,
+    "encoding": "jpeg",
+    "skew": 0.0,
+    "noise": 0.0,
+    "mixed": true
+   },
+   "seconds": 22.1,
+   "app_error": null,
+   "docs": 30,
+   "no_output": 0,
+   "micro_f1": 0.8250950570342205,
+   "micro_f1_strict": 0.7703081232492998,
+   "per_class_f1": {
+    "odwolanie": 0.8653846153846154,
+    "pelnomocnictwo": 0.8613138686131386,
+    "przelew": 0.5974025974025974
+   },
+   "loss": {
+    "routing": 0.049429657794676805,
+    "fields": 0.12547528517110265,
+    "routing_errors": 26,
+    "field_errors": 66
+   },
+   "routing": {
+    "odwolanie": {
+     "odwolanie": 10
+    },
+    "pelnomocnictwo": {
+     "pelnomocnictwo": 10
+    },
+    "przelew": {
+     "przelew": 5,
+     "negatywny": 5
+    }
+   },
+   "misrouted": [
+    {
+     "doc": "mixed-3/skany/potwierdzenia/0003",
+     "class": "przelew",
+     "routed_as": "negatywny"
+    },
+    {
+     "doc": "mixed-3/skany/potwierdzenia/0004",
+     "class": "przelew",
+     "routed_as": "negatywny"
+    },
+    {
+     "doc": "mixed-3/skany/potwierdzenia/0006",
+     "class": "przelew",
+     "routed_as": "negatywny"
+    },
+    {
+     "doc": "mixed-3/skany/potwierdzenia/0007",
+     "class": "przelew",
+     "routed_as": "negatywny"
+    },
+    {
+     "doc": "mixed-3/skany/potwierdzenia/0008",
+     "class": "przelew",
+     "routed_as": "negatywny"
+    }
+   ],
+   "failing_fields": [
+    {
+     "path": "mocodawca[].podpisujacy[].imie_nazwisko",
+     "tp": 7,
+     "fp": 0,
+     "fn": 7
+    },
+    {
+     "path": "Odwolujacy[].pelnomocnik.mail",
+     "tp": 3,
+     "fp": 1,
+     "fn": 5
+    },
+    {
+     "path": "ZamowieniePubliczne.numer_postepowania",
+     "tp": 6,
+     "fp": 1,
+     "fn": 3
+    },
+    {
+     "path": "Odwolujacy[].przez-pelnomocnika",
+     "tp": 6,
+     "fp": 3,
+     "fn": 1
+    },
+    {
+     "path": "Odwolujacy[].pelnomocnik.nazwa",
+     "tp": 5,
+     "fp": 0,
+     "fn": 4
+    },
+    {
+     "path": "ZamowieniePubliczne.tytul",
+     "tp": 7,
+     "fp": 1,
+     "fn": 2
+    },
+    {
+     "path": "Odwolujacy[].pelnomocnik.imie_nazwisko",
+     "tp": 6,
+     "fp": 0,
+     "fn": 3
+    },
+    {
+     "path": "mocodawca[].data.nip",
+     "tp": 8,
+     "fp": 0,
+     "fn": 3
+    }
+   ]
+  }
+ },
+ "groups": {
+  "mixed": {
+   "docs": 90,
+   "no_output": 0,
+   "micro_f1": 0.8548486720197653,
+   "micro_f1_strict": 0.8073563218390805,
+   "per_class_f1": {
+    "odwolanie": 0.8726114649681529,
+    "pelnomocnictwo": 0.9065420560747663,
+    "przelew": 0.6987951807228916
+   },
+   "loss": {
+    "routing": 0.04817788758492897,
+    "fields": 0.09697344039530574,
+    "routing_errors": 78,
+    "field_errors": 157
+   },
+   "routing": {
+    "odwolanie": {
+     "odwolanie": 29,
+     "negatywny": 1
+    },
+    "pelnomocnictwo": {
+     "pelnomocnictwo": 30
+    },
+    "przelew": {
+     "przelew": 19,
+     "negatywny": 11
+    }
+   },
+   "misrouted": [
+    {
+     "doc": "mixed-1/skany/odwolania/0004",
+     "class": "odwolanie",
+     "routed_as": "negatywny"
+    },
+    {
+     "doc": "mixed-1/skany/potwierdzenia/0004",
+     "class": "przelew",
+     "routed_as": "negatywny"
+    },
+    {
+     "doc": "mixed-1/skany/potwierdzenia/0007",
+     "class": "przelew",
+     "routed_as": "negatywny"
+    },
+    {
+     "doc": "mixed-2/skany/potwierdzenia/0004",
+     "class": "przelew",
+     "routed_as": "negatywny"
+    },
+    {
+     "doc": "mixed-2/skany/potwierdzenia/0006",
+     "class": "przelew",
+     "routed_as": "negatywny"
+    },
+    {
+     "doc": "mixed-2/skany/potwierdzenia/0007",
+     "class": "przelew",
+     "routed_as": "negatywny"
+    },
+    {
+     "doc": "mixed-2/skany/potwierdzenia/0009",
+     "class": "przelew",
+     "routed_as": "negatywny"
+    },
+    {
+     "doc": "mixed-3/skany/potwierdzenia/0003",
+     "class": "przelew",
+     "routed_as": "negatywny"
+    },
+    {
+     "doc": "mixed-3/skany/potwierdzenia/0004",
+     "class": "przelew",
+     "routed_as": "negatywny"
+    },
+    {
+     "doc": "mixed-3/skany/potwierdzenia/0006",
+     "class": "przelew",
+     "routed_as": "negatywny"
+    },
+    {
+     "doc": "mixed-3/skany/potwierdzenia/0007",
+     "class": "przelew",
+     "routed_as": "negatywny"
+    },
+    {
+     "doc": "mixed-3/skany/potwierdzenia/0008",
+     "class": "przelew",
+     "routed_as": "negatywny"
+    }
+   ],
+   "failing_fields": [
+    {
+     "path": "Odwolujacy[].pelnomocnik.mail",
+     "tp": 7,
+     "fp": 2,
+     "fn": 17
+    },
+    {
+     "path": "mocodawca[].podpisujacy[].imie_nazwisko",
+     "tp": 26,
+     "fp": 2,
+     "fn": 14
+    },
+    {
+     "path": "Odwolujacy[].pelnomocnik.nazwa",
+     "tp": 16,
+     "fp": 0,
+     "fn": 10
+    },
+    {
+     "path": "Odwolujacy[].przez-pelnomocnika",
+     "tp": 20,
+     "fp": 7,
+     "fn": 2
+    },
+    {
+     "path": "ZamowieniePubliczne.numer_postepowania",
+     "tp": 21,
+     "fp": 2,
+     "fn": 6
+    },
+    {
+     "path": "Odwolujacy[].pelnomocnik.imie_nazwisko",
+     "tp": 18,
+     "fp": 0,
+     "fn": 8
+    },
+    {
+     "path": "ZamowieniePubliczne.tytul",
+     "tp": 22,
+     "fp": 1,
+     "fn": 6
+    },
+    {
+     "path": "pelnomocnicy[].imie_nazwisko",
+     "tp": 45,
+     "fp": 1,
+     "fn": 5
+    }
+   ]
+  }
+ }
+}

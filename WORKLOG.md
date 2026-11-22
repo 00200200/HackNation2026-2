@@ -31,6 +31,8 @@ The viewer lists the loaded classes, the cue that chose each class, failed check
 
 ## Last eval
 
+The scan stress eval (`evals/scan_stress.py`, #81) re-rendered the 30 organizer scans from seed 2026 into 16 variants, the delivered files and 15 re-renders, and ran the CLI once per variant as the jury does: neutral case folders, no model endpoint, the default four workers. The product code was main `a84258d`, scored with the issue #59 metric at 0.80 s per document. The delivered scans scored 1.000 UZP (0.997 strict). The re-renders scored 0.791 to 0.965: 200 dpi grey JPEG 0.933, 150 dpi 0.922, 300 dpi 0.965, one-bit 0.882 (200 dpi) and 0.904 (300 dpi), skew from −3° to +3° 0.791 to 0.901, noise 0.931, three mixed sets 0.825 to 0.876. Of the F1 lost, routing errors account for 0.000 to 0.099 and field errors for 0.033 to 0.125. 54 of the 60 misrouted documents are transfers: receipt 0007 came back as `{}` in 13 of the 15 re-renders, 0008 in 10, 0004 in 9 and 0003 in 8. In most of them the first OCR pass lacks a cue that starts the receipt recovery, or one token stops it; the breakdown by cue is on #81. [Per-variant report](evals/results/scan-stress.json)
+
 On the 240 seeded PDFs, UZP field micro F1 rose from 0.2960 on #69 to **0.8948** on the robustness checkpoint. The classifier routed 170/180 positives, including all 60 appeals, and returned `{}` on all 60 negatives. The control with #78’s account and JSON conventions scored 0.3179. The ten remaining routing misses were alternative-format transfers.
 
 Main incorporated this classifier and the separate transfer-format fix in #89. The integrated rerun scored **0.9125** and routed **180/180** positives. Two-column appeals scored 0.4064 field F1 despite all ten routing correctly. All 196 organizer training outputs matched the control byte for byte and 29/30 organizer scans matched their references exactly. Private UZP F1 was 0.9247 on corpus 1 all and 0.9244 on corpus 2 dev. [Profile and gate comparisons](evals/results/variant-robustness.json)
@@ -113,6 +115,7 @@ Two and four grant JSONs matched exactly. The ten organizer grants remained exac
 | If the team keeps the Ministral profile (#38): obtain an EU/EEA-only processing commitment for Mistral or deploy the same weights within the EEA. UZP said no private hosting; UNCONFIRMED whether that rules out the second option, since upstream `VM.md` allows models and containers on the evaluation VM | Deployment |
 | Score corpus 2 test once after the class rules and small-model profile are integrated | Coordinator |
 | Improve receipt routing and recover damaged party names on development inputs | Open |
+| Scan robustness (#81): transfer routing on re-rendered scans. The stress eval is on `feat/scan-stress`; the extractor fix is not claimed | Open |
 | Confirm the unresolved VM, model hosting and scoring details listed in [the task brief](docs/task/BRIEF.md). | Open |
 | Promote HackNation2026 PR #48 to `prod` after the faktczyfejk demo, so the doc2json.pl Caddy block survives a redeploy | Open |
 | Run `docker compose run --rm cli` and `docker compose up gui` once on an amd64 Docker host and compare the CLI output with `python -m kio2json` (no Docker on the dev Macs; hosted Actions are blocked by billing, #67) | Open |
@@ -138,6 +141,8 @@ Two and four grant JSONs matched exactly. The ten organizer grants remained exac
   `/orchestrator`, not to Claude subagents.
 
 ## Log
+
+- 22.11.2026 · Claude · Added `evals/scan_stress.py` and `make scan-stress` for #81: 16 fixed-seed variants of the 30 organizer scans (the delivered files and 15 re-renders), run as the jury runs the app and scored with the loss split into routing and field errors. Baseline on main `a84258d`, no product change: delivered 1.000, re-renders 0.791 to 0.965, and 54 of the 60 misrouted documents are transfers returned as `{}`. [Report](evals/results/scan-stress.json) · feat/scan-stress
 
 - 22.11.2026 · Codex · Added contracting-authority descriptions and inflected captions to the appeal party reader. Joint authority cards preserve the printed names, registry IDs and lead marker. [Caption measurements](evals/results/authority-captions.json)
 
