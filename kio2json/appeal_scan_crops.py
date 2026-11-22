@@ -71,7 +71,24 @@ def _contact(name: str, header: str, words: list[WordBox], read: _ReadCrop) -> s
     return None
 
 
-def verify_cover(record: dict, page: str, words: list[WordBox], path: Path) -> None:
+def _disputed_counsel(firm: str, words: list[WordBox], read: _ReadCrop) -> bool:
+    """Check the printed name when both words following a professional title have weak OCR."""
+    if not re.search(r"(?i)\b(?:radca prawny|adwokat)\s+[^\W\d_]+\s+[^\W\d_]+$", firm):
+        return False
+    spans = list(_matching_boxes(words, firm.split()))
+    scores = [getattr(word, "confidence", None) for span in spans for word in span[-2:]]
+    if not scores or any(score is None or score >= 55 for score in scores):
+        return False
+
+    def letters(name):
+        return "".join(char for char in _fold(name) if char.isalpha())
+
+    expected = letters(" ".join(firm.split()[-2:]))
+    readings = [letters(read(span[-2:], "pol", False)) for span in spans]
+    return all(value and value != expected for value in readings)
+
+
+def verify_cover(record: dict, page: str, words: list[WordBox], path: Path, *, all_scanned: bool = False) -> None:
     if not words or not remaining_ms(1):
         return
     from tesserocr import PSM, PyTessBaseAPI
@@ -121,7 +138,9 @@ def verify_cover(record: dict, page: str, words: list[WordBox], path: Path) -> N
             if not counsel["mail"] and counsel["imie_nazwisko"]:
                 counsel["mail"] = _contact(counsel["imie_nazwisko"], header, words, read)
             firm = counsel["nazwa"] or ""
-            if " $ " in firm:
+            if all_scanned and _disputed_counsel(firm, words, read):
+                counsel["nazwa"] = None
+            elif " $ " in firm:
                 for span in _matching_boxes(words, firm.split()):
                     symbol = span[firm.split().index("$")]
                     if read([symbol], "eng") == "&":
