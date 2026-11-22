@@ -23,6 +23,7 @@ from .case_repair import Reading, printed_readings
 from .class_config import DocumentClass, load_classes, route
 from .classify import incomplete_booking_scan, resembles_appeal_heading
 from .engines import extract
+from .first_act import fill_missing_action
 from .grant_certificates import add_certificate_signers
 from .model_pages import AlternateOCR
 from .ocr_accounts import (
@@ -422,9 +423,10 @@ def _process(
             python_rules = partial(
                 _document_rules, definition, pdf_path, pages, ocr_pages, boxes, engine, selected, accounts, blocks
             )
+            text = join_pages(pages)
             record = extract(
                 definition,
-                join_pages(pages),
+                text,
                 ocr_python=python_rules,
                 alternate=alternate if definition.profile.dual_ocr else None,
                 model_text=join_pages(model_source) if pages is not model_source else None,
@@ -433,6 +435,8 @@ def _process(
                 source_pages=model_source,
                 on_recovery=on_recovery,
             )
+            if definition.extractor is appeal.extract and (header := record.get("OdwolanieKIO")):
+                fill_missing_action(header, text)
             if definition.extractor is power_of_attorney.extract and not definition.profile.keyed:
                 _grant_signers(pdf_path, record, pages, ocr_pages, engine)
             if case_readings is not None and uses_case_schema(definition):
