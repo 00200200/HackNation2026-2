@@ -91,6 +91,20 @@ def bind_engine(
     return partial(extract_llm, definition, model=model)
 
 
+def settle_checks(values: dict, failed: list[dict], held: dict) -> None:
+    """Return held "warn" readings to fields still empty, then report each failed check the record still shows."""
+    for path, value in held.items():
+        if trace.lookup(values, path, missing=MISSING) is None:
+            trace.assign(values, path, value)
+    kept = []
+    for warning in failed:
+        final = trace.lookup(values, warning["field"], missing=MISSING)
+        emptied = warning["action"] == "null" and final is None
+        if (emptied or final == warning["value"]) and warning not in kept:
+            kept.append(warning)
+    trace.note_warnings(kept)
+
+
 def missing_core_fields(class_id: str, record: dict) -> bool:
     """A missing party or transaction detail warrants a second reading of a rule-routed document."""
     if class_id == "appeal":
@@ -141,6 +155,7 @@ def extract(
                 if charge_focus == "only":
                     break
         if engine == "llm" and check_core_fields and not missing_core_fields(definition.id, values):
+            settle_checks(values, failed, held)
             return values
         if engine == "python" and ocr_python is not None:
             candidate = ocr_python()
@@ -180,18 +195,7 @@ def extract(
             if owner["typ"] == "osoba_prawna":
                 # A person's name belongs to an individual grantor or signer.
                 owner["imie_nazwisko"] = None
-    for path, value in held.items():
-        if trace.lookup(values, path, missing=MISSING) is None:
-            trace.assign(values, path, value)
-    if failed:
-        # Report a failed check while the final record still holds that reading, or keeps the emptied place.
-        kept = []
-        for warning in failed:
-            final = trace.lookup(values, warning["field"], missing=MISSING)
-            emptied = warning["action"] == "null" and final is None
-            if (emptied or final == warning["value"]) and warning not in kept:
-                kept.append(warning)
-        trace.note_warnings(kept)
+    settle_checks(values, failed, held)
     if definition.engines == ["python"]:
         # Python extractors own their normalization and serialization order.
         return values

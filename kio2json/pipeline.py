@@ -216,7 +216,7 @@ def _process_with_recovery(
     result = None, {}
     message = "Could not read document. Returning {}."
     if read.cache_info().currsize:
-        trace.discard_warnings()
+        trace.discard_attempt()
         try:
             result = _process(
                 pdf_path, [d.rules_only for d in definitions if d.profile.keyed], read, page_sizes, case_readings

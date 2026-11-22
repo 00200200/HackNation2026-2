@@ -485,13 +485,14 @@ def test_a_case_repair_shows_in_the_trace():
     assert "NIP: 1234567884" in shown and "poprawione według innego dokumentu sprawy" in shown
 
 
-def test_warnings_of_a_discarded_attempt_do_not_reach_the_retry():
+def test_a_discarded_attempt_leaves_no_warnings_or_candidates():
     from kio2json import trace
 
     with trace.recording() as events:
         trace.note_warnings([{"field": "nip", "check": "nip", "value": "1", "action": "null"}])
-        trace.discard_warnings()
-    assert events["warnings"] == []
+        trace.note_candidate("llm", {"nip": "1"})
+        trace.discard_attempt()
+    assert events["warnings"] == [] and events["candidates"] == []
 
 
 def test_the_scaffold_pattern_accepts_an_indented_label(tmp_path, monkeypatch):
@@ -604,3 +605,41 @@ def test_a_later_engine_replaces_a_value_kept_with_a_warning():
     record, events = traced_extract(accession_with_second_engine(), page, {"nip": "1234567883"})
     assert record["data_wezwania"] == "2032-03-11"
     assert [w["field"] for w in events["warnings"]] == ["data_wezwania"]
+
+
+def test_check_warnings_survive_the_early_core_field_return(monkeypatch):
+    from kio2json import engines, trace
+
+    definition = next(c for c in parse_classes(class_sources(extra=[EXAMPLES])) if c.id == "accession")
+    definition = definition.model_copy(update={"engines": ["labelled_fields", "llm"]})
+    monkeypatch.setattr(engines, "missing_core_fields", lambda class_id, record: False)
+    with trace.recording() as events:
+        record = engines.extract(
+            definition, ACCESSION_PAGE.replace("123-456-78-83", "123-456-78-84"), check_core_fields=True
+        )
+    assert record["nip"] is None
+    assert [w["field"] for w in events["warnings"]] == ["nip"]
+
+
+def test_printed_commands_quote_a_folder_with_spaces(tmp_path, monkeypatch, capsys):
+    monkeypatch.delenv("KIO_CLASSES_DIR", raising=False)
+    out = tmp_path / "my classes"
+    monkeypatch.setattr(sys, "argv", ["classes", "new", "accession", "--from-pdf", str(SAMPLE), "--out", str(out)])
+    assert tool.main() == 0
+    printed = capsys.readouterr().out
+    assert f"--classes '{out}'" in printed or f'--classes "{out}"' in printed
+
+
+@pytest.mark.parametrize(
+    ("value", "found", "missed"),
+    [
+        (125.125, "Stawka: 125.125", "Stawka: 125.12"),
+        (15.5, "Kwota: 15,50", "Kwota: 15,55"),
+        (15.0, "15,0 zł", "15,05"),
+    ],
+)
+def test_numbers_keep_their_full_precision_in_the_source_search(value, found, missed):
+    from kio2json.trace import value_pattern
+
+    assert value_pattern(value).search(found)
+    assert not value_pattern(value).search(missed)

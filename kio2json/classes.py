@@ -8,7 +8,10 @@ would load with the same --classes and --enable flags as the batch CLI.
 import argparse
 import json
 import math
+import os
 import re
+import shlex
+import subprocess
 import sys
 import tomllib
 import unicodedata
@@ -171,7 +174,8 @@ def new_class(args: argparse.Namespace) -> int:
     print(json.dumps(record, ensure_ascii=False, indent=2))
     for warning in warnings:
         print(f"check {warning['check']} failed for {warning['field']} = {warning['value']!r}")
-    flag = f"--classes {args.out}" if enabled else f"--enable {args.id}"
+    folder = subprocess.list2cmdline([str(args.out)]) if os.name == "nt" else shlex.quote(str(args.out))
+    flag = f"--classes {folder}" if enabled else f"--enable {args.id}"
     print(f"Run: python -m kio2json {flag} --input input --output output")
     print(f"View: python -m kio2json.gui {flag}")
     return 0

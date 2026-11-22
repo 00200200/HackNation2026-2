@@ -7,6 +7,7 @@ searching the text the extractor read; a value that cannot be found there is rep
 import re
 from contextlib import contextmanager
 from contextvars import ContextVar
+from decimal import Decimal
 
 from rapidfuzz.distance import Levenshtein
 
@@ -73,11 +74,12 @@ def note_warnings(warnings: list[dict]) -> None:
         events["warnings"].extend(warnings)
 
 
-def discard_warnings() -> None:
-    """Drop the warnings of an attempt whose output was discarded, before a retry records its own."""
+def discard_attempt() -> None:
+    """Drop what an attempt whose output was discarded recorded, before a retry records its own."""
     events = _events.get()
     if events is not None:
         events["warnings"].clear()
+        events["candidates"].clear()
 
 
 def note_candidate(engine: str, candidate: dict) -> None:
@@ -236,12 +238,14 @@ def field_source(
 
 def value_pattern(value) -> re.Pattern:
     if isinstance(value, float | int):
-        whole, _, cents = f"{value:.2f}".partition(".")
+        whole, _, fraction = format(Decimal(str(value)), "f").partition(".")
+        fraction = fraction.rstrip("0")
         digits = r"[ . ]?".join(re.escape(d) for d in whole)
-        if cents != "00":
-            return re.compile(rf"(?<!\d){digits}[.,]{cents}(?!\d)")
+        if fraction:
+            # The printed value may add trailing zeros ("15,50" for 15.5) but no other digits.
+            return re.compile(rf"(?<!\d){digits}[.,]{fraction}0*(?!\d)")
         # A whole amount may print ",00", but must not be the integer part of a different amount.
-        return re.compile(rf"(?<!\d){digits}(?:[.,]00)?(?![.,]?\d)")
+        return re.compile(rf"(?<!\d){digits}(?:[.,]0+)?(?![.,]?\d)")
     text = str(value)
     date = re.fullmatch(r"(\d{4})-(0[1-9]|1[0-2])-(\d{2})", text)
     if date:
