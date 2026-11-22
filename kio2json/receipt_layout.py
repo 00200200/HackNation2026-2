@@ -168,10 +168,10 @@ def has_detached_labels(pages: list[str], *, ocr: bool = False) -> bool:
     return len(detached) >= 2
 
 
-def _word_rows(boxes: list[WordBox]) -> tuple[list[list[WordBox]], float]:
+def word_rows(boxes: list[WordBox], page: int = 1) -> tuple[list[list[WordBox]], float]:
     words = []
     for box in boxes:
-        if box.page != 1 or box.y1 <= box.y0:
+        if box.page != page or box.y1 <= box.y0:
             continue
         # The native reader returns individual words. Some OCR backends also return multiword spans.
         for match in re.finditer(r"\S+", box.text):
@@ -331,7 +331,7 @@ def _amount_beside_label(rows, labels, index, anchor, height):
 
 def receipt_cell_fields(boxes: list[WordBox], *, ocr: bool = False) -> dict[str, str]:
     first_page = [word for word in boxes if word.page == 1]
-    rows, height = _word_rows(_level_scan_rows(first_page) if ocr else first_page)
+    rows, height = word_rows(_level_scan_rows(first_page) if ocr else first_page)
     labels = [_row_headers(row, following, height, ocr) for row, following in zip(rows, rows[1:] + [[]])]
     evidence = defaultdict(set)
     if ocr:
