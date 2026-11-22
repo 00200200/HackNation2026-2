@@ -143,7 +143,7 @@ Two and four grant JSONs matched exactly. The ten organizer grants remained exac
 
 ## Log
 
-- 22.11.2026 · Codex · Linked a printed firm name and execution signature to an identified sole trader, including a named proxy signing for the issuer.
+- 22.11.2026 · Codex · Linked a printed firm name and execution signature to an identified sole trader, including a named proxy signing for the issuer. The frozen panel recovered 5/10 firms and 2/10 signer lists on each rendering. [Results by grant](evals/results/trader-firm-signer.md)
 
 - 22.11.2026 · Codex · Added role-based sole-trader identification in declarations, registry cards and proprietor signatures. The frozen extractor recovered 8/8 reserved proprietor names. [Control and benchmark results](evals/results/sole-trader-grantors.md)
 
