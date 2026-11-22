@@ -60,6 +60,6 @@
     "uzp_micro_f1_both_runs": 1.0,
     "routing_correct_both_runs": 30,
     "result_files": "Not kept. Apart from the timing and the timestamp, the two result files were identical.",
-    "note": "The same work took 125 CPU seconds in both runs, and the scores did not change when it received about half the CPU. No cutoff was approached: the batch deadline for 30 documents is 324 s and the longer run took 115 s, so identical scores say nothing about behaviour once a cutoff binds. The resident set sizes are for the largest single process, not the total. Strict UZP F1 was 0.9974 in both runs. CPU seconds on the VM will differ with its core speed."
+    "note": "The same work took 125 CPU seconds in both runs, and the scores did not change when it received about half the CPU. The batch deadline for 30 documents is 324 s and the longer run took 115 s, so identical scores say nothing about behaviour once that deadline binds. The per-page OCR timeouts were not instrumented. The resident set sizes are for the largest single process, not the total. The strict micro F1, the historical exact-match score, was 0.9974 in both runs. CPU seconds on the VM will differ with its core speed."
   }
 }
