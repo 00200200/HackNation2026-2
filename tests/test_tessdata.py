@@ -15,7 +15,7 @@ def fresh_language_dir_cache():
 
 def test_vendored_models_match_pinned_hashes():
     assert pdf_text._language_dir() == str(pdf_text.TESSDATA_DIR)
-    assert (pdf_text.TESSDATA_DIR / "LICENSE").read_text().lstrip().startswith("Apache License")
+    assert (pdf_text.TESSDATA_DIR / "LICENSE").read_text(encoding="utf-8").lstrip().startswith("Apache License")
 
 
 def test_missing_or_altered_model_names_the_file(monkeypatch, tmp_path):

@@ -17,6 +17,7 @@ import pdfplumber
 from pdfplumber.utils import get_bbox_overlap, obj_to_bbox
 from PIL import Image
 
+from .case_repair import case_repair_enabled
 from .ocr_budget import CROP_TIMEOUT_MS, REREAD_PAGE_TIMEOUT_SECONDS, RereadExpired, remaining_ms, require_remaining_ms
 from .ocr_normalize import MAIL_TOKEN_RE, confirmed_email, normalize_ocr
 
@@ -150,6 +151,15 @@ class WordBox(NamedTuple):
     y1: float
 
 
+class OCRWord(WordBox):
+    """A Tesseract reading with the same six positional fields used by the layout readers."""
+
+    def __new__(cls, page, text, x0, y0, x1, y1, confidence=None):
+        word = super().__new__(cls, page, text, x0, y0, x1, y1)
+        word.confidence = confidence
+        return word
+
+
 # Tesseract fast models (Apache-2.0, see tessdata/LICENSE), vendored so pip needs no second host.
 TESSDATA_DIR = Path(__file__).with_name("tessdata")
 TESSDATA_UPSTREAM = (
@@ -274,6 +284,7 @@ def _tesseract(image: _Raster, words: list[WordBox] | None, *, explicit_dpi: boo
         cursor = 0
         if iterator is not None:
             left, top = image.bbox[:2]
+            keep_confidence = case_repair_enabled()
             for item in iterate_level(iterator, RIL.WORD):
                 box = item.BoundingBox(RIL.WORD)
                 if not box:
@@ -281,16 +292,17 @@ def _tesseract(image: _Raster, words: list[WordBox] | None, *, explicit_dpi: boo
                 token = item.GetUTF8Text(RIL.WORD)
                 x0, y0, x1, y1 = box
                 if words is not None:
-                    words.append(
-                        WordBox(
-                            image.page_number,
-                            token,
-                            left + x0 / image.scale,
-                            top + y0 / image.scale,
-                            left + x1 / image.scale,
-                            top + y1 / image.scale,
-                        )
+                    word = WordBox(
+                        image.page_number,
+                        token,
+                        left + x0 / image.scale,
+                        top + y0 / image.scale,
+                        left + x1 / image.scale,
+                        top + y1 / image.scale,
                     )
+                    if keep_confidence:
+                        word = OCRWord(*word, confidence=item.Confidence(RIL.WORD))
+                    words.append(word)
                 start = text.find(token, cursor)
                 if start < 0:
                     continue

@@ -1,0 +1,47 @@
+name: Jury batch
+on:
+  workflow_dispatch:
+  pull_request:
+    paths:
+      - requirements.txt
+      - kio2json/**
+      - start.bat
+      - .github/workflows/jury-batch.yml
+      - evals/jury_batch.py
+permissions:
+  contents: read
+jobs:
+  batch:
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [windows-latest, ubuntu-latest, macos-latest]
+    runs-on: ${{ matrix.os }}
+    timeout-minutes: 110
+    env:
+      PYTHONUTF8: "1"
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.13"
+      - run: python -m pip install -r requirements.txt
+      - if: runner.os == 'Windows'
+        shell: cmd
+        run: call start.bat
+      - run: python -m evals.jury_batch
+      - uses: actions/upload-artifact@v4
+        with:
+          name: jury-${{ matrix.os }}
+          path: jury-timing.json
+          if-no-files-found: error
+  parity:
+    needs: batch
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/download-artifact@v4
+        with:
+          pattern: jury-*
+          path: reports
+      - run: python3 -m evals.jury_batch --compare reports

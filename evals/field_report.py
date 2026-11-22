@@ -1,11 +1,11 @@
 """Per-field error report: uv run python -m evals.field_report [--holdout | --corpus DIR] [--force-ocr] [--errors]
 
 `evals.run` gives the headline F1. This report runs the pipeline in-process on the selected
-documents and shows which fields fail. Two differences from `evals.metrics`:
+documents and prints both headline metrics, followed by exact and normalized diagnostics:
 - list items are paired one-to-one inside their parent before fields are compared, so a signer
-  attached to the wrong principal is an error (the headline metric compares lists as multisets);
+  attached to the wrong principal is an error;
 - `--force-ocr` ignores the PDF text layer and reads every page with OCR, to measure what OCR costs.
-A wrong value costs one false positive and one false negative; null counts as a value.
+In the diagnostic tables a wrong value costs FP + FN and null counts as a value.
 """
 
 import argparse
@@ -19,7 +19,8 @@ from typing import TextIO
 
 from munkres import linear_sum_assignment
 
-from evals.metrics import NEGATIVE, doc_class
+from evals.metrics import NEGATIVE, Counts, compare_strict, doc_class
+from evals.metrics import compare as compare_uzp
 from evals.run import DATA, external_detail_path, input_errors, load_cases, load_corpus, private_output
 from kio2json.pipeline import process_pdf
 
@@ -166,6 +167,7 @@ def main() -> None:
 
 
 def print_report(cases: dict, data: Path, *, force_ocr: bool, errors: bool, diagnostics: TextIO | None) -> None:
+    uzp, strict = Counts(), Counts()
     confusion = Counter()
     by_class = defaultdict(list)
     normalized_by_class = defaultdict(list)
@@ -181,6 +183,8 @@ def print_report(cases: dict, data: Path, *, force_ocr: bool, errors: bool, diag
                 raise
             except Exception as exc:  # Extraction and OCR errors invalidate the report.
                 raise ValueError(f"document processing errors=1 ({type(exc).__name__})") from exc
+            uzp.add(compare_uzp(predicted, gold))
+            strict.add(compare_strict(predicted, gold))
             seconds.append(time.perf_counter() - started)
             gold_class, predicted_class = doc_class(gold), doc_class(predicted)
             confusion[(gold_class, predicted_class)] += 1
@@ -208,6 +212,9 @@ def print_report(cases: dict, data: Path, *, force_ocr: bool, errors: bool, diag
         f"mean {sum(seconds) / len(seconds):.2f} s/doc, max {max(seconds):.2f} s"
     )
 
+    for label, counts_total in (("micro_f1", uzp), ("micro_f1_strict", strict)):
+        value = counts_total.f1
+        print(f"{label} {value:.4f}" if value is not None else f"{label} undefined")
     print("\nRouting (rows: reference, columns: predicted)")
     print(f"{'':18}" + "".join(f"{c:>18}" for c in classes))
     for reference in classes:
