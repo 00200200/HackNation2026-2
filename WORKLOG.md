@@ -58,10 +58,12 @@ Two and four grant JSONs matched exactly. The ten organizer grants remained exac
 
 | Item | Owner |
 |---|---|
-| Obtain an EU/EEA-only processing commitment for Mistral or deploy the same weights within the EEA | Deployment |
+| If the team keeps the Ministral profile (#38): obtain an EU/EEA-only processing commitment from Mistral. UZP said no private hosting; UNCONFIRMED what that covers, since upstream `VM.md` expects models and containers on the evaluation VM | Deployment |
 | Score corpus 2 test once after the class rules and small-model profile are integrated | Coordinator |
 | Improve receipt routing and recover damaged party names on development inputs | Open |
-| Confirm the organizer’s F1 formula and Stage II weights with UZP | Open |
+| Organizer VM (`data/uzp/VM.md`, issue #66): team access ends 22.11.2026 at 11:00 and the evaluators run `/opt/solution/RUN.md` there. Request the VM through the form, install the solution in `/opt/solution` with `RUN.md` (and `.env` if an LLM is used), time it on 2 vCPU and test it as they will. UNCONFIRMED: whether a team without a VM is evaluated from GitHub | install-docker session (setup, `RUN.md`, compose, 2-vCPU timing); the team (VM request through the form, SSH access) |
+| Ask UZP the questions `docs/task/BRIEF.md` marks UNCONFIRMED (`grep -n UNCONFIRMED docs/task/BRIEF.md`). The ones that change the build: is a team without a VM evaluated from GitHub, does `.env` replace the form's key field, where "no private hosting" ends, the `RUN.md` format, whether the 45-minute limit is measured on the VM, how files unprocessed at the cutoff count, how F1 counts are aggregated, the 80% similarity measure and whether the PDF's 30/20 split still stands | Open |
+| Apply UZP's answers and the Regulamin: `{}` negatives (#57), country code in account numbers (#58), organizer F1 rules in the eval (#59), Docker Compose (#60), class-config flag and validators (#62), generated-variant eval (#63). Ministral or rules only (#38) is the team's decision | Open (see the issues) |
 | Promote HackNation2026 PR #48 to `prod` after the faktczyfejk demo, so the doc2json.pl Caddy block survives a redeploy | Open |
 
 ## Decisions
@@ -73,7 +75,12 @@ Two and four grant JSONs matched exactly. The ten organizer grants remained exac
   an OCR or model change has to beat this baseline in the eval. The baseline's rules have seen cases 51-60; a fresh case split is needed to measure generalization for work that builds on these rules.
 - 21.11.2026: use the date and act stated together in the first charge. When its heading lacks a date, use
   the introductory sentence describing the dated act. In cases 01–39 that sentence supplies the reference reason.
-- 21.11.2026: unrelated documents get an empty file (UNCONFIRMED with UZP; the team checks for a zero-byte output).
+- 22.11.2026: unrelated documents get a JSON containing only `{}`, not a 0-byte file. UZP confirmed it on Discord on
+  21.11 at 13:50, 22:19 and 22:32, after an ambiguous first answer at 13:27 (issue #57, `docs/task/BRIEF.md`).
+  Supersedes the 21.11 empty-file decision.
+- 22.11.2026: account numbers are written as printed in the document: a printed country code (`PL` or another) is
+  kept and all whitespace is removed (UZP on Discord; issues #46, #58). UZP calls the training references without `PL` an error that the
+  hidden set will not repeat.
 - 21.11.2026: file, module and identifier names are English; the jury GUI, organizer's JSON keys and original file stems use Polish.
 - 21.11.2026: delegated work and reviews (pre-commit review, pre-push judge) go to Codex workers through
   `/orchestrator`, not to Claude subagents.
@@ -179,3 +186,4 @@ These runs used local rules with the three endpoint variables unset. The two loc
 | Wire the doc2json.pl upload to the extraction (serve the GUI backend behind `/api/` or point the page at it) | Open |
 
 - 21.11.2026 · Codex · Round 3 traced 130 field errors on 78 real development PDFs. Recovered identifiers from matching party records, checked damaged company names against declarations and read debit amounts across bank columns. The single-field Ministral whitespace trial lost one correct title in 12 calls and was dropped.
+- 22.11.2026 · Claude · Brought `docs/task/BRIEF.md` up to UZP's Discord answers (#64), the Regulamin (`docs/task/regulamin.pdf`) and the organizer's new `VM.md`; refreshed `data/uzp` to `eadffbc` (adds `VM.md` only). Recorded the `{}` and account-number decisions, added the VM row to Next and merged main into PR #49 · docs/brief-update
