@@ -316,3 +316,4 @@ These runs used local rules with the three endpoint variables unset. The two loc
 - 22.11.2026 · Codex · Integrated the additional document families and matched native controls from #88 as `make eval-document-variants`. The fixed #69/#93 benchmark still runs with `make eval-variants`. · integrate/pr88
 - 22.11.2026 · Codex · Added grammatical agreement for descriptive appellant and buyer captions and linked printed joint-procurement lead references to numbered member identities on appeal cards.
 - 22.11.2026 · Refreshed the [jury pipeline diagram](docs/pipeline/pipeline.pdf) and [README results](README.md#results) with the merged-main scorecard at `725765b` and the later receipt-routing results.
+- 22.11.2026 · Codex · The default router rejects all five development transmission forms that main misclassified as grants, in native and scan views. The independent panel matched main on every output. [Delivery-proof measurements](evals/results/delivery-proofs.md)
