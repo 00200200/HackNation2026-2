@@ -66,6 +66,7 @@ app_ui = ui.page_fluid(
             ui.panel_conditional(
                 "output.count > 0",
                 ui.output_text("classification", container=ui.h2),
+                ui.output_ui("consistency_warnings"),
                 ui.div(
                     ui.tags.section(
                         ui.div(ui.h3("Dokument źródłowy"), ui.output_ui("page_picker"), class_="panel-head"),
@@ -148,7 +149,7 @@ def server(input: Inputs, output: Outputs, session: Session):
     def classification():
         result = selected().result
         if result.error:
-            return "Nie udało się odczytać dokumentu"
+            return f"Nie udało się odczytać dokumentu. {result.error}"
         if result.used_recovery:
             if result.label is None:
                 return "Brak wyniku po awaryjnej próbie odczytu regułami"
@@ -161,12 +162,24 @@ def server(input: Inputs, output: Outputs, session: Session):
     def target():
         return selected().name.with_suffix(".json").as_posix()
 
+    @render.ui
+    def consistency_warnings():
+        warnings = selected().warnings
+        if warnings:
+            return ui.div(
+                ui.h3("Rozbieżności w dokumentach sprawy"),
+                ui.tags.ul(
+                    *(
+                        ui.tags.li(w.message, " ", ui.tags.small(", ".join(name.as_posix() for name in w.documents)))
+                        for w in warnings
+                    )
+                ),
+                class_="alert alert-warning",
+            )
+
     @render.code
     def result_text():
-        result = selected().result
-        if result.error:
-            return f"Zapisano pusty plik (0 B).\nPrzyczyna: {result.error}"
-        return result.text or "Zapisano pusty plik (0 B)."
+        return selected().result.text
 
     @reactive.calc
     async def pages():

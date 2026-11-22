@@ -24,7 +24,7 @@ Classes and schemas (`data/uzp/oczekiwane-json/`):
 | appeal (odwołanie do KIO) | `odwolanie.json` | `OdwolanieKIO` (date, place, challenged action date, `czynnosc_powod_id` 1–12 + canonical `czynnosc_opis`, both from the **first** charge only), `Odwolujacy[]` (KRS/NIP/REGON, consortium leader, `przez-pelnomocnika`, attorney name, firm, e-mail), `Zamawiajacy[]` (+ `prowadzacy_postepowanie` null/0/1), `ZamowieniePubliczne` (BZP no. `YYYY/BZP########`, internal no., TED no. `NNNNNN-YYYY`, title) |
 | power of attorney (pełnomocnictwo) | `pelnomocnictwo.json` | `mocodawca[]` (`data`: name/KRS/NIP/`typ` osoba_prawna/osoba_fizyczna, `podpisujacy[]`), `pelnomocnicy[]` (name in nominative, PESEL) |
 | transfer confirmation (potwierdzenie przelewu) | `przelew.json` | `przelew_bankowy`: `data_operacji`, `kwota`, `na_rachunek`, `z_rachunku`, `numer_transakcji`, `tytul` |
-| anything else (negative) | — | **empty `.json` file**, no class |
+| anything else (negative) | — | `{}`, no class |
 
 `czynnosc_powod_id` dictionary: `data/uzp/oczekiwane-json/czynnosc_powod_id_dict.md`. The schema files contain
 `//` comments with the extraction rules for each field; treat them as the spec.
@@ -34,7 +34,8 @@ Missing information: never invent it; use `null` where the schema allows (FAQ 6)
 ## Input and output contract (organizer README, section 3)
 
 - `input/` and `output/` folders in the app root. The jury drops cases into `input/<case>/*.pdf`.
-- Output: `output/<case>/<same file name>.json`, one per input PDF, same tree. Negatives → empty `.json`.
+- Output: `output/<case>/<same file name>.json`, one per input PDF, same tree. Unrelated documents produce `{}`. The implementation also writes `{}` when it cannot process a PDF. [UZP clarification](https://github.com/00200200/HackNation2026-2/issues/57)
+- Transfer account numbers keep the printed country code, if present, and omit all whitespace. UZP confirmed that missing prefixes in the training references are labelling errors. [UZP clarification](https://github.com/00200200/HackNation2026-2/issues/58)
 - A CLI with instructions is **required** (FAQ 12a); a wrapper script (e.g. `start.bat`) is fine.
 - GUI is optional and scores extra: upload PDF, run, see JSON, ideally side by side with the source (FAQ 12b).
 
@@ -53,7 +54,7 @@ Missing information: never invent it; use `null` where the schema allows (FAQ 6)
 - `data/uzp/dane/przyklad_01` … `przyklad_60`: synthetic cases, each `odwolanie.pdf`, `pelnomocnictwo.pdf`,
   `potwierdzenie_przelewu.pdf` with gold `odwolanie.json`, `pelnomocnictwo.json`, `przelew.json`.
   (FAQ says "at least 39"; 60 in the repo on 21.11.2026.)
-- Negatives: 13 files in `data/uzp/dane/negatywne/`, and one extra PDF each in `przyklad_04`, `_10`, `_24`, `_37`.
+- Negatives: 12 PDFs in `data/uzp/dane/negatywne/`, and one extra PDF each in `przyklad_04`, `_10`, `_24`, `_37`.
 - `data/uzp/szablon-aplikacja/`: the expected folder layout (`input/case1`, `output/case1`).
 - Hidden test set: real cases prepared by UZP experts. The UZP stand can show it (FAQ 9).
 

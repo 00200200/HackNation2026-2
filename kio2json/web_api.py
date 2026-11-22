@@ -6,6 +6,7 @@
 
 `index` follows the upload order, so two files with the same name stay apart. `class` is the class id from
 `config/classes/*.toml` (null for a document outside every class, whose `data` is then `{}`).
+Failed documents also return `data: {}` and include the diagnostic in `error`.
 Run: `uvicorn kio2json.web_api:app --host 0.0.0.0 --port 8000`.
 """
 
@@ -45,7 +46,7 @@ class DocumentResult(BaseModel):
     index: int
     file: str
     class_id: str | None = Field(None, alias="class")
-    data: dict[str, Any] | None = None
+    data: dict[str, Any] = Field(default_factory=dict)
     error: str | None = None
 
 
@@ -150,7 +151,7 @@ async def _read(content: bytes, deadline: float) -> Result:
                             await cleanup
                             raise
                 if code or not output.exists():
-                    return Result(None, "", "Proces odczytu dokumentu zakończył się błędem.")
+                    return Result(None, error="Proces odczytu dokumentu zakończył się błędem.")
                 return Result(**json.loads(output.read_bytes()))
 
 
@@ -166,7 +167,7 @@ async def _extract_one(index: int, upload: UploadFile, deadline: float) -> Docum
             item.error = f"Przekroczono limit {DOC_TIMEOUT_S} s na dokument."
         else:
             item.class_id, item.error = result.label, result.error
-            item.data = json.loads(result.text) if result.text else ({} if result.error is None else None)
+            item.data = json.loads(result.text)
     return item
 
 

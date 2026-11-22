@@ -1,0 +1,24 @@
+x-jury: &jury
+  image: kio2json-jury:local
+  pull_policy: never
+  env_file:
+    - path: /opt/solution/.env
+      required: false
+
+services:
+  cli:
+    <<: *jury
+    user: "0:0"
+    command: ["python", "-m", "kio2json", "--jobs", "2"]
+    volumes:
+      - /opt/solution/input:/app/input:ro
+      - /opt/solution/output:/app/output
+    healthcheck:
+      disable: true
+
+  gui:
+    <<: *jury
+    command: ["uvicorn", "kio2json.jury_web:app", "--host", "0.0.0.0", "--port", "8000"]
+    ports:
+      - "8080:8000"
+    restart: unless-stopped

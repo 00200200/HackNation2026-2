@@ -1,5 +1,6 @@
 """Page text: the PDF text layer, with selectable local OCR for pages that have none."""
 
+import hashlib
 import os
 import re
 from collections.abc import Iterator
@@ -7,7 +8,6 @@ from concurrent.futures import Future, ThreadPoolExecutor
 from contextlib import ExitStack
 from contextvars import copy_context
 from functools import cache, partial
-from importlib.metadata import files
 from math import ceil
 from pathlib import Path
 from time import monotonic
@@ -17,6 +17,7 @@ import pdfplumber
 from pdfplumber.utils import get_bbox_overlap, obj_to_bbox
 from PIL import Image
 
+from .case_repair import case_repair_enabled
 from .ocr_budget import CROP_TIMEOUT_MS, REREAD_PAGE_TIMEOUT_SECONDS, RereadExpired, remaining_ms, require_remaining_ms
 from .ocr_normalize import MAIL_TOKEN_RE, confirmed_email, normalize_ocr
 
@@ -25,7 +26,9 @@ MAX_PAGES = 3
 OCR_DPI = 300
 # Three A4 pages at 300 DPI fit within this limit (about 105 MiB of RGB pixels in Pillow).
 MAX_PARALLEL_PIXELS = 28_000_000
-OCR_TIMEOUT_SECONDS = 60
+OCR_TIMEOUT_SECONDS = 180
+PRIMARY_RETRY_TIMEOUT_SECONDS = 60
+RETRY_DPI = OCR_DPI // 2
 DEFAULT_OCR_ENGINE = "tesseract-dpi"
 TESSERACT_ENGINES = frozenset({"tesseract", "tesseract-dpi", "hybrid"})
 OCR_ENGINES = TESSERACT_ENGINES | {"rapidocr"}
@@ -37,6 +40,14 @@ class NoReadableTextError(RuntimeError):
 
 class OCRRecognitionError(RuntimeError):
     """The OCR engine failed or timed out while recognizing a page."""
+
+
+class _PrimaryPageTimeout(OCRRecognitionError):
+    """A required Tesseract pass exhausted its native watchdog."""
+
+
+def _primary_retry_ms() -> int:
+    return remaining_ms(int(1000 * min(PRIMARY_RETRY_TIMEOUT_SECONDS, OCR_TIMEOUT_SECONDS)))
 
 
 MIN_OCR_WORDS = 2
@@ -150,12 +161,37 @@ class WordBox(NamedTuple):
     y1: float
 
 
+class OCRWord(WordBox):
+    """A Tesseract reading with the same six positional fields used by the layout readers."""
+
+    def __new__(cls, page, text, x0, y0, x1, y1, confidence=None):
+        word = super().__new__(cls, page, text, x0, y0, x1, y1)
+        word.confidence = confidence
+        return word
+
+
+# Tesseract fast models (Apache-2.0, see tessdata/LICENSE), vendored so pip needs no second host.
+TESSDATA_DIR = Path(__file__).with_name("tessdata")
+TESSDATA_UPSTREAM = (
+    "https://raw.githubusercontent.com/tesseract-ocr/tessdata_fast/87416418657359cb625c412a48b6e1d6d41c29bd"
+)
+TESSDATA_SHA256 = {
+    "pol.traineddata": "c4476cdbc0e33d898d32345122b7be1cbf85ace15f920f06c7714756e1ef79b2",
+    "eng.traineddata": "7d4322bd2a7749724879683fc3912cb542f19906c83bcc1a52132556427170b2",
+}
+
+
 @cache
 def _language_dir() -> str:
-    for entry in files("kio-polish-ocr-data") or ():
-        if entry.name == "pol.traineddata" and entry.locate().is_file():
-            return str(entry.locate().parent)
-    raise FileNotFoundError("Polish OCR data missing from the kio-polish-ocr-data installation")
+    for name, expected in TESSDATA_SHA256.items():
+        path = TESSDATA_DIR / name
+        try:
+            digest = hashlib.sha256(path.read_bytes()).hexdigest()
+        except OSError as error:
+            raise FileNotFoundError(f"OCR language data missing: {path} ({TESSDATA_UPSTREAM}/{name})") from error
+        if digest != expected:
+            raise RuntimeError(f"{path} has SHA-256 {digest}, expected {expected} ({TESSDATA_UPSTREAM}/{name})")
+    return str(TESSDATA_DIR)
 
 
 @cache
@@ -191,15 +227,18 @@ def _ocr(page, words: list[WordBox] | None, *, engine: str | None = None, reread
     except TimeoutError as error:
         if reread:
             raise RereadExpired from error
-        raise
+        retry_ms = _primary_retry_ms()
+        if not retry_ms:
+            raise
+        text, boxes = recognize(page.pdf.path, page.page_number, words is not None, retry_ms / 1000, dpi=RETRY_DPI)
     if words is not None:
         words.extend(WordBox(*box) for box in boxes)
     return text
 
 
-def _rapidocr(page, words: list[WordBox] | None, *, lines: bool = False) -> str:
+def _rapidocr(page, words: list[WordBox] | None, *, lines: bool = False, dpi: int | None = None) -> str:
     """Run inside the deadline-controlled worker, which owns the mutable ONNX engine."""
-    image = page.to_image(resolution=OCR_DPI)
+    image = page.to_image(resolution=OCR_DPI if dpi is None else dpi)
     result = _rapid_engine()(image.original, return_word_box=words is not None and not lines)
     if words is not None and result.txts:
         left, top = image.bbox[:2]
@@ -236,6 +275,20 @@ def _render(page) -> _Raster:
 
 
 def _tesseract(image: _Raster, words: list[WordBox] | None, *, explicit_dpi: bool, reread: bool = False) -> str:
+    try:
+        return _recognize_raster(image, words, explicit_dpi=explicit_dpi, dpi=OCR_DPI, reread=reread)
+    except _PrimaryPageTimeout:
+        if not _primary_retry_ms():
+            raise
+        # Resize the existing raster: parallel workers must never render PDFium pages.
+        with image.original.reduce(2) as reduced:
+            retry = image._replace(original=reduced, scale=image.scale / 2)
+            return _recognize_raster(retry, words, explicit_dpi=explicit_dpi, dpi=RETRY_DPI, reread=False)
+
+
+def _recognize_raster(
+    image: _Raster, words: list[WordBox] | None, *, explicit_dpi: bool, dpi: int, reread: bool
+) -> str:
     """Recognize the page and verify suspect e-mail separators against their image crops."""
     from tesserocr import PSM, RIL, PyTessBaseAPI, iterate_level
 
@@ -245,12 +298,18 @@ def _tesseract(image: _Raster, words: list[WordBox] | None, *, explicit_dpi: boo
         api = stack.enter_context(PyTessBaseAPI(path=_language_dir(), lang="pol", psm=PSM.AUTO))
         api.SetImage(image.original)
         if explicit_dpi:
-            api.SetSourceResolution(OCR_DPI)
+            api.SetSourceResolution(dpi)
         timeout = require_remaining_ms(1000 * REREAD_PAGE_TIMEOUT_SECONDS) if reread else 1000 * OCR_TIMEOUT_SECONDS
+        if dpi == RETRY_DPI:
+            timeout = _primary_retry_ms()
+            if not timeout:
+                raise _PrimaryPageTimeout("Polish OCR timed out before the lower-resolution retry")
         recognition_deadline = monotonic() + timeout / 1000
         if not api.Recognize(timeout=timeout):
             if reread and (not remaining_ms(1) or monotonic() >= recognition_deadline):
                 raise RereadExpired
+            if not reread and monotonic() >= recognition_deadline:
+                raise _PrimaryPageTimeout("Polish OCR timed out")
             raise OCRRecognitionError("Polish OCR failed or timed out")
         text = api.GetUTF8Text()
         iterator = api.GetIterator() if text.strip() else None
@@ -258,6 +317,7 @@ def _tesseract(image: _Raster, words: list[WordBox] | None, *, explicit_dpi: boo
         cursor = 0
         if iterator is not None:
             left, top = image.bbox[:2]
+            keep_confidence = case_repair_enabled()
             for item in iterate_level(iterator, RIL.WORD):
                 box = item.BoundingBox(RIL.WORD)
                 if not box:
@@ -265,16 +325,17 @@ def _tesseract(image: _Raster, words: list[WordBox] | None, *, explicit_dpi: boo
                 token = item.GetUTF8Text(RIL.WORD)
                 x0, y0, x1, y1 = box
                 if words is not None:
-                    words.append(
-                        WordBox(
-                            image.page_number,
-                            token,
-                            left + x0 / image.scale,
-                            top + y0 / image.scale,
-                            left + x1 / image.scale,
-                            top + y1 / image.scale,
-                        )
+                    word = WordBox(
+                        image.page_number,
+                        token,
+                        left + x0 / image.scale,
+                        top + y0 / image.scale,
+                        left + x1 / image.scale,
+                        top + y1 / image.scale,
                     )
+                    if keep_confidence:
+                        word = OCRWord(*word, confidence=item.Confidence(RIL.WORD))
+                    words.append(word)
                 start = text.find(token, cursor)
                 if start < 0:
                     continue
@@ -292,7 +353,7 @@ def _tesseract(image: _Raster, words: list[WordBox] | None, *, explicit_dpi: boo
                 )
                 english.SetImage(image.original.crop(crop))
                 if explicit_dpi:
-                    english.SetSourceResolution(OCR_DPI)
+                    english.SetSourceResolution(dpi)
                 timeout = remaining_ms(CROP_TIMEOUT_MS)
                 if timeout and english.Recognize(timeout=timeout):
                     replacement = confirmed_email(token, english.GetUTF8Text().strip())
