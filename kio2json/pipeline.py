@@ -242,8 +242,7 @@ def _process(
     primary_error = None
     for engine in engines:
         try:
-            if engine != engines[0] and not remaining_ms(1):
-                raise RereadExpired
+            # A cached reading is free; a new alternate reread raises RereadExpired itself once the deadline passes.
             primary, ocr_pages, boxes = read(engine)
             pages, definition, accounts = _read_receipt(
                 primary,

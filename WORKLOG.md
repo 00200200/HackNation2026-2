@@ -120,6 +120,9 @@ Two and four grant JSONs matched exactly. The ten organizer grants remained exac
 
 ## Log
 
+- 22.11.2026 · Claude · #39: closed #55 as superseded by #87, which already brought its gate into main. The reworked variant (trim a noise tail and trailing stray symbols, null only a value that is noise throughout) gave byte-identical output to main on the 30 organizer scans and on the template scan, changed none of 283 clean reference values and scored the same UZP F1 on 6 of 7 injected-damage recipes (the seventh, three stray rules inside a value, 0.916 against 0.884). It is not measured on the private corpora, so it was not merged. [Numbers](https://github.com/00200200/HackNation2026-2/pull/55) (`fix/ocr-plausibility` kept)
+- 22.11.2026 · Claude · Removed the deadline guard in front of the alternate OCR reading in `_process` (CodeRabbit on #33). After the shared deadline, recovery from a failed keyed extraction now tests the cached RapidOCR reading against the rules instead of returning `{}`; a new alternate reread still stops itself in `read_pages`. Only `KIO_OCR_ENGINE=hybrid` is affected, the default engine and its OCR work are unchanged. [Tests](tests/test_cached_ocr_deadline.py) (`fix/cached-ocr-after-deadline`)
+
 - 22.11.2026 · Codex · Raised the required page watchdog from 60 to 180 seconds and added one 150-dpi retry within the remaining OCR budget. Regression tests cover timeout recovery, immediate engine errors, budget exhaustion and word-box coordinates after resizing.
 
 - 22.11.2026 · Codex · Added case warnings and opt-in sibling OCR repair for #61. All 304 keyless outputs matched main byte for byte. UZP F1 stayed at 0.9231 on corpus 1 all, 0.9221 on corpus 1 dev and 0.9244 on corpus 2 dev. Training scored 1.000 with 196 exact outputs. The 30 singleton scans had 29 exact outputs and UZP F1 of 1.000. [Paired case measurements](evals/results/case-siblings.json)
