@@ -28,7 +28,7 @@ A KIO case can include an appeal, a power of attorney and a payment receipt. Eac
 
 <p align="center"><img src="docs/readme/pipeline.png" alt="Read, route, extract, normalise, write" width="100%"></p>
 
-Routing reads the document text. Each class configuration supplies its routing rules, fields and extraction engines. The default CLI runs on CPU with local OCR and rule-based extraction. It writes `null` for missing values. An optional language model can extract fields from cited source spans. [Pipeline](docs/readme/reference.md#how-it-works) · [Model configuration](docs/readme/reference.md#use-a-model-endpoint)
+The CLI reads and routes each document locally, then runs the rules for that class. On the jury VM, Ministral can fill a field the rules left null using a verbatim quote from the document. Every value the rules supplied is final. The CLI checks the evidence against the field and its owner. Missing scalar values can remain `null`. [Pipeline](docs/pipeline/pipeline.pdf) · [Model configuration](docs/readme/reference.md#use-a-model-endpoint)
 
 ## Results
 
@@ -79,7 +79,9 @@ OCR engines, offline install of the language data, the optional model endpoint a
 
 ## Deploy on the evaluation VM
 
-The setup script installs the jury CLI in `/opt/solution`. The reference includes the offline rehearsal and reboot checks. [VM setup](docs/readme/reference.md#deploy-on-the-evaluation-vm)
+The setup script installs the jury CLI in `/opt/solution`. The evaluator runs the two-worker command in `RUN.md` from that directory. Before handover, the deployment owner sets `KIO_LLM_API_KEY` in `/opt/solution/.env` alongside `KIO_LLM_BASE_URL=https://api.eu.mistral.ai/v1` and `KIO_LLM_MODEL=ministral-3b-2512`. The same command uses local rules when the key is absent and preserves their output if a model call fails. [Jury command](deploy/RUN.md) · [VM setup and rehearsal](docs/readme/reference.md#deploy-on-the-evaluation-vm)
+
+The jury model has 3.85 billion parameters, including its vision weights. Mistral lists EU and EFTA data centers for its regional inference service. The exact country serving this model is unconfirmed. [Model size](docs/small-model-providers.md) · [Regional inference](https://docs.mistral.ai/inference/regional-inference) · [Privacy policy](https://legal.mistral.ai/terms/privacy-policy/) · [Data Processing Addendum](https://legal.mistral.ai/terms/data-processing-addendum/)
 
 ## Run with Docker Compose
 

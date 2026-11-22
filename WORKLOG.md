@@ -8,7 +8,7 @@ The integration branch combines real-layout appeal, grant and transfer rules wit
 OpenAI-compatible model engine. The default CLI and GUI run locally with the three endpoint
 variables unset. Keyed runs can use a second OCR reading and recover a failed document with local rules.
 
-The opt-in small-model profile uses Mistral’s regional API, compact source spans and bounded PDF workers. [Provider comparison](docs/small-model-providers.md)
+On the jury VM the three regional Mistral settings select Ministral 3B after local routing and rules. One bounded request can fill missing fields using owner-specific source quotes. Populated rule values remain authoritative. Local rules supply the result when the key is absent or inference fails. [Jury runbook](deploy/RUN.md)
 
 The batch CLI defaults to up to four PDF workers, with one thread per Tesseract instance and up to three concurrent page reads per PDF. The first OCR pass supplies layout word boxes, and optional OCR has up to 300 seconds per document. A shared batch cutoff stops rereads after 27 minutes for 150 PDFs. Required OCR has a 180-second page watchdog and can retry a stalled page once at 150 dpi.
 
@@ -313,3 +313,5 @@ These runs used local rules with the three endpoint variables unset. The two loc
 - 22.11.2026 · Codex · Added the seeded case-linked benchmark on `feat/case-benchmark`, pairing each native appeal, mandate, transfer and near-negative with a scan and grouping the results by case and layout. Main `fa9937e` scored 0.7191 UZP and 0.6617 strict on 208 PDFs. [Measurements](evals/results/case-benchmark.json)
 - 22.11.2026 · Codex · Integrated the additional document families and matched native controls from #88 as `make eval-document-variants`. The fixed #69/#93 benchmark still runs with `make eval-variants`. · integrate/pr88
 - 22.11.2026 · Codex · Added grammatical agreement for descriptive appellant and buyer captions and linked printed joint-procurement lead references to numbered member identities on appeal cards.
+
+- 2026-11-22 — Jury profile: use regional Ministral 3B for evidence-checked field completion after local extraction, with shared time and concurrency limits across PDF workers.

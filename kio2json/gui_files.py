@@ -5,7 +5,7 @@ import ntpath
 import os
 import shutil
 from collections import defaultdict
-from contextlib import closing
+from contextlib import closing, nullcontext
 from dataclasses import dataclass, replace
 from io import BytesIO
 from pathlib import Path
@@ -17,6 +17,7 @@ from shiny.types import FileInfo
 from .batch import Result, configure_logging, read_document, reconcile_cases
 from .case_checks import CaseWarning, case_warnings
 from .class_config import DocumentClass, load_classes
+from .jury_budget import JuryBudget, jury_document
 from .ocr_budget import batch_deadline
 
 type Source = tuple[Path, Path]  # relative name for the jury and path to read
@@ -79,15 +80,16 @@ def analyze(sources: list[Source], directory: Path, classes: list[DocumentClass]
     classes = load_classes() if classes is None else classes
     configure_logging(classes)
     documents = []
-    for index, (name, path) in enumerate(sources):
-        snapshot = directory / f"{index}.pdf"
-        try:
-            shutil.copyfile(path, snapshot)
-        except OSError as error:
-            result = Result(None, error=str(error))
-        else:
-            result = read_document(snapshot, classes, batch_deadline=deadline, explain=True)
-        documents.append(Document(name, snapshot, result))
+    with jury_document(JuryBudget(len(sources))) if any(c.profile.jury for c in classes) else nullcontext():
+        for index, (name, path) in enumerate(sources):
+            snapshot = directory / f"{index}.pdf"
+            try:
+                shutil.copyfile(path, snapshot)
+            except OSError as error:
+                result = Result(None, error=str(error))
+            else:
+                result = read_document(snapshot, classes, batch_deadline=deadline, explain=True)
+            documents.append(Document(name, snapshot, result))
     names = [document.name for document in documents]
     results = reconcile_cases(names, [document.result for document in documents])
     warnings = defaultdict(list)

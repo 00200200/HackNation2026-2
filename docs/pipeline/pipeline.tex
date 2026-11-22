@@ -28,8 +28,6 @@
     fail/.style={base, draw=warn, fill=warnfill, line width=0.7pt, text width=#1},
     planned/.style={base, draw=plan, fill=planfill, dashed, line width=0.6pt, text width=#1},
     arrow/.style={->, line width=0.8pt, draw=flow},
-    review/.style={base, draw=violet!75!black, fill=violet!4, double, double distance=1pt, text width=#1},
-    plannedarrow/.style={->, line width=0.6pt, draw=plan, dashed},
     failarrow/.style={->, line width=0.7pt, draw=warn},
     note/.style={font=\sffamily\footnotesize, text=muted, align=left},
 ]
@@ -69,7 +67,7 @@
    Bind receipt cells to sender and recipient accounts. Read amount, execution date, title and transaction reference.};
 \node[fail=2.8cm, anchor=north west] (other) at ($(transfer.north east)+(3mm,0)$)
   {\textbf{Unrelated}\\\fname{batch.py}\\[3pt]
-   No accepted route after any enabled fallback.};
+   The local rules found no matching class.};
 \coordinate (fork) at ($(route.south)+(0,-5mm)$);
 \draw[draw=flow,line width=0.8pt] (route.south) -- (fork);
 \foreach \cls in {appeal,poa,transfer}
@@ -77,39 +75,39 @@
 \draw[failarrow] (other.north |- route.south) -- (other.north);
 
 \node[fit=(appeal)(poa)(transfer), inner sep=0pt] (rules) {};
-\node[io=12.25cm, anchor=north west] (json) at ($(appeal.west |- rules.south)+(0,-6mm)$)
+\node[planned=12.25cm, anchor=north west] (model) at ($(appeal.west |- rules.south)+(0,-6mm)$)
+  {\textbf{Fill null fields with Ministral}\\[2pt]
+   For a recognized class, ask only about fields the rules left null. Every populated rule value is final.
+   Verify a verbatim page quote and its role before accepting a typed answer. An abstention, failed request or exhausted budget preserves the rule result.};
+\foreach \cls in {appeal,poa,transfer}
+  \draw[arrow] (\cls.south) -- (\cls.south |- model.north);
+\node[io=12.25cm, below=6mm of model] (json)
   {\textbf{Write organizer JSON}\hfill\fname{batch.py / \_\_main\_\_.py}\\[2pt]
    Keep the relative directory and stem. Missing scalar fields can be \texttt{null}.\\
    \texttt{input/<case>/a.pdf} $\to$
    \texttt{output/<case>/a.json}};
-\foreach \cls in {appeal,poa,transfer}
-  \draw[arrow] (\cls.south) -- (\cls.south |- json.north);
+\draw[arrow] (model) -- (json);
 \node[fail=2.8cm, anchor=north] (empty) at (other.center |- json.north)
-  {\textbf{Empty file}\\Zero bytes at the matching JSON path.};
+  {\textbf{Empty object}\\Write \texttt{\{\}} at the matching JSON path.};
 \draw[failarrow] (other) -- (empty);
 
-% Side panels describe configuration, optional behavior and its review status.
+% The VM uses the same configuration for the native CLI and the Compose CLI.
 \node[box=7.1cm, anchor=north west] (config) at ($(gui.north east)+(8mm,0)$)
   {\textbf{Class configuration}\hfill\fname{config/classes/*.toml}\\[2pt]
    Add a class with one TOML file defining routing cues, fields, types and engine order.
    \fname{engines.py} runs \texttt{python}, \texttt{labelled\_fields} or \texttt{llm}.};
-\node[planned=7.1cm, below=4mm of config] (model)
-  {\textbf{Optional model engine on main}\\
-   \fname{llm.py / model\_profile.py / output\_schema.py}\\[2pt]
-   Set \texttt{KIO\_LLM\_BASE\_URL}, \texttt{KIO\_LLM\_MODEL} and
-   \texttt{KIO\_LLM\_API\_KEY} for an OpenAI-compatible EU endpoint supporting structured JSON.\\[3pt]
-   After rule rejection, route from the first page. By default the model extracts first and rules fill gaps.
-   Scans can supply a second RapidOCR reading. Accept a model value only with a supporting source quote.
-   On error, retry that document with local rules.};
-\draw[plannedarrow,<->] (route.east) -- (route.east -| model.west);
-\node[review=7.1cm, below=4mm of model] (changes)
-  {\textbf{In review}\\[2pt]
-   \textbf{\#26}\quad Rules extract first. Ministral 3B (3.85B parameters) fills null fields and can route a
-   rejected PDF only with evidence from that document.\\[3pt]
-   \textbf{\#24}\quad Scanned transfer confirmations, round two.\\
-   \textbf{\#28}\quad Recovery of fields on scanned appeals.\\
-   \textbf{Runtime}\quad Parallel PDF processing and bounded OCR rereads.};
-\node[box=7.1cm, draw=ink, fill=white, below=4mm of changes] (eval)
+\node[planned=7.1cm, below=4mm of config] (jury)
+  {\textbf{Jury VM}\\
+   \fname{deploy/RUN.md}\\[2pt]
+   Two PDF workers share a model budget. The CLI reads three settings from
+   \texttt{/opt/solution/.env}.\\[3pt]
+   \fname{KIO\_LLM\_BASE\_URL}\\
+   \texttt{https://api.eu.mistral.ai/v1}\\[2pt]
+   \fname{KIO\_LLM\_MODEL}\\
+   \texttt{ministral-3b-2512} (3.85B parameters)\\[2pt]
+   \fname{KIO\_LLM\_API\_KEY}\\
+   Private Mistral credential. With a missing file or key, the same command uses local rules.};
+\node[box=7.1cm, draw=ink, fill=white, below=4mm of jury] (eval)
   {\textbf{Measured}\hfill\fname{evals/run.py / evals/field\_report.py}\\[2pt]
    Synthetic training PDFs and negatives, 30 organizer scans\textsuperscript{*}, and private real-document corpora.
    Compare routing, field-level F1 and empty outputs with the references.\\[3pt]
@@ -123,7 +121,6 @@
   {\swatch{draw=flow,fill=flowfill}\ Local processing\qquad
    \swatch{draw=ok,fill=okfill}\ Input and output\qquad
    \swatch{draw=warn,fill=warnfill}\ Rejected document\qquad
-   \swatch{draw=plan,fill=planfill,dashed}\ Optional endpoint\qquad
-   \swatch{draw=violet!75!black,fill=violet!4,double}\ In review};
+   \swatch{draw=plan,fill=planfill,dashed}\ Keyed jury profile};
 \end{tikzpicture}
 \end{document}
