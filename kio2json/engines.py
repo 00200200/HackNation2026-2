@@ -113,6 +113,7 @@ def extract(
     ocr_python: Callable[[], dict] | None = None,
     alternate: AlternateOCR | None = None,
     model_text: str | None = None,
+    first_page: str | None = None,
     check_core_fields: bool = False,
 ) -> dict:
     values = None
@@ -144,6 +145,13 @@ def extract(
             candidate = ocr_python()
         else:
             candidate = bind_engine(engine, definition, model, alternate=alternate)(source)
+        if engine == "python" and definition.profile.keyed and definition.profile.mode == "RL" and first_page:
+            from .llm import OutputSettings
+
+            if definition.id in {"appeal", "bank_transfer"} and OutputSettings().output in {"schema", "spans"}:
+                from .doubtful_values import reassess
+
+                reassess(definition.id, candidate, first_page, model=model)
         trace.note_candidate(engine, candidate)
         if definition.checked:
             # A failed check empties the value unless the field keeps it, so a later engine can fill it.

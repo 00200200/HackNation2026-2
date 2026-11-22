@@ -89,8 +89,8 @@ Install Docker with Compose v2.24 or later. From the repository root, place case
 docker compose run --rm cli
 ```
 
-The first build downloads the Python dependencies from PyPI. The Polish and English OCR data ship in the repository
-(`kio2json/tessdata/`), so nothing else is fetched.
+The first build pulls the `python:3.13-slim` base image and downloads the Python dependencies from PyPI. The Polish
+and English OCR data ship in the repository (`kio2json/tessdata/`).
 Each input PDF gets a matching file under `output/<case>/`. To upload PDFs in a browser, run:
 
 ```sh
@@ -101,6 +101,9 @@ Open <http://127.0.0.1:8000> for the upload page or <http://127.0.0.1:8000/api/d
 the API. Press Ctrl+C to stop the server. Both services use local extraction by default.
 To enable a model, copy `.env.example` to `.env`, fill in the three endpoint settings,
 and rerun the service. Keep the key in the ignored `.env` file.
+
+The image is built for x86-64, because two dependencies, libsass and morfeusz2, have no Linux ARM wheels. Docker Desktop
+on Apple Silicon runs it under emulation, which is slower.
 
 Both services read the host's `config/classes/` directory. See the
 [pipeline architecture](#how-it-works), [class configuration example](#class-file-reference)
@@ -495,6 +498,8 @@ The real-dev result is in [the OCR branch corpus report](https://github.com/0020
 rules. [OCR results](evals/results/ocr-engines.json)
 
 ## Known limits
+
+- In rules-first native-schema mode, a receipt amount, execution date, singleton appeal party name or procurement title can be reconsidered when its first page contains a conflicting, locally readable value. The model selects a candidate ID in one request per disputed block. The extractor copies the corresponding printed span and normalizes it locally. Abstention or a failed request preserves the rule value. If OCR misses the correct digits in every reading, this step cannot recover them.
 
 - On two-column receipts a payment amount can sit beside a different label. The reader checks the amount's column and currency. A damaged account, reference or remittance title can still be unreadable after the receipt is identified.
 
