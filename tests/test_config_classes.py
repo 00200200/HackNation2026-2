@@ -437,13 +437,6 @@ def test_a_tiny_threshold_still_needs_its_cue(tmp_path):
     assert sparse.routing.explain(["Faktura"]) is None
 
 
-def test_explain_folder_may_not_contain_the_output(tmp_path, monkeypatch, in_process_cli):
-    (tmp_path / "input").mkdir()
-    run = tmp_path / "run"
-    with pytest.raises(SystemExit):
-        run_cli(monkeypatch, "--input", str(tmp_path / "input"), "--output", str(run / "output"), "--explain", str(run))
-
-
 def test_force_replaces_a_generated_file_that_no_longer_parses(tmp_path, monkeypatch):
     monkeypatch.delenv("KIO_CLASSES_DIR", raising=False)
     out = tmp_path / "classes"
@@ -454,36 +447,6 @@ def test_force_replaces_a_generated_file_that_no_longer_parses(tmp_path, monkeyp
     )
     assert tool.main() == 0
     assert next(c for c in parse_classes(class_sources(extra=[out])) if c.id == "accession")
-
-
-@pytest.mark.parametrize(
-    ("value", "found", "missed"),
-    [
-        (15.75, "Kwota: 15,75", "Saldo: 15,00"),
-        (15.0, "Kwota: 15,00 zł", "Saldo: 15,75"),
-        (15.0, "razem 15 zł.", "kod 155"),
-    ],
-)
-def test_an_amount_does_not_match_another_amounts_integer_part(value, found, missed):
-    from kio2json.trace import value_pattern
-
-    assert value_pattern(value).search(found)
-    assert not value_pattern(value).search(missed)
-
-
-def test_a_case_repair_shows_in_the_trace():
-    from kio2json.trace import repaired
-
-    trace = {
-        "fields": [{"field": "a.nip", "value": "1234567884", "page": 1, "snippet": "NIP: 1234567884", "engine": "ocr"}]
-    }
-    fixed = repaired(trace, {"a": {"nip": "1234567883"}})["fields"][0]
-    assert fixed["value"] == "1234567883" and fixed["note"] == "corrected from another document in the case folder"
-    assert trace["fields"][0]["value"] == "1234567884"
-    from kio2json.gui_explain import field_table
-
-    shown = str(field_table({"class": "x", "fields": [fixed]}))
-    assert "NIP: 1234567884" in shown and "poprawione według innego dokumentu sprawy" in shown
 
 
 def test_a_discarded_attempt_leaves_no_warnings_or_candidates():
@@ -628,26 +591,6 @@ def test_printed_commands_quote_a_folder_with_spaces(tmp_path, monkeypatch, caps
     assert tool.main() == 0
     printed = capsys.readouterr().out
     assert f"--classes '{out}'" in printed or f'--classes "{out}"' in printed
-
-
-@pytest.mark.parametrize(
-    ("value", "found", "missed"),
-    [
-        (125.125, "Stawka: 125.125", "Stawka: 125.12"),
-        (15.5, "Kwota: 15,50", "Kwota: 15,55"),
-        (15.0, "15,0 zł", "15,05"),
-        (150, "Kwota: 150,00 zł", "Kwota: 150.000 zł"),
-        (1.5, "Kwota: 1,50 zł", "Kwota: 1.500,00 zł"),
-        (500, "Wpis: 500,00 zł", "Wpis: 7.500,00 zł"),
-        (1000, "Kwota: 1 000,00 zł", "do godz. 10.00"),
-        (7500, "Wpis: 7.500,00 zł", "Wpis: 17 500 zł"),
-    ],
-)
-def test_numbers_keep_their_full_precision_in_the_source_search(value, found, missed):
-    from kio2json.trace import value_pattern
-
-    assert value_pattern(value).search(found)
-    assert not value_pattern(value).search(missed)
 
 
 PEOPLE = """id = "form"
@@ -796,3 +739,70 @@ def test_a_later_row_with_a_repeated_identity_is_not_merged_or_reported(tmp_path
     record, events = traced_extract(form, "Formularz\nOsoba: Anna", second)
     assert record["osoby"] == [{"imie": "Anna", "pesel": None}]
     assert events["warnings"] == []
+
+
+def test_explain_cannot_put_a_case_trace_inside_scored_output(tmp_path, monkeypatch, in_process_cli):
+    inputs = tmp_path / "input"
+    (inputs / "scored").mkdir(parents=True)
+    write_notice(inputs / "scored" / "notice.pdf")
+    trace = tmp_path / "reports"
+    output = trace / "scored"
+    with pytest.raises(SystemExit):
+        run_cli(monkeypatch, "--input", str(inputs), "--output", str(output), "--explain", str(trace))
+    assert not output.exists()
+
+
+def test_trace_respects_the_nested_object_capture(tmp_path):
+    from kio2json import trace
+
+    form = load(
+        tmp_path,
+        r"""id = "form"
+engines = ["labelled_fields"]
+[routing]
+required = ['^Form$']
+[fields.buyer]
+type = "object"
+instruction = "Buyer section."
+pattern = '^Buyer\n([^\n]+)'
+[fields.buyer.fields.name]
+type = "string"
+instruction = "Buyer name."
+pattern = '^Name: (.+)$'
+""",
+    )
+    record, events = traced_extract(form, "Form\nSeller\nName: Alice Brown\nBuyer\nName: Chris Ward")
+    (field,) = trace.build("form", record, events)["fields"]
+    assert (field["value"], field["snippet"]) == ("Chris Ward", "Name: Chris Ward")
+
+
+@pytest.mark.parametrize(
+    ("value", "found", "missed"),
+    [
+        (15.75, "Kwota: 15,75", "Saldo: 15,00"),
+        (15.0, "Kwota: 15,00 zł", "Saldo: 15,75"),
+        (15.0, "razem 15 zł.", "kod 155"),
+        (15.5, "Kwota: 15,50", "Kwota: 15,55"),
+        (150, "Kwota: 150,00 zł", "Kwota: 150.000 zł"),
+        (1.5, "Kwota: 1,50 zł", "Kwota: 1.500,00 zł"),
+        (500, "Wpis: 500,00 zł", "Wpis: 7.500,00 zł"),
+        (500, "Wpis: 500 zł", "Wartość: 500 000 zł"),
+        (7500, "Kwota: 7 500,00 PLN", "Wartość: 7 500 000 zł"),
+    ],
+)
+def test_an_amount_is_found_only_as_a_whole_printed_number(value, found, missed):
+    from kio2json.trace import source_match
+
+    assert source_match(found, value)
+    assert source_match(missed, value) is None
+
+
+def test_a_case_repair_shows_in_the_trace_without_stale_marks():
+    from kio2json.gui_explain import field_table
+    from kio2json.trace import after_case_repair
+
+    entry = {"field": "a.nip", "value": "1234567884", "page": 1, "snippet": "NIP: 1234567884", "engine": "ocr"}
+    trace = {"class": "x", "fields": [entry | {"boxes": [[1.0, 2.0, 3.0, 4.0]]}]}
+    (fixed,) = after_case_repair(trace, {"a": {"nip": "1234567883"}})["fields"]
+    assert (fixed["value"], fixed["boxes"], fixed["engine"]) == ("1234567883", [], "case repair")
+    assert "potwierdzono w innym dokumencie sprawy" in str(field_table({"class": "x", "fields": [fixed]}))

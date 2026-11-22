@@ -20,7 +20,7 @@ from .endpoint_error import EndpointError
 from .ocr_budget import batch_deadline
 from .pdf_text import NoReadableTextError
 from .pipeline import process_pdf, uses_case_schema
-from .trace import build, recording, repaired
+from .trace import after_case_repair, build, recording
 
 
 def configure_logging(classes: list[DocumentClass]) -> None:
@@ -102,8 +102,11 @@ def reconcile_cases(names: list[Path], results: list[Result]) -> list[Result]:
                     start, end = reading.span
                     value = node[field][:start] + value + node[field][end:]
                 node[field] = value
-            trace = repaired(result.trace, data) if result.trace else None
-            output[i] = replace(result, text=json.dumps(data, ensure_ascii=False, indent=2) + "\n", trace=trace)
+            output[i] = replace(
+                result,
+                text=json.dumps(data, ensure_ascii=False, indent=2) + "\n",
+                trace=after_case_repair(result.trace, data),
+            )
     return output
 
 

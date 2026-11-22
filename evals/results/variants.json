@@ -1,0 +1,500 @@
+{
+  "seed": 63059,
+  "cases": 60,
+  "docs": 240,
+  "dataset_sha256": "53414e5959d93426f1553cc36fcbe86968fca23edb80a959740654790b20dd03",
+  "commit": "2c00fbb061c0e4291cb060f79ae182b49d312266",
+  "dirty": false,
+  "chunk_cases": 5,
+  "seconds_per_doc": 0.9233813314135962,
+  "micro_f1": 0.9124966550709125,
+  "micro_f1_strict": 0.8742997983419225,
+  "counts_strict": {
+    "tp": 1951,
+    "fp": 196,
+    "fn": 365
+  },
+  "macro_f1_documents": 0.9094285081328858,
+  "macro_f1_classes": 0.925517874655208,
+  "macro_f1_class_count": 3,
+  "macro_f1_fields": 0.8531708751732171,
+  "micro_f1_non_null": 0.8652229299363058,
+  "per_class_f1": {
+    "odwolanie": 0.8918302145139206,
+    "pelnomocnictwo": 0.9373549883990719,
+    "przelew": 0.9473684210526315
+  },
+  "classification_accuracy": 1.0,
+  "negatives_empty": 1.0,
+  "outputs_complete": 1.0,
+  "counts": {
+    "tp": 1705,
+    "fp": 32,
+    "fn": 295,
+    "tn": 284
+  },
+  "per_field": {
+    "OdwolanieKIO.czynnosc_dzien": {
+      "tp": 49,
+      "fp": 0,
+      "fn": 11,
+      "tn": 0,
+      "f1": 0.8990825688073395
+    },
+    "OdwolanieKIO.czynnosc_opis": {
+      "tp": 58,
+      "fp": 0,
+      "fn": 2,
+      "tn": 0,
+      "f1": 0.9830508474576272
+    },
+    "OdwolanieKIO.czynnosc_powod_id": {
+      "tp": 58,
+      "fp": 0,
+      "fn": 2,
+      "tn": 0,
+      "f1": 0.9830508474576272
+    },
+    "OdwolanieKIO.data": {
+      "tp": 38,
+      "fp": 0,
+      "fn": 7,
+      "tn": 15,
+      "f1": 0.9156626506024096
+    },
+    "OdwolanieKIO.miejscowosc": {
+      "tp": 38,
+      "fp": 0,
+      "fn": 7,
+      "tn": 15,
+      "f1": 0.9156626506024096
+    },
+    "Odwolujacy[].krs": {
+      "tp": 50,
+      "fp": 0,
+      "fn": 6,
+      "tn": 4,
+      "f1": 0.9433962264150944
+    },
+    "Odwolujacy[].nazwa": {
+      "tp": 50,
+      "fp": 7,
+      "fn": 3,
+      "tn": 0,
+      "f1": 0.9090909090909091
+    },
+    "Odwolujacy[].nip": {
+      "tp": 54,
+      "fp": 0,
+      "fn": 6,
+      "tn": 0,
+      "f1": 0.9473684210526315
+    },
+    "Odwolujacy[].pelnomocnik.imie_nazwisko": {
+      "tp": 50,
+      "fp": 0,
+      "fn": 10,
+      "tn": 0,
+      "f1": 0.9090909090909091
+    },
+    "Odwolujacy[].pelnomocnik.mail": {
+      "tp": 44,
+      "fp": 0,
+      "fn": 16,
+      "tn": 0,
+      "f1": 0.8461538461538461
+    },
+    "Odwolujacy[].pelnomocnik.nazwa": {
+      "tp": 50,
+      "fp": 0,
+      "fn": 10,
+      "tn": 0,
+      "f1": 0.9090909090909091
+    },
+    "Odwolujacy[].przez-pelnomocnika": {
+      "tp": 50,
+      "fp": 7,
+      "fn": 3,
+      "tn": 0,
+      "f1": 0.9090909090909091
+    },
+    "Odwolujacy[].regon": {
+      "tp": 51,
+      "fp": 0,
+      "fn": 9,
+      "tn": 0,
+      "f1": 0.918918918918919
+    },
+    "Zamawiajacy[].krs": {
+      "tp": 43,
+      "fp": 0,
+      "fn": 15,
+      "tn": 5,
+      "f1": 0.8514851485148515
+    },
+    "Zamawiajacy[].nazwa": {
+      "tp": 47,
+      "fp": 2,
+      "fn": 14,
+      "tn": 0,
+      "f1": 0.8545454545454545
+    },
+    "Zamawiajacy[].nip": {
+      "tp": 47,
+      "fp": 0,
+      "fn": 16,
+      "tn": 0,
+      "f1": 0.8545454545454545
+    },
+    "Zamawiajacy[].prowadzacy_postepowanie": {
+      "tp": 0,
+      "fp": 0,
+      "fn": 6,
+      "tn": 57,
+      "f1": 0.0
+    },
+    "Zamawiajacy[].regon": {
+      "tp": 47,
+      "fp": 0,
+      "fn": 16,
+      "tn": 0,
+      "f1": 0.8545454545454545
+    },
+    "ZamowieniePubliczne.numer_bzp": {
+      "tp": 46,
+      "fp": 0,
+      "fn": 2,
+      "tn": 12,
+      "f1": 0.9787234042553191
+    },
+    "ZamowieniePubliczne.numer_postepowania": {
+      "tp": 60,
+      "fp": 0,
+      "fn": 0,
+      "tn": 0,
+      "f1": 1.0
+    },
+    "ZamowieniePubliczne.numer_ted": {
+      "tp": 47,
+      "fp": 0,
+      "fn": 0,
+      "tn": 13,
+      "f1": 1.0
+    },
+    "ZamowieniePubliczne.tytul": {
+      "tp": 0,
+      "fp": 0,
+      "fn": 60,
+      "tn": 0,
+      "f1": 0.0
+    },
+    "mocodawca[].data.imie_nazwisko": {
+      "tp": 0,
+      "fp": 0,
+      "fn": 4,
+      "tn": 62,
+      "f1": 0.0
+    },
+    "mocodawca[].data.krs": {
+      "tp": 59,
+      "fp": 0,
+      "fn": 3,
+      "tn": 4,
+      "f1": 0.9752066115702479
+    },
+    "mocodawca[].data.nazwa": {
+      "tp": 58,
+      "fp": 1,
+      "fn": 7,
+      "tn": 0,
+      "f1": 0.9354838709677419
+    },
+    "mocodawca[].data.nip": {
+      "tp": 59,
+      "fp": 0,
+      "fn": 7,
+      "tn": 0,
+      "f1": 0.944
+    },
+    "mocodawca[].data.typ": {
+      "tp": 59,
+      "fp": 0,
+      "fn": 7,
+      "tn": 0,
+      "f1": 0.944
+    },
+    "mocodawca[].podpisujacy[].imie_nazwisko": {
+      "tp": 85,
+      "fp": 0,
+      "fn": 10,
+      "tn": 0,
+      "f1": 0.9444444444444444
+    },
+    "pelnomocnicy[].imie_nazwisko": {
+      "tp": 83,
+      "fp": 0,
+      "fn": 15,
+      "tn": 0,
+      "f1": 0.9171270718232044
+    },
+    "pelnomocnicy[].pesel": {
+      "tp": 1,
+      "fp": 0,
+      "fn": 0,
+      "tn": 97,
+      "f1": 1.0
+    },
+    "przelew_bankowy.data_operacji": {
+      "tp": 50,
+      "fp": 0,
+      "fn": 10,
+      "tn": 0,
+      "f1": 0.9090909090909091
+    },
+    "przelew_bankowy.kwota": {
+      "tp": 50,
+      "fp": 0,
+      "fn": 10,
+      "tn": 0,
+      "f1": 0.9090909090909091
+    },
+    "przelew_bankowy.na_rachunek": {
+      "tp": 58,
+      "fp": 2,
+      "fn": 0,
+      "tn": 0,
+      "f1": 0.9830508474576272
+    },
+    "przelew_bankowy.numer_transakcji": {
+      "tp": 60,
+      "fp": 0,
+      "fn": 0,
+      "tn": 0,
+      "f1": 1.0
+    },
+    "przelew_bankowy.tytul": {
+      "tp": 47,
+      "fp": 13,
+      "fn": 0,
+      "tn": 0,
+      "f1": 0.8785046728971962
+    },
+    "przelew_bankowy.z_rachunku": {
+      "tp": 59,
+      "fp": 0,
+      "fn": 1,
+      "tn": 0,
+      "f1": 0.9915966386554622
+    }
+  },
+  "per_variant": {
+    "alternative-formats": {
+      "docs": 30,
+      "routing_by_class": {
+        "odwolanie": {
+          "correct": 10,
+          "total": 10
+        },
+        "pelnomocnictwo": {
+          "correct": 10,
+          "total": 10
+        },
+        "przelew": {
+          "correct": 10,
+          "total": 10
+        }
+      },
+      "micro_f1": 0.9622926093514329,
+      "per_class_f1": {
+        "odwolanie": 0.9489795918367347,
+        "pelnomocnictwo": 0.9668874172185431,
+        "przelew": 1.0
+      },
+      "counts": {
+        "tp": 319,
+        "fp": 0,
+        "fn": 25,
+        "tn": 46
+      }
+    },
+    "reordered": {
+      "docs": 30,
+      "routing_by_class": {
+        "odwolanie": {
+          "correct": 10,
+          "total": 10
+        },
+        "pelnomocnictwo": {
+          "correct": 10,
+          "total": 10
+        },
+        "przelew": {
+          "correct": 10,
+          "total": 10
+        }
+      },
+      "micro_f1": 0.9628482972136223,
+      "per_class_f1": {
+        "odwolanie": 0.9514066496163683,
+        "pelnomocnictwo": 0.9629629629629629,
+        "przelew": 1.0
+      },
+      "counts": {
+        "tp": 311,
+        "fp": 0,
+        "fn": 24,
+        "tn": 48
+      }
+    },
+    "scan": {
+      "docs": 30,
+      "routing_by_class": {
+        "odwolanie": {
+          "correct": 10,
+          "total": 10
+        },
+        "pelnomocnictwo": {
+          "correct": 10,
+          "total": 10
+        },
+        "przelew": {
+          "correct": 10,
+          "total": 10
+        }
+      },
+      "micro_f1": 0.9526813880126183,
+      "per_class_f1": {
+        "odwolanie": 0.9490616621983914,
+        "pelnomocnictwo": 0.9444444444444444,
+        "przelew": 0.9743589743589743
+      },
+      "counts": {
+        "tp": 302,
+        "fp": 3,
+        "fn": 27,
+        "tn": 50
+      }
+    },
+    "single-column": {
+      "docs": 30,
+      "routing_by_class": {
+        "odwolanie": {
+          "correct": 10,
+          "total": 10
+        },
+        "pelnomocnictwo": {
+          "correct": 10,
+          "total": 10
+        },
+        "przelew": {
+          "correct": 10,
+          "total": 10
+        }
+      },
+      "micro_f1": 0.9847094801223242,
+      "per_class_f1": {
+        "odwolanie": 0.9744897959183674,
+        "pelnomocnictwo": 1.0,
+        "przelew": 1.0
+      },
+      "counts": {
+        "tp": 322,
+        "fp": 0,
+        "fn": 10,
+        "tn": 45
+      }
+    },
+    "synonyms": {
+      "docs": 30,
+      "routing_by_class": {
+        "odwolanie": {
+          "correct": 10,
+          "total": 10
+        },
+        "pelnomocnictwo": {
+          "correct": 10,
+          "total": 10
+        },
+        "przelew": {
+          "correct": 10,
+          "total": 10
+        }
+      },
+      "micro_f1": 0.8980891719745223,
+      "per_class_f1": {
+        "odwolanie": 0.9489795918367347,
+        "pelnomocnictwo": 0.8489208633093526,
+        "przelew": 0.7628865979381443
+      },
+      "counts": {
+        "tp": 282,
+        "fp": 3,
+        "fn": 61,
+        "tn": 48
+      }
+    },
+    "two-column": {
+      "docs": 30,
+      "routing_by_class": {
+        "odwolanie": {
+          "correct": 10,
+          "total": 10
+        },
+        "pelnomocnictwo": {
+          "correct": 10,
+          "total": 10
+        },
+        "przelew": {
+          "correct": 10,
+          "total": 10
+        }
+      },
+      "micro_f1": 0.66015625,
+      "per_class_f1": {
+        "odwolanie": 0.4063745019920319,
+        "pelnomocnictwo": 0.9006622516556292,
+        "przelew": 0.9090909090909091
+      },
+      "counts": {
+        "tp": 169,
+        "fp": 26,
+        "fn": 148,
+        "tn": 47
+      }
+    }
+  },
+  "negative_families": {
+    "bzp": {
+      "docs": 10,
+      "empty": 10
+    },
+    "invoice": {
+      "docs": 10,
+      "empty": 10
+    },
+    "pro-forma": {
+      "docs": 10,
+      "empty": 10
+    },
+    "request": {
+      "docs": 10,
+      "empty": 10
+    },
+    "ruling": {
+      "docs": 10,
+      "empty": 10
+    },
+    "ted": {
+      "docs": 10,
+      "empty": 10
+    }
+  },
+  "weakest_first": [
+    "two-column",
+    "synonyms",
+    "scan",
+    "alternative-formats",
+    "reordered",
+    "single-column"
+  ]
+}

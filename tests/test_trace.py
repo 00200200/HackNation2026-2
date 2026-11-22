@@ -8,7 +8,7 @@ import pytest
 from kio2json import pipeline
 from kio2json.batch import read_document
 from kio2json.class_config import load_classes
-from kio2json.trace import field_source, value_pattern
+from kio2json.trace import field_source, snippet, source_match
 
 RECEIPT = """Potwierdzenie przelewu
 Rachunek nadawcy: PL11 1111 1111 1111 1111 1111 1111
@@ -73,7 +73,8 @@ def test_unrelated_document_has_no_route_or_fields(monkeypatch):
     ],
 )
 def test_value_patterns_accept_printed_forms(value, text):
-    assert value_pattern(value).search(text)
+    found = source_match(text, value)
+    assert found and snippet(*found) == text
 
 
 def test_unlocated_and_derived_values_say_so():
@@ -83,3 +84,13 @@ def test_unlocated_and_derived_values_say_so():
     code = field_source("a.id", 7, ["7"], [], [])
     assert code["page"] is None and code["engine"] is None
     assert code["note"] == "derived code or flag, not a printed value; producing engine not recorded"
+
+
+def test_amount_source_requires_the_printed_fraction():
+    field = field_source("amount", 1234.5, ["Fee: 1 234,00\nPaid: 1 234,50"], [], [("python", {"amount": 1234.5})])
+    assert field["snippet"] == "Paid: 1 234,50"
+
+
+def test_amount_source_requires_the_printed_sign():
+    field = field_source("amount", 123.45, ["Refund: -123,45\nPayment: 123,45"], [], [("python", {"amount": 123.45})])
+    assert field["snippet"] == "Payment: 123,45"

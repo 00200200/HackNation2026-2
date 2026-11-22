@@ -1,10 +1,10 @@
 """Batch CLI: python -m kio2json [--input DIR] [--output DIR]   (defaults: ./input, ./output)
 
 Writes one JSON per PDF at the same relative path and file stem. A document outside the three
-known classes gets {}. --classes adds class TOML files, --enable turns on a class that its file
-disables, and --explain DIR writes DIR/<case>/<name>.trace.json with the routing reason and field
-sources. The keyed organizer profile retries failed documents with rules and writes {} if recovery
-fails. Other document errors write {} and give exit status 1.
+known classes gets {}. --classes adds class TOML files, --enable activates a disabled class, and
+--explain DIR writes the routing reason and field sources to DIR/<case>/<name>.trace.json.
+The keyed organizer profile retries failed documents with rules and writes {} if recovery fails.
+Other document errors write {} and give exit status 1.
 """
 
 import argparse
@@ -42,10 +42,14 @@ def main() -> int:
 
     if not args.input_dir.is_dir():
         parser.error(f"input folder not found: {args.input_dir}")
+    pdfs = sorted(p for p in args.input_dir.rglob("*") if p.suffix.lower() == ".pdf")
     if args.explain:
-        explain, output = args.explain.resolve(), args.output_dir.resolve()
-        if explain.is_relative_to(output) or output.is_relative_to(explain):
-            parser.error("--explain needs a folder apart from --output, because every JSON there is scored")
+        output = args.output_dir.resolve()
+        evidence = (args.explain / p.relative_to(args.input_dir).with_suffix(".trace.json") for p in pdfs)
+        if args.explain.resolve().is_relative_to(output) or any(
+            path.resolve().is_relative_to(output) for path in evidence
+        ):
+            parser.error("--explain needs a folder outside --output, because every JSON there is scored")
         try:
             args.explain.mkdir(parents=True, exist_ok=True)
         except OSError as error:
@@ -58,7 +62,6 @@ def main() -> int:
         return 1
     configure_logging(classes)
 
-    pdfs = sorted(p for p in args.input_dir.rglob("*") if p.suffix.lower() == ".pdf")
     failed = 0
     workers = args.workers or min(DEFAULT_WORKER_CAP, os.process_cpu_count() or 1)
     explain = args.explain is not None

@@ -9,7 +9,7 @@ from pathlib import Path
 
 from . import appeal, bank_transfer, ocr_extract, power_of_attorney, trace
 from .accounts import normalize_account
-from .appeal_layout import apply_appeal_blocks, party_inventory, read_role_columns, restore_party_columns
+from .appeal_layout import apply_appeal_blocks, form_columns, party_inventory, read_role_columns, restore_party_columns
 from .case_repair import Reading, printed_readings
 from .class_config import DocumentClass, load_classes, route
 from .classify import incomplete_booking_scan, resembles_appeal_heading
@@ -247,6 +247,10 @@ def _process(
             if engine != engines[0] and not remaining_ms(1):
                 raise RereadExpired
             primary, ocr_pages, boxes = read(engine)
+            if primary and 1 not in ocr_pages and page_sizes.get(1):
+                first = form_columns(primary[0], boxes, page_sizes[1][0])
+                if first != primary[0]:
+                    primary = [first, *primary[1:]]
             pages, definition, accounts = _read_receipt(
                 primary,
                 pdf_path,
@@ -326,7 +330,7 @@ def _process(
                 and definition.profile.gap_scope == "incomplete"
             )
             blocks = (
-                party_inventory(boxes, page_sizes)
+                party_inventory(boxes, page_sizes, appeal_cards=definition.extractor is appeal.extract)
                 if definition.extractor in (appeal.extract, power_of_attorney.extract)
                 and definition.profile.rules_first
                 else []

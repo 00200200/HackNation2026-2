@@ -8,7 +8,13 @@ from shiny import ui
 from .batch import Result
 from .class_config import DocumentClass
 
-ENGINE_NAMES = {"rule": "reguły, tekst PDF", "ocr": "reguły, OCR", "model": "model", "rule or ocr": "reguły"}
+ENGINE_NAMES = {
+    "case repair": "inne pismo w sprawie",
+    "rule": "reguły, tekst PDF",
+    "ocr": "reguły, OCR",
+    "model": "model",
+    "rule or ocr": "reguły",
+}
 CHECK_NAMES = {
     "nip": "suma kontrolna NIP się nie zgadza",
     "regon": "suma kontrolna REGON się nie zgadza",
@@ -18,11 +24,11 @@ CHECK_NAMES = {
     "one_of": "wartości nie ma na liście dozwolonych",
 }
 NOTE_NAMES = {
+    "confirmed by a sibling document": "potwierdzono w innym dokumencie sprawy",
     "no value extracted": "brak wartości",
     "derived code or flag, not a printed value": "kod lub znacznik wyliczony z treści",
     "value not found verbatim in the text read": "wartości nie ma dosłownie w odczytanym tekście",
     "producing engine not recorded": "nie wiadomo, która metoda podała wartość",
-    "corrected from another document in the case folder": "poprawione według innego dokumentu sprawy",
 }
 
 
@@ -202,7 +208,7 @@ def field_table(trace: dict | None) -> ui.Tag:
     for index, field in enumerate(trace["fields"]):
         page = field["page"]
         notes = field.get("note", "").split("; ") if field.get("note") else []
-        # A snippet and a note can both apply, as for a value corrected from another document of the case.
+        # A snippet and a note can both apply, as when the source line is found but its engine was not recorded.
         named = "; ".join(NOTE_NAMES.get(note, note) for note in notes)
         source = "; ".join(part for part in (field["snippet"], named) if part)
         # A native button selects the field, as a click on its value in the JSON does, and works from the keyboard.

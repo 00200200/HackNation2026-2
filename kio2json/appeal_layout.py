@@ -1,8 +1,11 @@
 """Read role-labelled party and signature cards from native or OCR word boxes."""
 
+import itertools
 import re
 from collections import Counter, defaultdict
 from dataclasses import dataclass, field
+
+import pdfplumber
 
 from . import appeal
 from .common import ATTORNEY_RE, EMAIL_RE, PARTY_LABELS, PERSON
@@ -12,7 +15,10 @@ from .power_of_attorney import GRANT, MANDATE_TITLE, NAMED_SIGNATURE
 from .receipt_layout import word_rows
 
 _ROLE = r"(?:zamawiający|odwołujący|wykonawca|pełnomocnik odwołującego|nazwa postępowania):"
-DETACHED_ROLES = re.compile(rf"(?im)^({_ROLE})[ \t]*\n({_ROLE})[ \t]*$")
+
+
+def _detached_label(line: str) -> bool:
+    return bool(re.fullmatch(_ROLE, line, re.IGNORECASE) or appeal.CARD_ROLE.fullmatch(line))
 
 
 def restore_labels(page: str, words: list[WordBox]) -> str:
@@ -21,9 +27,9 @@ def restore_labels(page: str, words: list[WordBox]) -> str:
     omitted = set()
     for index, label in enumerate(lines):
         label = label.strip()
-        if not re.fullmatch(_ROLE, label, re.IGNORECASE):
+        if not _detached_label(label):
             continue
-        # The colon ends the label even when it consists of several words.
+        # Locate the final word of the caption on its physical row.
         ends = [w for w in words if w.text.casefold() == label.split()[-1].casefold()]
         if len(ends) != 1:
             continue
@@ -40,15 +46,54 @@ def restore_labels(page: str, words: list[WordBox]) -> str:
             prefix = " ".join(w.text for w in adjacent[:2])
             matches = [n for n, line in enumerate(lines) if line == prefix or line.startswith(prefix + " ")]
         if len(matches) == 1 and matches[0] not in insertions:
-            insertions[matches[0]] = label
+            insertions[matches[0]] = label if label.endswith(":") else label + ":"
             omitted.add(index)
     return "\n".join(
         (insertions[n] + " " if n in insertions else "") + line for n, line in enumerate(lines) if n not in omitted
     )
 
 
+def restore_overprinted_card(page, page_text: str) -> str:
+    """Separate a physically overlapping caption and value using their original PDF glyphs."""
+    lines = page_text.splitlines()
+    suspects = {
+        line
+        for line in lines
+        if re.match(rf"(?i)^{appeal.CARD_HEAD} (?:odwo|zamaw)", line)
+        and ":" in line
+        and not appeal.CARD_ROLE.match(line)
+        and lines.count(line) == 1
+    }
+    if not suspects:
+        return page_text
+    for row in page.extract_text_lines():
+        if row["text"] not in suspects:
+            continue
+        fonts = defaultdict(list)
+        for char in row["chars"]:
+            fonts[char["fontname"]].append(char)
+        if len(fonts) != 2:
+            continue
+        left, right = sorted(fonts.values(), key=lambda chars: min(c["x0"] for c in chars))
+        if max(c["x1"] for c in left) <= min(c["x0"] for c in right):
+            continue
+        heading, value = (pdfplumber.utils.extract_text(chars) for chars in (left, right))
+        index = lines.index(row["text"])
+        if appeal.CARD_ROLE.fullmatch(heading) and appeal.party_evidence([value, *lines[index + 1 : index + 6]]):
+            lines[index] = heading + " " + value
+    return "\n".join(lines)
+
+
 def restore_party_columns(pages: list[str], boxes: list[WordBox]) -> list[str]:
-    detached = [i for i, page in enumerate(pages) if DETACHED_ROLES.search(page)]
+    detached = set()
+    for i, page in enumerate(pages):
+        previous = False
+        for line in page.splitlines():
+            current = _detached_label(line.strip())
+            if previous and current:
+                detached.add(i)
+                break
+            previous = current
     if not detached:
         return pages
     return [
@@ -101,7 +146,9 @@ def _gutter(row, following, gap):
     return None
 
 
-def party_inventory(boxes: list[WordBox], sizes: dict[int, tuple[float, float]]) -> list[PartyBlock]:
+def party_inventory(
+    boxes: list[WordBox], sizes: dict[int, tuple[float, float]], *, appeal_cards: bool = False
+) -> list[PartyBlock]:
     """Enumerate labelled owners before reading any field. Repeated marginal rows delimit cards."""
     pages = {}
     margins = defaultdict(set)
@@ -124,6 +171,8 @@ def party_inventory(boxes: list[WordBox], sizes: dict[int, tuple[float, float]])
         grant_columns = set()
         bottom = {}
         for n, row in enumerate(rows):
+            if appeal_cards and appeal.party_header_end(_line(row)):
+                break
             y = min(w.y0 for w in row)
             key = _line(row).casefold(), round(row[0].y0 / length * 20)
             if len(margins.get(key, ())) > 1:
@@ -278,3 +327,78 @@ def apply_appeal_blocks(record: dict, blocks: list[PartyBlock]) -> None:
     mails = set(EMAIL_RE.findall("\n".join(following)))
     if len(mails) == 1 and not rep["mail"]:
         rep["mail"] = mails.pop()
+
+
+def _spans_gutter(row, gutter, height):
+    if any(w.x0 < gutter < w.x1 for w in row):
+        return True
+    return any(a.x1 <= gutter <= b.x0 and b.x0 - a.x1 <= height for a, b in itertools.pairwise(row))
+
+
+def form_columns(page: str, boxes: list[WordBox], width: float) -> str:
+    """Read parallel party sections around a persistent gutter. The receipt reader owns bank tables."""
+    inflected = bool(appeal.PARALLEL_CARD.search(page))
+    if not inflected and not re.search(r"\b(?:zamawiaj[ąa]cy|mocodawca)\b", page, re.IGNORECASE):
+        return page
+    rows, height = word_rows(boxes)
+    if len(rows) < 3 or not width:
+        return page
+    # A document title may sit entirely to one side of the table beneath it.
+    # Keep it above the form and out of the evidence for either column.
+    first_line = _line(rows[0])
+    heading = re.fullmatch(
+        r"pe[łl]nomocnictwo(?: procesowe)?|odwo[łl]anie(?: do (?:prezesa )?(?:KIO|Krajowej Izby Odwo[łl]awczej))?",
+        first_line,
+        re.IGNORECASE,
+    )
+    if heading:
+        rows = rows[1:]
+    # The start of the right column recurs at the same position on several rows.
+    starts = Counter(
+        round(b.x0 / height)
+        for row in rows
+        for a, b in itertools.pairwise(row)
+        if b.x0 - a.x1 > 2 * height and width * 0.32 < b.x0 < width * 0.72
+    )
+    section = re.compile(
+        rf"^(?:{appeal.APPELLANT_LABEL}|(?:wykonawca|podmiot) wnosz[ąa]cy odwo[łl]anie|zamawiaj[ąa]cy|"
+        r"mocodawca|pe[łl]nomocni(?:k|cy))(?:[ \t]*:|$)|"
+        r"^(?:odwo[łl]anie do|pe[łl]nomocnictwo(?: procesowe)?$|(?:niniejszym )?(?:upowa[żz]niam|udzielam|ustanawiam)\b)",
+        re.IGNORECASE,
+    )
+    for margin, count in starts.most_common():
+        if count < 3:
+            break
+        gutter = (margin - 0.8) * height
+        ordered = [first_line] if heading else []
+        changed = False
+
+        # Headings and footers that cross the gutter retain their place between bands.
+        def ends_band(row, gutter=gutter):
+            # A body section below parallel appeal cards belongs after both columns.
+            return _spans_gutter(row, gutter, height) or bool(inflected and appeal.BODY_HEADING.match(_line(row)))
+
+        for spanning, band_rows in itertools.groupby(rows, key=ends_band):
+            band = list(band_rows)
+            if spanning:
+                ordered.extend(_line(row) for row in band)
+                continue
+            columns = [[], []]
+            paired_rows = 0
+            for row in band:
+                cells = [[w for w in row if (w.x0 >= gutter) == col] for col in (0, 1)]
+                paired_rows += int(all(cells))
+                for col, cell in enumerate(cells):
+                    if cell:
+                        columns[col].append(_line(cell))
+            if paired_rows >= 3 and all(
+                any(section.match(line) or appeal.CARD_ROLE.match(line) for line in column) for column in columns
+            ):
+                ordered.extend(columns[0] + columns[1])
+                changed = True
+            else:
+                ordered.extend(_line(row) for row in band)
+        restored = "\n".join(ordered)
+        if changed and Counter(restored.split()) == Counter(page.split()):
+            return restored
+    return page
