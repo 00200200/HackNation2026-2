@@ -1,0 +1,24 @@
+Bank Mazurski n /
+Transakcja złożona poprzez usługi bankowości elektronicznej
+Z rachunku 68 1090 1505 1005 2441 7124 3731
+Dane MEDICOR iT SOLUTIONS S.A. UL. MARSZAŁKOWSKA 37, 80-386 GDAŃSK
+nadawcy
+Na rachunek | 60 1010 1010 0081 3622 3100 0000
+Dane _. | URZĄD ZAMÓWIEŃ PUBLICZNYCH
+odbiorcy
+Tytułem wpis od odwołania, ZP/12/2026, REGIONALNE CENTRUM ZDROWIA
+PUBLICZNEGO W DĘBNICY GÓRNEJ
+Kwota 10 000,00 PLN
+przelewu
+Data 2026-03-26
+wykonania
+Typ przelewu kat na rachunek obcy, elixir
+Status Wykonany
++ | Numer 305494
+transakcji |
+Źródło Bank Mazurski S.A.
+transakcji
+4
+Dokument jest wydrukiem komputerowym i nie wymaga dodatkowych podpisów oraz stempla bankowego.
+Bank Mazurski S.A. z siadzibą w Warszawie, zarejestrowany w Sądzie Rejonowym dla m.st. Warszawy, KRS 0046799280.
+Strona 1/1

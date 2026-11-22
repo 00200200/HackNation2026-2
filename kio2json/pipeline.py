@@ -9,6 +9,7 @@ from pathlib import Path
 
 from . import appeal, bank_transfer, ocr_extract, power_of_attorney, trace
 from .accounts import normalize_account
+from .appeal_charges import notice_date
 from .appeal_layout import (
     apply_appeal_blocks,
     form_columns,
@@ -17,6 +18,7 @@ from .appeal_layout import (
     read_role_columns,
     restore_party_columns,
 )
+from .appeal_subject import unlabelled_title
 from .case_repair import Reading, printed_readings
 from .class_config import DocumentClass, load_classes, route
 from .classify import incomplete_booking_scan, resembles_appeal_heading
@@ -24,7 +26,13 @@ from .engines import extract
 from .first_act import fill_missing_action
 from .grant_certificates import add_certificate_signers
 from .model_pages import AlternateOCR
-from .ocr_accounts import AccountEvidence, account_evidence, disputed_account_cells, normalize_receipt
+from .ocr_accounts import (
+    AccountEvidence,
+    account_evidence,
+    disputed_account_cells,
+    normalize_receipt,
+    repair_receipt_layout,
+)
 from .ocr_budget import RereadExpired, document_budget, remaining_ms
 from .ocr_choices import verify_cells
 from .ocr_grant_register import disputed_register_cells, verified_pages
@@ -41,6 +49,7 @@ from .pdf_text import (
 )
 from .receipt_account_crop import recover_account_crops
 from .receipt_layout import append_receipt_fields, has_detached_labels, receipt_cell_fields
+from .receipt_pairing import apply_receipt_cards
 from .receipt_reading import missing_letter_body, read_letter_body
 from .receipt_title import reread_title
 
@@ -94,10 +103,14 @@ def _read_receipt(
         return pages, definition, accounts
     original = pages
     fields = {}
-    if scanned and (definition is not None or incomplete_booking_scan(pages[0])):
-        if boxes:
-            pages = recover_account_crops(pdf_path, pages, boxes)
-        pages = [normalize_receipt(pages[0]), *pages[1:]]
+    if definition is not None or incomplete_booking_scan(pages[0]):
+        if scanned:
+            if boxes:
+                pages = recover_account_crops(pdf_path, pages, boxes)
+            pages = [normalize_receipt(pages[0]), *pages[1:]]
+        else:
+            # The checksum substitution corrects OCR digits only; a text layer keeps its accounts as printed.
+            pages = [repair_receipt_layout(pages[0]), *pages[1:]]
     if has_detached_labels(pages, ocr=scanned):
         fields = receipt_cell_fields(boxes, ocr=scanned)
         # Keep the complete title already bound to a native label, including wrapped lines.
@@ -146,18 +159,23 @@ def _grant_signers(pdf_path, record, pages, ocr_pages, engine):
         recover_board_stamp(pdf_path, record, pages[0])
 
 
-def _document_rules(definition, pdf_path, pages, ocr_pages, boxes, engine, selected, accounts, blocks):
+def _document_rules(definition, pdf_path, pages, ocr_pages, all_boxes, engine, selected, accounts, blocks):
     """Build the local candidate, including PDF evidence, before optional model gap filling."""
     rules_first = definition.profile.rules_first
-    if definition.extractor is bank_transfer.extract and ocr_pages:
-        record = ocr_extract.extract_bank_transfer(pages, ocr_pages, accounts=accounts)
-        if boxes and 1 in ocr_pages and (definition.engines == ["python"] or definition.profile.mode == "RL"):
-            fields = record["przelew_bankowy"]
-            title = reread_title(pdf_path, boxes, fields["tytul"])
-            if title is not None:
-                fields["tytul"] = title
-        if rules_first and boxes:
-            verify_cells(pdf_path, disputed_account_cells, record, boxes)
+    boxes = [box for box in all_boxes if box.page in ocr_pages]
+    if definition.extractor is bank_transfer.extract:
+        if ocr_pages:
+            record = ocr_extract.extract_bank_transfer(pages, ocr_pages, accounts=accounts)
+            if boxes and 1 in ocr_pages and (definition.engines == ["python"] or definition.profile.mode == "RL"):
+                fields = record["przelew_bankowy"]
+                title = reread_title(pdf_path, boxes, fields["tytul"])
+                if title is not None:
+                    fields["tytul"] = title
+            if rules_first and boxes:
+                verify_cells(pdf_path, disputed_account_cells, record, boxes)
+        else:
+            record = definition.extractor(join_pages(pages))
+        apply_receipt_cards(record["przelew_bankowy"], [box.layout_box for box in all_boxes])
         return record
     if definition.extractor is appeal.extract:
         if ocr_pages and rules_first:
@@ -167,7 +185,15 @@ def _document_rules(definition, pdf_path, pages, ocr_pages, boxes, engine, selec
             record = ocr_extract.extract_appeal(pages, ocr_pages)
         else:
             record = appeal.extract(join_pages(pages))
+        procurement = record["ZamowieniePubliczne"]
+        if procurement["tytul"] is None and (reference := procurement["numer_postepowania"]):
+            procurement["tytul"] = unlabelled_title([box.layout_box for box in all_boxes], reference)
         apply_appeal_blocks(record, blocks)
+        if not ocr_pages:
+            ocr_extract.complete_text_appeal(record, pages)
+        action = record["OdwolanieKIO"]
+        if action["czynnosc_dzien"] is None and action["czynnosc_powod_id"]:
+            action["czynnosc_dzien"] = notice_date(join_pages(pages[:3]), action["czynnosc_powod_id"])
         if not ocr_pages and len(pages) == MAX_PAGES:
             appeal.complete_signed_filing(record, pdf_path, len(pages))
         if rules_first and boxes:
@@ -179,6 +205,7 @@ def _document_rules(definition, pdf_path, pages, ocr_pages, boxes, engine, selec
             record = ocr_extract.extract_power_of_attorney(grant_pages, ocr_pages)
         else:
             record = power_of_attorney.extract(join_pages(pages))
+            ocr_extract.read_grant_declaration(pages, record)
         power_of_attorney.apply_grant_blocks(record, blocks, join_pages(pages))
         if rules_first and boxes:
             verify_cells(pdf_path, disputed_register_cells, record, boxes)
@@ -393,9 +420,8 @@ def _process(
             pages = read_role_columns(pages, blocks)
             if definition.id == "appeal":
                 pages = restore_party_columns(pages, layout_boxes)
-            scan_boxes = [box for box in boxes if box.page in ocr_pages]
             python_rules = partial(
-                _document_rules, definition, pdf_path, pages, ocr_pages, scan_boxes, engine, selected, accounts, blocks
+                _document_rules, definition, pdf_path, pages, ocr_pages, boxes, engine, selected, accounts, blocks
             )
             text = join_pages(pages)
             record = extract(

@@ -106,3 +106,44 @@ def test_register_crop_belongs_to_its_printed_party():
 def test_expired_shared_budget_skips_even_localization(monkeypatch):
     monkeypatch.setattr("kio2json.ocr_choices.remaining_ms", lambda limit: 0)
     verify_cells(None, lambda *_: pytest.fail("expired"), {}, [])
+
+
+def test_slow_localization_preserves_evidence_for_a_bounded_number_of_cells(tmp_path, monkeypatch):
+    from time import sleep
+
+    from PIL import Image
+
+    from kio2json.ocr_choices import Cell
+
+    path = tmp_path / "account.pdf"
+    Image.new("L", (200, 50), "white").save(path)
+    original = synthetic_account()
+    wrong = original[:-1] + next_digit(original[-1])
+    owners = [{"na_rachunek": None} for _ in range(5)]
+    box = WordBox(1, wrong, 10, 10, 100, 20)
+
+    def locate(record, boxes):
+        sleep(2.01)  # Scheduling delay before the first crop on a busy worker.
+        return [Cell(owner, "na_rachunek", wrong, boxes) for owner in owners]
+
+    monkeypatch.setattr("kio2json.ocr_choices._read", lambda *args: ((original,), False))
+    verify_cells(path, locate, {}, [box])
+    assert [owner["na_rachunek"] for owner in owners] == [original] * 4 + [None]
+
+
+@pytest.mark.parametrize("deadline_ms", [0, 125, 5000])
+def test_recognition_obeys_both_crop_timeout_and_remaining_document_time(monkeypatch, deadline_ms):
+    from unittest.mock import Mock
+
+    from kio2json.ocr_budget import CHOICE_TIMEOUT_MS, document_budget
+    from kio2json.ocr_choices import _read
+
+    monkeypatch.setattr("kio2json.ocr_budget.monotonic", lambda: 0)
+    api = Mock()
+    api.Recognize.return_value = False
+    with document_budget(batch_deadline=deadline_ms / 1000):
+        assert _read(api, None, "nip", "primary") == (("primary",), False)
+    if deadline_ms:
+        api.Recognize.assert_called_once_with(timeout=min(CHOICE_TIMEOUT_MS, deadline_ms))
+    else:
+        api.Recognize.assert_not_called()

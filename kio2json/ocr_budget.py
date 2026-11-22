@@ -7,6 +7,9 @@ from time import monotonic
 REREAD_DEADLINE_SECONDS = 300
 REREAD_PAGE_TIMEOUT_SECONDS = 180
 CROP_TIMEOUT_MS = 10_000
+# Identifier verification gets up to four single-line crops and 8 s of recognition per pass.
+CHOICE_MAX_CELLS = 4
+CHOICE_TIMEOUT_MS = 2_000
 JURY_SECONDS_PER_PDF = 45 * 60 / 150
 OPTIONAL_BATCH_FRACTION = 0.60
 _deadline: ContextVar[float | None] = ContextVar("ocr_reread_deadline", default=None)

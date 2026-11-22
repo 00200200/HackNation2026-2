@@ -59,7 +59,9 @@ def _iso(day: str) -> str | None:
 
 
 def apply_action(record: dict, pages: list[str], ocr_pages: Collection[int]) -> None:
-    """Apply OCR rules only when the supporting field evidence comes from OCR."""
+    """Apply OCR rules only when the supporting field evidence comes from OCR.
+
+    `ocr_extract.complete_text_appeal` passes every page of a text layer in the scan-set wording (#101)."""
     if not pages or not ocr_pages or "OdwolanieKIO" not in record:
         return
     action = record["OdwolanieKIO"]

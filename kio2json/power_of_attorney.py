@@ -6,6 +6,7 @@ from rapidfuzz.distance import Levenshtein
 from stdnum.pl import nip
 
 from .common import ATTORNEY_RE, EMAIL_RE, PERSON, UPPER, registry_ids, squash
+from .grant_identity_blocks import complete_trader, recover_trader
 from .grant_trader_signatures import add_trader_signers, issuer_signature_text
 from .grant_traders import (
     GRANTOR_CAPTION,
@@ -680,11 +681,20 @@ def grant_parties(text: str) -> tuple[list[dict], list[tuple[dict, str]]]:
             officers = []
     if len(principals) == 1 and principals[0]["typ"] == "osoba_prawna" and principals[0]["nip"] is None:
         _issuer_identifiers(registry_text, principals[0])
+    if (
+        not principals
+        and grant
+        and (
+            trader := recover_trader(text, grant, len(text) - len(body), [a["imie_nazwisko"] for a in _attorneys(body)])
+        )
+    ):
+        principals = [trader]
     if len(principals) == 1 and principals[0]["typ"] == "osoba_fizyczna" and principals[0]["imie_nazwisko"]:
         trader = principals[0]
         trader["nazwa"] = printed_firm(trader["nazwa"]) or stationery_firm(
             text, heading, trader["imie_nazwisko"], trader["nip"]
         )
+        complete_trader(text[: len(text) - len(body) + grant.start()] if grant else text, trader)
     return principals, officers
 
 
