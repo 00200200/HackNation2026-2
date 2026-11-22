@@ -67,6 +67,16 @@ downloads one JSON per PDF under its case folder. Failed documents show the reas
 empty file. The viewer keeps temporary copies for the current session. The default configuration
 works offline. Page provenance is used internally and the output follows the organizer’s JSON schema.
 
+When a case contains an appeal and a mandate or receipt, the viewer flags differences in party
+identifiers, attorney names and procedure numbers. It also flags unusual appeal fees when the
+procurement title identifies the category. Select a document to see which files to compare.
+
+Set `KIO_CASE_REPAIR=1` to enable sibling OCR repair in the CLI or viewer. The CLI finishes its
+parallel PDF reads before comparing documents in each `input/<case>/` folder. A replacement needs
+a damaged printed value and one compatible, independently read spelling in a different document
+class. Registry numbers also need a matching party identifier or name. A native text value can be
+corrected only when its NIP checksum fails. Missing fields stay empty.
+
 | Start from the repository | Windows | Linux or macOS |
 |---|---|---|
 | Run the CLI on `input/` and write to `output/` | `.\start.bat` | `./start.sh` |
@@ -218,7 +228,7 @@ The three organizer class definitions supply the field descriptions, types and g
 
 ## Use a model endpoint
 
-The primary small-model candidate is Mistral’s open-weight `ministral-3b-2512` (3,849,090,048 total parameters). Both the language and vision weights are counted. The organizer says a smaller model scores more and is revising the exact LLM scoring (`data/uzp/README.md`, “Sposób punktacji LLM”: “pracujemy nad nowymi wytycznymi”; the scoring list says a stronger model in billions of parameters earns fewer points). The regional API supports native JSON Schema. Its documented processing geography includes EU and EFTA countries, so the jury deployment needs a narrower location commitment. [Provider comparison and sources](../../docs/small-model-providers.md)
+The primary small-model candidate is Mistral’s open-weight `ministral-3b-2512` (3,849,090,048 total parameters). The count includes the 403,305,472 parameters of the vision encoder. The organizer says a smaller model scores more and is revising the exact LLM scoring (`data/uzp/README.md`, “Sposób punktacji LLM”: “pracujemy nad nowymi wytycznymi”; the scoring list says a stronger model in billions of parameters earns fewer points). The regional API supports native JSON Schema. Its documented processing geography includes EU and EFTA countries, so the jury deployment needs a narrower location commitment. [Provider comparison and sources](../../docs/small-model-providers.md)
 
 To run the measured rules-first profile, export the Mistral credential in your shell and run the following command.
 
@@ -315,15 +325,15 @@ current rules, select `KIO_OCR_ENGINE=tesseract-dpi` and run
 
 ### Current figures (UZP micro F1, rules only)
 
-| Dataset | PDFs | UZP micro F1 | Strict micro F1 | UZP TP / FP / FN | Routed A / P / T / other |
-|---|---:|---:|---:|---|---|
-| Synthetic training | 196 | 1.0000 | 1.0000 | 2032 / 0 / 0 | all (`classification_accuracy` 1.0 in `latest.json`) |
-| Organizer scans | 30 | 0.9869 | 0.9740 | 301 / 2 / 6 | 10/10, 10/10, 9/10, none in set |
-| Corpus 1 all | 39 | 0.9212 | 0.8889 | 269 / 19 / 27 | 13/13, 6/6, 9/9, 11/11 |
-| Corpus 2 dev | 39 | 0.9221 | 0.8926 | 219 / 12 / 25 | 13/13, 5/5, 10/10, 11/11 |
+| Dataset | PDFs | UZP micro F1 | Strict micro F1 | UZP TP / FP / FN | Outputs equal to the reference JSON |
+|---|---:|---:|---:|---|---:|
+| Synthetic training | 196 | 1.0000 | 1.0000 | 2032 / 0 / 0 | 196 |
+| Organizer scans | 30 | 1.0000 | 0.9974 | 309 / 0 / 0 | 29 |
+| Corpus 1 all | 39 | 0.9231 | 0.8900 | 270 / 19 / 26 | 18 |
+| Corpus 2 dev | 39 | 0.9244 | 0.8951 | 220 / 12 / 24 | 22 |
 
 Corpus 1 dev, a 22-PDF subset of corpus 1 all, scores 0.9221 UZP and 0.8740 strict (142 / 13 / 11).
-Each row is one rules-only CLI run (`profile`: local rules only, two PDF workers, no API key) at extractor commit `f7f3ee9`, scored at scorer commit `6b34bc5`. Both metrics score the same predictions. The UZP score treats a field that is empty in both the reference and the prediction as zero, counts a wrong value as one false positive and accepts an 80% RapidFuzz normalized Levenshtein match on five long strings, because UZP has not confirmed its similarity function (`similarity`). The strict score is the exact-match metric used before. The fresh organizer batch routed 29 of 30 scans (9 of 10 transfer confirmations), where the Round 3 run below routed 30 of 30 (`organizer_scan_note`). The 60 test PDFs of corpus 2 are not in these figures. [UZP measurements](../../evals/results/uzp-metric.json)
+Each row is one keyless CLI run with two PDF workers (`method`) on main at `6ff2966` (`baseline_commit`), scored at `6b34bc5` (`metric_commit`). The figures are `datasets.<name>.uzp_micro_f1.main`, `strict_micro_f1.main` and `exact_json.main` of [`case-siblings.json`](../../evals/results/case-siblings.json). The counts are its `branch_uzp_counts`, which describe main as well, because every output is byte-identical to main's (`byte_matches_to_main` equals `pdfs` in every dataset). The case-check branch of #74 (viewer warnings and the opt-in `KIO_CASE_REPAIR` pass), measured in the same file, scores the same: `branch_before_repair` equals `main` in every dataset, and the repair pass changed no output (`outputs_changed_by_repair` is 0). Both metrics score the same predictions. The UZP score treats a field that is empty in both the reference and the prediction as zero, counts a wrong value as one false positive and accepts an 80% RapidFuzz normalised Levenshtein match on five long strings, because UZP has not confirmed its similarity function (`similarity`). The strict score is the normalised exact-match metric used before. The earlier run at extractor `f7f3ee9` ([`uzp-metric.json`](../../evals/results/uzp-metric.json)) scored the organizer scans 0.9869 UZP and 0.9740 strict, with one transfer scan routed wrongly (`organizer_scan_note`), where the Round 3 run below routed 30 of 30. That run predates #65, which merged into main at `6ff2966`, and the newer run has no false negative on the scans. The cause of the difference is not established. The 60 test PDFs of corpus 2 are not in these figures.
 
 ### Round 3 (rules only, strict metric)
 
@@ -357,13 +367,13 @@ On corpus 1 the model raised transfer F1 by 0.1407. On corpus 2 dev it raised tr
 
 Exact counts compare the complete JSON, including list order. A/P/T denotes appeals, powers and transfers. Each private set includes 11 unrelated PDFs. Earlier appeal measurements are available separately. [Real appeal round](../../evals/results/appeal-real-development.json)
 
-Micro F1 pools field matches across documents. Macro F1 averages the three class scores. The combined measurement file includes correct routes for every class and both profiles. The negatives column counts zero-byte outputs. Timing includes OCR and extraction on a shared host. [Earlier appeal development measurements](../../evals/results/appeal-scan-development.json) · [Earlier grant development measurements](../../evals/results/poa-development.json) · [Organizer scan report](../../evals/results/organizer-scans.json)
+Micro F1 pools field matches across documents. Macro F1 averages the three class scores. The combined measurement file includes correct routes for every class and both profiles. The negatives column counts zero-byte outputs. Timing includes OCR and extraction on a shared host. [Earlier appeal development measurements](../../evals/results/appeal-scan-development.json) · [Earlier grant development measurements](../../evals/results/poa-development.json) · [Organizer scan report](../../evals/results/organizer-scans.json). That report records the same figures as [`uzp-metric.json`](../../evals/results/uzp-metric.json) (extractor `f7f3ee9`, scored at `6b34bc5`): it routed 29 of the 30 scans correctly (transfers 9 of 10), with strict micro F1 0.9740 and UZP micro F1 0.9869. The commit `6b34bc5` changes nothing under `kio2json/` or `config/` relative to `f7f3ee9`, so both ran the same extractor code. The 0.9974 strict score in the Round 2 and Round 3 tables comes from batches that routed all 30.
 
 The earlier model-engine experiment compared two profiles on the 17-document corpus 1 holdout. [Model results](../../evals/results/llm-real-docs.json)
 
 The scanned-transfer update was evaluated on a five-case organizer development half and a five-case holdout per class. Their combined transfer routing was 8/10, up from 2/10 on the integration baseline. Transfer field F1 was 0.8667 on the development half and 0.5833 on the holdout. [Scanned-transfer measurements](../../evals/results/scanned-transfers.json)
 
-On all 30 organizer development scans, the rules routed 10/10 transfer confirmations. Nine matched every field literally (59/60 fields, transfer F1 0.9833). The outstanding title contains a severely degraded name and abbreviation. Across all three classes the serial run averaged 9.23 s per PDF with a maximum of 19.02 s (`timing.final.by_class.all.mean_s.total` and `max_s.total`, rules commit `12a5681`, Apple M1, `OMP_THREAD_LIMIT=1`; `timing.final_run_load_sample` records a one-minute load average of 39.17 on 8 logical CPUs). With the integrated power-of-attorney rules, micro F1 reached 0.6312 on corpus 1 all, 0.7160 on its dev subset and 0.6816 on corpus 2 dev. [Round 2 measurements](../../evals/results/scanned-transfers-round2.json)
+On all 30 organizer development scans, the rules routed 10/10 transfer confirmations. Nine matched every field literally (59/60 fields, transfer F1 0.9833). The outstanding title contains a severely degraded name and abbreviation. Across all three classes the serial run averaged 9.23 s per PDF with a maximum of 19.02 s (`timing.final.by_class.all.mean_s.total` and `max_s.total`, rules commit `12a5681`, Apple M1, `OMP_THREAD_LIMIT=1`; `timing.final_run_load_sample` records a one-minute load average of 39.17 on 8 logical CPUs). At the intermediate step that merged the upstream power-of-attorney rules, micro F1 reached 0.6312 on corpus 1 all, 0.7160 on its dev subset and 0.6816 on corpus 2 dev (`steps["merge upstream power-of-attorney rules"]`). The integration table above comes from the later integrated rules and lists 0.8607 and 0.8789 for corpus 1 all and corpus 2 dev. [Round 2 measurements](../../evals/results/scanned-transfers-round2.json)
 
 In the Round 2 integration run (product `ca29753`, a shared 16 GB Apple M1 per `method.host`), the integrated CLI processed 30 organizer scans in 36.12 s with four rules workers and 44.91 s with three Ministral workers. Those two times are 30 × `datasets.organizer.keyless.seconds_per_pdf` (1.204) and 30 × `datasets.organizer.keyed.seconds_per_pdf` (1.497). The 150-PDF batch took 57.54 s (`mixed_batch_150.keyless.wall_seconds`) and 70.38 s (`mixed_batch_150.keyed.wall_seconds`). It used two copies of the 30 scans and 90 training PDFs. [Combined measurements](../../evals/results/round2-integration.json)
 
@@ -382,7 +392,7 @@ and reached a one-minute load average of 89.7 (`runs[3].load_end[0]`). Training 
 | 30 organizer scans | 41.54 s | 216.89 s | 30/30 | 29/30 exact |
 | 196 training PDFs | 13.65 s | 47.35 s | 196/196 | 1.000 micro F1 |
 
-The four times are `runs[1].seconds` (41.537), `runs[3].seconds` (216.89), `runs[2].seconds` (13.651) and `runs[4].seconds` (47.352) of `adaptive-ocr-budget.json`, measured at product `59aa13a` against base `dbda151`.
+The four times are in `adaptive-ocr-budget.json`: `runs[1].seconds` (41.537; profile `ordinary`, dataset `scans`), `runs[3].seconds` (216.89; `loaded`, `scans`), `runs[2].seconds` (13.651; `ordinary`, `training`) and `runs[4].seconds` (47.352; `loaded`, `training`). All four used four workers. The file records `product` `59aa13a`, `base` `dbda151` and the `machine` (Apple M1, 8 logical CPUs, 16 GiB). `runs` counts from zero.
 
 The 108-document calibration covered all 30 scans and both private development pools. The longest
 optional work in that pass took 33.18 seconds. A separate cold repeat of a repaired scan took 48.59
@@ -392,9 +402,9 @@ the deadline clock four times as fast and divided optional engine timeouts by fo
 Tesseract reads and three RapidOCR reads finished across the 108 PDFs.
 
 With these limits, eight busy loops and `--jobs 1`, the CLI processed the 150-PDF mix in **401.87 seconds**
-(`runs[5].seconds`, profile `loaded-serial`; 6 min 42 s of the jury’s 45 min). All 150 outputs matched the corresponding four-worker readings.
+(`runs[5].seconds`, profile `loaded-serial`, dataset `mix`; 6 min 42 s of the jury’s 45 min). All 150 outputs matched the corresponding four-worker readings.
 The mix contained two copies of each organizer scan and 90 training PDFs. This timing preceded the
-final change to handling expired optional page reads. [Measurements and output digests](../../evals/results/adaptive-ocr-budget.json)
+final change to handling expired optional page reads, and the test suite and public-output scoring ran during part of it (`serial_measurement`). [Measurements and output digests](../../evals/results/adaptive-ocr-budget.json)
 
 An earlier runtime-only experiment (product `a32ba1c`, base `5297660`, keyless `tesseract-dpi`, a 16 GiB M1 MacBook Air per `host`)
 recorded these figures. Four workers processed 30 organizer scans in 37.15 seconds (`runs.four-scans.wall`, 37.1466) and a mix of
@@ -411,7 +421,7 @@ OCR service would count toward model parameters. [Organizer evaluation rules](..
 
 The paired comparison uses the rules at `eabbb31`. The cold 150-PDF run used `bf57506`. Replaying the same model responses after the date fix reproduced all 108 development outputs byte for byte. The combined table above includes the subsequent receipt-routing and attorney-name fixes.
 
-A cold run of the production CLI processed **150 PDFs in 335.64 seconds** with three workers (`cold_regional_cli.timing.whole_command_s`, 335.6418, and `timing.workers`), including local OCR and 106 successful regional API requests (`cold_regional_cli.all150.http`). The result file does not record the host for this run. The mix comprised 108 development PDFs and 42 public training PDFs. The organizer scan group averaged 3.33 wall seconds per PDF (`cold_regional_cli.scans.active_span_s_pdf`, 3.3294). All outputs completed, with zero retries or recoveries. On the 91-PDF development pool, the fresh responses scored **.7208 micro and .7079 macro**. The live micro / macro scores were .7097 / .6701 on corpus 1 dev, .7104 / .6747 on corpus 2 dev, and .7394 / .7040 on organizer scans. The jury’s 45-minute allowance applies to its own machine and document mix.
+A cold run of the production CLI processed **150 PDFs in 335.64 seconds** with three workers (`cold_regional_cli.timing.whole_command_s`, 335.6418, and `timing.workers`), including local OCR and 106 successful regional API requests (`cold_regional_cli.all150.http`). The result file does not record the host for this run. The mix comprised 108 development PDFs and 42 public training PDFs. The 30 organizer scans finished within a 99.88 s window, which is 3.33 s per scan (`cold_regional_cli.scans.active_span_s` and `active_span_s_pdf`, 3.3294). The window may overlap other documents, as `timing.method` notes, so it is not the time one scan takes. One scan took 9.13 s on average (`cold_regional_cli.scans.mean_doc_s`, 9.1329). All outputs completed, with zero retries or recoveries. On the 91-PDF development pool, the fresh responses scored **.7208 micro and .7079 macro**. The live micro / macro scores were .7097 / .6701 on corpus 1 dev, .7104 / .6747 on corpus 2 dev, and .7394 / .7040 on organizer scans. The jury’s 45-minute allowance applies to its own machine and document mix.
 
 The rules-first profile above uses `ministral-3b-2512` and local Tesseract. The paired comparison below uses the same primary readings and captured API responses for each policy. Corpus 1 all includes its 22 dev PDFs and 17 additional development PDFs. The 91-PDF row pools corpus 1 dev, corpus 2 dev and all organizer scans. The coordinator reserved corpus 2 test for the final integrated system.
 

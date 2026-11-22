@@ -12,6 +12,8 @@ The opt-in small-model profile uses Mistral’s regional API, compact source spa
 
 The batch CLI defaults to up to four PDF workers, with one thread per Tesseract instance and up to three concurrent page reads per PDF. The first OCR pass supplies layout word boxes, and optional OCR has up to 300 seconds per document. A shared batch cutoff stops rereads after 27 minutes for 150 PDFs.
 
+The local viewer flags disagreements between an appeal, its mandate and its receipt. The CLI and viewer can use independently printed sibling values to repair a damaged reading within one case folder.
+
 The grant certificate and board-stamp readers share the copy-attestation check so that a certifier cannot be counted as the issuing officer.
 
 Public landing https://doc2json.pl (`frontend/`, static nginx, monochrome) runs on the team VPS as `doc2json-web`
@@ -65,7 +67,7 @@ Exact counts compare the complete JSON, including list order. A/P/T denotes appe
 
 The scanned-transfer rules routed 5/5 organizer dev transfers and 3/5 on the single organizer holdout, along with 4/4 and 9/10 transfers on the two private dev partitions. The synthetic regression still matched all 196 outputs byte for byte. [Per-step and holdout aggregates](evals/results/scanned-transfers.json)
 
-On all 30 organizer development scans, the rules routed 10/10 transfer confirmations. Nine matched every field literally (59/60 fields, transfer F1 0.9833). The outstanding title contains a severely degraded name and abbreviation. Across all three classes the run averaged 9.23 s/PDF on the shared Apple M1, with a maximum of 19.02 s. With the integrated power-of-attorney rules, micro F1 reached 0.6312 on corpus 1 all, 0.7160 on its dev subset and 0.6816 on corpus 2 dev. [Round 2 measurements](evals/results/scanned-transfers-round2.json)
+On all 30 organizer development scans, the rules routed 10/10 transfer confirmations. Nine matched every field literally (59/60 fields, transfer F1 0.9833). The outstanding title contains a severely degraded name and abbreviation. Across all three classes the run averaged 9.23 s/PDF on the shared Apple M1, with a maximum of 19.02 s. At the intermediate step that merged the upstream power-of-attorney rules, micro F1 reached 0.6312 on corpus 1 all, 0.7160 on its dev subset and 0.6816 on corpus 2 dev. The later integrated rules reached 0.8607 on corpus 1 all and 0.8789 on corpus 2 dev ([`round2-integration.json`](evals/results/round2-integration.json), `datasets.corpus1.keyless.micro_f1` and `datasets.corpus2.keyless.micro_f1`). [Round 2 measurements](evals/results/scanned-transfers-round2.json)
 
 The subsequent real-grant round found six labelled grants in corpus 1 and five in corpus 2 dev.
 On these development documents, grant field F1 rose to 0.9558 and 0.9895 respectively.
@@ -80,6 +82,7 @@ Two and four grant JSONs matched exactly. The ten organizer grants remained exac
 | Improve receipt routing and recover damaged party names on development inputs | Open |
 | Confirm the long-string similarity function with UZP and record the Stage II weights | Open |
 | Promote HackNation2026 PR #48 to `prod` after the faktczyfejk demo, so the doc2json.pl Caddy block survives a redeploy | Open |
+| Re-measure the README Results rows (UZP and strict micro F1) on the submission commit; they describe main at `6ff2966` | Open |
 
 ## Decisions
 
@@ -98,6 +101,8 @@ Two and four grant JSONs matched exactly. The ten organizer grants remained exac
   `/orchestrator`, not to Claude subagents.
 
 ## Log
+
+- 22.11.2026 · Codex · Added case warnings and opt-in sibling OCR repair for #61. All 304 keyless outputs matched main byte for byte. UZP F1 stayed at 0.9231 on corpus 1 all, 0.9221 on corpus 1 dev and 0.9244 on corpus 2 dev. Training scored 1.000 with 196 exact outputs. The 30 singleton scans had 29 exact outputs and UZP F1 of 1.000. [Paired case measurements](evals/results/case-siblings.json)
 
 - 22.11.2026 · Codex · Grouped appeal and mandate word boxes by printed role and column. Added regressions for wrapped names, repeated stationery, extra appointees and principal-specific signatures.
 
@@ -178,6 +183,7 @@ Two and four grant JSONs matched exactly. The ten organizer grants remained exac
 - 21.11.2026 · Claude · presentation-style README with monochrome visuals in `docs/readme/`; previous README moved to `docs/readme/reference.md` · feat/docs
 - 22.11.2026 · Claude · PR #36 merged with main: the README, results chart and `docs/readme/reference.md` now quote the rules-only figures from `evals/results/round3.json`, main's README changes are carried into the reference, and the reference gains a section on the bundled class TOML files · feat/docs
 - 22.11.2026 · Claude · PR #36 merged with main again (#71, UZP scoring): the README and the results chart show the UZP micro F1 of `evals/results/uzp-metric.json` (extractor `f7f3ee9`) beside the strict score and state the 29/30 organizer-scan routing; the organizer scans are no longer labelled real; both timings name their product commit; `reference.md` gains a current-figures table, relabels Round 3 as the strict metric and carries the #33 citation edits (result file, key, number and commit for every speed and memory figure); the README names the optional model, its parameter count and endpoint and links the pipeline PDF · feat/docs
+- 22.11.2026 · Claude · PR #36 merged with main again (#67, #74): the README results, the chart and the current-figures table of `docs/readme/reference.md` now come from `evals/results/case-siblings.json` (main at `6ff2966`: organizer scans UZP 1.0000, corpus 1 0.9231, corpus 2 dev 0.9244). #74's viewer and repair paragraphs are in `docs/readme/reference.md`. The judge's wording points are applied (EU and EFTA caveat, 402 s run caveat, known-limits link, normalised exact match, no jury laptop) · feat/docs
 
 ## Frontend branch snapshot before API integration
 
@@ -203,5 +209,6 @@ These runs used local rules with the three endpoint variables unset. The two loc
 
 - 21.11.2026 · Codex · Round 3 traced 130 field errors on 78 real development PDFs. Recovered identifiers from matching party records, checked damaged company names against declarations and read debit amounts across bank columns. The single-field Ministral whitespace trial lost one correct title in 12 calls and was dropped.
 
+- 22.11.2026 · Codex · Added a Python 3.13 jury install and 150-PDF CLI comparison for Windows x64, Linux x64 and macOS in `ab3c8fa`. GitHub blocked all three jobs before checkout due to account billing. The run produced no timings. [Run record](evals/results/jury-batch.json)
 - 22.11.2026 · Codex · Implemented the UZP scorer and retained historical strict micro F1 on `feat/uzp-metric` (#59).
 - 22.11.2026 · Codex · Added local jury Compose services and the signed task rules for #60. Compose configuration validated. Docker Desktop did not answer its health probe, so container byte parity is pending.

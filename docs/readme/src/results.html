@@ -16,13 +16,13 @@ h2 { font-size: 34px; font-weight: 600; letter-spacing: -.035em; }
 .note { margin-top: 34px; font-size: 14.5px; color: #a1a1a1; max-width: 1150px; line-height: 1.5; }
 </style></head><body>
 <h2>UZP field micro F1, rules only, no API key</h2>
-<p class="sub">One CLI run per dataset at extractor f7f3ee9. Source: evals/results/uzp-metric.json</p>
+<p class="sub">One CLI run per dataset on main at 6ff2966. Source: evals/results/case-siblings.json</p>
 <div class="chart">
   <div class="row"><div class="name">Training cases <small>organizer, synthetic, 196 PDFs</small></div><div class="track"><div class="bar" style="width:100%"></div></div><div class="val">1.0000<small>strict 1.0000</small></div></div>
-  <div class="row"><div class="name">Organizer scans <small>scanned, 30 PDFs</small></div><div class="track"><div class="bar real" style="width:98.69%"></div></div><div class="val">0.9869<small>strict 0.9740</small></div></div>
-  <div class="row"><div class="name">Local corpus 1 <small>real, 39 PDFs</small></div><div class="track"><div class="bar real" style="width:92.12%"></div></div><div class="val">0.9212<small>strict 0.8889</small></div></div>
-  <div class="row"><div class="name">Local corpus 2, dev <small>real, 39 PDFs</small></div><div class="track"><div class="bar real" style="width:92.21%"></div></div><div class="val">0.9221<small>strict 0.8926</small></div></div>
+  <div class="row"><div class="name">Organizer scans <small>scanned, 30 PDFs</small></div><div class="track"><div class="bar real" style="width:100%"></div></div><div class="val">1.0000<small>strict 0.9974</small></div></div>
+  <div class="row"><div class="name">Local corpus 1 <small>real, 39 PDFs</small></div><div class="track"><div class="bar real" style="width:92.31%"></div></div><div class="val">0.9231<small>strict 0.8900</small></div></div>
+  <div class="row"><div class="name">Local corpus 2, dev <small>real, 39 PDFs</small></div><div class="track"><div class="bar real" style="width:92.44%"></div></div><div class="val">0.9244<small>strict 0.8951</small></div></div>
 </div>
 <div class="axis"><span></span><div class="ticks"><span>0</span><span>0.25</span><span>0.50</span><span>0.75</span><span>1.00</span></div><span></span></div>
-<p class="note">The rules were developed against the training set, the organizer scans and these two local corpora, so none of these figures estimates performance on unseen cases. The 60 test PDFs of corpus 2 are not part of them. Strict is the earlier exact-match score on the same predictions; UZP has not confirmed its similarity function, so five long strings accept an 80% match. Routing: 29 of 30 organizer scans (9 of 10 transfers), every document of both local corpora.</p>
+<p class="note">The rules were developed against the training set, the organizer scans and these two local corpora, so none of these figures estimates performance on unseen cases. The 60 test PDFs of corpus 2 are not part of them. Strict is the earlier normalised exact-match score on the same predictions; UZP has not confirmed its similarity function, so five long strings accept an 80% match. 29 of the 30 organizer scan outputs equal the reference JSON exactly.</p>
 </body></html>

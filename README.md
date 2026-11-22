@@ -34,10 +34,10 @@ A person reads them easily, but a system can only use those facts once they are 
 - Routing reads the text of each PDF and never its file name, so `scan001.pdf` is handled like `odwolanie.pdf`.
 - A value the document does not state is `null`. Output from an optional model is kept only when it cites a
   supporting span of the source.
-- It runs on the jury's laptop: CPU only, offline OCR, installed with `pip install -r requirements.txt`. The
-  default configuration needs no API key and calls no language model, because extraction is rules plus local OCR.
-  The optional model profile we measured calls Mistral's open-weight `ministral-3b-2512` (3,849,090,048 parameters)
-  through the EU endpoint `api.eu.mistral.ai`; see
+- It needs no GPU: OCR runs offline on the CPU. The default configuration needs no API key and calls no language
+  model, because extraction is rules plus local OCR. The optional model profile we measured calls Mistral's
+  open-weight `ministral-3b-2512` (3,849,090,048 parameters) through the regional endpoint `api.eu.mistral.ai`. Its
+  documented processing geography includes EU and EFTA countries, so a narrower location commitment is still open; see
   [Use a model endpoint](docs/readme/reference.md#use-a-model-endpoint).
 - Each document class is one TOML file in `config/classes/` with its routing cues, fields and engines. The disabled
   fourth class shows how: [enable it](docs/readme/reference.md#enable-the-fourth-class).
@@ -45,30 +45,35 @@ A person reads them easily, but a system can only use those facts once they are 
 
 ## Results
 
-<p align="center"><img src="docs/readme/results.png" alt="UZP field micro F1, rules only: 1.0000 on the training cases, 0.9869 on the organizer scans, 0.9212 and 0.9221 on two local real-document corpora" width="100%"></p>
+<p align="center"><img src="docs/readme/results.png" alt="UZP field micro F1, rules only: 1.0000 on the training cases and the organizer scans, 0.9231 and 0.9244 on two local real-document corpora" width="100%"></p>
 
 | Dataset | PDFs | UZP micro F1 | Strict micro F1 |
 |---|---:|---:|---:|
 | Organizer training cases (synthetic) | 196 | 1.0000 | 1.0000 |
-| Organizer scans (scanned PDFs) | 30 | 0.9869 | 0.9740 |
-| Local corpus 1 (real) | 39 | 0.9212 | 0.8889 |
-| Local corpus 2, dev (real) | 39 | 0.9221 | 0.8926 |
+| Organizer scans (scanned PDFs) | 30 | 1.0000 | 0.9974 |
+| Local corpus 1 (real) | 39 | 0.9231 | 0.8900 |
+| Local corpus 2, dev (real) | 39 | 0.9244 | 0.8951 |
 
-Each row is one rules-only CLI run (no endpoint configured, two PDF workers) at extractor commit `f7f3ee9`, scored at
-`6b34bc5` and recorded in [`evals/results/uzp-metric.json`](evals/results/uzp-metric.json). Both scores use the same
-predictions. UZP micro F1 follows the scoring rules UZP gave on the hackathon Discord, as recorded in
-[issue #59](https://github.com/00200200/HackNation2026-2/issues/59) and implemented in `evals/metrics.py`: a field that
-is empty in both the reference and the prediction counts as zero, and a wrong value counts as one false positive. Five
-long strings accept an 80% RapidFuzz match, because UZP has not confirmed its similarity function. The strict score, an
-exact match, is the one we used before. Routing was correct for 29 of the 30 organizer scans (9 of 10 transfer
-confirmations) and for every document of both local corpora.
+Each row is one rules-only CLI run (no API key, two PDF workers) of main at commit `6ff2966`, scored at `6b34bc5` and
+recorded in [`evals/results/case-siblings.json`](evals/results/case-siblings.json). Both scores use the same
+predictions. In the same file the branch with the case checks of #74 wrote byte-identical outputs and scored the same
+(`byte_matches_to_main`, `branch_before_repair`). UZP micro F1 follows the scoring rules UZP gave on the hackathon
+Discord, as recorded in [issue #59](https://github.com/00200200/HackNation2026-2/issues/59) and implemented in
+`evals/metrics.py`: a field that is empty in both the reference and the prediction counts as zero, and a wrong value
+counts as one false positive. Five long strings accept an 80% RapidFuzz match, because UZP has not confirmed its
+similarity function. The strict score, a normalised exact match, is the one we used before. On the organizer scans no
+field is missing or wrong under the UZP rules (309 true positives, 0 false positives, 0 false negatives), and 29 of the
+30 outputs equal the reference JSON exactly. An earlier run at extractor `f7f3ee9`
+([`uzp-metric.json`](evals/results/uzp-metric.json)), which predates #65, routed one transfer scan wrongly and scored
+0.9869 UZP and 0.9740 strict on them. We have not established whether #65 explains the difference.
 
 The rules were developed against the training cases, the organizer scans and the two local corpora. The local corpora are
 private sets of real documents that are not in this repository. These are therefore development figures, not estimates
 for unseen cases and not the score on the organizer's hidden test set. The 60 test PDFs of corpus 2 are not part of them.
 
 Timing: 150 PDFs took 402 s with one worker while eight busy loops occupied the 8 logical CPUs of an Apple M1
-([`adaptive-ocr-budget.json`](evals/results/adaptive-ocr-budget.json), `runs[5]`, product `59aa13a`). With four workers on
+([`adaptive-ocr-budget.json`](evals/results/adaptive-ocr-budget.json), `runs[5]`, product `59aa13a`). That run preceded the
+final change to optional page reads, and the test suite ran during part of it (`serial_measurement`). With four workers on
 a host whose one-minute load average was 24 to 38 they took 83 s ([`round3.json`](evals/results/round3.json), `timing`,
 product `34da9ca`; `timing` does not name the machine). The organizer allows 45 minutes
 ([`data/uzp/README.md`](data/uzp/README.md)), and the jury's machine will differ from ours.
@@ -76,7 +81,8 @@ product `34da9ca`; `timing` does not name the machine). The organizer allows 45 
 The definition of the score, the earlier rounds and the OCR comparison are in the technical reference:
 [current figures](docs/readme/reference.md#current-figures-uzp-micro-f1-rules-only),
 [real-document rounds and timings](docs/readme/reference.md#rules-on-real-documents-and-organizer-scans) and
-[OCR comparison](docs/readme/reference.md#ocr-on-real-development-documents). Full training run:
+[OCR comparison](docs/readme/reference.md#ocr-on-real-development-documents). Known limits and unconfirmed organizer
+details: [known limits](docs/readme/reference.md#known-limits). Full training run:
 [`latest.json`](evals/results/latest.json).
 
 ## Quick start
@@ -92,7 +98,7 @@ python -m kio2json                                    # reads ./input/<case>/*.p
 | | Windows | Linux or macOS |
 |---|---|---|
 | CLI on `input/` → `output/` | `.\start.bat` | `./start.sh` |
-| Local viewer in the browser (127.0.0.1:8000): pages next to the JSON | `.\start.bat gui` | `./start.sh gui` |
+| Local viewer in the browser (127.0.0.1:8000): pages next to the JSON, and a warning when the documents of one case disagree | `.\start.bat gui` | `./start.sh gui` |
 | Web app | [doc2json.pl](https://doc2json.pl) | [doc2json.pl](https://doc2json.pl) |
 
 <p align="center">
