@@ -2,6 +2,8 @@
 
 import json
 import math
+import os
+import subprocess
 import sys
 from pathlib import Path
 
@@ -176,6 +178,7 @@ def test_the_organizer_scans_load_as_thirty_sources():
 
 
 STUB = """
+import os
 import sys
 from pathlib import Path
 
@@ -183,8 +186,9 @@ source, target, answers = Path(sys.argv[1]), Path(sys.argv[2]), Path(sys.argv[3]
 for pdf in source.rglob("*.pdf"):
     if "skew-3" in str(pdf):
         sys.exit("crashed on purpose")  # writes nothing for this variant
-    case = pdf.parent.relative_to(source).as_posix().split("/", 1)[1]
-    answer = (answers / (case.replace("/", "_") + ".json")).read_text(encoding="utf-8")
+    answer = (answers / f"{pdf.parent.name}.json").read_text(encoding="utf-8")
+    with (answers / "seen.txt").open("a", encoding="utf-8") as seen:
+        seen.write(f"{pdf.relative_to(source)} {sorted(key for key, value in os.environ.items() if key.upper().startswith('KIO_') and value)}\\n")
     out = target / pdf.parent.relative_to(source) / (pdf.stem + ".json")
     out.parent.mkdir(parents=True, exist_ok=True)
     out.write_text("{}" if any(name in str(pdf) for name in ("skew+3", "dpi-150")) else answer, encoding="utf-8")
@@ -195,8 +199,8 @@ def stub_app(folder: Path, sources: list) -> str:
     """The command of an app that returns the reference of every document, `{}` for some variants and crashes on one."""
     answers = folder / "answers"
     answers.mkdir()
-    for source in sources:
-        (answers / (source.case.replace("/", "_") + ".json")).write_text(json.dumps(source.gold), encoding="utf-8")
+    for number, source in enumerate(sources, 1):  # the app sees przyklad_01, przyklad_02, ... in this order
+        (answers / f"przyklad_{number:02d}.json").write_text(json.dumps(source.gold), encoding="utf-8")
     stub = folder / "stub.py"
     stub.write_text(STUB, encoding="utf-8")
     return f"{sys.executable} {stub} {{input}} {{output}} {answers}"
@@ -225,6 +229,78 @@ def test_a_run_scores_each_variant_apart_and_a_crash_in_one_leaves_the_others_al
     assert report["skew-3"]["no_output"] == 2
 
 
+def test_the_app_sees_neutral_folders_and_no_model_endpoint(tmp_path, monkeypatch):
+    for name in [name for name in os.environ if name.upper().startswith("KIO_")]:
+        monkeypatch.delenv(name)  # the stub reports every KIO_ variable with a value, so start from none
+    monkeypatch.setenv("KIO_LLM_API_KEY", "not-a-real-key")
+    monkeypatch.setenv("KIO_OCR_ENGINE", "not-the-default")
+    gold = {"przelew_bankowy": {"kwota": 100.0, "tytul": "x"}}
+    sources = [
+        stress.Source("skany/potwierdzenia/0001", "0001.pdf", make_scan(tmp_path, "s1.pdf", pages=1), gold),
+        stress.Source("skany/odwolania/0002", "0002.pdf", make_scan(tmp_path, "s2.pdf", pages=1), gold),
+    ]
+    cmd = stub_app(tmp_path, sources)
+    root = stress.build(sources, "delivered", stress.Spec(), 2026, tmp_path / "cache", workers=1)
+    run = stress.score(sources, "delivered", root, cmd)
+    assert run.error is None and [d.counts.fn for d in run.docs] == [0, 0]
+    seen = (tmp_path / "answers" / "seen.txt").read_text(encoding="utf-8").splitlines()
+    assert sorted(line.split(" ")[0] for line in seen) == [
+        "delivered/przyklad_01/dokument_01.pdf",
+        "delivered/przyklad_02/dokument_01.pdf",
+    ]  # no class, group or scan number in a path
+    assert all(line.endswith(" []") for line in seen)  # neither KIO_ variable of the shell reached the app with a value
+
+
+def test_the_app_environment_drops_the_switches_the_jury_does_not_set(monkeypatch):
+    for name in (
+        "KIO_LLM_API_KEY",
+        "kio_llm_model",
+        "KIO_LLM_MODE",
+        "KIO_OCR_ENGINE",
+        "KIO_CLASSES_DIR",
+        "KIO_CASE_REPAIR",
+        "UV_ENV_FILE",
+    ):
+        monkeypatch.setenv(name, "1")
+    monkeypatch.setenv("KIO_WEB_PORT", "8000")
+    env = stress.app_env()
+    assert {k: v for k, v in env.items() if k.upper().startswith("KIO_LLM_")} == stress.KEYLESS
+    assert not {"KIO_OCR_ENGINE", "KIO_CLASSES_DIR", "KIO_CASE_REPAIR", "UV_ENV_FILE"} & env.keys()
+    assert env["KIO_WEB_PORT"] == "8000" and env["PATH"] == os.environ["PATH"]  # the rest is untouched
+
+
+def test_an_empty_endpoint_in_the_environment_beats_a_keyed_env_file(tmp_path):
+    (tmp_path / ".env").write_text(
+        "KIO_LLM_BASE_URL=http://example.invalid/v1\nKIO_LLM_MODEL=m\nKIO_LLM_API_KEY=k\n", encoding="utf-8"
+    )
+    code = "from kio2json.model_profile import ProfileSettings; print(ProfileSettings().profile().keyed)"
+
+    def keyed(env: dict[str, str]) -> str:
+        run = subprocess.run(
+            [sys.executable, "-c", code],
+            check=True,
+            capture_output=True,
+            text=True,
+            cwd=tmp_path,
+            env=env | {"PYTHONPATH": str(stress.ROOT)},
+        )
+        return run.stdout.strip()
+
+    plain = {k: v for k, v in os.environ.items() if not k.upper().startswith("KIO_LLM_")}
+    assert keyed(plain) == "True"  # control: the app does read this `.env` from its working folder
+    assert keyed(stress.app_env()) == "False"
+
+
+def test_a_relative_cache_path_scores_like_an_absolute_one(tmp_path, monkeypatch):
+    monkeypatch.chdir(tmp_path)
+    gold = {"przelew_bankowy": {"kwota": 100.0, "tytul": "x"}}
+    sources = [stress.Source("skany/potwierdzenia/0001", "0001.pdf", make_scan(tmp_path, "s1.pdf", pages=1), gold)]
+    cmd = stub_app(tmp_path, sources)
+    root = stress.build(sources, "delivered", stress.Spec(), 2026, Path("cache"), workers=1)
+    run = stress.score(sources, "delivered", root, cmd)
+    assert run.error is None and run.docs[0].counts.fn == 0
+
+
 def test_the_command_line_runs_every_variant_once_and_writes_the_report(tmp_path):
     cmd = stub_app(tmp_path, stress.load_sources(stress.DATA))
     out = tmp_path / "report.json"
@@ -232,7 +308,7 @@ def test_the_command_line_runs_every_variant_once_and_writes_the_report(tmp_path
     assert stress.main([*argv, "--cmd", cmd]) == 0
     report = json.loads(out.read_text(encoding="utf-8"))
     assert list(report["variants"]) == ["delivered", "dpi-150", "mixed-1"]  # a repeated name runs once
-    assert {"commit", "dirty", "seed", "seconds_per_doc"} <= report.keys()
+    assert {"commit", "dirty", "seed", "seconds_per_doc", "cmd", "environment"} <= report.keys()
     delivered, dropped = report["variants"]["delivered"], report["variants"]["dpi-150"]
     assert delivered["docs"] == 30 and delivered["micro_f1"] == 1.0 and delivered["app_error"] is None
     assert len(dropped["misrouted"]) == 30 and dropped["loss"]["routing"] == 1.0 and dropped["no_output"] == 0

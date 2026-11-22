@@ -13,6 +13,8 @@ routing and how much is fields, and the fields that fail.
 The variants are built into `.cache/scan-stress` (ignored by git) and rebuilt only when the generator, the seed or a
 source file changes. Nothing but the report is committed. A variant skews the page on top of the scan's own skew
 (median 1.53 degrees and maximum 2.59 over the organizer's pages, issue #81), so `skew+3` is up to 5.6 degrees in all.
+The app runs as the jury's default run does (no model endpoint, even when a `.env` holds one; default OCR engine and
+classes) and sees neutral case folders.
 A diagnostic, not a gate: compare two reports to see whether a change helps.
 """
 
@@ -240,25 +242,48 @@ class Run:
     error: str | None
 
 
+# The environment wins over the app's `.env`, so empty values keep a keyed `.env` from giving it a model (as in evals/variants.py).
+KEYLESS = {"KIO_LLM_BASE_URL": "", "KIO_LLM_MODEL": "", "KIO_LLM_API_KEY": ""}
+# `uv run` loads a variable that is not set from the file `UV_ENV_FILE` names, so that is dropped too.
+NOT_SET_BY_THE_JURY = {"KIO_OCR_ENGINE", "KIO_CLASSES_DIR", "KIO_CASE_REPAIR", "UV_ENV_FILE"}
+
+
+def app_env() -> dict[str, str]:
+    """The environment of the jury's default run, whatever the caller's shell or `.env` holds."""
+    kept = {
+        key: value
+        for key, value in os.environ.items()
+        if not key.upper().startswith("KIO_LLM_") and key.upper() not in NOT_SET_BY_THE_JURY
+    }
+    return kept | KEYLESS
+
+
 def score(sources: list[Source], name: str, root: Path, cmd: str) -> Run:
-    """Run the app on one variant and score it. A document the app left without JSON scores as all misses."""
-    cases = {f"{name}/{s.case}": {s.name: s.gold} for s in sources}
+    """Run the app on one variant and score it. A document the app left without JSON scores as all misses.
+
+    The app sees `<variant>/przyklad_NN/dokument_01.pdf`: no class, group or scan number in a folder or file name.
+    """
     with tempfile.TemporaryDirectory(prefix="odw-scan-stress-") as tmp:
         data, input_dir, output_dir = Path(tmp) / "data", Path(tmp) / "input", Path(tmp) / "output"
-        data.mkdir()
-        (data / name).symlink_to(root)
+        cases = {}
+        for number, source in enumerate(sources, 1):
+            case = f"{name}/przyklad_{number:02d}"
+            (data / case).mkdir(parents=True)
+            target = (root / source.case / source.name).resolve()  # the link is read from another folder
+            (data / case / source.name).symlink_to(target)
+            cases[case] = {source.name: source.gold}
         input_dir.mkdir()
         output_dir.mkdir()
         staged = stage(cases, data, input_dir)
-        seconds, error = run_app(cmd, input_dir, output_dir)
+        seconds, error = run_app(cmd, input_dir, output_dir, env=app_env())
         docs = [
             score_doc(
-                f"{name}/{s.case}",
-                s.name,
-                output_dir / f"{name}/{s.case}" / f"{staged[(f'{name}/{s.case}', s.name)]}.json",
-                s.gold,
+                f"{name}/{source.case}",
+                source.name,
+                output_dir / case / f"{staged[(case, source.name)]}.json",
+                source.gold,
             )
-            for s in sources
+            for case, source in zip(cases, sources, strict=True)
         ]
     return Run(docs, seconds, error)
 
@@ -333,6 +358,11 @@ def main(argv: list[str] | None = None) -> int:
         "seed": args.seed,
         "documents": len(sources),
         "seconds_per_doc": sum(run.seconds for run in runs.values()) / sum(len(run.docs) for run in runs.values()),
+        "cmd": args.cmd,
+        "environment": (
+            "no model endpoint (KIO_LLM_BASE_URL, KIO_LLM_MODEL and KIO_LLM_API_KEY empty, even if a .env holds them); "
+            "KIO_OCR_ENGINE, KIO_CLASSES_DIR, KIO_CASE_REPAIR and UV_ENV_FILE not set; neutral case folders"
+        ),
         "metric": "micro_f1 is the organizer formula of evals/metrics.py (UZP #59); loss.routing + loss.fields = 1 - micro_f1",
         "variants": {
             name: {

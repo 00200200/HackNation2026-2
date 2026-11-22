@@ -75,7 +75,9 @@ up to ±3° on top of the scan's own, noise, three mixed sets) and runs the app 
 `evals/results/scan-stress.json`: per-variant UZP micro F1, routing per class, the loss split into routing errors
 (documents routed to the wrong class) and field errors (the rest), the misrouted documents and the failing fields.
 `--list` shows the variants, `--variants delivered,skew+3` runs some. The PDFs live in `.cache/scan-stress` (ignored by
-git); only the report is committed. A diagnostic, not a gate: compare two reports to see whether a change helps.
+git); only the report is committed. The app sees neutral `przyklad_NN` folders and runs as the jury's default run does:
+no model endpoint (even if a `.env` holds one), default OCR engine and classes. A diagnostic, not a gate: compare two reports to see whether a change helps, and check a fix on
+another `--seed` and on the private corpora too, because one seed is one set of renders.
 
 ## F1 definition (`evals/metrics.py`)
 
