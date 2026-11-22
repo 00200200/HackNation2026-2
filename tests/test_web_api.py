@@ -44,6 +44,7 @@ def test_extract_keeps_upload_order_and_duplicate_names(client):
         "class": "bank_transfer",
         "data": {"przelew_bankowy": {"kwota": 123.45}},
         "error": None,
+        "sources": [],
     }
     assert results[1]["class"] is None and results[1]["data"] == {} and results[1]["error"] is None
     assert results[2]["data"] == {} and results[2]["error"]
@@ -181,3 +182,29 @@ def test_admission_and_queue_wait_share_request_budget(monkeypatch):
             assert response.status_code == 408 and held.locked() and web_api._queued == 0
 
     asyncio.run(run())
+
+
+def test_sources_keep_located_values_only():
+    trace = {
+        "fields": [
+            {
+                "field": "przelew_bankowy.kwota",
+                "value": 123.45,
+                "engine": "rule",
+                "page": 1,
+                "snippet": "Kwota: 123,45 PLN",
+            },
+            {"field": "przelew_bankowy.tytul", "value": None, "engine": None, "page": None, "snippet": None},
+        ]
+    }
+    assert web_api._sources(trace) == [
+        {
+            "field": "przelew_bankowy.kwota",
+            "value": 123.45,
+            "engine": "rule",
+            "page": 1,
+            "snippet": "Kwota: 123,45 PLN",
+            "note": None,
+        }
+    ]
+    assert web_api._sources(None) == []
