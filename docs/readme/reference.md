@@ -218,7 +218,7 @@ corrected only when its NIP checksum fails. Missing fields stay empty.
    and, on scans, an independent OCR reading. Each accepted value needs a supporting span. The class rules
    fill gaps using the reconstructed layout. The CLI and viewer share this pipeline.
 
-The README has the current pipeline diagram. [`docs/pipeline/pipeline.pdf`](../../docs/pipeline/pipeline.pdf) is an older drawing of it: it shows the empty output as a zero-byte file and lists three merged pull requests (#24, #26 and #28) as in review. A rebuild from [`pipeline.tex`](../../docs/pipeline/pipeline.tex) is pending because no LaTeX engine was available.
+The README shows the pipeline diagram. [`docs/pipeline/pipeline.pdf`](../../docs/pipeline/pipeline.pdf) is the same diagram as a one-page PDF. Both are rendered from [`src/pipeline.html`](src/pipeline.html), and the commands are in the header of [`src/base.css`](src/base.css).
 
 ## Add a class
 
