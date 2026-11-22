@@ -33,6 +33,7 @@ make eval-real HN_REAL_SPLIT=dev                         # local corpus, overrid
 uv run python -m evals.run --corpus "$corpus" --split test
 uv run python -m evals.run --corpus "$corpus" --split dev --detail-out "$corpus/dev-detail.json"
 uv run python -m evals.field_report --corpus "$corpus" --split dev --force-ocr --errors
+uv run python -m evals.scan_stress                       # fresh renders of the 30 organizer scans (issue #81), ~6 min
 uv run pytest -q tests/test_eval_metrics.py              # metric code only
 ```
 
@@ -67,6 +68,14 @@ Together they must cover each case exactly once. Both commands accept `--split d
 Only the selected split's gold and PDFs are scored. Inspect field errors on dev and score test by aggregates.
 For a run that includes designated test cases, the field report requires an external `--detail-out` for
 `--errors` and sends document diagnostics to that file.
+
+Scan stress (`evals/scan_stress.py`, `make scan-stress`): the organizer's 30 scans score 1.000 because the app was tuned
+on those files, so this re-renders every page from a fixed seed (150/200/300 dpi, grey JPEG or one-bit CCITT, skew of
+up to ±3° on top of the scan's own, noise, three mixed sets) and runs the app on the result as a black box. It writes
+`evals/results/scan-stress.json`: per-variant UZP micro F1, routing per class, the loss split into routing errors
+(documents routed to the wrong class) and field errors (the rest), the misrouted documents and the failing fields.
+`--list` shows the variants, `--variants delivered,skew+3` runs some. The PDFs live in `.cache/scan-stress` (ignored by
+git); only the report is committed. A diagnostic, not a gate: compare two reports to see whether a change helps.
 
 ## F1 definition (`evals/metrics.py`)
 

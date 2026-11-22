@@ -1,4 +1,4 @@
-.PHONY: help install data requirements test lint format check eval eval-quick eval-real
+.PHONY: help install data requirements test lint format check eval eval-quick eval-real scan-stress
 
 help: ## List targets
 	@grep -E '^[a-z-]+:.*## ' $(MAKEFILE_LIST) | awk -F ':.*## ' '{printf "  %-12s %s\n", $$1, $$2}'
@@ -52,3 +52,6 @@ eval-variants: ## Gate rule changes on the fixed 60-case robustness baseline
 .PHONY: eval-cases
 eval-cases: ## Score paired native and scanned documents generated from linked case records
 	uv run python -m evals.cases $(CASE_ARGS)
+
+scan-stress: ## F1 on fresh renders of the organizer scans
+	uv run python -m evals.scan_stress
