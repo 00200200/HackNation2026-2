@@ -12,7 +12,7 @@ from .class_config import load_classes
 def main(source: Path, output: Path) -> None:
     classes = load_classes()
     configure_logging(classes)
-    result = read_document(source, classes)
+    result = read_document(source, classes, explain=True)
     output.write_text(json.dumps(asdict(result)), encoding="utf-8")
 
 
