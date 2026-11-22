@@ -503,7 +503,7 @@ rules. [OCR results](../../evals/results/ocr-engines.json)
 
 ## Known limits
 
-- A sole trader’s mandate can identify the person separately from the registered business name. The mandate schema records the NIP and has no REGON field. A damaged name or a signature without an identified signer can still leave a field empty.
+- A sole trader’s mandate can identify the person separately from the registered business name. The extractor reads the grantor’s declaration, owner fields on a CEIDG card, or an explicitly labelled proprietor signature. A registered business name can supply the person when exactly one end prints an identifiable personal name. The mandate schema records the NIP and has no REGON field. A damaged name or a signature without an identified signer can still leave a field empty.
 
 - An appeal can name the contracting authority by its role in conducting or awarding the procurement. A numbered list can identify joint authorities and mark one as the lead. An unfamiliar caption or a nearby name without local organization, address or registry evidence can leave the party list empty.
 
@@ -610,5 +610,7 @@ On the 26-case panel, keyless main `fa9937e` scored **0.7191 UZP F1** (case-boot
 Four receipt layouts are the first routing targets. The early bank letter, transaction history, operation details and order details each missed all four PDFs (two cases in both renditions). The sole-trader mandate routed 8/8 but scored 0.2069 UZP F1, with missed principal names and identifiers. Most families have few independent cases. The scorecard includes every family, codec/DPI combination, sample count and field result. [Benchmark measurements](../../evals/results/case-benchmark.json)
 
 The transfer update routed all four development bank letters, with 0.9767 UZP and 0.9167 strict field F1. After integrating main `cf67694`, development UZP F1 rose from 0.9603 to 0.9729. The frozen rules still missed all four PDFs in each reserved history, operation-detail and order-detail family. Reserved UZP F1 was 0.7923, and all 52 negatives across the two splits remained empty. [Transfer results](../../evals/results/case-transfers.json)
+
+A routing-only follow-up recognized two of four PDFs in each reserved transaction-history, operation-detail and order-detail family. These six receipts raised reserved UZP F1 from 0.7923 to 0.8159 and strict F1 from 0.7705 to 0.7867. None of the six had every field correct. The remaining families, including all 24 negatives, kept their scores. Development remained at 0.9729 UZP and 0.9667 strict. This was a second blind evaluation after the first candidate disclosed aggregate misses. [Paired routing results](../../evals/results/case-transfer-routing.json)
 
 On the same main revision, #69’s 240 compact-form PDFs scored 0.9125 UZP and 0.8743 strict, with 60/60 negatives rejected. The replay matched #69’s published PDF/reference digest and five-case batching. The two panels differ in both facts and layouts.

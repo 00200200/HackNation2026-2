@@ -7,7 +7,9 @@ from rapidfuzz.distance import Levenshtein
 from . import bank_transfer, power_of_attorney
 from .accounts import account_identity, account_matches, valid_account
 from .appeal_charges import FILING
-from .common import DATE, to_iso
+from .common import DATE, POLISH_FOLD, to_iso
+from .detail_routing import settled_details
+from .history_routing import settled_history
 from .ocr_accounts import AccountEvidence, account_evidence
 from .ocr_booking import INTERLEAVED_DEBIT, ORDER_TYPE
 from .receipt_layout import booking_heading
@@ -56,8 +58,6 @@ EXECUTION_ATTESTATION = re.compile(
 )
 
 
-# Compare Polish cues after folding, while keeping the original text for value extraction.
-POLISH_FOLD = str.maketrans("ąćęłńóśźż", "acelnoszz")
 COVER_HEADING = re.compile(r"^pismo przewodnie\b", re.IGNORECASE)
 OTHER_FILING = re.compile(
     r"^(?:odpowiedz na odwolanie|(?:zgloszenie )?przystapieni[ea] do postepowania|"
@@ -461,7 +461,7 @@ def _settled_history(page: str, accounts: AccountEvidence | None, *, require_sel
     return bool(sender and recipient and account_identity(sender) != account_identity(recipient))
 
 
-def classify(pages: list[str], *, ocr_accounts: AccountEvidence | None = None) -> str | None:
+def _classify_document(pages: list[str], *, ocr_accounts: AccountEvidence | None = None) -> str | None:
     if not pages:
         return None
     head = "\n".join(pages[:2])
@@ -629,3 +629,43 @@ def classify(pages: list[str], *, ocr_accounts: AccountEvidence | None = None) -
         ):
             return "bank_transfer"
     return None
+
+
+# A history caption can introduce a posted row. Other document headings still
+# own the page even when it quotes a complete receipt underneath.
+STATEMENT_HEADING = re.compile(r"^(?:wyciag|historia|lista|rejestr|wykaz|ewidencja)\b")
+WRAPPER_HEADING = re.compile(
+    r"^(?:pro[ -]?forma|formularz|spis|pismo przewodnie|faktura|wezwanie|prosba|wniosek|"
+    r"tytul (?:platnosci|przelewu)|(?:lista|rejestr) dyspozycji)\b"
+)
+UNSETTLED = re.compile(
+    r"^(?:(?:status|stan|wynik)(?: (?:dyspozycji|zlecenia|operacji|platnosci|przelewu|transakcji))?\s*[:|–—-]\s*)?"
+    r"(?:czeka na|oczekuj|odmow|odrzucon|anulowan|wstrzyman|nie ?(?:wykon|zrealiz|zaksiegow)|"
+    r"przyjet\w* do|do (?:wykonania|realizacji|akceptacji)|w toku)"
+)
+
+
+def _bank_record(pages: list[str]) -> bool:
+    if not pages:
+        return False
+    lines = [line.strip() for page in pages for line in page.splitlines() if line.strip()]
+    if _nonexecuted(lines) or any(bank_transfer.payment_denied(page) for page in pages):
+        return False
+    ledger = False
+    for index, line in enumerate(lines):
+        cue = line.casefold().translate(POLISH_FOLD).strip(" |:•*–—-")
+        statement = STATEMENT_HEADING.match(cue)
+        if (UNRELATED_HEADING.match(line) and not statement) or OTHER_FILING.match(cue) or UNSETTLED.match(cue):
+            return False
+        if ATTACHMENT_REFERENCE.search(line) or (index < 8 and WRAPPER_HEADING.match(cue)):
+            return False
+        if index < 8 and statement:
+            ledger = True
+    return settled_history(pages) or (not ledger and settled_details(pages))
+
+
+def classify(pages: list[str], *, ocr_accounts: AccountEvidence | None = None) -> str | None:
+    kind = _classify_document(pages, ocr_accounts=ocr_accounts)
+    if kind is None and _bank_record(pages):
+        return "bank_transfer"
+    return kind

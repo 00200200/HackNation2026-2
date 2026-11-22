@@ -1,14 +1,12 @@
-"""Find a cardinal rotation from the rendered pixels before full-resolution OCR."""
+"""Verify a cardinal rotation against the original displayed pixels and the primary OCR text."""
 
 import os
+import re
 from functools import cache
-from itertools import groupby
 from pathlib import Path
 from shutil import which
 
 from PIL import Image
-
-from .ocr_budget import remaining_ms
 
 
 @cache
@@ -27,101 +25,51 @@ def _osd_directory() -> Path | None:
     return next((path for path in candidates if (path / "osd.traineddata").is_file()), None)
 
 
-def _line_bands(mask: Image.Image) -> tuple[int, list[tuple[int, int]]]:
-    """Count distinct text-height ink bands and retain their locations."""
-    profile = mask.resize((1, mask.height), Image.Resampling.BOX).tobytes()
-    spans = []
-    for present, rows in groupby(enumerate(profile), key=lambda entry: entry[1] >= 5):
-        if present:
-            group = list(rows)
-            start, end = group[0][0], group[-1][0] + 1
-            if 4 <= end - start <= 120:
-                spans.append((start, end))
-    # Characters on a line share many inked rows. Vertical gaps between words
-    # also form bands, but usually have a much smaller mean ink density.
-    density = sum(sum(profile[start:end]) for start, end in spans)
-    return density, spans
-
-
-def _sample_score(api, sample: Image.Image, reread: bool) -> int:
-    timeout = remaining_ms(1200) if reread else 1200
-    if not timeout:
-        return 0
-    api.SetImage(sample)
-    api.SetSourceResolution(150)
-    if not api.Recognize(timeout=timeout):
-        return 0
-    words = api.GetUTF8Text().split()
-    return sum(
-        len(word)
-        for word, confidence in zip(words, api.AllWordConfidences())
-        if confidence >= 75 and sum(c.isalpha() for c in word) >= 3
-    )
-
-
-def correction_angle(image: Image.Image, language_dir: str, *, reread: bool = False) -> int:
-    """Counterclockwise correction. Ambiguous or sparse images keep their orientation."""
+def correction_angle(image: Image.Image, dpi: int) -> int:
+    """Ask OSD about the displayed raster, preserving its original axes and pixels."""
     from tesserocr import PSM, PyTessBaseAPI
 
-    if min(image.size) < 120 or (reread and remaining_ms(2500) < 2500):
+    directory = _osd_directory()
+    if directory is None or image.width * image.height > 12_000_000 or min(image.size) < 120:
         return 0
-    scale = min(1, 1600 / max(image.size))
-    size = tuple(max(1, round(n * scale)) for n in image.size)
-    preview = image.resize(size, Image.Resampling.BOX).convert("L")
-    # Scanner borders can otherwise connect many unrelated lines.
-    w, h = preview.size
-    preview = preview.crop((w // 32, h // 32, w - w // 32, h - h // 32))
-    mask = preview.point(lambda x: 255 if x < 150 else 0)
-    bounds = mask.getbbox()
-    if bounds is None or min(bounds[2] - bounds[0], bounds[3] - bounds[1]) < 85:
+    # Skip blank pages and very sparse strips. Only this inexpensive ink check
+    # sees a thumbnail. OSD always sees the complete original displayed image.
+    scale = min(1, 320 / max(image.size))
+    small = image.resize(tuple(max(1, round(n * scale)) for n in image.size), Image.Resampling.BOX).convert("L")
+    ink = small.point(lambda x: 255 if x < 180 else 0).getbbox()
+    if not ink or min(ink[2] - ink[0], ink[3] - ink[1]) < 18:
         return 0
-    horizontal = _line_bands(mask)
-    vertical = _line_bands(mask.transpose(Image.Transpose.ROTATE_90))
-    sideways = vertical[0] > horizontal[0]
-    _, spans = vertical if sideways else horizontal
-    if len(spans) < 3:
+    try:
+        with PyTessBaseAPI(path=str(directory), lang="osd", psm=PSM.OSD_ONLY) as api:
+            api.SetImage(image)
+            api.SetSourceResolution(dpi)
+            result = api.DetectOrientationScript()
+    except (OSError, RuntimeError, ValueError):
         return 0
+    if result and result["orient_conf"] >= 15 and result["orient_deg"] in (90, 180, 270):
+        return result["orient_deg"]
+    return 0
 
-    angle = 90 if sideways else 0
-    if sideways:
-        preview = preview.transpose(Image.Transpose.ROTATE_90)
-    # Tesseract only needs a few text lines. A complete page of fine print
-    # adds latency and provides little additional orientation evidence.
-    count = min(7, len(spans))
-    start, end = min(
-        ((a[0], b[1]) for a, b in zip(spans, spans[count - 1 :])),
-        key=lambda pair: pair[1] - pair[0],
-    )
-    if directory := _osd_directory():
-        try:
-            with PyTessBaseAPI(path=str(directory), lang="osd", psm=PSM.OSD_ONLY) as osd:
-                osd.SetImage(preview.crop((0, max(0, start - 3), preview.width, min(preview.height, end + 3))))
-                osd.SetSourceResolution(150)
-                result = osd.DetectOrientationScript()
-            if result and result["orient_conf"] >= 5:
-                return (result["orient_deg"] + angle) % 360
-        except RuntimeError:
-            # A separately installed OSD model may be incompatible with the wheel.
-            pass
 
-    # Compare a single complete line in each direction with the bundled Polish
-    # model when the OSD language data is missing or the result is uncertain.
-    profile = preview.resize((1, preview.height), Image.Resampling.BOX).tobytes()
-    # The densest band can be a logo or several touching rows in a noisy scan.
-    # Prefer bands the height of a single line of body text in this thumbnail.
-    body = [(a, b) for a, b in spans if 7 <= b - a <= 40]
-    start, end = max(
-        body or spans, key=lambda span: sum(255 - x for x in profile[span[0] : span[1]]) / (span[1] - span[0])
-    )
-    sample = preview.crop((0, max(0, start - 3), preview.width, min(preview.height, end + 3)))
-    with PyTessBaseAPI(path=language_dir, lang="pol", psm=PSM.SINGLE_LINE) as api:
-        first = _sample_score(api, sample, reread)
-        if angle == 0 and first >= 24:
-            return angle
-        second = _sample_score(api, sample.transpose(Image.Transpose.ROTATE_180), reread)
-    if max(first, second) < 8 or abs(first - second) < 5:
-        return 0
-    return angle if first > second else angle + 180
+def rotation_improves_text(upright: str, candidate: str) -> bool:
+    """Require at least four more distinct Polish words and a 50% gain."""
+    from .appeal_scan_procurement import _polish_dictionary
+
+    # Limit dictionary lookups on long OCR transcripts. Use whole lexical words
+    # so that punctuation, lone initials and fragments inside identifiers cannot vote.
+    def vocabulary(text):
+        return set(re.findall(r"\b[^\W\d_]{3,40}\b", text[:16_000].casefold()))
+
+    before, after = vocabulary(upright), vocabulary(candidate)
+    if len(after - before) < 4:
+        return False
+    with _polish_dictionary() as valid:
+        if valid is None:
+            return False
+        printed = {word for word in before | after if valid(word)}
+    original = len(before & printed)
+    improved = len(after & printed)
+    return improved >= original + 4 and 2 * improved >= 3 * original
 
 
 def source_box(box, size, angle):

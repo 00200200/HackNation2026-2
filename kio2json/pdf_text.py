@@ -17,9 +17,16 @@ import pdfplumber
 from pdfplumber.utils import get_bbox_overlap, obj_to_bbox
 from PIL import Image
 
-from .ocr_budget import CROP_TIMEOUT_MS, REREAD_PAGE_TIMEOUT_SECONDS, RereadExpired, remaining_ms, require_remaining_ms
+from .ocr_budget import (
+    CROP_TIMEOUT_MS,
+    REREAD_PAGE_TIMEOUT_SECONDS,
+    RereadExpired,
+    document_budget,
+    remaining_ms,
+    require_remaining_ms,
+)
 from .ocr_normalize import MAIL_TOKEN_RE, confirmed_email, normalize_ocr
-from .ocr_orientation import correction_angle, source_box
+from .ocr_orientation import correction_angle, rotation_improves_text, source_box
 
 # The organizer README says the key information sits on the first three pages.
 MAX_PAGES = 3
@@ -274,36 +281,68 @@ class _Raster(NamedTuple):
     bbox: tuple[float, ...]
     scale: float
     page_number: int
+    orientation_eligible: bool = False
 
 
 def _render(page) -> _Raster:
     image = page.to_image(resolution=OCR_DPI)
-    return _Raster(image.original, image.bbox, image.scale, page.page_number)
+    eligible = any(page.images) and (
+        not page.chars or (_page_sized_image(page) and damaged_text_layer(page.extract_text() or ""))
+    )
+    return _Raster(image.original, image.bbox, image.scale, page.page_number, eligible)
 
 
 def _tesseract(image: _Raster, words: list[WordBox] | None, *, explicit_dpi: bool, reread: bool = False) -> str:
     if reread:
         require_remaining_ms()
-    angle = correction_angle(image.original, _language_dir(), reread=reread)
-    with ExitStack() as stack:
-        if angle:
-            upright = stack.enter_context(image.original.rotate(angle, expand=True))
-            image = image._replace(original=upright)
-        try:
-            return _recognize_raster(image, words, explicit_dpi=explicit_dpi, dpi=OCR_DPI, reread=reread, angle=angle)
-        except _PrimaryPageTimeout:
-            if not _primary_retry_ms():
-                raise
-            # Resize the existing raster: parallel workers must never render PDFium pages.
-            with image.original.reduce(2) as reduced:
-                retry = image._replace(original=reduced, scale=image.scale / 2)
-                return _recognize_raster(
-                    retry, words, explicit_dpi=explicit_dpi, dpi=RETRY_DPI, reread=False, angle=angle
+    start = len(words) if words is not None else 0
+    try:
+        text = _recognize_raster(image, words, explicit_dpi=explicit_dpi, dpi=OCR_DPI, reread=reread)
+    except _PrimaryPageTimeout:
+        if not _primary_retry_ms():
+            raise
+        # Resize the existing raster: parallel workers must never render PDFium pages.
+        with image.original.reduce(2) as reduced:
+            retry = image._replace(original=reduced, scale=image.scale / 2)
+            return _recognize_raster(retry, words, explicit_dpi=explicit_dpi, dpi=RETRY_DPI, reread=False)
+    if not image.orientation_eligible or not remaining_ms(1):
+        return text
+    candidate_words = [] if words is not None else None
+    # The second read and its e-mail crops share both this page cap and the
+    # existing document cutoff. Preserve the successful primary on any failure.
+    deadline = monotonic() + remaining_ms(8000) / 1000
+    try:
+        with document_budget(deadline):
+            angle = correction_angle(image.original, OCR_DPI)
+            if not angle:
+                return text
+            require_remaining_ms()
+            with image.original.rotate(angle, expand=True) as rotated:
+                candidate = _recognize_raster(
+                    image._replace(original=rotated),
+                    candidate_words,
+                    explicit_dpi=explicit_dpi,
+                    dpi=OCR_DPI,
+                    reread=True,
+                    angle=angle,
                 )
+            if not rotation_improves_text(text, candidate) or not remaining_ms(1):
+                return text
+    except (OSError, RuntimeError, ValueError, RereadExpired):
+        return text
+    if words is not None:
+        words[start:] = candidate_words
+    return candidate
 
 
 def _recognize_raster(
-    image: _Raster, words: list[WordBox] | None, *, explicit_dpi: bool, dpi: int, reread: bool, angle: int
+    image: _Raster,
+    words: list[WordBox] | None,
+    *,
+    explicit_dpi: bool,
+    dpi: int,
+    reread: bool,
+    angle: int = 0,
 ) -> str:
     """Recognize the page and verify suspect e-mail separators against their image crops."""
     from tesserocr import PSM, RIL, PyTessBaseAPI, iterate_level
@@ -343,14 +382,25 @@ def _recognize_raster(
                 token = item.GetUTF8Text(RIL.WORD)
                 x0, y0, x1, y1 = box
                 if words is not None:
-                    px0, py0, px1, py1 = source_box(box, image.original.size, angle)
+                    if angle:
+                        px0, py0, px1, py1 = source_box(box, image.original.size, angle)
+                        physical = (
+                            min(right, left + px0 / image.scale),
+                            min(bottom, top + py0 / image.scale),
+                            min(right, left + px1 / image.scale),
+                            min(bottom, top + py1 / image.scale),
+                        )
+                    else:
+                        physical = (
+                            left + x0 / image.scale,
+                            top + y0 / image.scale,
+                            left + x1 / image.scale,
+                            top + y1 / image.scale,
+                        )
                     word = OCRWord(
                         image.page_number,
                         token,
-                        min(right, left + px0 / image.scale),
-                        min(bottom, top + py0 / image.scale),
-                        min(right, left + px1 / image.scale),
-                        min(bottom, top + py1 / image.scale),
+                        *physical,
                         confidence=item.Confidence(RIL.WORD),
                     )
                     if angle:
