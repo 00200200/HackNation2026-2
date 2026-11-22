@@ -6,6 +6,7 @@ import ntpath
 import os
 import shutil
 import stat
+import sys
 import zlib
 from collections import OrderedDict, defaultdict
 from collections.abc import Callable
@@ -105,8 +106,14 @@ def zip_sources(
     return sources
 
 
-def upload_sources(case: str, files: list[FileInfo], directory: Path | None = None) -> list[Source]:
-    """Uploaded PDFs go to the named case; ZIPs are unpacked into `directory`, within one limit for the upload."""
+def upload_sources(
+    case: str, files: list[FileInfo], directory: Path | None = None, uploads: Path | None = None
+) -> list[Source]:
+    """Uploaded PDFs go to the named case; ZIPs are unpacked into `directory`, within one limit for the upload.
+
+    A browser can send any value for an input, so with `uploads` (the session's upload folder) a file is read
+    only from inside it.
+    """
     validate_name(case)
     if not files:
         raise ValueError("Wybierz co najmniej jeden plik PDF albo archiwum ZIP.")
@@ -115,6 +122,8 @@ def upload_sources(case: str, files: list[FileInfo], directory: Path | None = No
     for number, file in enumerate(files):
         name = file["name"]
         validate_name(name)
+        if uploads is not None and not (Path(file["datapath"]).is_file() and inside(Path(file["datapath"]), uploads)):
+            raise ValueError("Przesłane dane wskazują plik spoza tego wgrania. Wgraj pliki ponownie.")
         suffix = Path(name).suffix.lower()
         if suffix == ".zip" and directory is not None:
             budget = (ZIP_MAX_FILES - len(sources), ZIP_MAX_BYTES - unpacked)
@@ -149,8 +158,47 @@ def inside(path: Path, allowed: Path, *, missing_ok: bool = False) -> bool:
         return False
 
 
-def folder_sources(folder: str, allowed: Path | None = None) -> list[Source]:
-    """PDFs under a folder; with `allowed`, the folder is read relative to it and must stay inside it."""
+def opened_path(descriptor: int) -> Path | None:
+    """The real path of an open file as the operating system names it, or None where no call reports it."""
+    if sys.platform == "darwin":
+        import fcntl
+
+        return Path(os.fsdecode(fcntl.fcntl(descriptor, fcntl.F_GETPATH, bytes(1024)).split(b"\0", 1)[0]))
+    link = Path(f"/proc/self/fd/{descriptor}")
+    return Path(os.readlink(link)) if link.exists() else None
+
+
+def real_root(allowed: Path) -> Path:
+    """The folder root named the way the system names an open file, including the case stored on disk."""
+    try:
+        descriptor = os.open(allowed, os.O_RDONLY)
+    except OSError:
+        return allowed.resolve(strict=True)
+    try:
+        return opened_path(descriptor) or allowed.resolve(strict=True)
+    finally:
+        os.close(descriptor)
+
+
+def checked_copy(path: Path, base: Path, target: Path) -> bool:
+    """Copy a PDF from the file that was opened and checked, if its real path lies under `base`.
+
+    The check and the copy use one open file, so a link changed in between cannot redirect the read.
+    """
+    with path.open("rb") as source:
+        real = opened_path(source.fileno()) or path.resolve(strict=True)
+        if not real.is_relative_to(base):
+            return False
+        with target.open("wb") as copy:
+            shutil.copyfileobj(source, copy)
+    return True
+
+
+def folder_sources(folder: str, allowed: Path | None = None, directory: Path | None = None) -> list[Source]:
+    """PDFs under a folder; with `allowed`, the folder is read relative to it and must stay inside it.
+
+    With `allowed`, each PDF is read from a checked copy in `directory`.
+    """
     root = Path(os.path.expanduser(folder)) if allowed is None else allowed / folder.strip()
     if allowed is not None and not inside(root, allowed, missing_ok=True):
         raise ValueError(f"Można otwierać tylko foldery w {allowed}.")
@@ -158,14 +206,21 @@ def folder_sources(folder: str, allowed: Path | None = None) -> list[Source]:
     if (allowed is None and not folder.strip()) or not root.is_dir():
         raise ValueError("Podaj ścieżkę do istniejącego folderu.")
     sources = []
+    base = real_root(allowed) if allowed is not None else None
     for path in sorted(root.rglob("*")):
         if path.suffix.lower() == ".pdf" and path.is_file():
             relative = path.relative_to(root)
             if allowed is not None:
-                # A link inside the allowed folder must not open a file outside it, so the real file is read.
-                if not inside(path, allowed):
+                # A link inside the allowed folder must not open a file outside it.
+                copy = directory / f"folder-{len(sources)}.pdf"
+                try:
+                    kept = checked_copy(path, base, copy)
+                except OSError as error:
+                    message = error.strerror or str(error)
+                    raise ValueError(f"Nie udało się odczytać pliku {relative.as_posix()}: {message}.") from None
+                if not kept:
                     raise ValueError(f"Plik {relative.as_posix()} prowadzi poza folder {allowed}.")
-                path = path.resolve(strict=True)
+                path = copy
             if len(relative.parts) == 1:  # User selected the case folder itself.
                 relative = Path(root.resolve().name, relative)
             sources.append((relative, path))

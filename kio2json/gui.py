@@ -26,8 +26,9 @@ from kio2json.gui_explain import class_list as class_panel
 from kio2json.gui_files import Document, analyze, archive, folder_sources, page_count, page_image, upload_sources
 
 # Class files are read again for every analysis, so a class file added to a --classes directory
-# applies on the next click.
-options = argparse.Namespace(classes=[], enable=[], host="127.0.0.1", folder_root=None)
+# applies on the next click. Folder mode without --folder-root is granted only by this module's launcher on a
+# loopback address; an app imported by another server keeps uploads only.
+options = argparse.Namespace(classes=[], enable=[], host="127.0.0.1", folder_root=None, local_folders=False)
 LOOPBACK = {"127.0.0.1", "localhost", "::1"}
 
 
@@ -137,6 +138,11 @@ app_ui = ui.page_fluid(
 )
 
 
+def upload_folder(session: Session) -> Path:
+    """Shiny's folder for this session's uploads, a private attribute that the forged-upload test exercises."""
+    return Path(session._file_upload_manager._basedir)
+
+
 def server(input: Inputs, output: Outputs, session: Session):
     documents = reactive.value(list[Document]())
     message = reactive.value("")
@@ -144,6 +150,8 @@ def server(input: Inputs, output: Outputs, session: Session):
     field = reactive.value(None)
     scratch = TemporaryDirectory(prefix="odwolania-")
     session.on_ended(lambda: scratch.cleanup())
+    # A browser can send any value for the file input, so an upload is read only from Shiny's folder.
+    uploads = upload_folder(session)
 
     @reactive.effect
     @reactive.event(input.run)
@@ -163,15 +171,15 @@ def server(input: Inputs, output: Outputs, session: Session):
                 progress.set(message="Przygotowanie dokumentów…")
                 # Listing a folder or unpacking a ZIP can take a while, so it runs off the event loop too.
                 if input.mode() == "folder":
-                    if options.folder_root is None and options.host not in LOOPBACK:
+                    if options.folder_root is None and not options.local_folders:
                         raise ValueError("Na tym serwerze można tylko wgrać pliki PDF albo archiwum ZIP.")
                     sources = await loop.run_in_executor(
-                        pdf_worker, folder_sources, input.folder(), options.folder_root
+                        pdf_worker, folder_sources, input.folder(), options.folder_root, Path(scratch.name)
                     )
                 else:
                     files = input.files() or []
                     sources = await loop.run_in_executor(
-                        pdf_worker, upload_sources, input.case().strip(), files, Path(scratch.name)
+                        pdf_worker, upload_sources, input.case().strip(), files, Path(scratch.name), uploads
                     )
                 total = len(sources)
                 progress.max = total
@@ -326,7 +334,8 @@ def server(input: Inputs, output: Outputs, session: Session):
 
 app = App(app_ui, server)
 
-if __name__ == "__main__":
+
+def parse_options(argv: list[str] | None = None) -> argparse.Namespace:
     parser = argparse.ArgumentParser(prog="python -m kio2json.gui", description="Local document viewer")
     add_class_options(parser)
     parser.add_argument("--host", default="127.0.0.1", help="address to listen on; 0.0.0.0 serves other machines")
@@ -337,5 +346,11 @@ if __name__ == "__main__":
         type=Path,
         help="folder whose cases the viewer may open; without it, a host other than localhost allows uploads only",
     )
-    parser.parse_args(namespace=options)
+    parser.parse_args(argv, namespace=options)
+    options.local_folders = options.host in LOOPBACK
+    return options
+
+
+if __name__ == "__main__":
+    parse_options()
     run_app(app, host=options.host, port=options.port, launch_browser=not options.no_browser, dev_mode=False)

@@ -80,9 +80,10 @@ def test_upload_collision_and_empty_folder(tmp_path):
         folder_sources(str(empty))
 
 
-def test_session_reports_failed_document_and_invalid_new_run(tmp_path):
+def test_session_reports_failed_document_and_invalid_new_run(tmp_path, monkeypatch):
     path = tmp_path / "broken.pdf"
     path.write_bytes(b"broken")
+    monkeypatch.setattr(gui.options, "local_folders", True)
     with shiny_session(gui.app) as session:
         session.set_inputs(mode="folder", folder=str(tmp_path), run=1, document="0", page="1")
         assert session.get_output("classification") == "Nie udało się odczytać dokumentu"
@@ -93,9 +94,9 @@ def test_session_reports_failed_document_and_invalid_new_run(tmp_path):
         assert "folder" in session.get_output("notice").value.lower()
 
 
-def test_public_host_without_folder_root_allows_uploads_only(tmp_path, monkeypatch):
+def test_an_imported_app_without_folder_root_allows_uploads_only(tmp_path):
     (tmp_path / "a.pdf").write_bytes(b"%PDF")
-    monkeypatch.setattr(gui.options, "host", "0.0.0.0")
+    assert not gui.options.local_folders  # Another server imported the app; its launcher never ran.
     with shiny_session(gui.app) as session:
         session.set_inputs(mode="folder", folder=str(tmp_path), run=1)
         assert "tylko wgrać" in session.get_output("notice").value
@@ -111,3 +112,12 @@ def test_case_warnings_render_as_badges_naming_their_documents():
     shown = str(case_badges((warning,)))
     assert 'class="badge-warning"' in shown and "Mocodawca różni się." in shown and "sprawa/pelnomocnictwo.pdf" in shown
     assert case_badges(()) is None
+
+
+def test_only_the_launcher_on_a_loopback_address_opens_any_folder(monkeypatch):
+    import argparse
+
+    fresh = argparse.Namespace(classes=[], enable=[], host="127.0.0.1", folder_root=None, local_folders=False)
+    monkeypatch.setattr(gui, "options", fresh)
+    assert gui.parse_options([]).local_folders
+    assert not gui.parse_options(["--host", "0.0.0.0"]).local_folders
