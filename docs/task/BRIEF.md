@@ -45,7 +45,7 @@ Value conventions (Discord):
 - Personal names in the nominative: "Jan Kowalski", not "Jana Kowalskiego".
 - The grantor's (`mocodawca`) company name exactly as printed in the document, even when it differs from CEIDG.
 - Account numbers as printed in the document: keep the country code when one is printed (`PL` or another country's
-  code) and remove all whitespace. This answers #46; the code follows it since PR #78 (#58).
+  code) and remove all whitespace. This answers #46. PR #78 implements it and closed #46 and #58.
 
 ## Input and output contract (organizer README, section 3)
 
@@ -54,7 +54,7 @@ Value conventions (Discord):
   answer in #64 gives the example `potwierdzenie_przelewu.pdf` → `potwierdzenie_przelewu.json`. The implementation
   also writes `{}` when it cannot process a PDF; the CLI and GUI report the failure separately.
 - Negatives: the README says "empty `.json` file". UZP clarified on Discord that the file must contain only `{}`,
-  not zero bytes (#57). The CLI, GUI and eval follow it since PR #78.
+  not zero bytes (#57). PR #78 implements it in the CLI, GUI and eval and closed #57.
 - A CLI with instructions is **required** (FAQ 12a); a wrapper script (e.g. `start.bat`) is fine.
 - GUI is optional and scores extra: upload PDF, run, see JSON, ideally side by side with the source (FAQ 12b).
 
@@ -123,10 +123,11 @@ Value conventions (Discord):
   does not show the `{}` convention.
 - Hidden test set: not published. The task PDF (section 6) says it contains real appeal cases prepared by the
   organizer, and README section 6 calls it complete cases, scored against references written by subject experts. The
-  #63 relay of UZP's Discord answers (two Discord speakers, roles not recorded) says the documents are **synthetic, generated
-  from real cases**, include both text PDFs and scans, and contain no PDF that merges a document with an attachment;
-  we follow that later answer. Regulamin § 2.4a: at least
-  10 appeal cases. The UZP stand can show it (FAQ 9).
+  #63 relay of UZP's Discord answers (two Discord speakers, roles not recorded) says the documents are **synthetic,
+  generated from real cases**, include both text PDFs and scans, and contain no PDF that merges a document with an
+  attachment. We follow that later answer. UNCONFIRMED: the relay is second-hand, its speakers' roles are not
+  recorded, and the task PDF says real cases. Regulamin § 2.4a: at least 10 appeal cases. The UZP stand can show it
+  (FAQ 9).
 
 ## Judging
 

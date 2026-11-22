@@ -91,7 +91,7 @@ Two and four grant JSONs matched exactly. The ten organizer grants remained exac
 
 | Item | Owner |
 |---|---|
-| Deadline 22.11.2026 11:00 (#66, closed by PR #77 although the VM work is open): the organizer VM (`data/uzp/VM.md`). Team access ends then and the evaluators run `/opt/solution/RUN.md` there. The install kit is on main (PR #77: `deploy/`, [steps](README.md#deploy-on-the-evaluation-vm)). Still open: request the VM through the form, run the kit on it, and check the Ubuntu offline run, the 2-vCPU timing and the reboot, which `evals/results/vm-2vcpu.json` records as unverified (its 4 min 25 s estimate for 150 PDFs comes from a shared Apple M1 host). Container byte parity for the Compose services (root `compose.yaml` from PR #68, `deploy/compose.vm.yaml` from PR #77) is still pending. The rulebook files still assume a jury machine with 16 GB, an Intel i7 and no GPU (Windows-class office hardware in `.claude/skills/hacknation-judging/SKILL.md`, also `.claude/skills/odwolania2json-eval/SKILL.md`). UNCONFIRMED: whether a team without a VM is evaluated from GitHub | 00200200 (VM request, credentials, final deployment, 2-vCPU timing and F1, rehearsal on the VM, per the #66 thread); Dominik-Galus built the kit (PR #77) |
+| Deadline 22.11.2026 11:00 (#66, closed by PR #77 although the VM work is open): the organizer VM (`data/uzp/VM.md`). Team access ends then and the evaluators run `/opt/solution/RUN.md` there. The install kit is on main (PR #77: `deploy/`, [steps](README.md#deploy-on-the-evaluation-vm)). Still open: request the VM through the form, run the kit on it, and check the Ubuntu offline run, the 2-vCPU timing and the reboot, which `evals/results/vm-2vcpu.json` records as unverified (its 4 min 25 s estimate for 150 PDFs comes from a shared Apple M1 host at `7a1c45b`, before PRs #78 and #79). Container byte parity for the Compose services (root `compose.yaml` from PR #68, `deploy/compose.vm.yaml` from PR #77) is still pending. The rulebook files still assume a jury machine with 16 GB, an Intel i7 and no GPU (Windows-class office hardware in `.claude/skills/hacknation-judging/SKILL.md`, also `.claude/skills/odwolania2json-eval/SKILL.md`). UNCONFIRMED: whether a team without a VM is evaluated from GitHub | 00200200 (VM request, credentials, final deployment, 2-vCPU timing and F1, rehearsal on the VM, per the #66 thread); Dominik-Galus built the kit (PR #77) |
 | If the team keeps the Ministral profile (#38): obtain an EU/EEA-only processing commitment for Mistral or deploy the same weights within the EEA. UZP said no private hosting; UNCONFIRMED whether that rules out the second option, since upstream `VM.md` allows models and containers on the evaluation VM | Deployment |
 | Score corpus 2 test once after the class rules and small-model profile are integrated | Coordinator |
 | Improve receipt routing and recover damaged party names on development inputs | Open |
@@ -114,12 +114,12 @@ Two and four grant JSONs matched exactly. The ten organizer grants remained exac
   the introductory sentence describing the dated act. In cases 01–39 that sentence supplies the reference reason.
 - 22.11.2026: unrelated documents get a JSON containing only `{}`, not a 0-byte file. UZP confirmed it on Discord on
   21.11 at 13:50, 22:19 and 22:32, after an ambiguous first answer at 13:27 (issue #57, `docs/task/BRIEF.md`).
-  Supersedes the 21.11 empty-file decision. The CLI and GUI also write `{}` for a PDF that failed and report the
-  failure separately (PR #78).
+  Supersedes the 21.11 empty-file decision. PR #78 implemented it in the CLI, GUI and eval and closed #57. The CLI and
+  GUI also write `{}` for a PDF that failed and report the failure separately.
 - 22.11.2026: account numbers are written as printed in the document: a printed country code (`PL` or another) is
   kept and all whitespace is removed (UZP on Discord; issues #46, #58). UZP calls the training references without `PL`
-  an error that the hidden set will not repeat. PR #78 implements it, and the training scorer can restore the missing
-  prefixes from each transfer PDF (`--correct-training-accounts`).
+  an error that the hidden set will not repeat. PR #78 implemented it and closed #46 and #58, and the training scorer
+  can restore the missing prefixes from each transfer PDF (`--correct-training-accounts`).
 - 21.11.2026: file, module and identifier names are English; the jury GUI, organizer's JSON keys and original file stems use Polish.
 - 21.11.2026: delegated work and reviews (pre-commit review, pre-push judge) go to Codex workers through
   `/orchestrator`, not to Claude subagents.
