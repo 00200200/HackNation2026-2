@@ -37,11 +37,11 @@ Where each step lives in `kio2json/`:
 | Modules | Responsibility |
 |---|---|
 | `__main__.py`, `batch.py` | Batch CLI, and the per-document output and diagnostics it shares with the viewer |
-| `gui.py`, `gui_files.py` | Local document viewer |
+| `gui.py`, `gui_files.py`, `gui_explain.py` | Local document viewer, with panels for the class list and a document's trace |
 | `web_api.py`, `web_worker.py`, `jury_web.py` | HTTP API and upload page; each upload is read in a disposable process |
-| `pipeline.py` | One PDF to a document class and canonical JSON |
+| `pipeline.py`, `trace.py` | One PDF to a document class and canonical JSON, and the opt-in trace of the routing reason and the source of each field |
 | `pdf_text.py`, `ocr_*.py`, `rapid_worker.py` | Page text from the PDF text layer, local OCR for pages without one with wall-clock limits on optional OCR, and the rules and checks that apply only to OCR text |
-| `class_config.py`, `classify.py` | Load `config/classes/*.toml` and route each document from its own content |
+| `class_config.py`, `classify.py`, `validators.py`, `classes.py` | Load the class TOML files (`config/classes/` by default), route each document from its own content, apply the field checks a class declares, and scaffold a class from a sample PDF (`python -m kio2json.classes`) |
 | `appeal.py`, `appeal_*.py` | Appeal to KIO: the appeal, the appellants, the contracting authorities and the procurement |
 | `power_of_attorney.py`, `grant_*.py`, `attorney_spans.py` | Power of attorney: the principals with their signatories, and the attorneys |
 | `bank_transfer.py`, `receipt_*.py`, `accounts.py` | Transfer confirmation, and printed account numbers |
@@ -64,7 +64,7 @@ The public training score uses the account prefixes printed in the PDFs. The loc
 
 The original training references omit the printed `PL` prefix of two accounts in each of 48 transfers, so the training row scores against references with them restored (`--correct-training-accounts`, [issue #58](https://github.com/00200200/HackNation2026-2/issues/58)). At product commit `55dc2a1` the outputs scored 0.9758 UZP and 0.9585 strict against the original references, with 96 field mismatches (`integration.training_raw` in [`p0-conventions.json`](evals/results/p0-conventions.json)).
 
-All four rows are development sets. The rules were developed against the training cases, the organizer scans and the two local corpora, and the corpora are private sets of real documents that are not in this repository. We have no held-out score: these figures are not estimates for unseen cases, and the 60 test PDFs of corpus 2 are not scored. The scan row is the most exposed. [Issue #81](https://github.com/00200200/HackNation2026-2/issues/81) reports that fresh renders of the same 30 organizer scans score about 0.92 to 0.95 UZP F1, and 0.87 with 1.5 degrees of skew, mostly because transfer routing fails. Those numbers are approximate and their script is not committed, so the scan stress evaluation is still open there. [Known limits](docs/readme/reference.md#known-limits) lists the unconfirmed organizer details.
+All four rows are development sets. The rules were developed against the training cases, the organizer scans and the two local corpora, and the corpora are private sets of real documents that are not in this repository. We have no held-out score: these figures are not estimates for unseen cases, and the 60 test PDFs of corpus 2 are not scored. The scan row is the most exposed. [Issue #81](https://github.com/00200200/HackNation2026-2/issues/81) reports that fresh renders of the same 30 organizer scans score about 0.92 to 0.95 UZP F1, and 0.87 with 1.5 degrees of skew, mostly because transfer routing fails. Those numbers are approximate and their script is not committed, so the scan stress evaluation is still open there. [Known limits](docs/readme/reference.md#known-limits) lists what the extractor does not handle, and the [task brief](docs/task/BRIEF.md) lists the unconfirmed organizer details.
 
 Timing: with the 180-second primary watchdog (`watchdog_commit` `21f55e0`), two workers processed all 226 public PDFs in 160.75 s on a shared Apple M1 ([`first-pass-watchdog.json`](evals/results/first-pass-watchdog.json), `public_batch.watchdog.wall_seconds`, 160.753). The one-minute load average of the host was 34.65 at the start and 32.54 at the end (`public_batch.watchdog.load_average_1min_start` and `load_average_1min_end`). In an earlier stress run, 150 PDFs took 401.873 s with one worker while eight busy loops occupied the 8 logical CPUs ([`adaptive-ocr-budget.json`](evals/results/adaptive-ocr-budget.json), `runs[5].seconds`, product `59aa13a`). That run preceded the final change to optional page reads, and the test suite ran during part of it (`serial_measurement`). Both timings predate #54, #72, #75, #82, #87 and #89. The organizer allows 45 minutes for 150 PDFs ([`data/uzp/README.md`](data/uzp/README.md)), and the jury's machine will differ from ours.
 
@@ -109,7 +109,7 @@ Run `docker compose run --rm cli` for the batch or `docker compose up gui` for t
 ## Add a document type
 
 ```toml
-# config/classes/receipt.toml
+# classes/receipt.toml
 id = "receipt"
 engines = ["labelled_fields"]
 
@@ -122,7 +122,7 @@ instruction = "Reference printed on the receipt."
 pattern = '^Reference:[ \t]*(.+)$'
 ```
 
-The reference explains how to load the file and configure lists, normalizers and model engines.
+Save this file as `classes/receipt.toml` and run `python -m kio2json --classes classes --input input --output output`. Add `--explain trace` to record the routing decision and field sources separately. The reference shows how to generate a class from a sample PDF and configure field checks.
 [Add a class](docs/readme/reference.md#add-a-class).
 
 ## REST API
@@ -133,11 +133,11 @@ The upload page and doc2json.pl call one HTTP API. `docker compose up gui` serve
 curl -F files=@appeal.pdf -F files=@power.pdf http://127.0.0.1:8000/api/extract
 ```
 
-The answer has one result per uploaded file, in upload order: `{"results": [{"index": 0, "file": "appeal.pdf", "class": "appeal", "data": {...}, "error": null}]}`. A document outside every class has `"class": null` and `"data": {}`. A file that is not a PDF, or a document that fails, also has `"data": {}`, with the reason in `error`. One request takes up to ten files of 20 MB each. Each document gets 90 seconds (300 in the `gui` service of `compose.yaml`) and a whole request gets 500. The server reads one document at a time and queues at most four requests, so a fifth gets HTTP 503. `GET /api/health` answers `{"status": "ok"}`, or `"busy"` while a document is being read or the queue is full. The limits are the environment variables `KIO_WEB_MAX_FILES`, `KIO_WEB_MAX_FILE_MB`, `KIO_WEB_DOC_TIMEOUT_S`, `KIO_WEB_REQUEST_BUDGET_S` and `KIO_WEB_MAX_QUEUED`. The extraction is the same one the CLI runs.
+The answer has one result per uploaded file, in upload order: `{"results": [{"index": 0, "file": "appeal.pdf", "class": "appeal", "data": {...}, "error": null}]}`. A document outside every class has `"class": null` and `"data": {}`. A file that is not a PDF, or a document that fails, also has `"data": {}`, with the reason in `error`. One request takes up to ten files of 20 MB each. Each document gets 90 seconds (300 in the `gui` service of `compose.yaml`), and a request that runs past 500 seconds ends with HTTP 408 and no results. The server reads one document at a time and accepts at most four requests at once (one being read, three waiting), so a fifth gets HTTP 503. `GET /api/health` answers `{"status": "ok"}`, or `"busy"` while a document is being read or the queue is full. The limits are the environment variables `KIO_WEB_MAX_FILES`, `KIO_WEB_MAX_FILE_MB`, `KIO_WEB_DOC_TIMEOUT_S`, `KIO_WEB_REQUEST_BUDGET_S` and `KIO_WEB_MAX_QUEUED`. The extraction is the same one the CLI runs.
 
 ## Data handling
 
-The default configuration processes everything on one machine: PDFs are read, OCR'd and extracted locally, and no document text goes anywhere else. The API stores no uploads and no results. An upload is held in memory, or in a temporary file for a large one, until the request ends (`extract` closes the form in `kio2json/web_api.py`), and the copy a worker reads sits in a temporary directory that is deleted as soon as its document has been read (`_read`). A model endpoint is used only when `KIO_LLM_BASE_URL`, `KIO_LLM_MODEL` and `KIO_LLM_API_KEY` are set, and then page text goes to that endpoint. For the profile we measured that is Mistral's regional API (see [How it works](#how-it-works) for what is confirmed about its location). The public page runs on a team VPS at OVHcloud, and the repository does not record the datacentre region (UNCONFIRMED). For documents with personal data, use the CLI or the local viewer, which keep the files on your machine. The real documents we developed against are private and not in this repository, and `data/uzp/` is the organizer's published copy of their data.
+The default configuration processes everything on one machine: PDFs are read, OCR'd and extracted locally, and no document text goes anywhere else. The API stores no uploads and no results. An upload is held in memory, or in a temporary file for a large one, until the request ends (`extract` closes the form in `kio2json/web_api.py`), and the copy a worker reads sits in a temporary directory that is deleted as soon as its document has been read (`_read`). A model endpoint is used only when `KIO_LLM_BASE_URL`, `KIO_LLM_MODEL` and `KIO_LLM_API_KEY` are set in the environment or in a `.env` file in the working directory, and then page text goes to that endpoint. For the profile we measured that is Mistral's regional API (see [How it works](#how-it-works) for what is confirmed about its location). The public page runs on a team VPS at OVHcloud, and the repository does not record the datacentre region (UNCONFIRMED). For documents with personal data, use the CLI or the local viewer, which keep the files on your machine. The real documents we developed against are private and not in this repository, and `data/uzp/` is the organizer's published copy of their data.
 
 ## Licences
 
