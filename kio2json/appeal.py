@@ -59,6 +59,25 @@ PARTIES_END_RE = re.compile(
 # The sentence must open with these words: the same phrase inside a subordinate clause
 # ("mimo że Zamawiający w dniu ...") describes some other act.
 ACTION_RE = re.compile(rf"(?:^|(?<=[.;:] ))Zamawiający\s+w\s+dniu\s+({DATE})")
+FIRST_CHARGE_HEADING = re.compile(
+    r"(?im)^[ \t]*(?:zarzut (?:pierwszy|(?:nr )?1|I)|pierwszy zarzut)[ \t]*[:.)–—-]?[ \t]*$"
+)
+AUTHORITY_ACT = re.compile(
+    rf"^zamawiaj[ąa]cy\s*(?:(?:w dniu|dnia)\s+({DATE})\s*(?:roku|r\.?)?\s*)?"
+    r"(?=(?:nie\s+)?(?:odrzucił|wykluczył|unieważnił|zaniechał|wybrał|dokonał|ogłosił|"
+    r"opublikował|udzielił|przedstawił|udostępnił|zmienił|zmodyfikował)\b)",
+    re.IGNORECASE,
+)
+# After a reporting verb, the grammatical object names the act. A later
+# mention of a bid in a sentence about a different object is insufficient.
+REPORTING_VERB = re.compile(r"^(?:dokonał|ogłosił|opublikował|udzielił|przedstawił|udostępnił)\s+", re.IGNORECASE)
+ACTION_OBJECTS = {
+    **ACTS,
+    2: rf"(?:{ACTS[2]}|wybrał\s+(?:najkorzystniejsz\w*\s+)?ofert\w*)",
+    3: r"wyklucz\w*\s+(?:wykonawc|odwołując|przedsiębiorc|oferent)\w*",
+    5: r"(?:z?modyfik\w*|zmian\w*|zmienił)\s+(?:(?:treś[ćc]i?|postanowieni\w*)\s+)?(?:si?wz\b|specyfikacj\w*)",
+    12: rf"(?:projektowan\w*\s+)?(?:{ACTS[12]})",
+}
 ALLEGATIONS_START_RE = re.compile(r"Zaskarżonym\s+czynnościom|Zarzut\s+nr\s+1\b")
 FIRST_ITEM_RE = re.compile(r"polegających\s+na:\s*1\)\s*(.+?);")
 FIRST_ALLEGATION_RE = re.compile(r"Zarzut\s+nr\s+1\b(.+?)(?=Zarzut\s+nr\s+2|$)")
@@ -619,6 +638,54 @@ def _reason(passage: str) -> int | None:
     return next((reason for reason, pattern in REASON_RULES if re.search(pattern, passage)), None)
 
 
+def _form_action(text: str) -> tuple[str | None, int] | None:
+    # Form fields describe the same first act only within their own section.
+    action = re.search(r"(?im)^(?:zaskarżona|kwestionowana|skarżona) czynność[ \t]*:[ \t]*(.+)$", text)
+    if (
+        action
+        and not (CHARGE.search(text, 0, action.start()) or NEXT_ITEM.search(text, 0, action.start()))
+        and (reason := _reason(action[1]))
+    ):
+        date_field = rf"(?im)^data (?:zaskarżonej |kwestionowanej |skarżonej )?czynności[ \t]*:[ \t]*({DATE})[ \t]*$"
+        lines = text.splitlines()
+        row = text[: action.start()].count("\n")
+        dates = [m[1] for line in lines[max(0, row - 1) : row + 2] if (m := re.fullmatch(date_field, line))]
+        return to_iso(dates[0]) if len(dates) == 1 else None, reason
+    return None
+
+
+def _opening_account(text: str) -> tuple[str | None, int | None] | None:
+    """Read a buyer's decision immediately above the first allegation heading."""
+    heading = FIRST_CHARGE_HEADING.search(text)
+    if not heading or CHARGE.search(text, 0, heading.start()):
+        return None
+    introduction = text[: heading.start()]
+    if form := _form_action(introduction):
+        return form
+    rows = introduction.rstrip().splitlines()[-3:]
+    for index in reversed(range(len(rows))):
+        passage = squash(" ".join(rows[index:]))
+        if not (actor := AUTHORITY_ACT.match(passage)):
+            continue
+        # A nearby report dates only its own object, even if the first charge
+        # expressly challenges a different decision.
+        clauses = sentences(passage[actor.end() :])
+        obj = REPORTING_VERB.sub("", next(clauses), count=1)
+        reason = (
+            None
+            if any(clauses)
+            else next((key for key, cue in ACTION_OBJECTS.items() if re.match(cue, obj, re.IGNORECASE)), None)
+        )
+        first_charge = first_sentence(squash(text[heading.end() :]))
+        for key, cue in ACTS.items():
+            if re.match(cue, first_charge, re.IGNORECASE):
+                if (day := act_date(first_charge, key)) or key != reason:
+                    return day, key
+                break
+        return to_iso(actor[1]) if actor[1] and reason else None, reason
+    return None
+
+
 def _challenged_action(text: str) -> tuple[str | None, int | None]:
     """Use a dated first charge, otherwise its introductory account of the challenged act."""
     flat = squash(text)
@@ -628,6 +695,9 @@ def _challenged_action(text: str) -> tuple[str | None, int | None]:
     day = act_date(STATUTE_DATE_RE.sub("", opening), reason) if reason else None
     if reason and day:
         return day, reason
+
+    if not reason and (account := _opening_account(text)) is not None:
+        return account
 
     introduction = ALLEGATIONS_START_RE.split(flat, maxsplit=1)[0]
     for action in reversed(list(ACTION_RE.finditer(introduction))):
@@ -661,19 +731,7 @@ def _challenged_action(text: str) -> tuple[str | None, int | None]:
         ):
             return first
         return None, reason
-    # Form fields describe the same first act only within their own section.
-    action = re.search(r"(?im)^(?:zaskarżona|kwestionowana|skarżona) czynność[ \t]*:[ \t]*(.+)$", text)
-    if (
-        action
-        and not (CHARGE.search(text, 0, action.start()) or NEXT_ITEM.search(text, 0, action.start()))
-        and (reason := _reason(action[1]))
-    ):
-        date_field = rf"(?im)^data (?:zaskarżonej |kwestionowanej |skarżonej )?czynności[ \t]*:[ \t]*({DATE})[ \t]*$"
-        lines = text.splitlines()
-        row = text[: action.start()].count("\n")
-        dates = [m[1] for line in lines[max(0, row - 1) : row + 2] if (m := re.fullmatch(date_field, line))]
-        return to_iso(dates[0]) if len(dates) == 1 else None, reason
-    return prose_action(text)
+    return _form_action(text) or prose_action(text)
 
 
 def _procurement(text: str) -> dict:
