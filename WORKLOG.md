@@ -65,7 +65,11 @@ Two and four grant JSONs matched exactly. The ten organizer grants remained exac
 | Improve receipt routing and recover damaged party names on development inputs | Open |
 | Organizer VM (`data/uzp/VM.md`, issue #66): team access ends 22.11.2026 at 11:00 and the evaluators run `/opt/solution/RUN.md` there. Request the VM through the form, install the solution in `/opt/solution` with `RUN.md` (and `.env` if an LLM is used), time it on 2 vCPU and test it as they will. UNCONFIRMED: whether a team without a VM is evaluated from GitHub | install-docker session (setup, `RUN.md`, compose, 2-vCPU timing); the team (VM request through the form, SSH access) |
 | Ask UZP the questions `docs/task/BRIEF.md` marks UNCONFIRMED (`grep -n UNCONFIRMED docs/task/BRIEF.md`). The ones that change the build: is a team without a VM evaluated from GitHub, does `.env` replace the form's key field, where "no private hosting" ends, the `RUN.md` format, whether the 45-minute limit is measured on the VM, how files unprocessed at the cutoff count, how F1 counts are aggregated, the 80% similarity measure and whether the PDF's 30/20 split still stands | Open |
-| Apply UZP's answers and the Regulamin: `{}` negatives (#57), country code in account numbers (#58), organizer F1 rules in the eval (#59), class-config flag and validators (#62), generated-variant eval (#63). Ministral or rules only (#38) is the team's decision | Open (see the issues) |
+| `{}` for unrelated documents (#57) and the printed country code in account numbers (#58) | Dominik-Galus (`fix/p0-conventions`) |
+| Score with the organizer's F1 rules, UZP and strict metrics side by side (#59) | Dominik-Galus (`feat/uzp-metric`) |
+| Use the case folder to repair OCR misreads from sibling documents and show case-level checks (#61) | Dominik-Galus (`feat/case-siblings`) |
+| Robustness eval on seeded layout variants and generated negatives (#63) | Dominik-Galus (`feat/variant-eval`, PR #69) |
+| Class-config flag, TOML validators, weighted routing and a scaffold for new classes (#62) | 00200200 (`claude/config-classes-case-ab8189`) |
 | Promote HackNation2026 PR #48 to `prod` after the faktczyfejk demo, so the doc2json.pl Caddy block survives a redeploy | Open |
 
 ## Decisions
@@ -191,4 +195,4 @@ These runs used local rules with the three endpoint variables unset. The two loc
 
 - 21.11.2026 · Codex · Round 3 traced 130 field errors on 78 real development PDFs. Recovered identifiers from matching party records, checked damaged company names against declarations and read debit amounts across bank columns. The single-field Ministral whitespace trial lost one correct title in 12 calls and was dropped.
 - 22.11.2026 · Codex · Added local jury Compose services and the signed task rules for #60. Compose configuration validated. Docker Desktop did not answer its health probe, so container byte parity is pending.
-- 22.11.2026 · Claude · Brought `docs/task/BRIEF.md` up to UZP's Discord answers (#64), the Regulamin (`docs/task/regulamin.pdf`) and the organizer's new `VM.md`; refreshed `data/uzp` to `eadffbc` (adds `VM.md` only). Recorded the `{}` and account-number decisions, added the VM row to Next and merged main into PR #49 · docs/brief-update
+- 22.11.2026 · Claude · Brought `docs/task/BRIEF.md` up to UZP's Discord answers (#64), the Regulamin (`docs/task/regulamin.pdf`) and the organizer's new `VM.md`; refreshed `data/uzp` to `eadffbc` (adds `VM.md` only). Recorded the `{}` and account-number decisions, added the VM row to Next, split the row of UZP-answer issues into per-issue rows with the owners claimed in them, dropped Docker Compose (#60, closed by PR #68) from Next and merged main into PR #49 · docs/brief-update

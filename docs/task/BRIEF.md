@@ -3,8 +3,8 @@
 Task of HackNation 2026 set by Urząd Zamówień Publicznych (UZP). One main prize: 20 000 zł gross.
 
 Sources (read 21 and 22.11.2026):
-- Regulamin Zadania Konkursowego: `docs/task/regulamin.pdf` (5 pages, signed electronically between 12 and
-  18.11.2026; "Regulamin" below). It sets the judging stages and the prize conditions.
+- Regulamin Zadania Konkursowego: [`docs/task/regulamin.pdf`](regulamin.pdf) (5 pages, signed electronically between
+  12 and 18.11.2026; "Regulamin" below). It sets the judging stages and the prize conditions.
 - UZP's answers on the HackNation Discord on 21 and 22.11.2026 ("Discord" below). No transcript is in the repo. The
   team copied them into issues #57, #58, #59, #62, #63 and #64, which record the times and quote or paraphrase them.
 - Task details PDF: `docs/task/odwolania2json-szczegoly.pdf` (from hacknation.pl/zadania).
