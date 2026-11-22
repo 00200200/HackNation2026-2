@@ -40,11 +40,11 @@ python docs/pitch/build.py
 | 9 | Ministral 3B added 0.0087 and 0.0131 micro F1 on the real development sets in round 2 | `evals/results/round2-integration.json` |
 | 9 (notes only) | Without an LLM the model-size criterion gets the maximum score | Second-hand: UZP's Discord answer "Tak, dokładnie" (13:51) as recorded in issue #64; the original message, its author and the question are not archived. The slide says only that the default uses 0 LLM parameters |
 | 5 (notes), 10 | About 0.7 s per PDF with two workers: all 226 organizer PDFs in 160.75 s on the shared Apple M1, no added load | `evals/results/first-pass-watchdog.json` (`public_batch.watchdog`, the #79 change) |
+| 10 | UZP's limit of 45 minutes for the 150 test PDFs; the evaluation VM has 2 vCPU (notes) | `data/uzp/README.md`, "Maksymalny czas przetwarzania"; `data/uzp/VM.md`, CPU / RAM row |
 | 9, 10 | `--explain` gives the page and line where a value occurs in the text and says so when the value is not there verbatim, for example a name converted to the nominative or a derived code | `kio2json/trace.py` on #76; run on the #76 branch on 22.11.2026 over four organizer documents |
 | 11 | Components and licenses, including Leptonica and the image libraries bundled in the tesserocr wheel, the PP-OCRv6 models bundled with RapidOCR and the Mistral AI API used by the optional profile | Package metadata of the pinned `requirements.txt`; `rapidocr-*.dist-info/licenses/MODEL_LICENSES.md` (Apache-2.0); `kio2json/tessdata/LICENSE`; `frontend/public/fonts/LICENSE-Geist.txt`; [Morfeusz 2 licence](http://morfeusz.sgjp.pl/doc/license/en) (BSD-2-Clause for the program and its data); `docs/small-model-providers.md` for Ministral 3B; Regulamin § 4 ust. 1 |
 | 9 | Stage II is 50% F1 and 50% flexibility, judged on the architecture description, code and presentation; the hidden set has at least 10 appeal cases | `docs/task/regulamin.pdf`, § 2 ust. 4 |
 | 9 | Up to 20 points for model size (a smaller model scores more, rules under revision), up to 20 for new classes, up to 10 for other features | `data/uzp/README.md`, section 7 |
-| 10 | About 900 hours per year if every PDF were retyped by hand | Estimate, not a measurement: 5986 appeals × 3 PDFs × 3 minutes per PDF |
 
 ## Open items
 
