@@ -1,0 +1,31 @@
+<section id="components" class="light" data-transition="fade">
+<div class="hdr"><p>Zadanie UZP: Odwołania2json</p><p class="r">HackNation 2026</p></div>
+<h2 class="in" style="--i:0;">Komponenty zewnętrzne i&nbsp;licencje.</h2>
+<p class="lead in" style="--i:1; font-size:28px; margin-top:12px;">Biblioteki i&nbsp;modele są open source; opcjonalny profil woła API Mistral AI. Wskazujemy je, bo wymaga tego Regulamin, § 4 ust. 1.</p>
+<div style="flex:1; display:flex; align-items:center;">
+<div class="pts3" style="width:100%; gap:40px 56px;">
+<div class="pt in" style="--i:2;"><p class="n">OCR i&nbsp;PDF</p>
+<p class="d"><b>Tesseract</b> z&nbsp;Leptonicą, tesserocr · Apache-2.0, licencja BSD, MIT</p>
+<p class="d"><b>tessdata_fast</b> pol, eng · Apache-2.0</p>
+<p class="d"><b>RapidOCR</b>, modele PP-OCRv6, ONNX Runtime · Apache-2.0, MIT</p>
+<p class="d"><b>pdfplumber</b>, pdfminer.six · MIT</p>
+<p class="d"><b>pypdfium2</b> (PDFium) · Apache-2.0, BSD-3-Clause</p>
+<p class="d"><b>Pillow</b> · MIT-CMU</p></div>
+<div class="pt in" style="--i:3;"><p class="n">Język i&nbsp;kontrola danych</p>
+<p class="d"><b>Morfeusz&nbsp;2</b> z&nbsp;danymi SGJP · BSD-2-Clause</p>
+<p class="d"><b>python-stdnum</b> (NIP, REGON, PESEL) · LGPL-2.1+</p>
+<p class="d"><b>RapidFuzz</b> · MIT</p>
+<p class="d"><b>Babel</b> · BSD-3-Clause</p>
+<p class="d"><b>asn1crypto</b> · MIT</p>
+<p class="d"><b>Pydantic</b>, pydantic-settings · MIT</p></div>
+<div class="pt in" style="--i:4;"><p class="n">Interfejsy i&nbsp;opcje</p>
+<p class="d"><b>Shiny</b> (GUI) · MIT</p>
+<p class="d"><b>FastAPI</b>, Starlette, uvicorn · MIT, BSD-3-Clause</p>
+<p class="d"><b>Geist</b> (czcionki) · SIL OFL 1.1</p>
+<p class="d">Opcjonalnie: <b>pydantic-ai</b>, SDK openai · MIT, Apache-2.0</p>
+<p class="d">Opcjonalnie: <b>Ministral&nbsp;3B</b> · Apache-2.0, przez regionalne API Mistral AI</p></div>
+</div>
+</div>
+<div class="ftr"><div class="brand"><svg aria-label="Logo doc2json" width="40" height="40" viewBox="0 0 64 64" style="width:40px; height:40px;"><rect width="64" height="64" rx="15" fill="#000"/><g fill="none" stroke="#fff" stroke-width="4.5" stroke-linecap="round" stroke-linejoin="round"><path d="M24 15c-4.5 0-5.5 2-5.5 6v6c0 3-1.5 5-4.5 5 3 0 4.5 2 4.5 5v6c0 4 1 6 5.5 6"/><path d="M40 15c4.5 0 5.5 2 5.5 6v6c0 3 1.5 5 4.5 5-3 0-4.5 2-4.5 5v6c0 4-1 6-5.5 6"/><path d="M28 27h8M28 37h5"/></g></svg><p>doc2json</p></div><p class="src">Licencje z&nbsp;metadanych pakietów z&nbsp;requirements.txt i&nbsp;plików LICENSE</p><p class="pg">11 / 12</p></div>
+<aside>Regulamin w § 4 ust. 1 wymaga, żeby rozwiązania zewnętrzne były wyraźnie wskazane w prezentacji, więc wymieniamy je tutaj. Biblioteki i modele są open source, a jedyną usługą zewnętrzną jest opcjonalne API Mistral AI. OCR robi Tesseract z polskimi i angielskimi modelami tessdata_fast, które dołączamy do repozytorium; RapidOCR z modelami PP-OCRv6 domyślnie czyta pieczęcie zarządu na jednostronicowych skanach pełnomocnictw, a w trybie hybrydowym daje drugi odczyt skanu. Tekst z PDF czyta pdfplumber, strony do OCR renderuje PDFium. Morfeusz 2 sprowadza nazwiska do mianownika, python-stdnum sprawdza sumy kontrolne NIP, REGON i PESEL, Babel czyta kwoty, asn1crypto czyta certyfikaty podpisów w PDF. GUI to Shiny, API to FastAPI. Model językowy jest opcjonalny i domyślnie wyłączony; profil z Ministral 3B korzysta z pydantic-ai i SDK openai.</aside>
+</section>

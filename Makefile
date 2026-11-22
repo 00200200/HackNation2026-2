@@ -55,3 +55,7 @@ eval-cases: ## Score paired native and scanned documents generated from linked c
 
 scan-stress: ## F1 on fresh renders of the organizer scans
 	uv run python -m evals.scan_stress
+
+.PHONY: eval-document-variants
+eval-document-variants: ## Measure document families and matched controls on public synthetic cases
+	uv run python -m evals.document_variants

@@ -127,6 +127,20 @@ the negatives directory).
 - Numbers in the README, docs or pitch come from `evals/results/latest.json` with its commit and mode, labelled
   "training data (synthetic)". Never present them as the test-set score.
 
+## Document family diagnostics
+
+Run `make eval-document-variants` to render and score 390 synthetic documents from the 60 public case references.
+Each case contributes three drifted documents and three native-PDF controls. The generator also builds 30 negatives
+across ten families. Appeals and powers of attorney in each pair share their gold. The transfer gold follows the printed
+payment purpose and account format in each document. Drifted scans can be RGB JPEG, grayscale JPEG or one-bit CCITT.
+
+The default run uses two workers and the keyless extractor. Its report in `.cache/document-variants.json` includes a
+dataset digest, control and drifted scores, routing errors, and tag-level scores within each medium. Runtime measures
+extractor wall time across the batch. To try one case and one negative per family, use
+`uv run python -m evals.document_variants --cases 1 --negatives 1 --min-docs 1`.
+Use `--dump DIR --no-run` to inspect the generated PDFs, references and tags. The fixed layout regression gate is
+`make eval-variants`.
+
 ## Pre-push gate
 
 - For a rule change, run the dev splits and `make eval-variants`. Compare the candidate on the fixed 60-case layout set against the committed baseline. Record regressions and the weakest profiles in the change review.

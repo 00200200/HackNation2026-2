@@ -503,9 +503,13 @@ rules. [OCR results](../../evals/results/ocr-engines.json)
 
 ## Known limits
 
+- A sole trader’s mandate can identify the person separately from the registered business name. The mandate schema records the NIP and has no REGON field. A damaged name or a signature without an identified signer can still leave a field empty.
+
 - An appeal can name the contracting authority by its role in conducting or awarding the procurement. A numbered list can identify joint authorities and mark one as the lead. An unfamiliar caption or a nearby name without local organization, address or registry evidence can leave the party list empty.
 
 - In rules-first native-schema mode, a receipt amount, execution date, singleton appeal party name or procurement title can be reconsidered when its first page contains a conflicting, locally readable value. The model selects a candidate ID in one request per disputed block. The extractor copies the corresponding printed span and normalizes it locally. Abstention or a failed request preserves the rule value. If OCR misses the correct digits in every reading, this step cannot recover them.
+
+- For appeals with parallel sections, the reader looks for a persistent gap between overlapping blocks of text with independent headings. A shared heading above full-width prose stays after both columns. Sparse cards and word boxes that disagree with the transcript can leave the original order ambiguous. A procurement title without a readable label can still be missed. [Two-column appeal evaluation](../../evals/results/two-column-appeals.json)
 
 - On two-column receipts a payment amount can sit beside a different label. The reader checks the amount's column and currency. A damaged account, reference or remittance title can still be unreadable after the receipt is identified.
 

@@ -9,7 +9,14 @@ from pathlib import Path
 
 from . import appeal, bank_transfer, ocr_extract, power_of_attorney, trace
 from .accounts import normalize_account
-from .appeal_layout import apply_appeal_blocks, form_columns, party_inventory, read_role_columns, restore_party_columns
+from .appeal_layout import (
+    apply_appeal_blocks,
+    form_columns,
+    party_inventory,
+    read_appeal_columns,
+    read_role_columns,
+    restore_party_columns,
+)
 from .case_repair import Reading, printed_readings
 from .class_config import DocumentClass, load_classes, route
 from .classify import incomplete_booking_scan, resembles_appeal_heading
@@ -245,9 +252,11 @@ def _process(
         try:
             # A cached reading is free; a new alternate reread raises RereadExpired itself once the deadline passes.
             primary, ocr_pages, boxes = read(engine)
+            original_first = None
             if primary and 1 not in ocr_pages and page_sizes.get(1):
                 first = form_columns(primary[0], boxes, page_sizes[1][0])
                 if first != primary[0]:
+                    original_first = primary[0]
                     primary = [first, *primary[1:]]
             pages, definition, accounts = _read_receipt(
                 primary,
@@ -327,8 +336,18 @@ def _process(
                 and definition.profile.mode == "RL"
                 and definition.profile.gap_scope == "incomplete"
             )
+            page_gutters = {}
+            if definition.extractor is appeal.extract:
+                # Match boxes against their original transcript, before routing reordered native cards.
+                appeal_pages = [original_first, *pages[1:]] if original_first and 1 not in ocr_pages else pages
+                ordered, page_gutters = read_appeal_columns(appeal_pages, boxes, page_sizes, ocr_pages)
+                if page_gutters:
+                    pages = [ordered[i] if i + 1 in page_gutters else page for i, page in enumerate(pages)]
+            model_source = pages if page_gutters else primary
             blocks = (
-                party_inventory(boxes, page_sizes, appeal_cards=definition.extractor is appeal.extract)
+                party_inventory(
+                    boxes, page_sizes, appeal_cards=definition.extractor is appeal.extract, page_gutters=page_gutters
+                )
                 if definition.extractor in (appeal.extract, power_of_attorney.extract)
                 and definition.profile.rules_first
                 else []
@@ -345,7 +364,7 @@ def _process(
                 join_pages(pages),
                 ocr_python=python_rules,
                 alternate=alternate if definition.profile.dual_ocr else None,
-                model_text=join_pages(primary) if pages is not primary else None,
+                model_text=join_pages(model_source) if pages is not model_source else None,
                 first_page=primary[0] if primary else None,
                 check_core_fields=check_core_fields,
             )
