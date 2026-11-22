@@ -1,4 +1,4 @@
-"""OCR noise is trimmed off the end of names and titles; a present value is never replaced with null (invented strings)."""
+"""OCR noise is trimmed off the end of names and titles; a value that is noise throughout becomes null (invented strings)."""
 
 import pytest
 
@@ -33,7 +33,7 @@ def test_noisy_tail_after_legal_form_is_cut(raw, clean):
         ("Kancelaria AG Legal |", "Kancelaria AG Legal"),
         ("Testowa S.A. Centrum Usług Wspólnych |", "Testowa S.A. Centrum Usług Wspólnych"),
         ("Wzorcowa Spółka S.A. W KRAKOWIE |", "Wzorcowa Spółka S.A. W KRAKOWIE"),
-        ("ZWIK SP. Z O.O. W ŁODZI |", "ZWIK SP. Z O.O. W ŁODZI"),
+        ("WZOR SP. Z O.O. W ŁODZI |", "WZOR SP. Z O.O. W ŁODZI"),
         ("Wzorcowa Energia SA ODDZIAŁ PN WSCH |", "Wzorcowa Energia SA ODDZIAŁ PN WSCH"),
     ],
 )
@@ -44,15 +44,26 @@ def test_trailing_stray_symbols_are_stripped(raw, clean):
 @pytest.mark.parametrize(
     "noise",
     [
+        "wę =— MH EMMM Warszawa O |] EGO | Li ZWS |",
         "ąz =— KQ WWWW Lublin I |] OKA | Te XYV |",
-        "[| ~~ 12 # 7 <> |",
+        "Kancelaria Prawn — Radca Prawny Kaj EBM",
         "Kancelaria Praw — Radca Prawny Ola QBX |",
+        "[| ~~ 12 # 7 <> |",
     ],
 )
-def test_damaged_value_is_trimmed_never_nulled(noise):
-    trimmed = trim_name(noise)
-    assert trimmed
-    assert noise.startswith(trimmed)
+def test_value_that_is_scanner_noise_throughout_is_nulled(noise):
+    assert trim_name(noise) is None
+
+
+@pytest.mark.parametrize(
+    ("raw", "clean"),
+    [
+        ("Testowa Firma S.A. | EBX KQ XYV ZWS", "Testowa Firma S.A."),
+        ("PKP |", "PKP"),
+    ],
+)
+def test_value_with_a_recoverable_part_is_trimmed_not_nulled(raw, clean):
+    assert trim_name(raw) == clean
 
 
 @pytest.mark.parametrize("noise", ["| ]", "=== |", " ` "])
@@ -91,17 +102,27 @@ def test_title_made_only_of_stray_symbols_has_nothing_left(noise):
         "Kancelaria AG Legal",
         "Testowa S.A. Centrum Usług Wspólnych",
         "Testowa S.A. Departament | Zakupów",
-        "Wzorcowa Wytwórnia S.A. – ZW Jaworzno",
+        "Wzorcowa Wytwórnia S.A. – ZW Przykładowo",
         "Wzorcowa Spółka SP. Z O.O. W NOWYM SĄCZU",
-        "PGKIM SP. Z O.O. W ZIELONEJ GÓRZE",
+        "PKXM SP. Z O.O. W ZIELONEJ GÓRZE",
         "ABC S.A. Z SIEDZIBĄ W ŁODZI",
-        "WZORCOWA WYTWÓRNIA S.A. ZW JAWORZNO III",
+        "WZORCOWA WYTWÓRNIA S.A. ZW PRZYKŁADOWO III",
         "PHU ABC SC JAN NOWAK ADAM KOT",
         "FHU ABC SC ANNA KOWALSKA PIOTR NOWAK MAREK LIS",
         "FHU ABC SC JAN KOWALSKI ADAM KOWALSKI EWA NOWAK",
         "ABC SPÓŁKA CYWILNA ANNA NOWAK PIOTR LIS ADAM KOT MAREK WÓJT",
         "ABC S.A. ZW PN 2",
         "ABC S.A. ZW | PN 2",
+        "Wodociągi | Przykładowe Spółka z ograniczoną odpowiedzialnością",
+        "Kancelaria Radcy Prawnego Ewa PRZYKŁADOWA",
+        "GMINA MIASTO | ŁÓDŹ",
+        "URZĄD MIASTA | KRAKOWA",
+        "WZOR SP. Z O.O. | W ŁODZI",
+        "PRZEDSIĘBIORSTWO ABC SP. Z O.O. | ODDZIAŁ W ŁODZI",
+        "Alfa ABC | SA",
+        "Kancelaria Radców Prawnych Nowak I Wspólnicy sp.k.",
+        "Kancelaria Radcy Prawnego Jan Nowak W Warszawie",
+        "Kancelaria Radców Prawnych Anna Nowak Jan Kot SC",
         None,
         "",
     ],
@@ -176,3 +197,24 @@ def test_value_printed_on_a_native_page_is_not_trimmed():
     assert party["pelnomocnik"]["nazwa"] == "Kancelaria Wzorcowa | ][ ="
     assert party["pelnomocnik"]["imie_nazwisko"] == "Jan Przykładowy"
     assert record["ZamowieniePubliczne"]["tytul"] == "Budowa drogi gminnej 2026/1 ~"
+
+
+def test_trim_appeal_nulls_a_name_that_is_only_noise():
+    record = _appeal()
+    record["Odwolujacy"][0]["nazwa"] = "wę =— MH EMMM Warszawa O |] EGO | Li ZWS |"
+    trim_appeal(record)
+    assert record["Odwolujacy"][0]["nazwa"] is None
+    assert record["Odwolujacy"][0]["nip"] == "1234567890"
+
+
+def test_scanned_appeal_trims_ocr_pages_and_leaves_native_pages_alone():
+    from kio2json.ocr_extract import extract_scanned_appeal
+
+    pages = [
+        "ODWOŁANIE\nOdwołujący: Testowa Firma S.A. | EBX\nul. Dolna 1\nUzasadnienie:",
+        "Testowa Firma S.A. wnosi odwołanie.",
+    ]
+    scanned = extract_scanned_appeal(pages, {1, 2}, None, [])
+    native_cover = extract_scanned_appeal(pages, {2}, None, [])
+    assert scanned["Odwolujacy"][0]["nazwa"] == "Testowa Firma S.A."
+    assert native_cover["Odwolujacy"][0]["nazwa"] == "Testowa Firma S.A. | EBX"
