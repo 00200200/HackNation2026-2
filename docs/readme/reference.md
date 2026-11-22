@@ -503,7 +503,7 @@ rules. [OCR results](../../evals/results/ocr-engines.json)
 
 ## Known limits
 
-- A sole trader’s mandate can identify the person separately from the registered business name. The extractor reads the grantor’s declaration, owner fields on a CEIDG card, or an explicitly labelled proprietor signature. A registered business name can supply the person when exactly one end prints an identifiable personal name. The mandate schema records the NIP and has no REGON field. A damaged name or a signature without an identified signer can still leave a field empty.
+- A sole trader’s mandate can identify the person separately from the registered business name. The extractor reads the grantor’s declaration, owner fields on a CEIDG card, or an explicitly labelled proprietor signature. A registered business name can supply the person when exactly one end prints an identifiable personal name. An issuer’s letterhead or stamp can supply the business name. A named proprietor or an explicitly identified proxy can supply the execution signature. The mandate schema records the NIP and has no REGON field. A damaged name or a signature without an identified signer can still leave a field empty.
 
 - An appeal can name the contracting authority by its role in conducting or awarding the procurement. A numbered list can identify joint authorities and mark one as the lead. An unfamiliar caption or a nearby name without local organization, address or registry evidence can leave the party list empty.
 
