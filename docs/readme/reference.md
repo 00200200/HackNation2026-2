@@ -611,4 +611,6 @@ Four receipt layouts are the first routing targets. The early bank letter, trans
 
 The transfer update routed all four development bank letters, with 0.9767 UZP and 0.9167 strict field F1. After integrating main `cf67694`, development UZP F1 rose from 0.9603 to 0.9729. The frozen rules still missed all four PDFs in each reserved history, operation-detail and order-detail family. Reserved UZP F1 was 0.7923, and all 52 negatives across the two splits remained empty. [Transfer results](../../evals/results/case-transfers.json)
 
+A routing-only follow-up recognized two of four PDFs in each reserved transaction-history, operation-detail and order-detail family. These six receipts raised reserved UZP F1 from 0.7923 to 0.8159 and strict F1 from 0.7705 to 0.7867. None of the six had every field correct. The remaining families, including all 24 negatives, kept their scores. Development remained at 0.9729 UZP and 0.9667 strict. This was a second blind evaluation after the first candidate disclosed aggregate misses. [Paired routing results](../../evals/results/case-transfer-routing.json)
+
 On the same main revision, #69’s 240 compact-form PDFs scored 0.9125 UZP and 0.8743 strict, with 60/60 negatives rejected. The replay matched #69’s published PDF/reference digest and five-case batching. The two panels differ in both facts and layouts.
