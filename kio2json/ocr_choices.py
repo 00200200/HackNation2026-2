@@ -5,7 +5,6 @@ from contextlib import ExitStack
 from dataclasses import dataclass
 from itertools import product
 from pathlib import Path
-from time import monotonic
 
 import pdfplumber
 import pypdfium2 as pdfium
@@ -13,7 +12,7 @@ from pdfplumber.utils.exceptions import PdfminerException
 from stdnum.pl import nip, pesel, regon
 
 from .accounts import normalize_account, valid_account
-from .ocr_budget import remaining_ms
+from .ocr_budget import CHOICE_MAX_CELLS, CHOICE_TIMEOUT_MS, remaining_ms
 from .pdf_text import OCR_DPI, WordBox, _language_dir
 
 LENGTHS = {"nip": (10,), "regon": (9, 14), "pesel": (11,), "krs": (10,)}
@@ -83,11 +82,12 @@ def candidates(field: str, original: str, symbols: list) -> tuple[str, ...]:
     return tuple(result)
 
 
-def _read(api, crop, field, original, timeout):
+def _read(api, crop, field, original):
     from tesserocr import RIL, iterate_level
 
     api.SetImage(crop)
     api.SetSourceResolution(OCR_DPI)
+    timeout = remaining_ms(CHOICE_TIMEOUT_MS)
     if not timeout or not api.Recognize(timeout=timeout):
         return (original,), False
     it = api.GetIterator()
@@ -143,17 +143,12 @@ def _crop(pdf, path, cell):
 
 
 def verify_cells(path: Path, locate, record: dict, boxes: list[WordBox], *, data_dir: str | None = None) -> None:
-    deadline = monotonic() + 2.0
-
-    def timeout():
-        return remaining_ms(max(0, int(1000 * (deadline - monotonic()))))
-
-    if not timeout():
+    if not remaining_ms(1):
         return
     cells = locate(record, boxes)
     occurrences = Counter((id(cell.parent), cell.field) for cell in cells)
     eligible = [c for c in cells if occurrences[id(c.parent), c.field] == 1 and not valid(c.field, c.original)]
-    if not eligible or not timeout():
+    if not eligible or not remaining_ms(1):
         return
     from tesserocr import PSM, PyTessBaseAPI
 
@@ -164,12 +159,12 @@ def verify_cells(path: Path, locate, record: dict, boxes: list[WordBox], *, data
         ):
             if not api.SetVariable("lstm_choice_mode", "2"):
                 return
-            for cell in eligible:
-                if not timeout():
+            for cell in eligible[:CHOICE_MAX_CELLS]:
+                if not remaining_ms(1):
                     break
                 crop = _crop(pdf, path, cell)
-                readings, clear = _read(api, crop, cell.field, cell.original, timeout())
-                if not timeout():
+                readings, clear = _read(api, crop, cell.field, cell.original)
+                if not remaining_ms(1):
                     break
                 hits = [v for v in readings if valid(cell.field, v)]
                 if clear and cell.field in ACCOUNT_KEYS and not hits:
