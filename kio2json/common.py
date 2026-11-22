@@ -22,7 +22,9 @@ MONTHS = [
 ]
 # 2026-03-21, 21.03.2026, 21-03-2026, 21 marca 2026
 DATE = (
-    r"(?<!\d)(?:\d{4}-\d{2}-\d{2}|\d{1,2}[.\-]\d{1,2}[.\-]\d{4}|\d{1,2}\s+(?i:" + "|".join(MONTHS) + r")\s+\d{4})(?!\d)"
+    r"(?<!\d)(?:\d{4}[-/.]\d{2}[-/.]\d{2}|\d{1,2}[-/.]\d{1,2}[-/.]\d{4}|\d{1,2}\s+(?i:"
+    + "|".join(MONTHS)
+    + r")\s+\d{4})(?!\d)"
 )
 DATE_RE = re.compile(DATE)
 
@@ -37,7 +39,7 @@ def squash(text: str) -> str:
 
 
 def to_iso(text: str) -> str | None:
-    parts = re.split(r"[.\-\s]+", text.strip().lower())
+    parts = re.split(r"[./\-\s]+", text.strip().lower())
     if len(parts[0]) == 4:
         year, month, day = parts
     else:

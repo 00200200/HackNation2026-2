@@ -1,5 +1,6 @@
 """Read role-labelled party and signature cards from native or OCR word boxes."""
 
+import itertools
 import re
 from collections import Counter, defaultdict
 from dataclasses import dataclass, field
@@ -58,14 +59,14 @@ def restore_party_columns(pages: list[str], boxes: list[WordBox]) -> list[str]:
 
 
 _LABELS = {
-    "appellant": r"odwo[łl]uj[ąa]cy",
+    "appellant": appeal.APPELLANT_LABEL + r"|(?:wykonawca|podmiot) wnosz[ąa]cy odwo[łl]anie",
     "authority": r"zamawiaj[ąa]cy",
     "principal": r"mocodawc[ay]",
     "appointee": r"pełnomocni(?:k|cy)",
     "representation": r"(?:reprezentowan|zastępowan)\w* przez(?: pełnomocnika)?",
     "counsel": r"pełnomocnik odwołującego",
     "other": r"adresat|uczestnik(?: postępowania)?|poświadczający|za zgodność(?: z oryginałem)?",
-    "signer": r"podpisuj[ąa]c[ya]|podpis(?:y)? mocodawc[yó]w?",
+    "signer": r"podpisuj[ąa]c[ya]|podpis(?:y)?(?: mocodawc(?:y|ów))?",
 }
 _HEADING = re.compile(
     r"^(?:" + "|".join(f"(?P<{k}>{v})" for k, v in _LABELS.items()) + r")(?:\s*:\s*|\s*$)", re.IGNORECASE
@@ -288,3 +289,43 @@ def apply_appeal_blocks(record: dict, blocks: list[PartyBlock]) -> None:
     mails = set(EMAIL_RE.findall("\n".join(following)))
     if len(mails) == 1 and not rep["mail"]:
         rep["mail"] = mails.pop()
+
+
+def form_columns(page: str, boxes: list[WordBox], width: float) -> str:
+    """Read parallel party sections around a persistent gutter. The receipt reader owns bank tables."""
+    if not re.search(r"\b(?:zamawiaj[ąa]cy|mocodawca)\b", page, re.IGNORECASE):
+        return page
+    rows, height = word_rows(boxes)
+    if len(rows) < 3 or not width:
+        return page
+    # Candidate right margins recur at the start of a cell across several rows.
+    starts = Counter(
+        round(b.x0 / height)
+        for row in rows
+        for a, b in itertools.pairwise(row)
+        if b.x0 - a.x1 > 2 * height and width * 0.32 < b.x0 < width * 0.72
+    )
+    section = re.compile(
+        rf"^(?:{appeal.APPELLANT_LABEL}|(?:wykonawca|podmiot) wnosz[ąa]cy odwo[łl]anie|zamawiaj[ąa]cy|"
+        r"mocodawca|pe[łl]nomocni(?:k|cy))(?:[ \t]*:|$)|"
+        r"^(?:odwo[łl]anie do|pe[łl]nomocnictwo(?: procesowe)?$|(?:niniejszym )?(?:upowa[żz]niam|udzielam)\b.*:$)",
+        re.IGNORECASE,
+    )
+    for margin, count in starts.most_common():
+        if count < 3:
+            break
+        gutter = (margin - 0.8) * height
+        if any(w.x0 < gutter < w.x1 for row in rows for w in row):
+            continue
+        columns = [[], []]
+        for row in rows:
+            for col in (0, 1):
+                words = [w for w in row if (w.x0 >= gutter) == col]
+                if words:
+                    columns[col].append(_line(words))
+        if not all(any(section.match(line) for line in column) for column in columns):
+            continue
+        ordered = "\n".join(columns[0] + columns[1])
+        if Counter(ordered.split()) == Counter(page.split()):
+            return ordered
+    return page

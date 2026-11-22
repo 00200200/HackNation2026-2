@@ -9,17 +9,17 @@ ACCOUNT_RE = re.compile(r"(?<![\d])(?:PL\s?)?(\d{2}(?:[ \n]?\d{4}){6})(?!\d)")
 SENDER_RE = re.compile(r"nadawc|zleceniodawc|płatnik|obciąż|z rachunku")
 RECIPIENT_RE = re.compile(r"odbiorc|beneficjent|adresat|uznawan|na rachunek")
 
-MONEY = r"(?<![\d.,])(?:\d{1,3}(?:[ .\u00a0]\d{3})+[.,]\d{2}|\d+[.,]\d{2})(?![.,]?\d)"
-AMOUNT_LABEL = r"(?:kwota(?: (?:operacji|przelewu|transakcji|zaksięgowana))?|wartość)"
+MONEY = r"(?<![\d.,])(?:\d{1,3}(?:[ .\u00a0\u202f]\d{3})+[.,]\d{2}|\d{1,3}(?:,\d{3})+\.\d{2}|\d+[.,]\d{2})(?![.,]?\d)"
+AMOUNT_LABEL = r"(?:kwota(?: (?:operacji|przelewu|transakcji|płatności|zaksięgowana))?|wartość(?: (?:operacji|przelewu|transakcji|płatności))?)"
 DATE_LABEL = r"data (?:operacji|transakcji|realizacji|wykonania|księgowania|obciążenia|zlecenia)"
-REFERENCE_LABEL = r"(?:nr ref\.?|nr transakcji(?: w [^:\n]{1,55}(?=:))?|numer (?:referencyjny|transakcji)|(?:id|identyfikator) (?:operacji|transakcji))(?: operacji)?"
-TITLE_LABEL = r"(?:szczegóły płatności|tytułem|tytu[łl](?: (?:przelewu|operacji))?|opis)"
+REFERENCE_LABEL = r"(?:nr ref\.?|(?:nr|numer) (?:operacji|transakcji)(?: w [^:\n]{1,55}(?=:))?|numer referencyjny|(?:id|identyfikator) (?:operacji|transakcji))(?: operacji)?"
+TITLE_LABEL = r"(?:szczegóły płatności|tytułem|tytu[łl](?: (?:przelewu|operacji|płatności|transakcji))?|opis(?: (?:płatności|przelewu|transakcji))?)"
 FIELD_LABEL = rf"(?:{AMOUNT_LABEL}|{DATE_LABEL}|{REFERENCE_LABEL}|{TITLE_LABEL})"
 GENERIC_LABEL = r"[^\W\d_][\w /().-]{0,55}:"
 # A known undelimited field must match the full label word, never a prefix of a title.
 BOUNDARY_RE = re.compile(
     rf"^(?:{GENERIC_LABEL}|{FIELD_LABEL}(?!\w)|(?:waluta|typ operacji|kanał|tryb|nadawca|odbiorca|"
-    r"zleceniodawca|beneficjent|płatnik|adresat przelewu|dane (?:nadawcy|odbiorcy)|rachunek|"
+    r"(?:z rachunku|na rachunek|z konta|na konto)(?=[ \t]*(?:$|:|(?:PL)?\d|[*]))|zleceniodawca|beneficjent|płatnik|adresat przelewu|dane (?:nadawcy|odbiorcy)|rachunek|"
     r"data (?:wystawienia|wydruku|stempla|sporządzenia)|opłata(?:/prowizja)?(?=\s*[\d.:]|$))\b|[-*]{3,}|bank nie ponosi\b|(?:dokument (?:jest wydrukiem|wygenerowany)|signature not verified)\b|potwierdzenie ma charakter\b)",
     re.IGNORECASE,
 )
@@ -32,7 +32,9 @@ STATUS = re.compile(
 )
 PADDING = r"[\s.:]*"
 AMOUNT_RE = re.compile(rf"^{AMOUNT_LABEL}{PADDING}(?:PLN\s*)?[−-]?[ \t]*({MONEY})", re.IGNORECASE | re.MULTILINE)
-OPERATION_DATE_RE = re.compile(rf"^({DATE_LABEL}){PADDING}({DATE})", re.IGNORECASE | re.MULTILINE)
+OPERATION_DATE_RE = re.compile(
+    rf"^({DATE_LABEL})(?: (?:przelewu|płatności))?{PADDING}({DATE})", re.IGNORECASE | re.MULTILINE
+)
 REFERENCE_RE = re.compile(
     rf"^(?i:{REFERENCE_LABEL}){PADDING}((?=[A-Z0-9/_.-]*\d)[A-Z0-9][A-Z0-9/_-]*(?:\.[A-Z0-9/_-]+)*)", re.MULTILINE
 )
@@ -61,6 +63,17 @@ EXECUTION_DAY_RE = re.compile(
     rf"{COMPLETED_PAYMENT}\s+{EXECUTION_DATE_INTRO}(?P<between>{DATE})\s+{PAYMENT_NOUN}\b(?![ \t]*:|\s+{COMPLETED_PAYMENT}\b))",
     re.IGNORECASE | re.MULTILINE,
 )
+
+
+GROUPED_ACCOUNT = re.compile(r"(?<![\w-])(?:PL[^\S\n]*)?[0-9]+(?:[^\S\n]+[0-9]+|-[0-9]+)+(?![\w-])", re.IGNORECASE)
+
+
+def normalize_account_spacing(text: str) -> str:
+    def compact(match: re.Match) -> str:
+        number = re.sub(r"[\s-]", "", match[0])
+        return number if re.fullmatch(r"(?:PL)?[0-9]{26}", number, re.IGNORECASE) else match[0]
+
+    return GROUPED_ACCOUNT.sub(compact, text)
 
 
 def _legacy_accounts(text: str) -> tuple[str | None, str | None]:
@@ -101,7 +114,7 @@ def _legacy_accounts(text: str) -> tuple[str | None, str | None]:
 
 
 def _amount(raw: str) -> float:
-    digits = re.sub(r"[ \u00a0]", "", raw)
+    digits = "".join(raw.split())
     whole, cents = digits[:-3], digits[-2:]
     return float(re.sub(r"[.,]", "", whole) + "." + cents)
 
@@ -371,6 +384,12 @@ def transaction_values(text: str) -> tuple[float | None, str | None]:
     amount = AMOUNT_RE.search(fields)
     raw_amount = amount[1] if amount else description_debit(fields)
     money = _amount(raw_amount) if raw_amount else None
+    if money is None:
+        integer = re.search(
+            rf"(?im)^{AMOUNT_LABEL}{PADDING}([0-9]+(?:[ \u00a0\u202f][0-9]{{3}})*)[ \t]*(?:PLN|zł|EUR)\b", fields
+        )
+        if integer:
+            money = float("".join(integer[1].split()))
     dates = [(m[1].casefold(), m[2]) for m in OPERATION_DATE_RE.finditer(fields)]
     posted = _posted_row(fields)
     if posted:
@@ -406,7 +425,7 @@ def transaction_values(text: str) -> tuple[float | None, str | None]:
 
 
 def extract(text: str) -> dict:
-    sender, recipient = _accounts(text)
+    sender, recipient = _accounts(normalize_account_spacing(text))
     amount, day = transaction_values(text)
     fields = _field_text(text)
     reference = REFERENCE_RE.search(fields) or re.search(

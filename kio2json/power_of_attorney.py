@@ -281,10 +281,15 @@ def _attorneys(text: str) -> list[dict]:
     addressed = (
         rf"(?i:{GRANT.pattern}\s+pełnomocnictwa\s+do reprezentowania\s+[^,:.]{{1,55}}:\s*(?:pani|panu)\s+)({PERSON})"
     )
+    appointment_field = (
+        rf"(?im:^[ \t]*(?:niniejszym )?{GRANT.pattern} (?:pełnomocnictwa )?"
+        r"do (?:reprezentowania|działania|występowania)\b[^:\n]{0,100}:[ \t]*\n[ \t]*)"
+        rf"({PERSON})(?=[ \t]*(?:$|\n|,|\bPESEL\b))"
+    )
     matches = sorted(
         (
             (m, kind)
-            for kind, pattern in enumerate((titled, plain, labelled, addressed))
+            for kind, pattern in enumerate((titled, plain, labelled, addressed, appointment_field))
             for m in re.finditer(pattern, text)
         ),
         key=lambda item: item[0].start(),
@@ -566,6 +571,21 @@ def finish_record(
     text: str, principals: list[dict], officers: list[tuple[dict, str]], attorneys: list[dict], signers: list[list]
 ) -> dict:
     principal_names = [p["nazwa"] for p in principals]
+    # On a compact form the signature fields immediately follow the named issuer
+    # and its register numbers. Stop ownership at the next unrelated line.
+    owner = None
+    for line in map(str.strip, text.splitlines()):
+        if line in principal_names:
+            owner = principal_names.index(line)
+        elif owner is not None and re.match(r"^(?:KRS|NIP|REGON)\b", line, re.IGNORECASE):
+            continue
+        elif owner is not None and (
+            m := re.fullmatch(rf"(?i:podpis(?: mocodawcy)?|podpisa[łl]a?)\s*:\s*({PERSON})", line)
+        ):
+            if m[1] not in signers[owner]:
+                signers[owner].append(m[1])
+        else:
+            owner = None
     for principal, name in officers:
         people = signers[principal_names.index(principal["nazwa"])]
         if name not in people:
@@ -633,6 +653,8 @@ def apply_grant_blocks(record, blocks, text):
             printed_people.extend(_card_people(block.lines))
         elif block.role == "principal" and block.lines:
             lines = block.lines
+            if lines[0].casefold() == "osoba prawna":
+                lines = lines[1:]
             identity = re.split(r"\b(?:KRS|NIP|REGON)\b", squash(" ".join(lines)), maxsplit=1)[0].strip(" ,;")
             identity = re.sub(r"^\d+[.)]\s+", "", identity)
             if not COMPANY_RE.fullmatch(identity):
