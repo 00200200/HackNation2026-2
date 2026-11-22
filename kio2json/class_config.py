@@ -33,6 +33,9 @@ from .validators import Validator, declares_checks
 
 DEFAULT_DIR = Path(__file__).resolve().parents[1] / "config" / "classes"
 # The model profile (KIO_LLM_*) supports these extractors; a class file opts in with model_profile = true.
+# The rule classifier and the model route (llm.RouteDecision) answer only with these ids, so a class with another id
+# is never chosen and cannot carry the model profile.
+PROFILE_CLASSES = frozenset({"appeal", "power_of_attorney", "bank_transfer"})
 PROFILE_EXTRACTORS = frozenset(
     {"kio2json.appeal.extract", "kio2json.bank_transfer.extract", "kio2json.power_of_attorney.extract"}
 )
@@ -384,15 +387,20 @@ def parse_classes(sources: ClassSources | Mapping[Path, bytes]) -> list[Document
             definition = DocumentClass.model_validate(raw)
             if definition.id in classes:
                 raise ValueError(f"duplicate class id {definition.id} (also in {classes[definition.id].source})")
-            if definition.model_profile and str(raw.get("extractor", "")).replace(":", ".") not in PROFILE_EXTRACTORS:
-                # The model profile's routing and gap checks know only the organizer's Python extractors.
-                raise ValueError("model_profile applies only to the organizer's Python extractors")
+            extractor = str(raw.get("extractor", "")).replace(":", ".")
+            if definition.model_profile and (
+                definition.id not in PROFILE_CLASSES or extractor not in PROFILE_EXTRACTORS
+            ):
+                # The model profile's routing and gap checks know only the organizer's classes and extractors.
+                raise ValueError(
+                    "model_profile applies only to the organizer's three classes and their Python extractors"
+                )
             # Enable before the profile copies the class for rule recovery, so the copy is enabled too.
             if definition.id in sources.enable:
                 definition.enabled = True
             if (
                 definition.model_profile
-                and definition.engines == ["python"]
+                and definition.engines[0] == "python"
                 and isinstance(definition.routing, ClassifierRouting)
             ):
                 definition.apply_profile(profile)

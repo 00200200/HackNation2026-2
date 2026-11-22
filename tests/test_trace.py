@@ -1,6 +1,7 @@
 """--explain writes a sidecar trace and leaves the organizer JSON unchanged."""
 
 import json
+import re
 from pathlib import Path
 
 import pytest
@@ -74,7 +75,7 @@ def test_unrelated_document_has_no_route_or_fields(monkeypatch):
 )
 def test_value_patterns_accept_printed_forms(value, text):
     found = source_match(text, value)
-    assert found and snippet(*found) == text
+    assert found and snippet(*found[:2]) == text
 
 
 def test_unlocated_and_derived_values_say_so():
@@ -94,3 +95,28 @@ def test_amount_source_requires_the_printed_fraction():
 def test_amount_source_requires_the_printed_sign():
     field = field_source("amount", 123.45, ["Refund: -123,45\nPayment: 123,45"], [], [("python", {"amount": 123.45})])
     assert field["snippet"] == "Payment: 123,45"
+
+
+@pytest.mark.parametrize(
+    ("page", "value", "patterns", "line"),
+    [
+        ("Refund: -123,45\nPayment: 123,45", 123.45, (), 2),
+        ("Fee: 100,00\nPaid: 100,00", "100,00", (re.compile(r"^Paid:[ \t]*(.+)$", re.MULTILINE),), 2),
+        ("Zwrot: -100,00\nKwota:100,00", 100.0, (), 2),
+        ("Fee:100,00\nPaid:100,00", "100,00", (re.compile(r"^Paid:[ \t]*(.+)$", re.MULTILINE),), 2),
+    ],
+)
+def test_marks_follow_the_located_occurrence_of_an_equal_value(page, value, patterns, line):
+    from kio2json.pdf_text import WordBox
+
+    words = {
+        1: [
+            WordBox(1, word, 10.0 * column, 20.0 * row, 10.0 * column + 8, 20.0 * row + 10)
+            for row, text in enumerate(page.splitlines(), 1)
+            for column, word in enumerate(text.split())
+        ]
+    }
+    engine = "labelled_fields" if patterns else "python"
+    entry = field_source("x", value, [page], [], [(engine, {"x": value})], patterns, words)
+    assert entry["page"] == 1 and entry["boxes"]
+    assert {box[1] for box in entry["boxes"]} == {20.0 * line}

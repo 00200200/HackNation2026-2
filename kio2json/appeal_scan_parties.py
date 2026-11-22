@@ -398,8 +398,10 @@ def _authority_rows(parties: list[dict], block: list[str]) -> list[dict]:
                     break
         rows.append(
             {
+                "krs": party["krs"],
                 "nazwa": name,
-                **{k: party[k] for k in ("krs", "nip", "regon")},
+                "nip": party["nip"],
+                "regon": party["regon"],
                 "prowadzacy_postepowanie": int(leading) if len(parties) > 1 else None,
             }
         )
@@ -422,7 +424,7 @@ def apply_parties(
         if not record["Odwolujacy"]:
             record["Odwolujacy"] = [
                 {
-                    **{k: leader[k] for k in ("krs", "nip", "regon", "nazwa")},
+                    **{k: leader[k] for k in ("krs", "nazwa", "nip", "regon")},
                     "przez-pelnomocnika": 0,
                     "pelnomocnik": {"imie_nazwisko": None, "nazwa": None, "mail": None},
                 }

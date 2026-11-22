@@ -538,7 +538,7 @@ classifier = "kio2json.classify.classify"
 type = "string"
 instruction = "A."
 """
-    with pytest.raises(ValueError, match=r"(?s)custom\.toml.*organizer's Python extractors"):
+    with pytest.raises(ValueError, match=r"(?s)custom\.toml.*organizer's three classes"):
         load(tmp_path, custom, "custom.toml")
 
 
@@ -706,11 +706,31 @@ def test_a_record_of_another_shape_has_no_core_fields():
 
 
 def test_model_profile_accepts_the_colon_form_of_an_organizer_extractor(tmp_path):
-    appeal = (ROOT / "config" / "classes" / "appeal.toml").read_text(encoding="utf-8")
-    copy = appeal.replace('id = "appeal"', 'id = "appeal_copy"', 1).replace(
-        'extractor = "kio2json.appeal.extract"', 'extractor = "kio2json.appeal:extract"', 1
+    import shutil
+
+    folder = tmp_path / "classes"
+    shutil.copytree(ROOT / "config" / "classes", folder)
+    appeal = folder / "appeal.toml"
+    appeal.write_text(
+        appeal.read_text(encoding="utf-8").replace(
+            'extractor = "kio2json.appeal.extract"', 'extractor = "kio2json.appeal:extract"', 1
+        ),
+        encoding="utf-8",
     )
-    assert load(tmp_path, copy, "appeal_copy.toml").model_profile
+    assert next(c for c in parse_classes(class_sources(folder)) if c.id == "appeal").model_profile
+
+
+def test_model_profile_is_refused_for_a_class_no_route_can_choose(tmp_path):
+    from typing import get_args
+
+    from kio2json.class_config import PROFILE_CLASSES
+    from kio2json.llm import RouteDecision
+
+    assert set(get_args(RouteDecision.model_fields["label"].annotation)) - {"unrelated"} == PROFILE_CLASSES
+    appeal = (ROOT / "config" / "classes" / "appeal.toml").read_text(encoding="utf-8")
+    copy = appeal.replace('id = "appeal"', 'id = "appeal_copy"', 1)
+    with pytest.raises(ValueError, match="organizer's three classes"):
+        load(tmp_path, copy, "appeal_copy.toml")
 
 
 def test_a_rejected_value_keeps_its_row_through_a_third_engine(tmp_path, monkeypatch):

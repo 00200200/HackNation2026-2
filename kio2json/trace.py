@@ -92,6 +92,8 @@ def build(label: str | None, record: dict, events: dict) -> dict:
         trace["recovery"] = events["recovery"]
     if events.get("optional_ocr_expired"):
         trace["optional_ocr_expired"] = True
+    if events.get("schema_error"):
+        trace["schema_error"] = events["schema_error"]
     if label is None:
         return trace
     routing = dict(events["routes"].get(label) or {"router": None, "rule": None})
@@ -198,15 +200,18 @@ def declared_patterns(fields: dict, path: str) -> tuple[re.Pattern, ...]:
     return tuple(patterns) if field and field.pattern else ()
 
 
-def source_match(page: str, value, patterns: tuple[re.Pattern, ...] = ()) -> tuple[str, re.Match] | None:
+def source_match(page: str, value, patterns: tuple[re.Pattern, ...] = ()) -> tuple[str, re.Match, int] | None:
     """The text searched and the match: inside a labelled field's captures, or a printed form of the value.
 
-    A capture chain narrows the text, so the match's positions refer to the returned text.
+    A capture chain narrows the text, so the match's positions refer to the returned text, which starts at the
+    returned offset of the page.
     """
+    offset = 0
     for pattern in patterns[:-1]:
         capture = pattern.search(page)
         if not capture or capture[1] is None:
             return None
+        offset += capture.start(1)
         page = capture[1]
     if patterns:
         match = patterns[-1].search(page)
@@ -217,10 +222,10 @@ def source_match(page: str, value, patterns: tuple[re.Pattern, ...] = ()) -> tup
         match = next((token for token in NUMBER_TOKEN.finditer(page) if money_value(token) == amount), None)
     else:
         match = value_pattern(value).search(page)
-    return (page, match) if match else None
+    return (page, match, offset) if match else None
 
 
-def locate(pages: list[str], value, patterns: tuple[re.Pattern, ...] = ()) -> tuple[int, str, re.Match] | None:
+def locate(pages: list[str], value, patterns: tuple[re.Pattern, ...] = ()) -> tuple[int, str, re.Match, int] | None:
     for number, page in enumerate(pages, 1):
         found = source_match(page, value, patterns)
         if found:
@@ -258,11 +263,12 @@ def field_source(
             used = ()
             located = locate(pages, value)
         if located:
-            number, text, match = located
+            number, text, match, offset = located
             entry["page"], entry["snippet"] = number, snippet(text, match)
             # An optional capture group can be empty; the whole match still shows where the label is.
-            printed = (match[1] if used else None) or match[0]
-            spelled = word_span((words or {}).get(number, []), printed)
+            printed, position = (match[1], match.start(1)) if used and match[1] else (match[0], match.start())
+            before = pages[number - 1][: offset + position]
+            spelled = word_span((words or {}).get(number, []), printed, before)
             entry["boxes"] = [[round(c, 1) for c in (w.x0, w.y0, w.x1, w.y1)] for w in spelled]
         else:
             entry["note"] = "value not found verbatim in the text read"
@@ -302,26 +308,52 @@ def _token(text: str) -> str:
     return re.sub(r"^\W+|\W+$", "", text).casefold()
 
 
-def word_span(words: list, printed: str) -> list:
-    """The consecutive words that spell the printed value, ignoring edge punctuation and spacing.
-
-    A value printed inside a longer word, such as "NIP:5260250995", falls back to that one word.
-    """
-    target = "".join(_token(part) for part in printed.split())
-    if not target:
-        return []
-    tokens = [_token(word.text) for word in words]
+def _spans(tokens: list[str], target: str):
+    """Start and end of each run of consecutive tokens that spells the target."""
     for start, first in enumerate(tokens):
         if not first or not target.startswith(first):
             continue
         joined = ""
-        for end in range(start, len(words)):
+        for end in range(start, len(tokens)):
             joined += tokens[end]
             if joined == target:
-                return words[start : end + 1]
+                yield start, end + 1
+                break
             if not target.startswith(joined):
                 break
-    return next(([word] for word, token in zip(words, tokens, strict=True) if target in token), [])
+
+
+def word_span(words: list, printed: str, before: str = "") -> list:
+    """The consecutive words that spell the printed value, ignoring edge punctuation and spacing.
+
+    `before` is the page text ahead of the located value. Its spellings of the same value are skipped, so an equal
+    value under another label keeps its own marks. A value printed inside a longer word, such as
+    "NIP:5260250995", falls back to that one word.
+    """
+    target = "".join(_token(part) for part in printed.split())
+    if not target:
+        return []
+    found = _hits([_token(word.text) for word in words], target)
+    if not found:
+        return []
+    earlier = len(_hits([_token(part) for part in before.split()], target))
+    start, end = found[min(earlier, len(found) - 1)]
+    return words[start:end]
+
+
+def _hits(tokens: list[str], target: str) -> list[tuple[int, int]]:
+    """Each spelling of the target in reading order: a run of tokens, or one token that holds it with its label."""
+    runs = dict(_spans(tokens, target))
+    hits, after = [], 0
+    for index, token in enumerate(tokens):
+        if index < after:
+            continue
+        if index in runs:
+            hits.append((index, runs[index]))
+            after = runs[index]
+        elif token and target in token:
+            hits.append((index, index + 1))
+    return hits
 
 
 def snippet(page: str, match: re.Match) -> str:

@@ -1,9 +1,12 @@
 """Run configured text-to-dict extractors and fill gaps from later engines."""
 
+import logging
 from collections import Counter
 from collections.abc import Callable
 from copy import deepcopy
 from functools import partial
+
+from pydantic import ValidationError
 
 from . import trace
 from .class_config import DocumentClass, OutputField
@@ -30,6 +33,31 @@ def labelled(field: OutputField, text: str, *, item: bool = False):
     if field.pattern or item:
         return scalar_value(field, text.strip() or None)
     return None
+
+
+def conform(field: OutputField, value):
+    """A Python value shaped by the class file: its keys in file order, missing ones null, others dropped."""
+    if field.type == "object" and isinstance(value, dict):
+        return {key: conform(child, value.get(key)) for key, child in field.fields.items()}
+    if field.type == "list" and isinstance(value, list):
+        return [conform(field.items, item) for item in value]
+    return value
+
+
+def fits(field: OutputField, value) -> bool:
+    """Whether a value has the shape its field declares, so a reading can be merged into it."""
+    if value is None:
+        return True
+    if field.type == "object":
+        return isinstance(value, dict) and all(fits(child, value.get(key)) for key, child in field.fields.items())
+    if field.type == "list":
+        return isinstance(value, list) and all(fits(field.items, item) for item in value)
+    return not isinstance(value, dict | list)
+
+
+def declares_pattern(field: OutputField) -> bool:
+    children = [*(field.fields or {}).values(), *([field.items] if field.items else [])]
+    return field.pattern is not None or any(declares_pattern(child) for child in children)
 
 
 def identity(record, path: str):
@@ -148,17 +176,20 @@ def missing_core_fields(record: dict) -> bool:
 
     The organizer's record shape decides which details count; any other record has none.
     """
+    # A detail the class file removed does not count as missing.
     if "Odwolujacy" in record:
-        return not all(any(row.get("nazwa") for row in record[key]) for key in ("Odwolujacy", "Zamawiajacy"))
+        parties = ("Odwolujacy", "Zamawiajacy")
+        return not all(any(row.get("nazwa") for row in record.get(key) or []) for key in parties)
     if "mocodawca" in record:
-        principals = (row["data"] for row in record["mocodawca"])
+        principals = (row.get("data") or {} for row in record["mocodawca"] or [])
         return not (
             any(party.get("nazwa") or party.get("imie_nazwisko") for party in principals)
-            and any(person.get("imie_nazwisko") for person in record["pelnomocnicy"])
+            and any(person.get("imie_nazwisko") for person in record.get("pelnomocnicy") or [])
         )
     if "przelew_bankowy" in record:
-        payment = record["przelew_bankowy"]
-        return any(payment[key] is None for key in ("kwota", "data_operacji", "tytul", "na_rachunek", "z_rachunku"))
+        payment = record["przelew_bankowy"] or {}
+        details = ("kwota", "data_operacji", "tytul", "na_rachunek", "z_rachunku")
+        return any(key in payment and payment[key] is None for key in details)
     return False
 
 
@@ -173,7 +204,7 @@ def extract(
     first_page: str | None = None,
     check_core_fields: bool = False,
 ) -> dict:
-    values = None
+    values = raw = None
     rejected = []
     held = {}
     trace.note("declared_fields", definition.fields)
@@ -206,10 +237,13 @@ def extract(
         else:
             candidate = bind_engine(engine, definition, model, alternate=alternate)(source)
         if engine == "python":
-            # A field added to a Python class's TOML, with a label pattern, is read after the extractor.
+            # The class file decides which fields the extractor's record has, and its label patterns fill the gaps.
+            raw = candidate
+            candidate = {key: conform(field, candidate.get(key)) for key, field in definition.fields.items()}
             for key, field in definition.fields.items():
-                if key not in candidate and field.pattern is not None:
-                    candidate[key] = labelled(field, text)
+                # A value of another shape than the file declares is left for the validation below to report.
+                if declares_pattern(field) and fits(field, candidate[key]):
+                    candidate[key] = fill(field, candidate[key], labelled(field, text))
         if engine == "python" and definition.profile.keyed and definition.profile.mode == "RL" and first_page:
             from .llm import OutputSettings
 
@@ -245,15 +279,26 @@ def extract(
                 rejected.append(warning | {"field": path})
         values = merged
     if definition.profile.mode == "RL" and definition.id == "power_of_attorney":
-        for principal in values["mocodawca"]:
-            owner = principal["data"]
-            if owner["typ"] == "osoba_prawna":
+        for principal in values.get("mocodawca") or []:
+            owner = principal.get("data") or {}
+            if owner.get("typ") == "osoba_prawna" and "imie_nazwisko" in owner:
                 # A person's name belongs to an individual grantor or signer.
                 owner["imie_nazwisko"] = None
     if definition.checked:
         settle_checks(definition.fields, values, rejected, held)
     if definition.engines == ["python"]:
-        # Python extractors own their normalization and serialization order.
+        # Python extractors own their normalization, so the record is only checked against the class file.
+        try:
+            definition.output_model.model_validate(values)
+        except ValidationError as error:
+            # A slip in a class file must not cost the document its record, so the extractor's own record stays.
+            first = error.errors()[0]
+            problem = f"{'.'.join(map(str, first['loc']))}: {first['msg']}"
+            trace.note("schema_error", problem)
+            logging.getLogger(__name__).warning(
+                "%s: the class file does not fit the record, kept as read: %s", definition.id, problem
+            )
+            return raw
         return values
     if definition.profile.mode == "V":
         from .model_validation import validate_fields

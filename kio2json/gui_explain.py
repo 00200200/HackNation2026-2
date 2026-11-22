@@ -77,11 +77,17 @@ def routing_reason(trace: dict | None) -> str:
 
 
 def warning_list(trace: dict | None) -> ui.Tag | None:
-    warnings = (trace or {}).get("warnings") or []
-    if not warnings:
-        return None
+    trace = trace or {}
     badges = []
-    for warning in warnings:
+    if trace.get("schema_error"):
+        badges.append(
+            ui.span(
+                ui.tags.strong("Plik klasy"),
+                f" nie pasuje do odczytanego rekordu ({trace['schema_error']}), więc zapisano rekord bez jego zmian.",
+                class_="badge-warning",
+            )
+        )
+    for warning in trace.get("warnings") or []:
         action = "usunięto z JSON" if warning["action"] == "null" else "zostawiono, sprawdź"
         problem = CHECK_NAMES.get(warning["check"], warning["check"])
         badges.append(
@@ -91,7 +97,7 @@ def warning_list(trace: dict | None) -> ui.Tag | None:
                 class_="badge-warning",
             )
         )
-    return ui.div(*badges, class_="checks", role="status")
+    return ui.div(*badges, class_="checks", role="status") if badges else None
 
 
 def case_badges(warnings) -> ui.Tag | None:

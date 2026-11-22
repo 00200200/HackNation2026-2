@@ -273,7 +273,7 @@ python -m kio2json --input examples/input --output /tmp/demo --classes examples/
 | `enabled` | `false` keeps the class off until `--enable <id>` (default `true`) |
 | `priority` | Classes are tried in ascending priority, then ID; the first match wins (default 100; organizer classes use 10 to 30) |
 | `engines` | `["labelled_fields"]` reads values after printed labels. `"llm"` asks the configured model endpoint and needs the `KIO_LLM_*` variables |
-| `model_profile` | `true` applies the `KIO_LLM_*` profile (model mode, routing, second OCR reading) to the class. Only the organizer's Python extractors support it, and the three organizer classes set it |
+| `model_profile` | `true` applies the `KIO_LLM_*` profile (model mode, routing, second OCR reading) to the class. Only the three organizer classes (`appeal`, `power_of_attorney`, `bank_transfer`) with their Python extractors support it, because the classifier and the model route choose only those ids. All three set it |
 | `[routing.cues]` with `threshold` | Phrase = weight. The class applies when the weights of the phrases found reach the threshold. Phrases match whole words, ignoring case and line breaks. A negative weight counts against the class |
 | `routing.required`, `routing.forbidden` | Regular expressions (case-insensitive, `^` and `$` per line). Every `required` one must match; any `forbidden` match rejects the class |
 | `routing.headings`, `routing.pages`, `[routing.evidence]` | A whole-line pattern with spaces removed; how many pages to search (default 1); a capture that must find `minimum` distinct values |
@@ -282,14 +282,27 @@ python -m kio2json --input examples/input --output /tmp/demo --classes examples/
 | `validators` | `"nip"`, `"regon"`, `"pesel"`, `"iban"` (checksums), `{ name = "date_range", min = 2021-01-01, max = 2030-12-31 }` (needs `iso_date`), `{ name = "one_of", values = ["A", "B"] }` |
 | `on_invalid` | `"null"` (default) writes null for a value that fails a check; `"warn"` keeps it and reports it in the trace and viewer |
 
-### Add a field to an existing class
+### Add or remove a field of an organizer class
 
-Add a `[fields.<key>]` table with a `pattern` to the class file, for example
-`[fields.sygnatura]` with `pattern = '^Sygn\. akt:[ \t]*(KIO \d+/\d+)'` in a copy of `appeal.toml`
-used through `KIO_CLASSES_DIR`. For a Python class the extractor runs first, and the labelled field is then
-read and added after its keys. `engines` stays as it is. A copy outside `config/classes` runs with local rules
-only, because the model profile applies to the bundled folder. Leave the organizer classes unchanged for the
-jury run, because their schema has exactly the organizer's keys.
+Copy `config/classes` and point `KIO_CLASSES_DIR` at the copy. Leave the shipped files unchanged for the jury
+run: UZP scores a value that appears only in the prediction as a false positive.
+
+```sh
+cp -R config/classes /tmp/kio-classes
+# In /tmp/kio-classes/bank_transfer.toml, under [fields.przelew_bankowy.fields],
+# delete the numer_transakcji line and add:
+#   waluta = { type = "string", instruction = "Currency code.", pattern = '[0-9][0-9 ,.]* (PLN|EUR)' }
+KIO_CLASSES_DIR=/tmp/kio-classes python -m kio2json --input input --output /tmp/out
+```
+
+The Python extractor still reads the document. Its record then gets exactly the fields of the class file, in the
+file's order. A removed field disappears and a new field starts as null; a field added to list rows, such as an
+address in `Odwolujacy`, is null in every row. A field with a `pattern` that is not a list and not inside list
+rows is filled from the text where the extractor left it null, and the values the extractor read are not
+normalized again. If the edited file does not
+fit the record, for example a new field with `nullable = false`, the record is written as the extractor read it,
+the CLI prints a warning, and the trace and the viewer name the field. A copy outside `config/classes` runs with
+local rules only, because the model profile applies to the bundled folder.
 
 The `labelled_fields` engine needs values printed after fixed labels. A layout without labels needs the
 `llm` engine and a model endpoint; the jury configuration runs without one. The three organizer classes

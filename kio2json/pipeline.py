@@ -42,7 +42,7 @@ def uses_case_schema(definition: DocumentClass) -> bool:
         "bank_transfer": bank_transfer.extract,
     }
     rules = definition.rules_only
-    return rules.engines == ["python"] and rules.extractor is not None and rules.extractor is expected.get(rules.id)
+    return rules.engines[0] == "python" and rules.extractor is not None and rules.extractor is expected.get(rules.id)
 
 
 def _is_receipt(definition: DocumentClass | None) -> bool:
@@ -134,7 +134,7 @@ def _document_rules(definition, pdf_path, pages, ocr_pages, boxes, engine, selec
     rules_first = definition.profile.rules_first
     if definition.extractor is bank_transfer.extract and ocr_pages:
         record = ocr_extract.extract_bank_transfer(pages, ocr_pages, accounts=accounts)
-        if boxes and 1 in ocr_pages and (definition.engines == ["python"] or definition.profile.mode == "RL"):
+        if boxes and 1 in ocr_pages and (definition.engines[0] == "python" or definition.profile.mode == "RL"):
             fields = record["przelew_bankowy"]
             title = reread_title(pdf_path, boxes, fields["tytul"])
             if title is not None:
@@ -163,7 +163,8 @@ def _document_rules(definition, pdf_path, pages, ocr_pages, boxes, engine, selec
         power_of_attorney.apply_grant_blocks(record, blocks, join_pages(pages))
         if rules_first and boxes:
             verify_cells(pdf_path, disputed_register_cells, record, boxes)
-        if definition.profile.mode == "RL":
+        if rules_first:
+            # Signers join the extractor's record before the class file shapes it, so a removed field cannot break them.
             _grant_signers(pdf_path, record, pages, ocr_pages, engine)
         return record
     return definition.extractor(join_pages(pages))
@@ -350,8 +351,6 @@ def _process(
                 first_page=primary[0] if primary else None,
                 check_core_fields=check_core_fields,
             )
-            if definition.extractor is power_of_attorney.extract and not definition.profile.keyed:
-                _grant_signers(pdf_path, record, pages, ocr_pages, engine)
             if case_readings is not None and uses_case_schema(definition):
                 case_readings.extend(printed_readings(definition.id, record, primary, ocr_pages, boxes))
             trace.note("pages", pages)
