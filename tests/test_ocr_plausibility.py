@@ -66,6 +66,12 @@ def test_value_with_a_recoverable_part_is_trimmed_not_nulled(raw, clean):
     assert trim_name(raw) == clean
 
 
+@pytest.mark.parametrize("name", ["Firma ` Alfa", "Firma | Alfa Beta", "GMINA MIASTO | ŁÓDŹ"])
+def test_a_lone_stray_symbol_inside_a_name_stays(name):
+    # Still 80 % similar to the printed name under the UZP counting, so a null would lose the hit.
+    assert trim_name(name) == name
+
+
 @pytest.mark.parametrize("noise", ["| ]", "=== |", " ` "])
 def test_name_made_only_of_stray_symbols_has_nothing_left(noise):
     assert trim_name(noise) is None
