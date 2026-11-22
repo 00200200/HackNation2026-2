@@ -3,10 +3,10 @@
   "cases": 60,
   "docs": 240,
   "dataset_sha256": "53414e5959d93426f1553cc36fcbe86968fca23edb80a959740654790b20dd03",
-  "commit": "6b34bc53d0f56dbabf7c752136f87c25ca5bf758",
-  "command": "uv run python -m kio2json --input {input} --output {output} --jobs 2",
+  "commit": "1609682a0f4b0d37b3e357d4bc562c9509c5ade2",
+  "dirty": false,
   "chunk_cases": 5,
-  "seconds_per_doc": 1.7866280856057226,
+  "seconds_per_doc": 1.003088106418727,
   "micro_f1": 0.2960167714884696,
   "micro_f1_strict": 0.28602305475504325,
   "counts_strict": {
@@ -413,6 +413,5 @@
     "scan",
     "single-column"
   ],
-  "extractor_main_commit": "f7f3ee97951817e9899c949f2078b1d9075b6846",
-  "dirty": true
+  "extractor_main_commit": "3eccb41f2bf9240648752a09affff2bdba57ba3c"
 }

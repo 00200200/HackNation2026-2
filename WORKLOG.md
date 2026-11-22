@@ -21,7 +21,7 @@ The jury can run the batch CLI and upload UI locally with the root Compose file.
 
 ## Last eval
 
-The fixed-seed benchmark re-rendered the facts from all 60 synthetic cases and generated 60 look-alike negatives. The keyless extractor was main at `f7f3ee9`, scored with the issue #59 metric.
+The fixed-seed benchmark re-rendered the facts from all 60 synthetic cases and generated 60 look-alike negatives. The keyless extractor was main at `3eccb41`, scored with the issue #59 metric. The initial `f7f3ee9` run had the same dataset digest and field counts.
 
 | Dataset | PDFs | UZP micro F1 | Strict micro F1 | Appeal F1 | Power F1 | Transfer F1 | Empty negatives |
 |---|---:|---:|---:|---:|---:|---:|---:|
@@ -195,5 +195,5 @@ These runs used local rules with the three endpoint variables unset. The two loc
 
 - 22.11.2026 · Codex · Implemented the UZP scorer and retained historical strict micro F1 on `feat/uzp-metric` (#59).
 
-- 22.11.2026 · Codex · Added the seeded layout regression gate and measured main at `f7f3ee9` on 240 generated PDFs for issue #63.
+- 22.11.2026 · Codex · Added the seeded layout regression gate and measured main at `f7f3ee9` and `3eccb41` on the same 240 generated PDFs for issue #63.
 - 22.11.2026 · Codex · Added local jury Compose services and the signed task rules for #60. Compose configuration validated. Docker Desktop did not answer its health probe, so container byte parity is pending.
