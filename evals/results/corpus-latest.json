@@ -1,18 +1,18 @@
 {
-  "commit": "ca29753921e6e6c1a7d867ab56965373edf70bec",
+  "commit": "6b34bc53d0f56dbabf7c752136f87c25ca5bf758",
   "dirty": false,
   "mode": "corpus",
-  "timestamp": "2026-11-21T22:11:00+00:00",
+  "timestamp": "2026-11-22T00:07:41+00:00",
   "n_cases": 14,
   "n_docs": 39,
   "coverage_ok": false,
-  "overall_pass": false,
+  "overall_pass": true,
   "run_error": null,
   "metrics": {
     "micro_f1": {
-      "value": 0.8788659793814433,
+      "value": 0.9221052631578948,
       "target": 0.9,
-      "pass": false
+      "pass": true
     },
     "outputs_complete": {
       "value": 1.0,
@@ -25,35 +25,47 @@
       "pass": true
     },
     "classification_accuracy": {
-      "value": 0.9642857142857143,
+      "value": 1.0,
       "target": 1.0,
-      "pass": false
+      "pass": true
     },
     "seconds_per_doc": {
-      "value": 0.757383322641731,
+      "value": null,
       "target": null,
       "pass": true
+    },
+    "micro_f1_strict": {
+      "value": 0.8925831202046036,
+      "target": null,
+      "pass": null
     }
   },
   "detail": {
-    "micro_f1": 0.8788659793814433,
-    "macro_f1_documents": 0.8602564102564102,
-    "macro_f1_classes": 0.8950957641016121,
-    "macro_f1_class_count": 3,
-    "macro_f1_fields": 0.8899443831022779,
-    "micro_f1_non_null": 0.8237623762376237,
-    "per_class_f1": {
-      "odwolanie": 0.8712522045855379,
-      "pelnomocnictwo": 0.9894736842105263,
-      "przelew": 0.8245614035087719
+    "micro_f1": 0.9221052631578948,
+    "micro_f1_strict": 0.8925831202046036,
+    "counts_strict": {
+      "tp": 349,
+      "fp": 39,
+      "fn": 45
     },
-    "classification_accuracy": 0.9642857142857143,
+    "macro_f1_documents": 0.9245993841858503,
+    "macro_f1_classes": 0.9473106689207004,
+    "macro_f1_class_count": 3,
+    "macro_f1_fields": 0.9078757341286054,
+    "micro_f1_non_null": 0.8431372549019608,
+    "per_class_f1": {
+      "odwolanie": 0.8940397350993378,
+      "pelnomocnictwo": 0.9836065573770492,
+      "przelew": 0.9642857142857143
+    },
+    "classification_accuracy": 1.0,
     "negatives_empty": 1.0,
     "outputs_complete": 1.0,
     "counts": {
-      "tp": 341,
-      "fp": 41,
-      "fn": 53
+      "tp": 219,
+      "fp": 12,
+      "fn": 25,
+      "tn": 138
     },
     "routing_by_class": {
       "odwolanie": {
@@ -65,7 +77,7 @@
         "total": 5
       },
       "przelew": {
-        "correct": 9,
+        "correct": 10,
         "total": 10
       },
       "negatywny": {
@@ -75,6 +87,6 @@
     }
   },
   "holdout_51_60": null,
-  "f1_definition": "evals/metrics.py docstring (organizer formula UNCONFIRMED)",
+  "f1_definition": "UZP #59 with RapidFuzz normalized Levenshtein >= 0.80 on five long fields",
   "split": "dev"
 }
