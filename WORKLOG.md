@@ -17,6 +17,8 @@ The grant certificate and board-stamp readers share the copy-attestation check s
 Public landing https://doc2json.pl (`frontend/`, static nginx, monochrome) runs on the team VPS as `doc2json-web`
 behind the faktczyfejk Caddy; deploy in `docs/deploy.md`. Its upload calls `kio2json.web_api` (`/api/extract`, rules engine, no keys) in the `doc2json-api` container.
 
+The jury can run the batch CLI and upload UI locally with the root Compose file. [Docker instructions](README.md#run-with-docker-compose)
+
 ## Last eval
 
 Round 3 raised rules-only micro F1 from 0.8607 to 0.8900 on corpus 1 (39 PDFs) and from 0.8789 to 0.8926 on corpus 2 dev (39 PDFs). Four recovered payment receipts brought routing to 78/78, including the 22 negatives. One appeal timed out in the initial corpus 1 run (0.8812) and returned its baseline bytes in an isolated rerun. All 30 organizer scan outputs and 196 synthetic training outputs matched the baseline byte for byte. Organizer scans scored 0.9974 with 29/30 exact, and synthetic F1 was 1.000. [Field counts, intermediate runs and timing](evals/results/round3.json)
@@ -79,6 +81,8 @@ Two and four grant JSONs matched exactly. The ten organizer grants remained exac
   `/orchestrator`, not to Claude subagents.
 
 ## Log
+
+- 22.11.2026 · Codex · Grouped appeal and mandate word boxes by printed role and column. Added regressions for wrapped names, repeated stationery, extra appointees and principal-specific signatures.
 
 - 21.11.2026 · Codex · Added native span output for small models, local source validation and a bounded parallel CLI. Verified the native schema on the quantized local model and both regional API releases.
 
@@ -156,6 +160,7 @@ Two and four grant JSONs matched exactly. The ten organizer grants remained exac
 
 - 21.11.2026 · Integrated #27 and #34 with streamed upload limits and a disposable OCR process per document. The request deadline includes upload and queue time.
 - 22.11.2026 · Claude · PR #53 review fixes: the 3B "smallest" claim now names its table, the 14.97 s on-device smoke test cites `evals/results/small-model.json` (`local_smoke`), an unsourced local-grant sentence was removed, the provider table drops its "eligibility" and "qualifying" wording and the eval skill example requires `HN_REAL_CORPUS` · claude/pr53-docs
+- 22.11.2026 · Claude · README speed and memory figures now cite their result file with key, exact number and commit (the open #33 review thread): `batch-runtime.json` (37.15 s, 74.42 s, 1,504 MiB, product `a32ba1c`), `round2-integration.json` (derived 36.12 s and 44.91 s, 57.54 s, 70.38 s), `scanned-transfers-round2.json`, `adaptive-ocr-budget.json`, `small-model.json`, `ocr-engines.json`; the 335.64 s run no longer names a machine the file does not record; `origin/main` merged · claude/pr53-docs
 
 ## Frontend branch snapshot before API integration
 
@@ -180,3 +185,5 @@ These runs used local rules with the three endpoint variables unset. The two loc
 | Wire the doc2json.pl upload to the extraction (serve the GUI backend behind `/api/` or point the page at it) | Open |
 
 - 21.11.2026 · Codex · Round 3 traced 130 field errors on 78 real development PDFs. Recovered identifiers from matching party records, checked damaged company names against declarations and read debit amounts across bank columns. The single-field Ministral whitespace trial lost one correct title in 12 calls and was dropped.
+
+- 22.11.2026 · Codex · Added local jury Compose services and the signed task rules for #60. Compose configuration validated. Docker Desktop did not answer its health probe, so container byte parity is pending.

@@ -8,6 +8,32 @@ Without endpoint credentials the jury configuration runs three rule-based extrac
 that selects its routing rules, output fields and extraction engines. New classes can use
 label patterns or an optional language model.
 
+## Run with Docker Compose
+
+Install Docker with Compose v2.24 or later. From the repository root, place case PDFs in
+`input/<case>/` or use the bundled `input/case1/`, then run:
+
+```sh
+docker compose run --rm cli
+```
+
+The first build downloads the Python dependencies and Polish and English OCR data.
+Each input PDF gets a matching file under `output/<case>/`. To upload PDFs in a browser, run:
+
+```sh
+docker compose up gui
+```
+
+Open <http://127.0.0.1:8000> for the upload page or <http://127.0.0.1:8000/api/docs> for
+the API. Press Ctrl+C to stop the server. Both services use local extraction by default.
+To enable a model, copy `.env.example` to `.env`, fill in the three endpoint settings,
+and rerun the service. Keep the key in the ignored `.env` file.
+
+Both services read the host's `config/classes/` directory. See the
+[pipeline architecture](#how-it-works), [class configuration example](#enable-the-fourth-class)
+and [instructions for adding a class](#add-a-class). The handover requirements are in
+[§3.5 of the task rules](docs/task/regulamin.pdf).
+
 ## Run
 
 From the repository root, create a virtual environment with 64-bit CPython 3.13.
@@ -284,24 +310,26 @@ The earlier model-engine experiment compared two profiles on the 17-document cor
 
 The scanned-transfer update was evaluated on a five-case organizer development half and a five-case holdout per class. Their combined transfer routing was 8/10, up from 2/10 on the integration baseline. Transfer field F1 was 0.8667 on the development half and 0.5833 on the holdout. [Scanned-transfer measurements](evals/results/scanned-transfers.json)
 
-On all 30 organizer development scans, the rules routed 10/10 transfer confirmations. Nine matched every field literally (59/60 fields, transfer F1 0.9833). The outstanding title contains a severely degraded name and abbreviation. Across all three classes the run averaged 9.23 s/PDF on the shared Apple M1, with a maximum of 19.02 s. With the integrated power-of-attorney rules, micro F1 reached 0.6312 on corpus 1 all, 0.7160 on its dev subset and 0.6816 on corpus 2 dev. [Round 2 measurements](evals/results/scanned-transfers-round2.json)
+On all 30 organizer development scans, the rules routed 10/10 transfer confirmations. Nine matched every field literally (59/60 fields, transfer F1 0.9833). The outstanding title contains a severely degraded name and abbreviation. Across all three classes the serial run averaged 9.23 s per PDF with a maximum of 19.02 s (`timing.final.by_class.all.mean_s.total` and `max_s.total`, rules commit `12a5681`, Apple M1, `OMP_THREAD_LIMIT=1`; `timing.final_run_load_sample` records a one-minute load average of 39.17 on 8 logical CPUs). With the integrated power-of-attorney rules, micro F1 reached 0.6312 on corpus 1 all, 0.7160 on its dev subset and 0.6816 on corpus 2 dev. [Round 2 measurements](evals/results/scanned-transfers-round2.json)
 
-On the shared 16 GB Apple M1, the integrated CLI processed 30 organizer scans in 36.12 s with four rules workers and 44.91 s with three Ministral workers. The 150-PDF batch took 57.54 s and 70.38 s respectively. It used two copies of the 30 scans and 90 training PDFs. [Combined measurements](evals/results/round2-integration.json)
+In the Round 2 integration run (product `ca29753`, a shared 16 GB Apple M1 per `method.host`), the integrated CLI processed 30 organizer scans in 36.12 s with four rules workers and 44.91 s with three Ministral workers. Those two times are 30 × `datasets.organizer.keyless.seconds_per_pdf` (1.204) and 30 × `datasets.organizer.keyed.seconds_per_pdf` (1.497). The 150-PDF batch took 57.54 s (`mixed_batch_150.keyless.wall_seconds`) and 70.38 s (`mixed_batch_150.keyed.wall_seconds`). It used two copies of the 30 scans and 90 training PDFs. [Combined measurements](evals/results/round2-integration.json)
 
 ### Optional OCR under load
 
 The organizer allows 45 minutes for 150 PDFs. The batch uses 60% of that allowance for optional OCR,
 scaled by the number of input PDFs. Required page reads continue after the cutoff.
 
-On the shared 16 GiB M1, four local rules workers produced byte-identical outputs in both runs below.
-The CPU was 76.5% idle before the ordinary scan run. The loaded run added one busy loop per CPU core
-and reached a one-minute load average of 89.7. Training outputs also matched the baseline at
+On a 16 GiB Apple M1 with 8 logical CPUs, four local rules workers produced byte-identical outputs in both runs below.
+The CPU was 76.5% idle before the ordinary scan run (`runs[1].cpu_idle_pct_before`). The loaded run added one busy loop per CPU core
+and reached a one-minute load average of 89.7 (`runs[3].load_end[0]`). Training outputs also matched the baseline at
 `dbda151` byte for byte, including all 16 empty negatives.
 
 | Input | No added load | Eight busy loops | Bytes matched | Accuracy |
 |---|---:|---:|---:|---|
 | 30 organizer scans | 41.54 s | 216.89 s | 30/30 | 29/30 exact |
 | 196 training PDFs | 13.65 s | 47.35 s | 196/196 | 1.000 micro F1 |
+
+The four times are `runs[1].seconds` (41.537), `runs[3].seconds` (216.89), `runs[2].seconds` (13.651) and `runs[4].seconds` (47.352) of `adaptive-ocr-budget.json`, measured at product `59aa13a` against base `dbda151`.
 
 The 108-document calibration covered all 30 scans and both private development pools. The longest
 optional work in that pass took 33.18 seconds. A separate cold repeat of a repaired scan took 48.59
@@ -311,13 +339,16 @@ the deadline clock four times as fast and divided optional engine timeouts by fo
 Tesseract reads and three RapidOCR reads finished across the 108 PDFs.
 
 With these limits, eight busy loops and `--jobs 1`, the CLI processed the 150-PDF mix in **401.87 seconds**
-(6 min 42 s of the jury’s 45 min). All 150 outputs matched the corresponding four-worker readings.
+(`runs[5].seconds`, profile `loaded-serial`; 6 min 42 s of the jury’s 45 min). All 150 outputs matched the corresponding four-worker readings.
 The mix contained two copies of each organizer scan and 90 training PDFs. This timing preceded the
 final change to handling expired optional page reads. [Measurements and output digests](evals/results/adaptive-ocr-budget.json)
 
-In the earlier runtime-only experiment on a 16 GiB M1 MacBook Air, four workers processed 30 organizer scans in 37.15 seconds and a mix of
-60 scans and 90 training PDFs in 74.42 seconds. Peak sampled process-tree RSS for the mix was
-1,504 MiB. All 226 training and scan outputs matched sequential main (`5297660`) byte for byte.
+An earlier runtime-only experiment (product `a32ba1c`, base `5297660`, keyless `tesseract-dpi`, a 16 GiB M1 MacBook Air per `host`)
+recorded these figures. Four workers processed 30 organizer scans in 37.15 seconds (`runs.four-scans.wall`, 37.1466) and a mix of
+60 scans and 90 training PDFs in 74.42 seconds (`runs.four-mixed.wall`, 74.4154). Peak sampled process-tree RSS for the mix was
+1,504 MiB (`runs.four-mixed.peak_kib`, 1,540,208 KiB; shared mappings can be counted more than once, see `method.rss`).
+The outputs for all 226 training and scan PDFs matched sequential main byte for byte (`parity.four-out-scans`, 30 of 30, and `parity.four-out-train`, 196 of 196).
+These runs predate the adaptive-budget runs above (`a32ba1c` is an ancestor of `59aa13a`).
 [Batch timings and per-PDF profile](evals/results/batch-runtime.json)
 
 The reported times cover these local datasets. OCR runs locally. Under the updated rules, a remote
@@ -327,7 +358,7 @@ OCR service would count toward model parameters. [Organizer evaluation rules](da
 
 The paired comparison uses the rules at `eabbb31`. The cold 150-PDF run used `bf57506`. Replaying the same model responses after the date fix reproduced all 108 development outputs byte for byte. The combined table above includes the subsequent receipt-routing and attorney-name fixes.
 
-A cold run of the production CLI processed **150 PDFs in 335.64 seconds** on a 16 GB Apple M1 with three workers, including local OCR and 106 successful regional API requests. The mix comprised 108 development PDFs and 42 public training PDFs. The organizer scan group averaged 3.33 wall seconds per PDF. All outputs completed, with zero retries or recoveries. On the 91-PDF development pool, the fresh responses scored **.7208 micro and .7079 macro**. The live micro / macro scores were .7097 / .6701 on corpus 1 dev, .7104 / .6747 on corpus 2 dev, and .7394 / .7040 on organizer scans. The jury’s 45-minute allowance applies to its own machine and document mix.
+A cold run of the production CLI processed **150 PDFs in 335.64 seconds** with three workers (`cold_regional_cli.timing.whole_command_s`, 335.6418, and `timing.workers`), including local OCR and 106 successful regional API requests (`cold_regional_cli.all150.http`). The result file does not record the host for this run. The mix comprised 108 development PDFs and 42 public training PDFs. The organizer scan group averaged 3.33 wall seconds per PDF (`cold_regional_cli.scans.active_span_s_pdf`, 3.3294). All outputs completed, with zero retries or recoveries. On the 91-PDF development pool, the fresh responses scored **.7208 micro and .7079 macro**. The live micro / macro scores were .7097 / .6701 on corpus 1 dev, .7104 / .6747 on corpus 2 dev, and .7394 / .7040 on organizer scans. The jury’s 45-minute allowance applies to its own machine and document mix.
 
 The rules-first profile above uses `ministral-3b-2512` and local Tesseract. The paired comparison below uses the same primary readings and captured API responses for each policy. Corpus 1 all includes its 22 dev PDFs and 17 additional development PDFs. The 91-PDF row pools corpus 1 dev, corpus 2 dev and all organizer scans. The coordinator reserved corpus 2 test for the final integrated system.
 
@@ -379,6 +410,8 @@ The real-dev result is in [the OCR branch corpus report](https://github.com/0020
 `provenance_check` entry records the paired native-text and forced-OCR checks on the same
 rules. [OCR results](evals/results/ocr-engines.json)
 
+The table columns are the `variants.<name>` entries `micro_f1`, `macro_three_classes`, `routing`, `wall_seconds_per_ocr_page`, `cpu_seconds_per_ocr_page`, `peak_rss_mib` and `installed_bytes` of that file (rules commit `865b1ea`; `machine` records an Apple M1 with 16 GiB).
+
 ## Known limits
 
 - On two-column receipts a payment amount can sit beside a different label. The reader checks the amount's column and currency. A damaged account, reference or remittance title can still be unreadable after the receipt is identified.
@@ -408,6 +441,9 @@ rules. [OCR results](evals/results/ocr-engines.json)
   passes the Polish IBAN checksum, and the confirmation supplies the amount and date. The masked number
   is null. OCR also supports fully masked fields. Digit repairs apply only to OCR text and require a
   single checksum-valid candidate. A number printed in a native text layer keeps its printed digits.
+- On appeals and mandates, side-by-side role headings and a consistent gutter can delimit separate party cards.
+  A signer caption can supply a name when its column identifies the principal. Conflicting identities or
+  an unlabelled signature can leave the signer missing.
 - Grant extraction reads numbered and coordinated appointments, officers in representation clauses,
   and digital approval signatures. Where a name is inflected, rules use a compatible printed form
   or a unique case- and gender-compatible personal-name reading from Morfeusz2. Ambiguous readings

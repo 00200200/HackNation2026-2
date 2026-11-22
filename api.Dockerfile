@@ -6,6 +6,7 @@ COPY packaging ./packaging
 RUN pip install --no-cache-dir -r requirements.txt
 COPY kio2json ./kio2json
 COPY config ./config
+COPY frontend/public ./frontend/public
 RUN useradd --system --uid 10001 app
 USER app
 ENV PYTHONUNBUFFERED=1
