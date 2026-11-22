@@ -209,15 +209,17 @@ def load_organizer_scans(data: Path) -> dict[str, dict[str, dict]]:
     if not pdfs or found != expected or found != references | set(pdfs):
         raise ValueError("organizer scan pairs differ from the committed inventory")
     groups = {"odwolania": "odwolanie", "pelnomocnictwa": "pelnomocnictwo", "potwierdzenia": "przelew"}
-    docs = {}
+    cases = {}
     for name in pdfs:
         check_pdf(folder / name)
         gold = load_reference((folder / name).with_suffix(".json"))
         label = groups.get(Path(name).parts[0])
         if label is None or gold.keys() & CLASSES.values() != {CLASSES[label]} or not flatten(gold[CLASSES[label]]):
             raise ValueError("organizer scan reference must contain fields for its expected class")
-        docs[name] = gold
-    return {"skany": docs}
+        # Files in different scan folders are independent examples, even when their stems match.
+        relative = Path("skany", name)
+        cases.setdefault(relative.parent.as_posix(), {})[relative.name] = gold
+    return cases
 
 
 def corpus_partition(root: Path, split: str, folders: set[str]) -> set[str]:
