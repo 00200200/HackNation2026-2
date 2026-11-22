@@ -1,0 +1,46 @@
+<section id="flexibility" data-transition="fade">
+<div class="glow"></div>
+<div class="hdr"><p>Zadanie UZP: Odwołania2json</p><p class="r">HackNation 2026</p></div>
+<h2 class="in" style="--i:0; width:1400px;">Nowa klasa to jeden plik TOML.</h2>
+<div style="flex:1; display:flex; align-items:center; gap:32px;">
+<div class="window in" style="--i:1; flex:none; width:860px;">
+<div class="titlebar"><div class="dot"></div><div class="dot"></div><div class="dot"></div><p class="t">examples/classes/accession.toml</p></div>
+<div class="code" style="padding:20px 28px;">
+<p style="font-size:21px; line-height:1.5;">id = <span class="c">"accession"</span></p>
+<p style="font-size:21px; line-height:1.5;">name = <span class="c">"Zgłoszenie przystąpienia"</span></p>
+<p style="font-size:21px; line-height:1.5;">engines = <span class="c">["labelled_fields"]</span></p>
+<p style="font-size:21px; line-height:1.5;">[routing]</p>
+<p style="font-size:21px; line-height:1.5;">threshold = <span class="c">4</span></p>
+<p style="font-size:21px; line-height:1.5;">[routing.cues]</p>
+<p style="font-size:21px; line-height:1.5;">"zgłoszenie przystąpienia" = <span class="c">3</span></p>
+<p style="font-size:21px; line-height:1.5;">"postępowania odwoławczego" = <span class="c">1</span></p>
+<p style="font-size:21px; line-height:1.5;">"Przystępujący:" = <span class="c">1</span></p>
+<p style="font-size:21px; line-height:1.5;">"Sygnatura akt:" = <span class="c">1</span></p>
+<p style="font-size:21px; line-height:1.5;">[fields.nip]</p>
+<p style="font-size:21px; line-height:1.5;">normalizer = <span class="c">"nip"</span></p>
+<p style="font-size:21px; line-height:1.5;">validators = <span class="c">["nip"]</span></p>
+<p style="font-size:21px; line-height:1.5;">pattern = <span class="c">'^NIP[ \t]*:[ \t]*(.+)$'</span></p>
+</div>
+</div>
+<div style="flex:1; display:flex; flex-direction:column; gap:24px;">
+<div class="window in" style="--i:2;">
+<div class="titlebar"><div class="dot"></div><div class="dot"></div><div class="dot"></div><p class="t">zgloszenie_przystapienia.json</p></div>
+<div class="code" style="padding:20px 28px;">
+<p style="font-size:21px; line-height:1.5;">{</p>
+<p style="font-size:21px; line-height:1.5;">&nbsp;&nbsp;"sygnatura": <span class="c">"KIO 1234/26"</span>,</p>
+<p style="font-size:21px; line-height:1.5;">&nbsp;&nbsp;"przystepujacy": <span class="c">"Miedziana</span></p>
+<p style="font-size:21px; line-height:1.5;"><span class="c">&nbsp;&nbsp;&nbsp;&nbsp;Czapla Sp. z&nbsp;o.o."</span>,</p>
+<p style="font-size:21px; line-height:1.5;">&nbsp;&nbsp;"nip": <span class="c">"1234567883"</span>,</p>
+<p style="font-size:21px; line-height:1.5;">&nbsp;&nbsp;"regon": <span class="c">"123456785"</span>,</p>
+<p style="font-size:21px; line-height:1.5;">&nbsp;&nbsp;"strona": <span class="c">"Zamawiającego"</span>,</p>
+<p style="font-size:21px; line-height:1.5;">&nbsp;&nbsp;"data_wezwania": <span class="c">"2026-03-11"</span></p>
+<p style="font-size:21px; line-height:1.5;">}</p>
+</div>
+</div>
+<p class="mono in" style="--i:3; font-size:20px;">python -m kio2json --input examples/input<br>&nbsp;&nbsp;--classes examples/classes</p>
+<p class="body in" style="--i:3; font-size:24px;">Bez zmiany kodu i&nbsp;bez restartu GUI. Rozpoznanie z&nbsp;wag fraz, NIP i&nbsp;REGON sprawdzane sumą kontrolną.</p>
+</div>
+</div>
+<div class="ftr"><div class="brand"><svg aria-label="Logo doc2json" width="40" height="40" viewBox="0 0 64 64" style="width:40px; height:40px;"><rect x="0.5" y="0.5" width="63" height="63" rx="15" fill="#0a0a0a" stroke="#4a4a4a" stroke-width="1"/><g fill="none" stroke="#fff" stroke-width="4.5" stroke-linecap="round" stroke-linejoin="round"><path d="M24 15c-4.5 0-5.5 2-5.5 6v6c0 3-1.5 5-4.5 5 3 0 4.5 2 4.5 5v6c0 4-1 6-5.5 6"/><path d="M40 15c4.5 0 5.5 2 5.5 6v6c0 3 1.5 5 4.5 5-3 0-4.5 2-4.5 5v6c0 4-1 6-5.5 6"/><path d="M28 27h8M28 37h5"/></g></svg><p>doc2json</p></div><p class="src">Wyciąg z&nbsp;konfiguracji klasy accession · przykładowy PDF z&nbsp;danymi zmyślonymi</p><p class="pg">07 / 12</p></div>
+<aside>Zgłoszenie przystąpienia to pismo z akt sprawy KIO; w 2025 r. zgłoszono 5881 przystąpień. Cała klasa to jeden plik TOML: frazy z wagami decydują o rozpoznaniu, a pola mają wzorce, normalizatory i sprawdzenia, tu suma kontrolna NIP i REGON, lista dozwolonych wartości i zakres dat. Wartość, która nie przejdzie sprawdzenia, staje się null albo ostrzeżeniem, zależnie od pliku. Klasę ładuje flaga --classes w CLI i w GUI. Szkielet pliku generuje python -m kio2json.classes new z przykładowego PDF-u. Flaga --explain podaje stronę i fragment odczytanego tekstu z wartością, a gdy jej tam nie ma dosłownie, zaznacza to w raporcie. Trzy klasy UZP mają ekstraktory w Pythonie, bo ich prawdziwe układy są zbyt różne na same etykiety. Bez flagi --classes ukryty zbiór dostaje tylko trzy klasy UZP.</aside>
+</section>

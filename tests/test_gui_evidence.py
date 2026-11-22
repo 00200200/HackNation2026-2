@@ -2,6 +2,7 @@
 
 import html
 import json
+import os
 import re
 import sys
 from io import BytesIO
@@ -206,10 +207,10 @@ def test_a_folder_root_confines_folder_mode(tmp_path):
     case = tmp_path / "root" / "input" / "sprawa"
     case.mkdir(parents=True)
     (case / "a.pdf").write_bytes(b"%PDF")
-    sources = gui_files.folder_sources("input", tmp_path / "root")
+    sources = gui_files.folder_sources("input", tmp_path / "root", tmp_path)
     assert [name.as_posix() for name, _ in sources] == ["sprawa/a.pdf"]
     with pytest.raises(ValueError, match="tylko foldery"):
-        gui_files.folder_sources("../..", tmp_path / "root")
+        gui_files.folder_sources("../..", tmp_path / "root", tmp_path)
 
 
 @pytest.mark.parametrize(
@@ -333,7 +334,8 @@ def test_the_cache_key_covers_every_kio_setting(monkeypatch):
 def test_an_empty_folder_field_opens_the_folder_root(tmp_path):
     (tmp_path / "sprawa").mkdir()
     (tmp_path / "sprawa" / "a.pdf").write_bytes(b"%PDF")
-    assert [name.as_posix() for name, _ in gui_files.folder_sources("", tmp_path)] == ["sprawa/a.pdf"]
+    (copies := tmp_path / "copies").mkdir()
+    assert [name.as_posix() for name, _ in gui_files.folder_sources("", tmp_path, copies)] == ["sprawa/a.pdf"]
 
 
 @pytest.mark.parametrize(
@@ -446,10 +448,10 @@ def test_a_link_inside_the_folder_root_cannot_open_a_file_outside(tmp_path):
     (root / "sprawa" / "pismo.pdf").write_bytes(b"%PDF-1.4")
     (outside / "obcy.pdf").write_bytes(b"%PDF-1.4")
     (root / "sprawa" / "skrot.pdf").symlink_to(root / "sprawa" / "pismo.pdf")
-    assert len(folder_sources("sprawa", root)) == 2  # A link that stays inside the root still opens.
+    assert len(folder_sources("sprawa", root, tmp_path)) == 2  # A link that stays inside the root still opens.
     (root / "sprawa" / "link.pdf").symlink_to(outside / "obcy.pdf")
     with pytest.raises(ValueError, match="prowadzi poza"):
-        folder_sources("sprawa", root)
+        folder_sources("sprawa", root, tmp_path)
     assert len(folder_sources(str(root / "sprawa"))) == 3  # On localhost, without a root, links are the user's own.
 
 
@@ -469,15 +471,15 @@ def test_a_link_chain_too_long_to_resolve_cannot_leave_the_folder_root(tmp_path)
         current, links = current / f"l{level}", [*links, f"l{level}"]
     (current / "esc").symlink_to("../" * 25 + "outside")
     with pytest.raises(ValueError, match="tylko foldery w"):
-        folder_sources("/".join([*links, "esc"]), root)
+        folder_sources("/".join([*links, "esc"]), root, tmp_path)
     # Inside a real case folder, only the check of each PDF's real target catches the same chain.
     (root / "sprawa").mkdir()
     (root / "sprawa" / "obcy.pdf").symlink_to("../" + "/".join([*links, "esc", "obcy.pdf"]))
     with pytest.raises(ValueError, match="prowadzi poza"):
-        folder_sources("sprawa", root)
+        folder_sources("sprawa", root, tmp_path)
     (root / "pismo.pdf").write_bytes(b"%PDF-1.4")
     with pytest.raises(ValueError, match="istniejącego folderu"):
-        folder_sources("pismo.pdf/x", root)
+        folder_sources("pismo.pdf/x", root, tmp_path)
 
 
 def test_plain_pdfs_count_toward_the_upload_byte_limit(tmp_path, monkeypatch):
@@ -488,3 +490,106 @@ def test_plain_pdfs_count_toward_the_upload_byte_limit(tmp_path, monkeypatch):
     uploads = [{"name": "a.pdf", "datapath": str(plain)}, zip_upload(zipped, {"s/b.pdf": b"%PDF-"})]
     with pytest.raises(ValueError, match="Przekroczono limit"):
         upload_sources("sprawa", uploads, tmp_path)
+
+
+@SYMLINKS
+def test_a_link_changed_after_the_check_cannot_redirect_the_copy(tmp_path, monkeypatch):
+    from kio2json.gui_files import folder_sources, opened_path
+
+    root, outside = tmp_path / "root", tmp_path / "outside"
+    (root / "sprawa").mkdir(parents=True)
+    outside.mkdir()
+    (root / "sprawa" / "pismo.pdf").write_bytes(b"%PDF-inside")
+    (outside / "obcy.pdf").write_bytes(b"%PDF-outside")
+    link = root / "sprawa" / "skrot.pdf"
+    link.symlink_to(root / "sprawa" / "pismo.pdf")
+
+    seen = []
+
+    def swap_after_check(descriptor):
+        real = opened_path(descriptor)
+        seen.append(real.name)
+        if seen.count("pismo.pdf") == 2:  # The link's open file names its target; swap the link once checked.
+            link.unlink()
+            link.symlink_to(outside / "obcy.pdf")
+        return real
+
+    monkeypatch.setattr(gui_files, "opened_path", swap_after_check)
+    (copies := tmp_path / "copies").mkdir()
+    read = {name.name: path.read_bytes() for name, path in folder_sources("sprawa", root, copies)}
+    assert set(read.values()) == {b"%PDF-inside"}
+
+
+def test_a_forged_upload_path_outside_the_session_upload_folder_is_refused(tmp_path):
+    from shiny.testserver import test_server
+
+    from kio2json import gui
+
+    secret = tmp_path / "server.pdf"
+    secret.write_bytes(b"%PDF-secret")
+    forged = [{"name": "a.pdf", "size": 11, "type": "application/pdf", "datapath": str(secret)}]
+    with test_server(gui.app) as session:
+        session.set_inputs(mode="upload", case="sprawa", files=forged, run=1)
+        assert "spoza tego wgrania" in session.get_output("notice").value
+
+
+def test_a_file_in_the_session_upload_folder_is_read(tmp_path, monkeypatch):
+    from shiny.testserver import test_server
+
+    from kio2json import gui
+
+    (folder := tmp_path / "uploads" / "0").mkdir(parents=True)
+    (folder / "0.pdf").write_bytes(b"%PDF-1.4")
+    monkeypatch.setattr(gui, "upload_folder", lambda session: tmp_path / "uploads")
+    files = [{"name": "a.pdf", "size": 8, "type": "application/pdf", "datapath": str(folder / "0.pdf")}]
+    with test_server(gui.app) as session:
+        session.set_inputs(mode="upload", case="sprawa", files=files, run=1)
+        assert "Liczba dokumentów: 1" in session.get_output("notice").value
+
+
+def test_a_folder_root_typed_in_another_case_still_opens(tmp_path):
+    from kio2json.gui_files import folder_sources
+
+    (tmp_path / "Cases" / "sprawa").mkdir(parents=True)
+    (tmp_path / "Cases" / "sprawa" / "a.pdf").write_bytes(b"%PDF-1.4")
+    if not (tmp_path / "cases").exists():
+        pytest.skip("this file system tells letter case apart")
+    (copies := tmp_path / "copies").mkdir()
+    assert [name.as_posix() for name, _ in folder_sources("sprawa", tmp_path / "cases", copies)] == ["sprawa/a.pdf"]
+
+
+@pytest.mark.skipif(sys.platform == "win32" or os.geteuid() == 0, reason="needs file permissions that bind a user")
+def test_an_unreadable_pdf_under_the_folder_root_names_the_read_error(tmp_path):
+    from kio2json.gui_files import folder_sources
+
+    (tmp_path / "root" / "s").mkdir(parents=True)
+    (tmp_path / "root" / "s" / "b.pdf").write_bytes(b"%PDF-1.4")
+    (tmp_path / "root" / "s" / "b.pdf").chmod(0)
+    try:
+        with pytest.raises(ValueError, match="Nie udało się odczytać pliku b.pdf"):
+            folder_sources("s", tmp_path / "root", tmp_path)
+    finally:
+        (tmp_path / "root" / "s" / "b.pdf").chmod(0o644)
+
+
+def test_a_real_shiny_upload_passes_the_upload_folder_check_and_the_folder_itself_does_not(tmp_path):
+    from shiny._fileupload import FileUploadManager
+
+    manager = FileUploadManager()
+    try:
+        operation = manager.get_upload_operation(
+            manager.create_upload_operation([{"name": "a.pdf", "size": 8, "type": "application/pdf"}])
+        )
+        operation.file_begin()
+        operation.write_chunk(b"%PDF-1.4")
+        operation.file_end()
+        uploaded = operation.finish()
+        uploads = Path(manager._basedir)
+        assert [name.as_posix() for name, _ in upload_sources("sprawa", uploaded, tmp_path, uploads)] == [
+            "sprawa/a.pdf"
+        ]
+        folder = [{"name": "a.pdf", "size": 8, "type": "application/pdf", "datapath": str(uploads)}]
+        with pytest.raises(ValueError, match="spoza tego wgrania"):
+            upload_sources("sprawa", folder, tmp_path, uploads)
+    finally:
+        manager.rm_upload_dir()

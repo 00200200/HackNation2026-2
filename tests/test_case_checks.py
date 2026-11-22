@@ -129,6 +129,7 @@ def test_local_gui_warns_for_selected_document_and_exports_only_organizer_output
         assert {name: bundle.read(name).decode() for name in bundle.namelist()} == {
             name.replace(".pdf", ".json"): result.text for name, result in results.items()
         }
+    monkeypatch.setattr(gui.options, "local_folders", True)  # As launched with python -m kio2json.gui.
     with shiny_session(gui.app, timeout_secs=30) as session:
         session.set_inputs(mode="folder", folder=str(folder), run=1, document="0", page="1")
         html = session.get_output("consistency_warnings").value["html"]
