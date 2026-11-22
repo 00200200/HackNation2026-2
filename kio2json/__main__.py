@@ -1,8 +1,8 @@
 """Batch CLI: python -m kio2json [--input DIR] [--output DIR]   (defaults: ./input, ./output)
 
 Writes one JSON per PDF at the same relative path and file stem. A document outside the three
-known classes gets an empty file. The keyed organizer profile retries failed documents with rules
-and continues with empty output if recovery fails. Other document errors give exit status 1.
+known classes gets {}. The keyed organizer profile retries failed documents with rules and writes {}
+if recovery fails. Other document errors write {} and give exit status 1.
 """
 
 import argparse

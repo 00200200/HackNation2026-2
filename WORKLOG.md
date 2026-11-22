@@ -21,7 +21,21 @@ behind the faktczyfejk Caddy; deploy in `docs/deploy.md`. Its upload calls `kio2
 
 The jury can run the batch CLI and upload UI locally with the root Compose file. [Docker instructions](README.md#run-with-docker-compose)
 
+The evaluation VM kit installs the rules CLI under `/opt/solution`. The VM owner still needs to run the Ubuntu offline and reboot checks. [Deployment steps](README.md#deploy-on-the-evaluation-vm)
+
 ## Last eval
+
+The empty-object writer preserved all 180 positive training files byte for byte and wrote `{}\n` for all 16 negatives. Keeping printed country codes then changed two fields in each of 48 transfers. The comparison used local rules and two PDF workers. The integrated run includes the UZP scorer and the fix for a printed underline in a recipient account cell.
+
+| Dataset | Main strict `f7f3ee9` | Candidate strict `41903d1` | Integrated strict | Integrated UZP |
+|---|---:|---:|---:|---:|
+| Training, original references | 1.0000 | 0.9585 | 0.9585 | 0.9758 |
+| Training, corrected references | 0.9585 | 1.0000 | 1.0000 | 1.0000 |
+| Organizer scans (30) | 0.9766 | 0.9974 | 0.9974 | 1.0000 |
+| Corpus 1 all (39) | 0.8889 | 0.8873 | 0.8880 | 0.9212 |
+| Corpus 2 dev (39) | 0.8926 | 0.8926 | 0.8951 | 0.9244 |
+
+The first main scan batch required one isolated OCR timeout retry on the shared host. All 196 training files matched byte for byte before and after integration. The jury CI checker matched all 90 training entries against corrected references. [Field counts and expected changes by case](evals/results/p0-conventions.json)
 
 Main `f7f3ee9` ran with local rules and two PDF workers. Both scores below use the same predictions and original references. The difference is UZP F1 minus historical strict F1.
 
@@ -67,7 +81,7 @@ Exact counts compare the complete JSON, including list order. A/P/T denotes appe
 
 The scanned-transfer rules routed 5/5 organizer dev transfers and 3/5 on the single organizer holdout, along with 4/4 and 9/10 transfers on the two private dev partitions. The synthetic regression still matched all 196 outputs byte for byte. [Per-step and holdout aggregates](evals/results/scanned-transfers.json)
 
-On all 30 organizer development scans, the rules routed 10/10 transfer confirmations. Nine matched every field literally (59/60 fields, transfer F1 0.9833). The outstanding title contains a severely degraded name and abbreviation. Across all three classes the run averaged 9.23 s/PDF on the shared Apple M1, with a maximum of 19.02 s. With the integrated power-of-attorney rules, micro F1 reached 0.6312 on corpus 1 all, 0.7160 on its dev subset and 0.6816 on corpus 2 dev. [Round 2 measurements](evals/results/scanned-transfers-round2.json)
+On all 30 organizer development scans, the rules routed 10/10 transfer confirmations. Nine matched every field literally (59/60 fields, transfer F1 0.9833). The outstanding title contains a severely degraded name and abbreviation. Across all three classes the run averaged 9.23 s/PDF on the shared Apple M1, with a maximum of 19.02 s. At the intermediate step that merged the upstream power-of-attorney rules, micro F1 reached 0.6312 on corpus 1 all, 0.7160 on its dev subset and 0.6816 on corpus 2 dev. The later integrated rules reached 0.8607 on corpus 1 all and 0.8789 on corpus 2 dev ([`round2-integration.json`](evals/results/round2-integration.json), `datasets.corpus1.keyless.micro_f1` and `datasets.corpus2.keyless.micro_f1`). [Round 2 measurements](evals/results/scanned-transfers-round2.json)
 
 The subsequent real-grant round found six labelled grants in corpus 1 and five in corpus 2 dev.
 On these development documents, grant field F1 rose to 0.9558 and 0.9895 respectively.
@@ -94,7 +108,7 @@ Two and four grant JSONs matched exactly. The ten organizer grants remained exac
   an OCR or model change has to beat this baseline in the eval. The baseline's rules have seen cases 51-60; a fresh case split is needed to measure generalization for work that builds on these rules.
 - 21.11.2026: use the date and act stated together in the first charge. When its heading lacks a date, use
   the introductory sentence describing the dated act. In cases 01–39 that sentence supplies the reference reason.
-- 21.11.2026: unrelated documents get an empty file (UNCONFIRMED with UZP; the team checks for a zero-byte output).
+- 21.11.2026 · UZP confirmed that unrelated PDFs produce `{}` and transfer account numbers keep their printed country code with all whitespace removed. The CLI and GUI use the same empty object for a failed PDF and report the failure separately. [Empty output](https://github.com/00200200/HackNation2026-2/issues/57) · [Account numbers](https://github.com/00200200/HackNation2026-2/issues/58)
 - 21.11.2026: file, module and identifier names are English; the jury GUI, organizer's JSON keys and original file stems use Polish.
 - 21.11.2026: delegated work and reviews (pre-commit review, pre-push judge) go to Codex workers through
   `/orchestrator`, not to Claude subagents.
@@ -206,8 +220,11 @@ These runs used local rules with the three endpoint variables unset. The two loc
 | Wire the doc2json.pl upload to the extraction (serve the GUI backend behind `/api/` or point the page at it) | Open |
 
 - 21.11.2026 · Codex · Round 3 traced 130 field errors on 78 real development PDFs. Recovered identifiers from matching party records, checked damaged company names against declarations and read debit amounts across bank columns. The single-field Ministral whitespace trial lost one correct title in 12 calls and was dropped.
+- 22.11.2026 · Codex · Implemented UZP’s empty-object and printed-account conventions on `fix/p0-conventions`. The training scorer can restore missing country codes from each transfer PDF with `--correct-training-accounts`.
 
 - 22.11.2026 · Codex · Added a Python 3.13 jury install and 150-PDF CLI comparison for Windows x64, Linux x64 and macOS in `ab3c8fa`. GitHub blocked all three jobs before checkout due to account billing. The run produced no timings. [Run record](evals/results/jury-batch.json)
 - 22.11.2026 · Codex · Implemented the UZP scorer and retained historical strict micro F1 on `feat/uzp-metric` (#59).
 - 22.11.2026 · Codex · Added local jury Compose services and the signed task rules for #60. Compose configuration validated. Docker Desktop did not answer its health probe, so container byte parity is pending.
 - 22.11.2026 · Claude · PR #53 README: the organizer-scans.json link now says it is the later 29/30 batch, the 0.6312 step is labelled as intermediate, the cold run separates throughput (3.33 s per PDF) from time per scan (9.13 s), and each adaptive OCR timing names its profile and dataset. `origin/main` (#67) merged. The new CodeRabbit thread asking for `latest.json` is answered: every figure is in `adaptive-ocr-budget.json`, which records product `59aa13a`, base `dbda151` and the machine · claude/pr53-docs
+- 22.11.2026 · Codex · Prepared the VM installation and offline rehearsal for #66 and refreshed the organizer instructions to `eadffbc`. [Rehearsal measurements](evals/results/vm-2vcpu.json)
+- 22.11.2026 · Claude · PR #53 merged with main again (#77, #78): README and WORKLOG conflicts resolved with both sides kept (main's "historical measurement counted zero-byte outputs" wording plus the organizer-scans note). Judge nits applied: the `steps["merge upstream power-of-attorney rules"]` locator is a valid key path, and the WORKLOG line on the 0.6312 step now names it as intermediate and gives the later 0.8607 and 0.8789 · docs/paths-and-llm-scoring

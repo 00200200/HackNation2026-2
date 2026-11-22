@@ -20,7 +20,7 @@ def test_headless_page(live_app):
     assert "Analizuj dokumenty" in html
 
 
-def test_results_preserve_cases_empty_files_and_failures(tmp_path, monkeypatch):
+def test_zip_contains_an_object_for_every_document(tmp_path, monkeypatch):
     root = tmp_path / "input"
     for case, name in (("a", "same.PDF"), ("b", "same.pdf"), ("b", "broken.pdf")):
         folder = root / case
@@ -40,9 +40,17 @@ def test_results_preserve_cases_empty_files_and_failures(tmp_path, monkeypatch):
     results = analyze(folder_sources(str(root)), tmp_path)
     with ZipFile(BytesIO(archive(results))) as files:
         assert files.read("a/same.json").decode() == '{\n  "pole": "treść"\n}\n'
-        assert files.read("b/same.json") == files.read("b/broken.json") == b""
+        assert files.read("b/same.json") == files.read("b/broken.json") == b"{}\n"
     assert [r.result.error for r in results] == [None, "ValueError: uszkodzony plik", None]
     assert folder_sources(str(root / "a"))[0][0].as_posix() == "a/same.PDF"
+
+
+def test_zip_records_unreadable_upload(tmp_path):
+    name = Path("sprawa/missing.pdf")
+    documents = analyze([(name, tmp_path / "missing.pdf")], tmp_path)
+    assert documents[0].result.error
+    with ZipFile(BytesIO(archive(documents))) as files:
+        assert files.read("sprawa/missing.json") == b"{}\n"
 
 
 @pytest.mark.parametrize("name", ["../x.pdf", r"C:\tmp\x.pdf", "x.txt", "NUL.pdf", "C:file.pdf"])
@@ -74,7 +82,7 @@ def test_session_reports_failed_document_and_invalid_new_run(tmp_path):
     path.write_bytes(b"broken")
     with shiny_session(gui.app) as session:
         session.set_inputs(mode="folder", folder=str(tmp_path), run=1, document="0", page="1")
-        assert session.get_output("classification") == "Nie udało się odczytać dokumentu"
-        assert "No /Root object" in session.get_output("result_text").value
+        assert "No /Root object" in session.get_output("classification").value
+        assert session.get_output("result_text").value == "{}\n"
         session.set_inputs(folder=str(tmp_path / "missing"), run=2)
         assert "folder" in session.get_output("notice").value.lower()
