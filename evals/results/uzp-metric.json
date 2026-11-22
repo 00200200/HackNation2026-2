@@ -1,0 +1,232 @@
+{
+  "extractor_commit": "f7f3ee97951817e9899c949f2078b1d9075b6846",
+  "scorer_commit": "6b34bc53d0f56dbabf7c752136f87c25ca5bf758",
+  "profile": "Local rules only, two PDF workers, no API key.",
+  "method": "Original references and one fresh CLI extraction per dataset, staged under neutral names. Both metrics score the same predictions. Delta is UZP minus strict in F1 units.",
+  "similarity": "RapidFuzz distance.Levenshtein.normalized_similarity >= 0.80. UZP has not confirmed its similarity function.",
+  "pr55_method": "Applied the exact gate from fe66789 to copies of all predicted appeal records to identify candidates. Only a record changed by that filter could change under rules-only extraction. Reran every candidate through the main CLI with the PR product diff and verified each output equalled either its baseline or its filtered record. Reused untouched outputs.",
+  "organizer_scan_note": "The fresh batch routed 29/30 scans (9/10 transfers). Historical run round3.json measured 30/30 routing. The headline UZP/strict difference uses identical fresh outputs.",
+  "datasets": [
+    {
+      "dataset": "Synthetic training",
+      "n_docs": 196,
+      "micro_f1": 1.0,
+      "micro_f1_strict": 1.0,
+      "delta": 0.0,
+      "counts": {
+        "tp": 2032,
+        "fp": 0,
+        "fn": 0,
+        "tn": 284
+      },
+      "counts_strict": {
+        "tp": 2316,
+        "fp": 0,
+        "fn": 0
+      },
+      "routing_by_class": null,
+      "pr55": {
+        "uzp": {
+          "f1": 1.0,
+          "tp": 2032,
+          "fp": 0,
+          "fn": 0
+        },
+        "strict": {
+          "f1": 1.0,
+          "tp": 2316,
+          "fp": 0,
+          "fn": 0
+        },
+        "n": 196,
+        "candidates": 0,
+        "changed": 0,
+        "nulled": 0,
+        "trimmed": 0
+      }
+    },
+    {
+      "dataset": "Organizer scans",
+      "n_docs": 30,
+      "micro_f1": 0.9868852459016394,
+      "micro_f1_strict": 0.974025974025974,
+      "delta": 0.012859271875665379,
+      "counts": {
+        "tp": 301,
+        "fp": 2,
+        "fn": 6,
+        "tn": 79
+      },
+      "counts_strict": {
+        "tp": 375,
+        "fp": 7,
+        "fn": 13
+      },
+      "routing_by_class": {
+        "odwolanie": {
+          "correct": 10,
+          "total": 10
+        },
+        "pelnomocnictwo": {
+          "correct": 10,
+          "total": 10
+        },
+        "przelew": {
+          "correct": 9,
+          "total": 10
+        },
+        "negatywny": {
+          "correct": 0,
+          "total": 0
+        }
+      },
+      "pr55": {
+        "uzp": {
+          "f1": 0.9868852459016394,
+          "tp": 301,
+          "fp": 2,
+          "fn": 6
+        },
+        "strict": {
+          "f1": 0.974025974025974,
+          "tp": 375,
+          "fp": 7,
+          "fn": 13
+        },
+        "n": 30,
+        "candidates": 0,
+        "changed": 0,
+        "nulled": 0,
+        "trimmed": 0
+      }
+    },
+    {
+      "dataset": "Corpus 1 all",
+      "n_docs": 39,
+      "micro_f1": 0.9212328767123288,
+      "micro_f1_strict": 0.8888888888888888,
+      "delta": 0.032343987823439946,
+      "counts": {
+        "tp": 269,
+        "fp": 19,
+        "fn": 27,
+        "tn": 173
+      },
+      "counts_strict": {
+        "tp": 432,
+        "fp": 52,
+        "fn": 56
+      },
+      "routing_by_class": {
+        "odwolanie": {
+          "correct": 13,
+          "total": 13
+        },
+        "pelnomocnictwo": {
+          "correct": 6,
+          "total": 6
+        },
+        "przelew": {
+          "correct": 9,
+          "total": 9
+        },
+        "negatywny": {
+          "correct": 11,
+          "total": 11
+        }
+      },
+      "pr55": {
+        "uzp": {
+          "f1": 0.9246575342465754,
+          "tp": 270,
+          "fp": 15,
+          "fn": 29
+        },
+        "strict": {
+          "f1": 0.8930041152263375,
+          "tp": 434,
+          "fp": 50,
+          "fn": 54
+        },
+        "n": 39,
+        "candidates": 2,
+        "changed": 2,
+        "nulled": 3,
+        "trimmed": 1
+      }
+    },
+    {
+      "dataset": "Corpus 2 dev",
+      "n_docs": 39,
+      "micro_f1": 0.9221052631578948,
+      "micro_f1_strict": 0.8925831202046036,
+      "delta": 0.02952214295329114,
+      "counts": {
+        "tp": 219,
+        "fp": 12,
+        "fn": 25,
+        "tn": 138
+      },
+      "counts_strict": {
+        "tp": 349,
+        "fp": 39,
+        "fn": 45
+      },
+      "routing_by_class": {
+        "odwolanie": {
+          "correct": 13,
+          "total": 13
+        },
+        "pelnomocnictwo": {
+          "correct": 5,
+          "total": 5
+        },
+        "przelew": {
+          "correct": 10,
+          "total": 10
+        },
+        "negatywny": {
+          "correct": 11,
+          "total": 11
+        }
+      },
+      "pr55": {
+        "uzp": {
+          "f1": 0.9221052631578948,
+          "tp": 219,
+          "fp": 12,
+          "fn": 25
+        },
+        "strict": {
+          "f1": 0.8925831202046036,
+          "tp": 349,
+          "fp": 39,
+          "fn": 45
+        },
+        "n": 39,
+        "candidates": 0,
+        "changed": 0,
+        "nulled": 0,
+        "trimmed": 0
+      }
+    }
+  ],
+  "corpus_1_dev": {
+    "dataset": "Corpus 1 dev subset",
+    "n_docs": 22,
+    "micro_f1": 0.922077922077922,
+    "micro_f1_strict": 0.8739837398373984,
+    "delta": 0.04809418224052364,
+    "counts": {
+      "tp": 142,
+      "fp": 13,
+      "fn": 11,
+      "tn": 81
+    },
+    "counts_strict": {
+      "tp": 215,
+      "fp": 30,
+      "fn": 32
+    }
+  }
+}
