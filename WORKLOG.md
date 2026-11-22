@@ -155,6 +155,7 @@ Two and four grant JSONs matched exactly. The ten organizer grants remained exac
 - 22.11.2026 · Codex · Added role-based sole-trader identification in declarations, registry cards and proprietor signatures. The frozen extractor recovered 8/8 reserved proprietor names. [Control and benchmark results](evals/results/sole-trader-grantors.md)
 
 - 22.11.2026 · Codex · Separated sole-trader identities, mandate signatures and challenged acts using the case-linked development split. [Field errors and split results](evals/results/case-mandates-appeals.md)
+- 22.11.2026 · Codex · On `fix/verifier-budget`, OCR identifier verification checks up to four eligible cells in document order. Each recognition gets up to two seconds within the shared document and batch deadline.
 
 - 22.11.2026 · Codex · Added contracting-authority descriptions and inflected captions to the appeal party reader. Joint authority cards preserve the printed names, registry IDs and lead marker. [Caption measurements](evals/results/authority-captions.json)
 
@@ -332,3 +333,4 @@ These runs used local rules with the three endpoint variables unset. The two loc
 - 22.11.2026 · Codex · The default router rejects all five development transmission forms that main misclassified as grants, in native and scan views. The independent panel matched main on every output. [Delivery-proof measurements](evals/results/delivery-proofs.md)
 - 22.11.2026 · Codex · Rotation and searchable-layer release gates on main `b2fd9c6` preserved 196 training outputs, 30 organizer scans and nine upright development controls byte-for-byte. Five of 39 stress documents improved. The earlier independent acceptance panel missed its thresholds. [Measurements](evals/results/rotation-textlayer.json)
 - 22.11.2026 · Codex · Added bounded date, amount and purpose pairing on routed transfers using first-page word boxes. Repeated captions, competing typed values and unassigned title continuations cause the reader to abstain.
+- 22.11.2026 · Unlabelled appeal procurement subjects can be recovered from the first-page paragraph immediately above an unambiguous procedure reference. The fallback uses existing word boxes and excludes litigation costs, owner names and competing procedures.
