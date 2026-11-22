@@ -14,6 +14,7 @@ from pydantic_settings import BaseSettings, SettingsConfigDict
 from .class_config import DocumentClass, OutputField
 from .derived_evidence import derive_from_quote, derived_value
 from .endpoint_error import EndpointError
+from .jury_budget import request_slot
 from .model_pages import MODEL_INPUT_BYTES, model_readings
 from .output_schema import cited_value
 
@@ -164,14 +165,21 @@ def bounded_text(text: str) -> str:
 
 
 def structured(output_type, instructions: str, text: str, *, max_tokens: int, model=None, single_request: bool = False):
+    with request_slot() as jury_timeout:
+        return _request(output_type, instructions, text, max_tokens, model, single_request, jury_timeout)
+
+
+def _request(output_type, instructions, text, max_tokens, model, single_request, jury_timeout):
     try:
         timeout = 180
         settings = {"max_retries": 0, "max_tokens": max_tokens, "temperature": 0}
         if model is None:
             endpoint = Endpoint()
             settings, timeout = endpoint.request_settings(routing=output_type is RouteDecision, max_tokens=max_tokens)
+            if jury_timeout is not None:
+                endpoint = endpoint.model_copy(update={"output": "schema", "token_parameter": "max_tokens"})
             model = endpoint.chat_model()
-            if endpoint.output == "spans":
+            if endpoint.output == "spans" or jury_timeout is not None:
                 # Native schema travels in response_format; a second system message is invalid for some templates.
                 output_type = NativeOutput(output_type)
             else:
@@ -180,6 +188,10 @@ def structured(output_type, instructions: str, text: str, *, max_tokens: int, mo
                     output_type,
                     template="Return a JSON object matching this schema and its field definitions: {schema}",
                 )
+        if jury_timeout is not None:
+            timeout = min(timeout, jury_timeout)
+            settings["timeout"] = timeout
+            single_request = True
         if single_request:
             settings["max_tokens"] = min(settings["max_tokens"], max_tokens)
             timeout = min(timeout, 30)

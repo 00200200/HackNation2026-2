@@ -17,6 +17,7 @@ from pathlib import Path
 from .case_repair import Reading, case_repair_enabled, repairs
 from .class_config import ClassSources, DocumentClass, parse_classes
 from .endpoint_error import EndpointError
+from .jury_budget import JuryBudget, use_batch
 from .ocr_budget import batch_deadline
 from .pdf_text import NoReadableTextError
 from .pipeline import process_pdf, uses_case_schema
@@ -28,7 +29,7 @@ def configure_logging(classes: list[DocumentClass]) -> None:
         # The SDK banner names the model; debug logs include response headers and request URLs.
         os.environ.setdefault("PYDANTIC_AI_NO_BANNER", "1")
         os.environ.pop("OPENAI_LOG", None)
-        for name in ("openai", "httpx2", "httpcore2"):
+        for name in ("openai", "httpx", "httpcore", "httpx2", "httpcore2", "pydantic_ai"):
             logging.getLogger(name).setLevel(logging.CRITICAL + 1)
 
 
@@ -122,8 +123,9 @@ def explained(label: str | None, data: dict, events: dict) -> dict:
 _worker_classes: list[DocumentClass]
 
 
-def _init_worker(sources: ClassSources) -> None:
+def _init_worker(sources: ClassSources, budget: JuryBudget | None) -> None:
     global _worker_classes
+    use_batch(budget)
     _worker_classes = parse_classes(sources)
     configure_logging(_worker_classes)
 
@@ -141,6 +143,7 @@ def read_batch(pdfs: list[Path], sources: ClassSources, workers: int, *, explain
     """Yield in input order so the parent owns all writes, including colliding stems."""
     os.environ["OMP_THREAD_LIMIT"] = "1"
     deadline = batch_deadline(len(pdfs))
+    budget = JuryBudget(len(pdfs)) if any(c.profile.jury for c in parse_classes(sources)) else None
     inputs = iter(enumerate(pdfs))
     pending = {}
     ready = {}
@@ -156,7 +159,7 @@ def read_batch(pdfs: list[Path], sources: ClassSources, workers: int, *, explain
                 # One outstanding PDF per interpreter. A native crash has exactly one owner.
                 pool = stack.enter_context(
                     ProcessPoolExecutor(
-                        1, mp_context=get_context("spawn"), initializer=_init_worker, initargs=(sources,)
+                        1, mp_context=get_context("spawn"), initializer=_init_worker, initargs=(sources, budget)
                     )
                 )
             pending[pool.submit(_read_in_worker, path, deadline, explain)] = (pool, index)
