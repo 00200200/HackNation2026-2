@@ -6,6 +6,17 @@ from datetime import date
 UPPER = "A-ZĄĆĘŁŃÓŚŹŻ"
 LOWER = "a-ząćęłńóśźż"
 
+PARTY_LABELS = {
+    "appellant": r"odwo[łl]uj[ąa]cy",
+    "authority": r"zamawiaj[ąa]cy",
+    "principal": r"mocodawc[ay]",
+    "appointee": r"pełnomocni(?:k|cy)",
+    "representation": r"(?:reprezentowan|zastępowan)\w* przez(?: pełnomocnika)?",
+    "counsel": r"pełnomocnik odwołującego",
+    "other": r"adresat|uczestnik(?: postępowania)?|poświadczający|za zgodność(?: z oryginałem)?",
+    "signer": r"podpisuj[ąa]c[ya]|podpis(?:y)? mocodawc[yó]w?",
+}
+
 MONTHS = [
     "stycznia",
     "lutego",
