@@ -1,2 +1,4 @@
 # The SHA-256 check in kio2json/pdf_text.py fails if a checkout rewrites these models (for example CRLF conversion on Windows).
 kio2json/tessdata/*.traineddata binary
+# A CRLF shebang line makes the script fail under WSL or Git Bash.
+*.sh text eol=lf

@@ -66,13 +66,15 @@ def test_parallel_cli_preserves_bytes_order_and_failure_status(tmp_path):
 
 
 def test_cli_prints_polish_file_names_to_a_legacy_code_page_stream(tmp_path):
+    root = Path(__file__).resolve().parents[1]
     inputs = tmp_path / "input"
     inputs.mkdir()
-    (inputs / "pełnomocnictwo.pdf").write_bytes(Path("data/uzp/dane/przyklad_01/pelnomocnictwo.pdf").read_bytes())
+    (inputs / "pełnomocnictwo.pdf").write_bytes((root / "data/uzp/dane/przyklad_01/pelnomocnictwo.pdf").read_bytes())
     run = subprocess.run(
         [sys.executable, "-m", "kio2json", "--input", str(inputs), "--output", str(tmp_path / "out"), "--workers", "1"],
         capture_output=True,
         check=False,
+        cwd=root,
         env={**os.environ, "KIO_LLM_API_KEY": "", "PYTHONIOENCODING": "cp1252"},
     )
     assert run.returncode == 0, run.stderr.decode("utf-8", "replace")

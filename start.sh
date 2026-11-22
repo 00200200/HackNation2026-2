@@ -8,6 +8,8 @@ if [ -x .venv/bin/python ]; then
 else
     py=$(command -v python || command -v python3) || { echo "Python 3.13 was not found. See Run in README.md." >&2; exit 1; }
 fi
+# Ubuntu 24.04 ships Python 3.12, which would fail later with a traceback.
+"$py" -c 'import sys; sys.exit(sys.version_info < (3, 13))' || { echo "$py is older than Python 3.13. See Run in README.md." >&2; exit 1; }
 case "$#:${1:-}" in
     0:) exec "$py" -m kio2json ;;
     1:gui) exec "$py" -m kio2json.gui ;;
