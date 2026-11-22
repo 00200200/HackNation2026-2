@@ -55,8 +55,12 @@ Value conventions (Discord):
   also writes `{}` when it cannot process a PDF. In the default keyless profile the CLI prints the reason to stderr
   and exits with status 1, and the GUI shows the reason and puts `{}` in its ZIP. The keyed organizer profile retries
   the PDF with rules after a model or secondary OCR error, and an unreadable PDF yields `{}` (README).
-- Negatives: the README says "empty `.json` file". UZP clarified on Discord that the file must contain only `{}`,
-  not zero bytes (#57). PR #78 implements it in the CLI, GUI and eval and closed #57.
+- Negatives: the organizer README still says "pusty plik `.json`", an empty `.json` file (`data/uzp/README.md:143`).
+  UZP answered on Discord four times on 21.11.2026 (13:27, 13:50, 22:19 and 22:32, relayed in #57). The first answer
+  says an empty JSON with the original file name. The three later ones say the file contains only `{}`, not zero bytes.
+  We follow the explicit Discord answer. PR #78 implements it in the CLI, GUI and eval and closed #57. The README line
+  was not corrected, so re-confirm this at the UZP stand. UNCONFIRMED: which form the scorer accepts, since the README
+  and the Discord answers differ.
 - A CLI with instructions is **required** (FAQ 12a); a wrapper script (e.g. `start.bat`) is fine.
 - GUI is optional and scores extra: upload PDF, run, see JSON, ideally side by side with the source (FAQ 12b).
 
