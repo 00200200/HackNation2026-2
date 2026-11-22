@@ -218,7 +218,7 @@ corrected only when its NIP checksum fails. Missing fields stay empty.
    and, on scans, an independent OCR reading. Each accepted value needs a supporting span. The class rules
    fill gaps using the reconstructed layout. The CLI and viewer share this pipeline.
 
-The README shows the pipeline diagram. [`docs/pipeline/pipeline.pdf`](../../docs/pipeline/pipeline.pdf) is the same diagram as a one-page PDF. Both are rendered from [`src/pipeline.html`](src/pipeline.html), and the commands are in the header of [`src/base.css`](src/base.css).
+The README shows the pipeline diagram. [`docs/pipeline/pipeline.pdf`](../../docs/pipeline/pipeline.pdf) is the jury version, built from [`pipeline.tex`](../../docs/pipeline/pipeline.tex) with `pdflatex`.
 
 ## Add a class
 
@@ -527,11 +527,17 @@ The table columns are the `variants.<name>` entries `micro_f1`, `macro_three_cla
 
 ## Known limits
 
+- A sole trader’s mandate can identify the person separately from the registered business name. The extractor reads the grantor’s declaration, owner fields on a CEIDG card, or an explicitly labelled proprietor signature. A registered business name can supply the person when exactly one end prints an identifiable personal name. The mandate schema records the NIP and has no REGON field. A damaged name or a signature without an identified signer can still leave a field empty.
+
 - An appeal can name the contracting authority by its role in conducting or awarding the procurement. A numbered list can identify joint authorities and mark one as the lead. An unfamiliar caption or a nearby name without local organization, address or registry evidence can leave the party list empty.
 
 - In rules-first native-schema mode, a receipt amount, execution date, singleton appeal party name or procurement title can be reconsidered when its first page contains a conflicting, locally readable value. The model selects a candidate ID in one request per disputed block. The extractor copies the corresponding printed span and normalizes it locally. Abstention or a failed request preserves the rule value. If OCR misses the correct digits in every reading, this step cannot recover them.
 
+- For appeals with parallel sections, the reader looks for a persistent gap between overlapping blocks of text with independent headings. A shared heading above full-width prose stays after both columns. Sparse cards and word boxes that disagree with the transcript can leave the original order ambiguous. A procurement title without a readable label can still be missed. [Two-column appeal evaluation](../../evals/results/two-column-appeals.json)
+
 - On two-column receipts a payment amount can sit beside a different label. The reader checks the amount's column and currency. A damaged account, reference or remittance title can still be unreadable after the receipt is identified.
+
+- A bank letter can attest an executed payment in prose. A history export needs a single identifiable posted transfer or a clearly marked detail section. If several rows could own an amount or account, the extractor can leave the statement empty.
 
 - A receipt that shows only acceptance for future execution can remain unclassified. On damaged scans, a booking date and debit can establish a completed payment even when the account roles are unreadable. The affected account fields stay null.
 - A model can cite the wrong party’s valid source text.
@@ -626,5 +632,9 @@ On the 26-case panel, keyless main `fa9937e` scored **0.7191 UZP F1** (case-boot
 | Scans, all classes | 104 | 0.8133 | 0.7865 | 41 |
 
 Four receipt layouts are the first routing targets. The early bank letter, transaction history, operation details and order details each missed all four PDFs (two cases in both renditions). The sole-trader mandate routed 8/8 but scored 0.2069 UZP F1, with missed principal names and identifiers. Most families have few independent cases. The scorecard includes every family, codec/DPI combination, sample count and field result. [Benchmark measurements](../../evals/results/case-benchmark.json)
+
+The transfer update routed all four development bank letters, with 0.9767 UZP and 0.9167 strict field F1. After integrating main `cf67694`, development UZP F1 rose from 0.9603 to 0.9729. The frozen rules still missed all four PDFs in each reserved history, operation-detail and order-detail family. Reserved UZP F1 was 0.7923, and all 52 negatives across the two splits remained empty. [Transfer results](../../evals/results/case-transfers.json)
+
+A routing-only follow-up recognized two of four PDFs in each reserved transaction-history, operation-detail and order-detail family. These six receipts raised reserved UZP F1 from 0.7923 to 0.8159 and strict F1 from 0.7705 to 0.7867. None of the six had every field correct. The remaining families, including all 24 negatives, kept their scores. Development remained at 0.9729 UZP and 0.9667 strict. This was a second blind evaluation after the first candidate disclosed aggregate misses. [Paired routing results](../../evals/results/case-transfer-routing.json)
 
 On the same main revision, #69’s 240 compact-form PDFs scored 0.9125 UZP and 0.8743 strict, with 60/60 negatives rejected. The replay matched #69’s published PDF/reference digest and five-case batching. The two panels differ in both facts and layouts.

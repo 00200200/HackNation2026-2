@@ -9,7 +9,14 @@ from pathlib import Path
 
 from . import appeal, bank_transfer, ocr_extract, power_of_attorney, trace
 from .accounts import normalize_account
-from .appeal_layout import apply_appeal_blocks, form_columns, party_inventory, read_role_columns, restore_party_columns
+from .appeal_layout import (
+    apply_appeal_blocks,
+    form_columns,
+    party_inventory,
+    read_appeal_columns,
+    read_role_columns,
+    restore_party_columns,
+)
 from .case_repair import Reading, printed_readings
 from .class_config import DocumentClass, load_classes, route
 from .classify import incomplete_booking_scan, resembles_appeal_heading
@@ -32,6 +39,7 @@ from .pdf_text import (
 )
 from .receipt_account_crop import recover_account_crops
 from .receipt_layout import append_receipt_fields, has_detached_labels, receipt_cell_fields
+from .receipt_reading import missing_letter_body, read_letter_body
 from .receipt_title import reread_title
 
 
@@ -108,11 +116,18 @@ def _read_receipt(
             accounts = evidence
         else:
             pages = original
-    if definition is None and scanned and retry and incomplete_booking_scan(pages[0]):
+    if definition is None and scanned and retry:
+        letter = missing_letter_body(pages[0])
+        if not letter and not incomplete_booking_scan(pages[0]):
+            return pages, definition, accounts
         if not remaining_ms(1):
             return pages, definition, accounts
         try:
-            alternate = read_pages(pdf_path, max_pages=1, force_ocr=True, engine="tesseract", reread=True)
+            alternate = (
+                read_letter_body(pdf_path)
+                if letter
+                else read_pages(pdf_path, max_pages=1, force_ocr=True, engine="tesseract", reread=True)
+            )
         except RereadExpired:
             return pages, definition, accounts
         if alternate:
@@ -245,18 +260,29 @@ def _process(
         try:
             # A cached reading is free; a new alternate reread raises RereadExpired itself once the deadline passes.
             primary, ocr_pages, boxes = read(engine)
+            original_first = None
             if primary and 1 not in ocr_pages and page_sizes.get(1):
                 first = form_columns(primary[0], boxes, page_sizes[1][0])
                 if first != primary[0]:
+                    original_first = primary[0]
                     primary = [first, *primary[1:]]
-            pages, definition, accounts = _read_receipt(
-                primary,
-                pdf_path,
-                definitions,
-                scanned=1 in ocr_pages,
-                boxes=boxes,
-                retry=engine == selected == "tesseract-dpi",
-            )
+            # Keep physical page boundaries so a selected detail spanning pages retains OCR provenance.
+            page_break = "\n\f\n"
+            statement = page_break.join(primary)
+            selection = bank_transfer.selected_history_section(statement)
+            if selection is None:
+                pages, definition, accounts = _read_receipt(
+                    primary,
+                    pdf_path,
+                    definitions,
+                    scanned=1 in ocr_pages,
+                    boxes=boxes,
+                    retry=engine == selected == "tesseract-dpi",
+                )
+            else:
+                # Route the entire document (including exclusion headings), without appending unrelated cells.
+                pages = primary
+                definition, accounts = _route_receipt(primary, definitions, 1 in ocr_pages)
         except RereadExpired:
             if primary_error is not None:
                 raise primary_error
@@ -315,6 +341,13 @@ def _process(
                 accounts = account_evidence(primary[0]) if 1 in ocr_pages else None
             definition = routed
         if definition is not None:
+            if selection is not None and _is_receipt(definition):
+                first = statement.count(page_break, 0, statement.index(selection)) + 1
+                pages = primary = selection.split(page_break)
+                ocr_pages = [i + 1 for i in range(len(pages)) if first + i in ocr_pages]
+                accounts = account_evidence(pages[0]) if 1 in ocr_pages else None
+                # Whole-page crops, alternate OCR and sibling evidence must not reintroduce other rows.
+                boxes, alternate = [], None
             check_core_fields = (
                 definition is rule_class
                 and (
@@ -327,8 +360,18 @@ def _process(
                 and definition.profile.mode == "RL"
                 and definition.profile.gap_scope == "incomplete"
             )
+            page_gutters = {}
+            if definition.extractor is appeal.extract:
+                # Match boxes against their original transcript, before routing reordered native cards.
+                appeal_pages = [original_first, *pages[1:]] if original_first and 1 not in ocr_pages else pages
+                ordered, page_gutters = read_appeal_columns(appeal_pages, boxes, page_sizes, ocr_pages)
+                if page_gutters:
+                    pages = [ordered[i] if i + 1 in page_gutters else page for i, page in enumerate(pages)]
+            model_source = pages if page_gutters else primary
             blocks = (
-                party_inventory(boxes, page_sizes, appeal_cards=definition.extractor is appeal.extract)
+                party_inventory(
+                    boxes, page_sizes, appeal_cards=definition.extractor is appeal.extract, page_gutters=page_gutters
+                )
                 if definition.extractor in (appeal.extract, power_of_attorney.extract)
                 and definition.profile.rules_first
                 else []
@@ -345,7 +388,7 @@ def _process(
                 join_pages(pages),
                 ocr_python=python_rules,
                 alternate=alternate if definition.profile.dual_ocr else None,
-                model_text=join_pages(primary) if pages is not primary else None,
+                model_text=join_pages(model_source) if pages is not model_source else None,
                 first_page=primary[0] if primary else None,
                 check_core_fields=check_core_fields,
             )

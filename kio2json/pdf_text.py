@@ -368,9 +368,26 @@ def _text_layer(page, force_ocr: bool, repair_image_text: bool) -> str | None:
     if page.page_number == 1:
         # The layout reader also consumes WordBox, so import after this module is initialized.
         from .appeal_layout import restore_overprinted_card
+        from .receipt_reading import restore_receipt_spacing
 
-        return restore_overprinted_card(page, text)
+        return restore_overprinted_card(page, restore_receipt_spacing(page, text))
     return text
+
+
+_JOINED_REGISTRY = re.compile(r"(?:KRS|NIP)\d{10}(?!\d)|REGON\d{9}(?:\d{5})?(?!\d)")
+_SPACED_REGISTRY = re.compile(r"\b(KRS|NIP|REGON)[ \t]+(\d+)\b")
+
+
+def _native_spacing(page, text: str) -> tuple[str, dict[str, float]]:
+    """Retry a tighter physical gap when a register label is fused to a full-length number."""
+    joined = set(_JOINED_REGISTRY.findall(text))
+    if joined:
+        options = {"x_tolerance": 1.5}
+        spaced = page.extract_text(**options) or ""
+        restored = any(label + value in joined for label, value in _SPACED_REGISTRY.findall(spaced))
+        if restored and "".join(spaced.split()) == "".join(text.split()):
+            return spaced, options
+    return text, {}
 
 
 def _fits_parallel_batch(pages) -> bool:
@@ -469,11 +486,13 @@ def read_pages(
                 else:
                     text = recognize(page, words if include else None)
                 text = normalize_ocr(text)
-            elif include and word_boxes is not None:
-                words.extend(
-                    WordBox(page.page_number, w["text"], w["x0"], w["top"], w["x1"], w["bottom"])
-                    for w in page.extract_words()
-                )
+            elif include:
+                text, spacing = _native_spacing(page, text)
+                if word_boxes is not None:
+                    words.extend(
+                        WordBox(page.page_number, w["text"], w["x0"], w["top"], w["x1"], w["bottom"])
+                        for w in page.extract_words(**spacing)
+                    )
             if include:
                 if page_sizes is not None:
                     page_sizes[number] = page.width, page.height

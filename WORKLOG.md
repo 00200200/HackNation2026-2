@@ -21,6 +21,8 @@ behind the faktczyfejk Caddy; deploy in `docs/deploy.md`. Its upload calls `kio2
 
 The jury can run the batch CLI and upload UI locally with the root Compose file. [Docker instructions](README.md#run-with-docker-compose)
 
+The final deck (12 slides) and a two-minute demo script are in `docs/pitch/`. The form fields and the jury's commands are in `docs/submission.md`. [Number sources](docs/pitch/README.md)
+
 The evaluation VM kit installs the rules CLI under `/opt/solution`. The VM owner still needs to run the Ubuntu offline and reboot checks. [Deployment steps](README.md#deploy-on-the-evaluation-vm)
 
 A new document class needs one TOML file. `--classes PATH` and `--enable ID` add classes to the three organizer
@@ -30,6 +32,8 @@ The viewer lists the loaded classes, the cue that chose each class, failed check
 `--explain DIR` writes the same trace to a folder outside `--output`. Example: `examples/classes/accession.toml`.
 
 ## Last eval
+
+Native two-column appeal field F1 rose from 0.4064 to 0.9717 across ten generated cases. On the five held-out cases, native F1 rose from 0.3387 to 0.9700 and forced-Tesseract F1 rose from 0.8619 to 0.8925. [Per-field, organizer and private aggregate results](evals/results/two-column-appeals.json)
 
 On the 240 seeded PDFs, UZP field micro F1 rose from 0.2960 on #69 to **0.8948** on the robustness checkpoint. The classifier routed 170/180 positives, including all 60 appeals, and returned `{}` on all 60 negatives. The control with #78’s account and JSON conventions scored 0.3179. The ten remaining routing misses were alternative-format transfers.
 
@@ -139,6 +143,10 @@ Two and four grant JSONs matched exactly. The ten organizer grants remained exac
   `/orchestrator`, not to Claude subagents.
 
 ## Log
+
+- 22.11.2026 · Codex · Added role-based sole-trader identification in declarations, registry cards and proprietor signatures. The frozen extractor recovered 8/8 reserved proprietor names. [Control and benchmark results](evals/results/sole-trader-grantors.md)
+
+- 22.11.2026 · Codex · Separated sole-trader identities, mandate signatures and challenged acts using the case-linked development split. [Field errors and split results](evals/results/case-mandates-appeals.md)
 
 - 22.11.2026 · Codex · Added contracting-authority descriptions and inflected captions to the appeal party reader. Joint authority cards preserve the printed names, registry IDs and lead marker. [Caption measurements](evals/results/authority-captions.json)
 
@@ -250,6 +258,9 @@ Two and four grant JSONs matched exactly. The ten organizer grants remained exac
 
 - 22.11.2026 · Codex · Fixed appeal party boundaries at numbered headings, parenthesized page counters over scans, labelled OCR receipt accounts and explicit grantor signature blocks. The remaining round-three routing and role errors are tracked in #1.
 
+- 22.11.2026 · Restored independent appeal sections from native and OCR word positions, preserved shared headings and bound party cards to their columns. [Measurements](evals/results/two-column-appeals.json)
+- 22.11.2026 · Measured merged main `725765b` keyless with two workers. Printed-prefix training was 196/196 byte-identical (UZP and strict F1 1.0000), and organizer scans were 29/30 exact (UZP 1.0000). UZP F1 was 0.9512 on fixed variants, 0.9729/0.7923 on linked development/reserved cases and 0.9286/0.9244 on corpus 1/2 development. The 150-PDF mixed batch took 343.53 seconds. [Measurements](evals/results/merged-main-725765b.json)
+
 - 22.11.2026 · Added corroborating Polish filing and payment cues, scoped fields and native two-column reading for issue #63. Re-ran the 240-PDF benchmark and organizer and private gates against the confirmed JSON and account conventions. [Final field counts](evals/results/variants.json)
 
 - 22.11.2026 · Claude · `start.sh` now finds `.venv/bin/python` or `python3`, the CLI writes progress lines as UTF-8 when a Windows redirect uses an ANSI code page, `deploy/RUN.md` says unrelated documents produce `{}`, and the rehearsal speeds in `docs/readme/reference.md` name their revision and profile · fix/jury-run-hardening
@@ -257,6 +268,8 @@ Two and four grant JSONs matched exactly. The ten organizer grants remained exac
 - 22.11.2026 · Claude · `start.sh` takes the first of `.venv/bin/python`, `python3` and `python` that is Python 3.13 or newer, `*.sh` files keep LF endings and the encoding test pins its working directory. A two-worker run on the 30 organizer scans at `d9a3b25`, with 12 busy loops on an Apple M2 Pro (about 1.1 cores), kept UZP F1 at 1.000 and routing at 30 of 30. It is recorded as a simulation, not VM timing. [Measurements](evals/results/vm-2vcpu.json) · fix/jury-run-hardening
 
 - 22.11.2026 · Claude · The rehearsal sentence in `docs/readme/reference.md` now says the output was compared with the reference run, names the 226 files as 196 synthetic training PDFs plus 30 organizer scans, and cites the committed record `evals/results/vm-2vcpu.json` for the 399.77 s figure and the revision `7a1c45b` · fix/jury-run-hardening
+
+- 22.11.2026 · Claude · Updated the final deck (12 slides) with the UZP-formula F1, the #76 accession class, a components and licences slide, the Regulamin Stage II split, an architecture slide, UZP value and a two-minute demo script; added the submission checklist with the VM evaluation from the organizer's VM.md. Posted the pre-access history audit and the title recommendation on #48 · docs/pitch
 
 ## Frontend branch snapshot before API integration
 
@@ -290,6 +303,7 @@ These runs used local rules with the three endpoint variables unset. The two loc
 - 22.11.2026 · Codex · Added local jury Compose services and the signed task rules for #60. Compose configuration validated. Docker Desktop did not answer its health probe, so container byte parity is pending.
 - 22.11.2026 · Codex · The keyless LSTM crop experiment retained 13 correctly printed checksum-invalid accounts on the 240 seeded variants, raising UZP F1 from 0.2960 to 0.3053. It changed no digits on either real cohort or the organizer scans. [Paired measurements](evals/results/ocr-alternatives.json)
 
+- 22.11.2026 · Claude · doc2json.pl frontend: route file drops anywhere on the page to the upload, report a refused clipboard copy, white keyboard focus ring on light buttons, null token at #8a8a8a (CodeRabbit threads on #27) · fix/frontend-review-27
 - 2026-11-22 · Grounded candidate selection for disputed, populated first-page transfer fields, singleton appeal party names and procurement titles in the rules-first schema profile (`feat/doubtful-values`).
 - 22.11.2026 · Codex · Scored candidate selection after merging #71 at `c13dc3e7f`. Across 91 development PDFs, UZP micro-F1 was 0.9572 keyless and 0.9617 keyed with two workers. All 196 keyless training outputs matched main byte for byte. [Development counts](evals/results/doubtful-values.json)
 - 22.11.2026 · Codex · Prepared the VM installation and offline rehearsal for #66 and refreshed the organizer instructions to `eadffbc`. [Rehearsal measurements](evals/results/vm-2vcpu.json)
@@ -302,11 +316,17 @@ These runs used local rules with the three endpoint variables unset. The two loc
 - 22.11.2026 · Claude · PR #53 merged with main again (#72, #82): the README's VM rehearsal figures (399.77 s, about 4 min 25 s) now name their keys in `vm-2vcpu.json` and the extraction revision `7a1c45b` they come from, and the stale "before the kit merges" sentence is gone because `deploy/vm-kit` is an ancestor of main. The WORKLOG conflict kept both sides · docs/paths-and-llm-scoring
 - 22.11.2026 · Claude · PR #53 merged with main again (#83) and the judge's citation findings fixed: the Round 2 wall-time column, the optional-OCR calibration times and the cold Ministral run now name their file and keys, the Round 2 section is labelled as older strict-metric history with a pointer to the UZP figures in `p0-conventions.json`, the Ministral section is labelled older strict-metric history too (without the pointer), and the Docker section says no container run has been compared with the CLI yet · docs/paths-and-llm-scoring
 - 22.11.2026 · Claude · PR #53 judge notes on `7716064` applied: the Round 2 note says the later UZP runs are local rules, no model and development data only (strict 0.9974 on the scans), the DeepSeek Flash plan is marked superseded with the key that still records it, the VM Docker Compose fallback carries the same not-yet-run note as the Docker section, the per-pool read counts show their sums, and a Next row asks the team to align the `latest.json` wording of the two skills with the practice of naming a result file, key, value and commit · docs/paths-and-llm-scoring
-- 22.11.2026 · Claude · PR #53 rebuilt on main after #90 (`f98dc56`), then merged with #91, #93, #95 and #96 (`ace38bb`), as a small change on top of the README split: the README is main's, and what this PR said in the README now sits in `docs/readme/reference.md` (VM rehearsal, with the wording of #100: the parity result for the 226 files and a link to `vm-2vcpu.json`, without the timing figures; Round 2, optional OCR, watchdog, batch runtime and cold Ministral citations with file, key, number and commit; Round 2 labelled as strict-metric history with a pointer to the README results table and the Ministral section labelled the same way without the pointer; the Compose fallback and the Docker section marked not run end to end; the pipeline PDF called older than the README diagram; the 8B wording follows the organizer's "smaller model scores more"; DeepSeek Flash marked superseded). `HN_REAL_CORPUS` stays empty by default in the Makefile and the skill, because main's Makefile has the personal path again · docs/paths-and-llm-scoring
+- 22.11.2026 · Claude · PR #53 rebuilt on main after #90 (`f98dc56`), then merged with #91, #93, #95 and #96 (`ace38bb`), as a small change on top of the README split: the README is main's, and what this PR said in the README now sits in `docs/readme/reference.md` (VM rehearsal, with the wording of #100: the parity result for the 226 files and a link to `vm-2vcpu.json`, without the timing figures; Round 2, optional OCR, watchdog, batch runtime and cold Ministral citations with file, key, number and commit; Round 2 labelled as strict-metric history with a pointer to the README results table and the Ministral section labelled the same way without the pointer; the Compose fallback and the Docker section marked not run end to end; the 8B wording follows the organizer's "smaller model scores more"; DeepSeek Flash marked superseded). `HN_REAL_CORPUS` stays empty by default in the Makefile and the skill, because main's Makefile has the personal path again · docs/paths-and-llm-scoring
 - 22.11.2026 · Claude · PR #53 aligned with #100 (`53aae2f`): the VM rehearsal paragraph in `docs/readme/reference.md` is #100's text, so the two PRs merge in either order. The 399.77 s and 4 min 25 s figures and their `vm-2vcpu.json` key names are gone from that paragraph, which keeps the parity result for 196 training PDFs plus 30 scans (rules-only, extraction revision `7a1c45b`) and the link to the measurements. Ready for merge, no further pushes to this branch · docs/paths-and-llm-scoring
-- 22.11.2026 · Claude · `docs/pipeline/pipeline.pdf` is now the README pipeline diagram printed from `docs/readme/src/pipeline.html` with headless Chrome (one page, shows `{}` for unrelated documents, no "In review" panel), and `docs/pipeline/pipeline.tex` is deleted, at the coordinator's request after a CodeRabbit finding on #36. The old PDF showed the empty output as a zero-byte file and #24, #26 and #28 as in review, and no LaTeX engine was available for a rebuild. The new PDF drops the extra panels of the old drawing (GUI, class configuration, model engine detail, measured evaluations); the README and `docs/readme/reference.md` describe those. The print command is in the header of `docs/readme/src/base.css` · docs/paths-and-llm-scoring
 - 22.11.2026 · Codex · Synced #72 with main at `4222472`, retaining first-page candidate selection in the keyed profile.
 - 22.11.2026 · Codex · Synced the rule fixes in #75 with main at `b9c2c7f`, preserving the printed account prefix during OCR slash repair.
 - 22.11.2026 · Codex · Integrated the merged #75 rule fixes into #72 at main `257a6af`.
 - 2026-11-22 · Transfer confirmations can bind a split execution heading to a single dated amount and two explicitly owned accounts. Receipt dates also accept Roman months and labelled whole amounts can place the currency first.
+- 22.11.2026 · Codex · Added bank-attestation, single-entry history and settled-detail rules. The development bank letters routed 4/4 with 0.9767 UZP F1. The reserved history, operation-detail and order-detail layouts remained at 0/4 each. [Measurements](evals/results/case-transfers.json)
+- 22.11.2026 · Codex · Integrated the bank-letter update with main `cf67694`. The merged extractor `95c87f3` scored 0.9729 development and 0.7923 reserved UZP F1, matched all 196 training outputs and scored 29/30 exact on serial organizer scans. [Results](evals/results/case-transfers.json)
+- 22.11.2026 · Codex · Router `b5cdc5b` recovered two of four reserved receipts in each of the history, operation-detail and order-detail families. Reserved UZP F1 rose from 0.7923 to 0.8159 on the second blind evaluation. Development counts and all 52 negative outputs held. [Results](evals/results/case-transfer-routing.json)
 - 22.11.2026 · Codex · Added the seeded case-linked benchmark on `feat/case-benchmark`, pairing each native appeal, mandate, transfer and near-negative with a scan and grouping the results by case and layout. Main `fa9937e` scored 0.7191 UZP and 0.6617 strict on 208 PDFs. [Measurements](evals/results/case-benchmark.json)
+- 22.11.2026 · Codex · Integrated the additional document families and matched native controls from #88 as `make eval-document-variants`. The fixed #69/#93 benchmark still runs with `make eval-variants`. · integrate/pr88
+- 22.11.2026 · Codex · Added grammatical agreement for descriptive appellant and buyer captions and linked printed joint-procurement lead references to numbered member identities on appeal cards.
+- 22.11.2026 · Refreshed the [jury pipeline diagram](docs/pipeline/pipeline.pdf) and [README results](README.md#results) with the merged-main scorecard at `725765b` and the later receipt-routing results.
+- 22.11.2026 · Claude · PR #53 merged with main `b2fd9c6` (#127). Main's refreshed `docs/pipeline/pipeline.pdf` and `pipeline.tex` are kept, so the HTML print of the PDF that this PR carried is dropped, `docs/readme/reference.md` now calls the PDF the jury version built with `pdflatex`, and `docs/readme/src/base.css` and `pipeline.html` are main's again. The earlier version of this PR (`d0acd29`) still has the print if the team prefers it · docs/paths-and-llm-scoring

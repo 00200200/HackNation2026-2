@@ -152,3 +152,29 @@ def test_marginal_lead_marker_between_numbered_authorities_keeps_both_records():
             ("Muzeum Latawców", "1234567890", None, 1),
             ("Gmina Lampionów", None, "123456789", 0),
         ]
+
+
+def test_numbered_office_mailbox_stays_with_its_appointed_lawyer_after_the_subject():
+    page = """Zamawiający: Uniwersytet Północny
+e-mail: biuro9Qnauka.example
+Dotyczy: Naprawa obudowy
+ODWOŁANIE
+Odwołujący: Firma Pastel
+ul. Równa 8
+Pełnomocnik odwołującego: adw. Ada Pole
+Kancelaria Pastel
+e-mail: kancelaria403Q©tusz.example"""
+    result = extract([page], {1})
+    assert result["Odwolujacy"][0]["pelnomocnik"]["mail"] == "kancelaria403@tusz.example"
+
+
+def test_attorney_named_only_in_a_quoted_card_cannot_supply_contact_details():
+    page = """Odwołujący: Firma Pastel
+Pełnomocnik odwołującego: adw. Ada Pole
+Dotyczy: Naprawa obudowy
+Uzasadnienie
+Cytat:
+Odwołujący: Inna Firma
+Pełnomocnik odwołującego: adw. Ada Pole
+e-mail: kancelaria403Q©tusz.example"""
+    assert extract([page], {1})["Odwolujacy"][0]["pelnomocnik"]["mail"] is None
