@@ -69,31 +69,32 @@ For a run that includes designated test cases, the field report requires an exte
 
 ## F1 definition (`evals/metrics.py`)
 
-The organizer has not published the formula: **UNCONFIRMED**, ask at the UZP stand and update `metrics.py` and
-this section when they answer. Working definition:
+UZP published the field-counting rules on 21 November 2026. The exact string similarity function remains unconfirmed. [Organizer answers](https://github.com/00200200/HackNation2026-2/issues/59)
 
-- Each JSON is flattened to `(path, value)` leaf pairs; list indices become `[]`, so lists compare as multisets.
-- Values are normalised: whitespace and case; numbers by value (`10000.00 == 10000`); identifier fields (`krs`,
-  `nip`, `regon`, `pesel`, `na_rachunek`, `z_rachunku`) as digits only, string or number. Types (`"3" != 3`) and
-  format rules from the schema comments (ISO dates, `YYYY/BZP########`, TED `NNNNNN-YYYY`, `czynnosc_opis` exactly
-  as in the dictionary) are **not** normalised away: the product must emit them.
-- `null` leaves count: null where gold is null is a hit; an invented value is a FP and a FN. Never fill a field the
-  document does not state (FAQ 6). `micro_f1_non_null` shows the variant that ignores gold-null fields.
-- Negative document: gold is empty, every predicted pair is a FP. Missing/invalid output: every gold pair is a FN.
-- The micro-F1 is pooled over all documents. `holdout_51_60` (full run) reports the same on cases 51–60.
-- `macro_f1_documents` averages F1 over documents with at least one predicted or reference leaf.
-  An invented field on a negative gives that document zero.
-- `macro_f1_classes` averages the field-level F1 scores for the target classes with reference or predicted fields.
-  A wrong class incurs missed fields in the reference class and spurious fields in the predicted class.
-  `macro_f1_class_count` gives the number of classes in the mean and `per_class_f1` names them.
-- `macro_f1_fields` gives each distinct leaf path the same weight. Match values within each document,
-  pool TP/FP/FN for each path across documents, then average the path scores. An empty average is JSON null.
+| Prediction | Reference | Count |
+|---|---|---|
+| Matching value | Present | TP |
+| Wrong value | Present | FP |
+| Present | Absent | FP |
+| Absent | Present | FN |
+| Absent | Absent | TN |
+
+A missing field and JSON null both mean absent. Micro F1 is `2 TP / (2 TP + FP + FN)`, pooled across documents. TN contributes nothing. A wrong guess and a null each cost one error when the reference contains a value. Retain a supported, partially legible name and trim OCR noise when possible. An invented value against an absent reference costs an FP.
+
+The evaluator uses RapidFuzz normalized Levenshtein similarity of at least 0.80 for the attorney firm, transfer title, appellant name, contracting authority name and procurement title. Other text fields require equality after whitespace and case normalization. Printed identifiers retain country prefixes, case, leading zeros and punctuation, with whitespace removed. JSON numbers compare by value.
+
+List entries are paired one-to-one by content within each parent. The assignment maximizes matching leaves, then pairs remaining present fields. Reordering entries preserves the score, and duplicate entries consume distinct matches. Missing predictions miss all present reference values. Extra predicted values on unrelated documents are FP.
+
+`micro_f1_strict` retains the historical score for comparison across revisions. It flattens lists to leaf multisets, includes null hits, uses the original identifier normalization and charges FP + FN for an incorrect substitution. `micro_f1_non_null` is its historical gold-null-excluded variant.
+
+The document, class and field macro scores average the defined UZP F1 scores of their respective groups. An empty average is JSON null. Full runs also report both micro metrics on training cases 51–60.
 
 ## Metrics and targets
 
 | Results key | Meaning | Target |
 |---|---|---|
 | `micro_f1` | pooled field-level F1, all documents incl. negatives | ≥ `ODW_F1_TARGET` (0.90 default; **team target**, the jury has no threshold, only a ranking) |
+| `micro_f1_strict` | historical pooled field-level F1 | reported |
 | `outputs_complete` | every input PDF has a valid JSON (or an empty file) in the right place | 1.00 |
 | `negatives_empty` | negatives returned as an empty file | 1.00 |
 | `classification_accuracy` | positive documents given the right class | 1.00 |
@@ -116,7 +117,7 @@ the negatives directory).
 
 - Product code changed (anything outside `docs/`, `data/`, Markdown, `.claude/`, `.githooks/`, `.github/`,
   `.gitignore`, `LICENSE`, `evals/results/`): commit, then run at least `--quick` on the committed state. Once
-  `.git/eval-latest.json` exists, the hook blocks a product push whose commit has no clean eval run.
+  `.git/eval-latest.json` exists, the hook requires a clean run with both metrics. Only UZP F1 has an F1 target.
 - Failing metric on a normal push: the hook warns, the `judge` agent decides PASS or BLOCK (a drop in `micro_f1`
   against the last committed results, or any negative not empty, is BLOCK).
 - Submission push (`HN_FINAL=1 git push`): full run on that commit, every required metric passing, `coverage_ok`.
