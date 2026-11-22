@@ -36,32 +36,47 @@ A person reads them easily, but a system can only use those facts once they are 
   supporting span of the source.
 - It runs on the jury's laptop: CPU only, offline OCR, installed with `pip install -r requirements.txt`. The
   default configuration needs no API key and calls no language model, because extraction is rules plus local OCR.
-  An optional OpenAI-compatible endpoint is described in
+  The optional model profile we measured calls Mistral's open-weight `ministral-3b-2512` (3,849,090,048 parameters)
+  through the EU endpoint `api.eu.mistral.ai`; see
   [Use a model endpoint](docs/readme/reference.md#use-a-model-endpoint).
 - Each document class is one TOML file in `config/classes/` with its routing cues, fields and engines. The disabled
   fourth class shows how: [enable it](docs/readme/reference.md#enable-the-fourth-class).
+- The pipeline diagram is also available as a [PDF](docs/pipeline/pipeline.pdf).
 
 ## Results
 
-<p align="center"><img src="docs/readme/results.png" alt="Field-level micro F1, rules only: 1.0000 on the synthetic training cases, 0.9974 on the organizer scans, 0.8900 and 0.8926 on two local real-document corpora" width="100%"></p>
+<p align="center"><img src="docs/readme/results.png" alt="UZP field micro F1, rules only: 1.0000 on the training cases, 0.9869 on the organizer scans, 0.9212 and 0.9221 on two local real-document corpora" width="100%"></p>
 
-| Dataset | PDFs | Micro F1 | Appeal | Power of attorney | Transfer |
-|---|---:|---:|---:|---:|---:|
-| Organizer training cases (synthetic) | 196 | 1.0000 | 1.0000 | 1.0000 | 1.0000 |
-| Organizer scans (real) | 30 | 0.9974 | 1.0000 | 1.0000 | 0.9833 |
-| Local corpus 1 (real) | 39 | 0.8900 | 0.9069 | 0.9558 | 0.7037 |
-| Local corpus 2, dev (real) | 39 | 0.8926 | 0.8783 | 0.9895 | 0.8833 |
+| Dataset | PDFs | UZP micro F1 | Strict micro F1 |
+|---|---:|---:|---:|
+| Organizer training cases (synthetic) | 196 | 1.0000 | 1.0000 |
+| Organizer scans (scanned PDFs) | 30 | 0.9869 | 0.9740 |
+| Local corpus 1 (real) | 39 | 0.9212 | 0.8889 |
+| Local corpus 2, dev (real) | 39 | 0.9221 | 0.8926 |
 
-Each figure is a rules-only CLI run (no endpoint configured), recorded in
-[`evals/results/round3.json`](evals/results/round3.json). The rules were developed against the training cases and the
-two local corpora, which are private sets of real documents that are not in this repository. These are therefore
-development figures, not estimates for unseen cases and not the score on the organizer's hidden test set. The 60 test
-PDFs of corpus 2 are held back and have not been scored.
+Each row is one rules-only CLI run (no endpoint configured, two PDF workers) at extractor commit `f7f3ee9`, scored at
+`6b34bc5` and recorded in [`evals/results/uzp-metric.json`](evals/results/uzp-metric.json). Both scores use the same
+predictions. UZP micro F1 follows the scoring rules UZP gave on the hackathon Discord, as recorded in
+[issue #59](https://github.com/00200200/HackNation2026-2/issues/59) and implemented in `evals/metrics.py`: a field that
+is empty in both the reference and the prediction counts as zero, and a wrong value counts as one false positive. Five
+long strings accept an 80% RapidFuzz match, because UZP has not confirmed its similarity function. The strict score, an
+exact match, is the one we used before. Routing was correct for 29 of the 30 organizer scans (9 of 10 transfer
+confirmations) and for every document of both local corpora.
 
-The F1 comes from this repository's scorer, `evals/metrics.py`, not from the organizer's, which we do not have.
-A batch of 150 PDFs took 83 s with four workers on a busy host, with load averages of 24 to 38 recorded around the run
-(`timing` in `round3.json`). The organizer's limit for 150 PDFs is 45 minutes ([`data/uzp/README.md`](data/uzp/README.md)). Method, timings and the OCR comparison are in the
-[technical reference](docs/readme/reference.md#results-on-the-training-data-synthetic). Full training run:
+The rules were developed against the training cases, the organizer scans and the two local corpora. The local corpora are
+private sets of real documents that are not in this repository. These are therefore development figures, not estimates
+for unseen cases and not the score on the organizer's hidden test set. The 60 test PDFs of corpus 2 are not part of them.
+
+Timing: 150 PDFs took 402 s with one worker while eight busy loops occupied the 8 logical CPUs of an Apple M1
+([`adaptive-ocr-budget.json`](evals/results/adaptive-ocr-budget.json), `runs[5]`, product `59aa13a`). With four workers on
+a host whose one-minute load average was 24 to 38 they took 83 s ([`round3.json`](evals/results/round3.json), `timing`,
+product `34da9ca`; `timing` does not name the machine). The organizer allows 45 minutes
+([`data/uzp/README.md`](data/uzp/README.md)), and the jury's machine will differ from ours.
+
+The definition of the score, the earlier rounds and the OCR comparison are in the technical reference:
+[current figures](docs/readme/reference.md#current-figures-uzp-micro-f1-rules-only),
+[real-document rounds and timings](docs/readme/reference.md#rules-on-real-documents-and-organizer-scans) and
+[OCR comparison](docs/readme/reference.md#ocr-on-real-development-documents). Full training run:
 [`latest.json`](evals/results/latest.json).
 
 ## Quick start
