@@ -121,3 +121,34 @@ ul. Wodna 8
 ODWOŁANIE
 NIP 4322221119, KRS 0000033311"""
     assert extract([page], {1})["Odwolujacy"][0]["krs"] is None
+
+
+def test_scanned_filing_cover_can_list_attachments_before_its_party_cards():
+    page = (
+        "Karta zgłoszenia\nZałączniki: 2\nOdpis formularza\nSkany podpisów\n"
+        "Zamawiający: Muzeum Latawców\nNIP: 2345678901\n"
+        "Odwołujący: Fabryka Wstęg sp. z o.o.\nNIP: 1234567890\nODWOŁANIE"
+    )
+    result = extract([page], {1})
+    assert [(p["nazwa"], p["nip"]) for p in result["Zamawiajacy"]] == [("Muzeum Latawców", "2345678901")]
+
+
+def test_attachment_after_the_filing_parties_cannot_add_an_authority():
+    page = (
+        "Odwołujący: Fabryka Wstęg sp. z o.o.\nNIP: 1234567890\nZałączniki:\n"
+        "Zamawiający: Muzeum Latawców\nNIP: 2345678901"
+    )
+    assert extract([page], {1})["Zamawiajacy"] == []
+
+
+def test_marginal_lead_marker_between_numbered_authorities_keeps_both_records():
+    page = (
+        "Zamawiający: Zamawiający wspólnie udzielający zamówienia:\n"
+        "1. Muzeum Latawców\nNIP: 1234567890\nZamawiający prowadzący postępowanie\n"
+        "2. Gmina Lampionów\nREGON: 123456789\nODWOŁANIE"
+    )
+    for result in (appeal.extract(page), extract([page], {1})):
+        assert [(p["nazwa"], p["nip"], p["regon"], p["prowadzacy_postepowanie"]) for p in result["Zamawiajacy"]] == [
+            ("Muzeum Latawców", "1234567890", None, 1),
+            ("Gmina Lampionów", None, "123456789", 0),
+        ]

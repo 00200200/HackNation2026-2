@@ -244,8 +244,7 @@ def _process(
     primary_error = None
     for engine in engines:
         try:
-            if engine != engines[0] and not remaining_ms(1):
-                raise RereadExpired
+            # A cached reading is free; a new alternate reread raises RereadExpired itself once the deadline passes.
             primary, ocr_pages, boxes = read(engine)
             if primary and 1 not in ocr_pages and page_sizes.get(1):
                 first = form_columns(primary[0], boxes, page_sizes[1][0])
