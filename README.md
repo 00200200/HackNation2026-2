@@ -43,6 +43,8 @@ Routing reads the document text. Each class configuration supplies its routing r
 
 The public training score uses the account prefixes printed in the PDFs. The local rows report the `fast` Tesseract arm of the OCR-alternatives experiment. All four rows used local rules without a model endpoint. UZP accepts approximate matches for five long fields. Our scorer uses normalized Levenshtein similarity for those fields. The strict column uses the project's earlier scoring method. [Scoring rules](https://github.com/00200200/HackNation2026-2/issues/59) · [Evaluation method](docs/readme/reference.md#measure)
 
+Run `make eval-cases` for the paired native/scan benchmark. [Case families and scores](docs/readme/reference.md#case-linked-benchmark)
+
 ## Quick start
 
 Install 64-bit Python 3.13. From the repository root, create and activate a virtual environment.
@@ -84,7 +86,7 @@ Run `docker compose run --rm cli` for the batch or `docker compose up gui` for t
 ## Add a document type
 
 ```toml
-# config/classes/receipt.toml
+# classes/receipt.toml
 id = "receipt"
 engines = ["labelled_fields"]
 
@@ -97,7 +99,7 @@ instruction = "Reference printed on the receipt."
 pattern = '^Reference:[ \t]*(.+)$'
 ```
 
-The reference explains how to load the file and configure lists, normalizers and model engines.
+Save this file as `classes/receipt.toml` and run `python -m kio2json --classes classes --input input --output output`. Add `--explain trace` to record the routing decision and field sources separately. The reference shows how to generate a class from a sample PDF and configure field checks.
 [Add a class](docs/readme/reference.md#add-a-class).
 
 ## Repository

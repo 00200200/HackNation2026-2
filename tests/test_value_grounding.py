@@ -89,6 +89,18 @@ def test_offline_model_cannot_ground_partial_field_values(engines):
     assert result == {**dict.fromkeys(cases), "gross": 87.23}
 
 
+def test_offline_model_account_quote_may_leave_out_the_printed_code():
+    printed = "PL38" + " 6129" * 6
+    config = DocumentClass(
+        id="statement",
+        routing={"required": ["Konto"]},
+        engines=["llm"],
+        fields={"account": typed_field("account_number")},
+    )
+    model = OfflineModel(custom_output_args={"account": {"value": "PL38" + "6129" * 6, "quote": printed[2:]}})
+    assert extract(config, f"Konto: {printed}", model=model) == {"account": "PL38" + "6129" * 6}
+
+
 @pytest.mark.parametrize(
     ("printed", "expected"),
     [
@@ -110,12 +122,44 @@ def test_account_evidence_preserves_the_printed_country(printed, expected):
     assert grounded(field, printed, text, text, spans=True) == expected
     assert cited_value(field, expected, printed, text) == expected
     if printed.startswith("PL"):
-        assert cited_value(field, expected, printed[2:].strip(), text) is None
         assert cited_value(field, expected[2:], printed, text) is None
     if printed[0].isdigit():
         assert cited_value(field, "PL" + expected, printed, text) is None
     if printed != printed.upper():
         assert cited_value(field, expected.upper(), printed, text) is None
+
+
+@pytest.mark.parametrize(
+    "printed",
+    [
+        "PL 74 1234 5123 4512 3451 2345 1234",
+        "PL74 1234 5123 4512 3451 2345 1234",
+        "P L74 1234 5123 4512 3451 2345 1234",
+        "DE89 3704 0044 0532 0130 00",
+        "GB82 WEST 1234 5698 7654 32",
+    ],
+)
+def test_a_quote_may_leave_out_the_printed_country_code(printed):
+    field = typed_field("account_number")
+    text = f"Na rachunek: {printed}."
+    expected = "".join(printed.split())
+    quote = re.sub(r"^[A-Za-z]\s*[A-Za-z]\s*", "", printed)
+    assert cited_value(field, expected, quote, text) == expected
+    if expected.startswith("PL"):
+        # Without its code the value is a different, bare account.
+        assert cited_value(field, expected[2:], quote, text) is None
+    # The quote still has to reach both ends of the digits.
+    assert cited_value(field, expected, quote[3:], text) is None
+    assert cited_value(field, expected, quote[:-3], text) is None
+
+
+def test_a_quote_without_the_country_code_must_still_sit_at_the_printed_occurrence():
+    field = typed_field("account_number")
+    digits = "74123451234512345123451234"
+    quote = "74 1234 5123 4512 3451 2345 1234"
+    text = f"Konto A: {quote}. Konto B: PL{digits}."
+    assert cited_value(field, "PL" + digits, quote, text) is None
+    assert cited_value(field, digits, quote, text) == digits
 
 
 @pytest.mark.parametrize(
