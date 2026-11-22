@@ -3,34 +3,34 @@
   "cases": 60,
   "docs": 240,
   "dataset_sha256": "53414e5959d93426f1553cc36fcbe86968fca23edb80a959740654790b20dd03",
-  "commit": "32315e7754f8d61435c36e0a8fbae90a0b3669dc",
+  "commit": "2c00fbb061c0e4291cb060f79ae182b49d312266",
   "dirty": false,
   "chunk_cases": 5,
-  "seconds_per_doc": 0.21100455866932558,
-  "micro_f1": 0.89475115583356,
-  "micro_f1_strict": 0.8589598001362707,
+  "seconds_per_doc": 0.9233813314135962,
+  "micro_f1": 0.9124966550709125,
+  "micro_f1_strict": 0.8742997983419225,
   "counts_strict": {
-    "tp": 1891,
+    "tp": 1951,
     "fp": 196,
-    "fn": 425
+    "fn": 365
   },
-  "macro_f1_documents": 0.8538729525773303,
-  "macro_f1_classes": 0.8917796830222796,
+  "macro_f1_documents": 0.9094285081328858,
+  "macro_f1_classes": 0.925517874655208,
   "macro_f1_class_count": 3,
-  "macro_f1_fields": 0.8361879581602499,
-  "micro_f1_non_null": 0.8476067270375162,
+  "macro_f1_fields": 0.8531708751732171,
+  "micro_f1_non_null": 0.8652229299363058,
   "per_class_f1": {
     "odwolanie": 0.8918302145139206,
     "pelnomocnictwo": 0.9373549883990719,
-    "przelew": 0.8461538461538461
+    "przelew": 0.9473684210526315
   },
-  "classification_accuracy": 0.9444444444444444,
+  "classification_accuracy": 1.0,
   "negatives_empty": 1.0,
   "outputs_complete": 1.0,
   "counts": {
-    "tp": 1645,
+    "tp": 1705,
     "fp": 32,
-    "fn": 355,
+    "fn": 295,
     "tn": 284
   },
   "per_field": {
@@ -245,46 +245,46 @@
       "f1": 1.0
     },
     "przelew_bankowy.data_operacji": {
-      "tp": 40,
-      "fp": 0,
-      "fn": 20,
-      "tn": 0,
-      "f1": 0.8
-    },
-    "przelew_bankowy.kwota": {
-      "tp": 40,
-      "fp": 0,
-      "fn": 20,
-      "tn": 0,
-      "f1": 0.8
-    },
-    "przelew_bankowy.na_rachunek": {
-      "tp": 48,
-      "fp": 2,
-      "fn": 10,
-      "tn": 0,
-      "f1": 0.8888888888888888
-    },
-    "przelew_bankowy.numer_transakcji": {
       "tp": 50,
       "fp": 0,
       "fn": 10,
       "tn": 0,
       "f1": 0.9090909090909091
     },
-    "przelew_bankowy.tytul": {
-      "tp": 37,
-      "fp": 13,
+    "przelew_bankowy.kwota": {
+      "tp": 50,
+      "fp": 0,
       "fn": 10,
       "tn": 0,
-      "f1": 0.7628865979381443
+      "f1": 0.9090909090909091
+    },
+    "przelew_bankowy.na_rachunek": {
+      "tp": 58,
+      "fp": 2,
+      "fn": 0,
+      "tn": 0,
+      "f1": 0.9830508474576272
+    },
+    "przelew_bankowy.numer_transakcji": {
+      "tp": 60,
+      "fp": 0,
+      "fn": 0,
+      "tn": 0,
+      "f1": 1.0
+    },
+    "przelew_bankowy.tytul": {
+      "tp": 47,
+      "fp": 13,
+      "fn": 0,
+      "tn": 0,
+      "f1": 0.8785046728971962
     },
     "przelew_bankowy.z_rachunku": {
-      "tp": 49,
+      "tp": 59,
       "fp": 0,
-      "fn": 11,
+      "fn": 1,
       "tn": 0,
-      "f1": 0.8990825688073395
+      "f1": 0.9915966386554622
     }
   },
   "per_variant": {
@@ -300,20 +300,20 @@
           "total": 10
         },
         "przelew": {
-          "correct": 0,
+          "correct": 10,
           "total": 10
         }
       },
-      "micro_f1": 0.8590381426202321,
+      "micro_f1": 0.9622926093514329,
       "per_class_f1": {
         "odwolanie": 0.9489795918367347,
         "pelnomocnictwo": 0.9668874172185431,
-        "przelew": 0.0
+        "przelew": 1.0
       },
       "counts": {
-        "tp": 259,
+        "tp": 319,
         "fp": 0,
-        "fn": 85,
+        "fn": 25,
         "tn": 46
       }
     },
@@ -491,9 +491,9 @@
   },
   "weakest_first": [
     "two-column",
-    "alternative-formats",
     "synonyms",
     "scan",
+    "alternative-formats",
     "reordered",
     "single-column"
   ]

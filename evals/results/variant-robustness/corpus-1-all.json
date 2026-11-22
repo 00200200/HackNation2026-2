@@ -1,8 +1,8 @@
 {
-  "commit": "32315e7754f8d61435c36e0a8fbae90a0b3669dc",
+  "commit": "2c00fbb061c0e4291cb060f79ae182b49d312266",
   "dirty": false,
   "mode": "corpus",
-  "timestamp": "2026-11-22T02:21:09+00:00",
+  "timestamp": "2026-11-22T02:35:58+00:00",
   "n_cases": 21,
   "n_docs": 39,
   "coverage_ok": false,
@@ -10,7 +10,7 @@
   "run_error": null,
   "metrics": {
     "micro_f1": {
-      "value": 0.9212328767123288,
+      "value": 0.9246575342465754,
       "target": 0.9,
       "pass": true
     },
@@ -30,31 +30,31 @@
       "pass": true
     },
     "seconds_per_doc": {
-      "value": 10.161269094030827,
+      "value": 1.8434100064138572,
       "target": null,
       "pass": true
     },
     "micro_f1_strict": {
-      "value": 0.8879753340184995,
+      "value": 0.8920863309352518,
       "target": null,
       "pass": null
     }
   },
   "detail": {
-    "micro_f1": 0.9212328767123288,
-    "micro_f1_strict": 0.8879753340184995,
+    "micro_f1": 0.9246575342465754,
+    "micro_f1_strict": 0.8920863309352518,
     "counts_strict": {
-      "tp": 432,
-      "fp": 53,
-      "fn": 56
+      "tp": 434,
+      "fp": 51,
+      "fn": 54
     },
-    "macro_f1_documents": 0.8919908160862365,
-    "macro_f1_classes": 0.9139127966880757,
+    "macro_f1_documents": 0.8953921766304542,
+    "macro_f1_classes": 0.9155588872230552,
     "macro_f1_class_count": 3,
-    "macro_f1_fields": 0.8878283443752057,
-    "micro_f1_non_null": 0.8301282051282052,
+    "macro_f1_fields": 0.8905629321637227,
+    "micro_f1_non_null": 0.8333333333333334,
     "per_class_f1": {
-      "odwolanie": 0.928395061728395,
+      "odwolanie": 0.9333333333333333,
       "pelnomocnictwo": 0.9655172413793104,
       "przelew": 0.8478260869565217
     },
@@ -62,10 +62,10 @@
     "negatives_empty": 1.0,
     "outputs_complete": 1.0,
     "counts": {
-      "tp": 269,
-      "fp": 20,
-      "fn": 26,
-      "tn": 173
+      "tp": 270,
+      "fp": 16,
+      "fn": 28,
+      "tn": 174
     },
     "routing_by_class": {
       "odwolanie": {

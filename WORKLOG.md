@@ -25,9 +25,9 @@ The evaluation VM kit installs the rules CLI under `/opt/solution`. The VM owner
 
 ## Last eval
 
-On the 240 seeded PDFs, UZP field micro F1 rose from 0.2960 on the #69 baseline to **0.8948**. The control with #78’s account and JSON conventions scored 0.3179. The final classifier routed **170/180** positives, including all 60 appeals, and returned `{}` for all 60 negatives. The baseline missed every appeal.
+On the 240 seeded PDFs, UZP field micro F1 rose from 0.2960 on #69 to **0.8948** on the robustness checkpoint. The classifier routed 170/180 positives, including all 60 appeals, and returned `{}` on all 60 negatives. The control with #78’s account and JSON conventions scored 0.3179. The ten remaining routing misses were alternative-format transfers.
 
-All ten held-out alternative-format transfers were missed. Two-column forms had the lowest final field F1 (0.6602). The six profiles draw on different samples of synthetic cases. The 196 organizer training outputs matched the control byte for byte, and 29/30 organizer scans matched their references exactly. Private UZP F1 held at 0.9212 on corpus 1 all and 0.9244 on corpus 2 dev. [Profile and gate comparisons](evals/results/variant-robustness.json)
+Main incorporated this classifier and the separate transfer-format fix in #89. The integrated rerun scored **0.9125** and routed **180/180** positives. Two-column appeals scored 0.4064 field F1 despite all ten routing correctly. All 196 organizer training outputs matched the control byte for byte and 29/30 organizer scans matched their references exactly. Private UZP F1 was 0.9247 on corpus 1 all and 0.9244 on corpus 2 dev. [Profile and gate comparisons](evals/results/variant-robustness.json)
 
 The fixed-seed benchmark re-rendered the facts from all 60 synthetic cases and generated 60 look-alike negatives. The keyless extractor was main at `3eccb41`, scored with the issue #59 metric. The initial `f7f3ee9` run had the same dataset digest and field counts.
 
