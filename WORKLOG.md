@@ -25,7 +25,7 @@ The evaluation VM kit installs the rules CLI under `/opt/solution`. The VM owner
 
 ## Last eval
 
-On the 240 seeded PDFs, UZP field micro F1 rose from 0.2960 on the #69 baseline to **0.8902**. The control with #78’s account and JSON conventions scored 0.3179. The final classifier routed **170/180** positives, including all 60 appeals, and returned `{}` for all 60 negatives. The baseline missed every appeal.
+On the 240 seeded PDFs, UZP field micro F1 rose from 0.2960 on the #69 baseline to **0.8948**. The control with #78’s account and JSON conventions scored 0.3179. The final classifier routed **170/180** positives, including all 60 appeals, and returned `{}` for all 60 negatives. The baseline missed every appeal.
 
 All ten held-out alternative-format transfers were missed. Two-column forms had the lowest final field F1 (0.6602). The six profiles draw on different samples of synthetic cases. The 196 organizer training outputs matched the control byte for byte, and 29/30 organizer scans matched their references exactly. Private UZP F1 held at 0.9212 on corpus 1 all and 0.9244 on corpus 2 dev. [Profile and gate comparisons](evals/results/variant-robustness.json)
 

@@ -17,7 +17,7 @@
   "extractor_commits": {
     "base": "9d2c22e465d4b92043d65096d8a4de3c4d5128f0",
     "main": "d19ec82df6aaf750d56d357f76899c582b32bd42",
-    "final": "eb9bfa16d43b1c2fb74715dba6f0da06f673a7a0"
+    "final": "32315e7754f8d61435c36e0a8fbae90a0b3669dc"
   },
   "method": "All stages used the keyless CLI, two workers and the same 240 benchmark PDFs and references. The routing-only snapshot added class cues and account-spacing recognition to the #69 baseline. Baseline and routing used the scoring and empty-file convention then in force. Main and final both used #78 scoring, the corrected organizer training references and the {} output convention. Exact scan counts compare parsed JSON with organizer scan references. Training byte parity is measured against the baseline under the same output convention. Private reports contain only aggregates.",
   "stages": {
@@ -583,15 +583,15 @@
       }
     },
     "final": {
-      "micro_f1": 0.8902239213544512,
-      "micro_f1_strict": 0.8521462639109698,
+      "micro_f1": 0.89475115583356,
+      "micro_f1_strict": 0.8589598001362707,
       "classification_accuracy": 0.9444444444444444,
       "outputs_complete": 1.0,
       "negatives_empty": 1.0,
       "per_class_f1": {
-        "odwolanie": 0.891324200913242,
+        "odwolanie": 0.8918302145139206,
         "pelnomocnictwo": 0.9373549883990719,
-        "przelew": 0.819672131147541
+        "przelew": 0.8461538461538461
       },
       "correct_positive_routes": 170,
       "profiles": {
@@ -640,11 +640,11 @@
           }
         },
         "scan": {
-          "micro_f1": 0.9273021001615509,
+          "micro_f1": 0.9526813880126183,
           "per_class_f1": {
-            "odwolanie": 0.946236559139785,
+            "odwolanie": 0.9490616621983914,
             "pelnomocnictwo": 0.9444444444444444,
-            "przelew": 0.8349514563106796
+            "przelew": 0.9743589743589743
           },
           "routing_by_class": {
             "odwolanie": {
@@ -767,6 +767,26 @@
           "exact": 22,
           "docs": 39
         }
+      }
+    }
+  },
+  "organizer_receipt_recheck": {
+    "jobs": 1,
+    "extractor_commit": "32315e7754f8d61435c36e0a8fbae90a0b3669dc",
+    "scans": {
+      "0007": {
+        "routed": "przelew",
+        "exact": true,
+        "tp": 5,
+        "fp": 0,
+        "fn": 0
+      },
+      "0008": {
+        "routed": "przelew",
+        "exact": false,
+        "tp": 5,
+        "fp": 0,
+        "fn": 0
       }
     }
   }
