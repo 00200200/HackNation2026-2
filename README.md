@@ -88,6 +88,33 @@ python -m kio2json                                    # reads ./input/<case>/*.p
 OCR engines, offline install of the language data, the optional model endpoint and every setting are in the
 [technical reference](docs/readme/reference.md#run).
 
+## Run with Docker Compose
+
+Install Docker with Compose v2.24 or later. From the repository root, place case PDFs in
+`input/<case>/` or use the bundled `input/case1/`, then run:
+
+```sh
+docker compose run --rm cli
+```
+
+The first build downloads the Python dependencies and Polish and English OCR data.
+Each input PDF gets a matching file under `output/<case>/`. To upload PDFs in a browser, run:
+
+```sh
+docker compose up gui
+```
+
+Open <http://127.0.0.1:8000> for the upload page or <http://127.0.0.1:8000/api/docs> for
+the API. Press Ctrl+C to stop the server. Both services use local extraction by default.
+To enable a model, copy `.env.example` to `.env`, fill in the three endpoint settings,
+and rerun the service. Keep the key in the ignored `.env` file.
+
+Both services read the host's `config/classes/` directory. See the
+[pipeline architecture](docs/readme/reference.md#how-it-works),
+[class configuration example](docs/readme/reference.md#enable-the-fourth-class)
+and [instructions for adding a class](docs/readme/reference.md#add-a-class). The handover requirements are in
+[§3.5 of the task rules](docs/task/regulamin.pdf).
+
 ## Add a document type
 
 ```toml
@@ -115,6 +142,7 @@ A class like this needs no code change and no rebuild. Field types, lists, norma
 | `kio2json/` | The extractor: PDF text and OCR, routing, rule extractors, optional model engine, CLI and viewer |
 | `config/classes/` | One TOML per document class |
 | `evals/` | Field-level F1 harness and recorded results |
+| `compose.yaml`, `api.Dockerfile` | Docker Compose services for the batch CLI and the local upload page |
 | `frontend/`, `docs/deploy.md` | The doc2json.pl page and how it is deployed |
 | `data/uzp/` | Organizer data and schemas (copy of their repository) |
 | `docs/task/` | Challenge brief, FAQ and details |
