@@ -65,7 +65,8 @@ abstraction layer "for flexibility"; call it directly. Do not add a dependency f
   options. Follow the conventions already in the repo.
 - Bound every external call: timeout, retry count, and what the user sees on failure.
 - Secrets live in ignored `.env*` files. Never commit keys, tokens, datasets with personal data
-  or model weights.
+  or model weights. The one exception is the two Tesseract `tessdata_fast` models in `kio2json/tessdata/`
+  (Apache-2.0, 8.9 MB, SHA-256 checked before OCR): vendored so that `pip install -r requirements.txt` needs only PyPI.
 - Use the package manager the repo already uses (lockfile wins). For new Python projects: `uv`.
   For new JS/TS projects: `pnpm`.
 - Python 3.13+, `uv` for dependencies. The jury installs with `pip install -r requirements.txt`: after every
