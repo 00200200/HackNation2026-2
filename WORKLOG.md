@@ -96,7 +96,9 @@ Two and four grant JSONs matched exactly. The ten organizer grants remained exac
 | Improve receipt routing and recover damaged party names on development inputs | Open |
 | Confirm the long-string similarity function with UZP and record the Stage II weights | Open |
 | Promote HackNation2026 PR #48 to `prod` after the faktczyfejk demo, so the doc2json.pl Caddy block survives a redeploy | Open |
-| Re-measure the README Results rows (UZP and strict micro F1) on the submission commit; the training and scan rows are product commit `97dc53e` (`latest.json` and `organizer-scans.json`, refreshed at `17fae15`, agree), the corpus rows `55dc2a1`, and main has since gained #79, #54, #75, #72 and #82 | Open |
+| Re-measure the README Results rows (UZP and strict micro F1) on the submission commit; the training and scan rows are product commit `97dc53e` (`latest.json` and `organizer-scans.json`, refreshed at `17fae15`, agree), the corpus rows `55dc2a1`, and main has since gained #79, #54, #75, #72, #82 and #87 | Open |
+| Rebuild `docs/pipeline/pipeline.pdf` from `docs/pipeline/pipeline.tex` with a LaTeX engine (only the empty-output node of the `.tex` is fixed; the PDF still shows it as zero bytes, and the `.tex` and the PDF still show #24, #26 and #28 as in review; the README uses a Mermaid diagram instead) | Open |
+| Run a scan stress evaluation on fresh renders and skewed copies of the 30 organizer scans and commit its script ([#81](https://github.com/00200200/HackNation2026-2/issues/81) reports about 0.92 to 0.95 UZP F1, and 0.87 at 1.5 degrees of skew, from an uncommitted script); the README says no held-out score exists | Open |
 | Run `docker compose run --rm cli` and `docker compose up gui` once on an amd64 Docker host and compare the CLI output with `python -m kio2json` (no Docker on the dev Macs; hosted Actions are blocked by billing, #67) | Open |
 
 <!-- Superseded by the UZP scoring decision below. Previous open item:
@@ -254,3 +256,4 @@ These runs used local rules with the three endpoint variables unset. The two loc
 - 22.11.2026 · Codex · Synced #72 with main at `4222472`, retaining first-page candidate selection in the keyed profile.
 - 22.11.2026 · Codex · Synced the rule fixes in #75 with main at `b9c2c7f`, preserving the printed account prefix during OCR slash repair.
 - 22.11.2026 · Codex · Integrated the merged #75 rule fixes into #72 at main `257a6af`.
+- 22.11.2026 · Claude · PR #36 follow-up on the README: UZP micro F1 is the headline with strict micro F1 beside it, all four rows are named development sets with no held-out score (corpus 2 test unscored, scan stress evaluation open in #81), the pipeline is a Mermaid diagram with a module map instead of `pipeline.png`, short REST API, data handling and licence sections are added, the old rounds in `docs/readme/reference.md` carry history labels and the same three timing citations as #53, and `docs/pipeline/pipeline.tex` writes `{}` for unrelated PDFs (the PDF needs a LaTeX rebuild) · feat/docs
