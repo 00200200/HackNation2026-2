@@ -71,5 +71,5 @@ def test_cli_endpoint_failure_reports_only_path_type_and_status(
     assert capsys.readouterr().err == f"{first}: not processed ({diagnostic})\n"
     assert "invented-header" not in caplog.text
     assert "offline.invalid" not in caplog.text
-    assert (output / "first.json").read_bytes() == b""
+    assert (output / "first.json").read_text() == "{}\n"
     assert json.loads((output / "second.json").read_text()) == {"ref": "NIGHT-5"}

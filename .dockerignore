@@ -11,5 +11,4 @@ frontend/*
 !frontend/public/
 **/__pycache__
 **/*.egg-info
-packaging/polish_ocr_data/build
 .env*

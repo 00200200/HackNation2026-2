@@ -22,7 +22,8 @@ INSTRUCTIONS = (
     "Use null for information the document does not state and an empty list for no records. "
     "For each scalar value, quote a contiguous passage verbatim that establishes the value "
     "and the person, entity or transaction to which it belongs. Preserve record grouping. "
-    "Return dates in ISO format, amounts as numbers and identifiers as digit strings."
+    "Return dates in ISO format, amounts as numbers and numeric identifiers as digit strings. "
+    "For bank accounts keep all printed letters and digits, including their case and any country code."
 )
 
 
