@@ -27,6 +27,7 @@ dev = [
     "httpx>=0.28.1",
     "munkres>=3.0.0",
     "pytest>=9.2.0",
+    "reportlab>=4.4",
     "ruff>=0.17.6",
 ]
 

@@ -1,7 +1,7 @@
-.PHONY: help install data requirements test lint format check eval eval-quick eval-real
+.PHONY: help install data requirements test lint format check eval eval-quick eval-real eval-variants
 
 help: ## List targets
-	@grep -E '^[a-z-]+:.*## ' $(MAKEFILE_LIST) | awk -F ':.*## ' '{printf "  %-12s %s\n", $$1, $$2}'
+	@grep -E '^[a-z-]+:.*## ' $(MAKEFILE_LIST) | awk -F ':.*## ' '{printf "  %-14s %s\n", $$1, $$2}'
 
 install: ## Install Python dependencies
 	uv sync
@@ -44,3 +44,9 @@ export HN_REAL_CORPUS HN_REAL_SPLIT
 
 eval-real: ## F1 eval on the local real corpus
 	@uv run python -m evals.run --corpus "$$HN_REAL_CORPUS" --split "$$HN_REAL_SPLIT"
+
+N ?= 1
+SEED ?= 2026
+
+eval-variants: ## Robustness eval on re-rendered variants of the training cases (make eval-variants N=2 SEED=7)
+	uv run python -m evals.variants --n $(N) --seed $(SEED)

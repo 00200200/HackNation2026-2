@@ -33,7 +33,24 @@ uv run python -m evals.run --corpus "$corpus" --split test
 uv run python -m evals.run --corpus "$corpus" --split dev --detail-out "$corpus/dev-detail.json"
 uv run python -m evals.field_report --corpus "$corpus" --split dev --force-ocr --errors
 uv run pytest -q tests/test_eval_metrics.py              # metric code only
+uv run python -m evals.variants --n 1 --seed 2026        # robustness: re-rendered variants + invented negatives
 ```
+
+`evals.variants` (about one minute, `make eval-variants N=1 SEED=2026`) re-renders the facts of the training cases with
+other wording, field order, date, amount and account formats, layouts and stand-in scans, plus invented negatives
+(invoices, rulings, notices, payment requests). It writes `evals/results/variants.json`: F1 per class, per field and per
+tag slice, and the worst documents with expected and predicted values. A control set (the same facts, text only, every
+wording and layout choice at its default option: the most common one in the training documents where that was
+measured; it is no copy of a training template) is scored next to it. The control is the reference point on these
+facts: below 1.0 it points at facts or conventions the app misses, and the gap between control and variants is what
+wording, format, layout and scanning cost (some transfers also pay for another purpose). Both are diagnostics, not
+gates. `micro_f1` is the organizer formula, `micro_f1_strict` the old exact match. Gold follows what a document prints. Account numbers keep
+the printed country code, without whitespace (UZP on Discord, 21.11.2026, #46 and #58: the training references that lack
+`PL` are an organizer error the test set does not share), so an app that strips the code loses both account fields of
+every transfer that prints one. Whether the organizer's gold also follows the page for identifiers printed with
+separators (gold keeps digits only) or amounts printed with a debit sign (gold keeps the positive amount) is UNCONFIRMED.
+Stand-in scans copy the encodings of the organizer's 30 sample scans (colour JPEG, grey JPEG, one-bit CCITT). Use
+`--dump DIR --no-run` to write the PDFs and reference JSON without running the app.
 
 The app is called with the jury's contract: `--cmd` or `ODW_CMD` (default
 `uv run python -m kio2json --input {input} --output {output}`). The eval
