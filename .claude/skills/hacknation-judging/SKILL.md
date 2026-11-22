@@ -21,7 +21,7 @@ organizer README `data/uzp/README.md` (https://github.com/Urzad-Zamowien-Publicz
 | 50% (README) / 30% (PDF) | Flexibility and extensibility | README: 1–20 pts LLM size (smaller model scores **more**), 1–20 pts new document types and data classes without rebuilding (config only), 1–10 pts other features such as GUI |
 | — (README) / 20% (PDF) | Architecture and technical quality | clarity, modularity, maintainability, documentation |
 
-Which split applies is UNCONFIRMED; build for both. F1 formula: UNCONFIRMED (see `odwolania2json-eval`).
+Which split applies is UNCONFIRMED; build for both. UZP published its F1 counts and 80% threshold in #59. The eval uses normalized Levenshtein as the similarity proxy.
 
 ## Basic requirements (miss one and the run scores nothing)
 
@@ -32,7 +32,7 @@ Which split applies is UNCONFIRMED; build for both. F1 formula: UNCONFIRMED (see
 - `input/` and `output/` folders in the app root. `input/<case>/<file>.pdf` → `output/<case>/<file>.json`, same file
   name, same tree, one JSON per PDF.
 - Classification by **content**, not file name. Three classes: appeal, power of attorney, transfer confirmation.
-  Anything else → **empty `.json` file**.
+  Anything else → a JSON file containing `{}`.
 - JSON per class exactly as `data/uzp/oczekiwane-json/` (keys, nesting, types, formats from the `//` comments).
 - `null` where the document does not state a value; never invent data (FAQ 6).
 - Text PDFs **and** scans (OCR) both work (FAQ 7).

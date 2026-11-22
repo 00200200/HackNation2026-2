@@ -8,6 +8,104 @@ Without endpoint credentials the jury configuration runs three rule-based extrac
 that selects its routing rules, output fields and extraction engines. New classes can use
 label patterns or an optional language model.
 
+## Deploy on the evaluation VM
+
+1. **Request the VM.** Submit one request per team using the form in the
+   organizer’s instructions. When the login arrives, connect over SSH. The
+   deployment account needs read access to the private GitHub repository.
+   [Organizer’s VM instructions and request form](data/uzp/VM.md)
+
+2. **Run `vm_setup.sh`.** While the VM is online, run these commands as the
+   deployment user. Before the kit merges, use `deploy/vm-kit` in place of
+   `main`. Setup copies the checked-out commit into `/opt/solution/repo`,
+   installs Python 3.13 and the pinned requirements, and smoke-tests a transfer
+   and a scanned appeal outside the evaluator directories.
+
+   ```sh
+   git clone --single-branch --branch main git@github.com:00200200/HackNation2026-2.git ~/kio-release
+   cd /opt/solution
+   bash ~/kio-release/deploy/vm_setup.sh
+   ```
+
+3. **Run the offline rehearsal.** On the VM, the following command prepares a
+   disposable x86-64 Ubuntu 24.04 container with two CPUs and 16 GiB. It uses
+   the installed Python as the reference. For both the network-disabled run
+   and the run after a container restart, it compares all 226 organizer files
+   by path and bytes and prints a time estimate for 150 PDFs. The script
+   removes its temporary outputs, containers and snapshot image when it exits.
+
+   ```sh
+   cd /opt/solution
+   bash repo/deploy/rehearse_vm.sh /opt/solution/.venv/bin/python
+   ```
+
+   The development host’s Docker engine timed out before starting Ubuntu.
+   The Ubuntu offline run, two-vCPU timing and reboot result are unverified.
+   On the shared Apple M1 host, the network-denied run matched all 226 local
+   files byte for byte in 399.77 seconds with two workers. The same mix scales
+   to about 4 min 25 s for 150 PDFs on that host. [Rehearsal measurements](evals/results/vm-2vcpu.json)
+
+4. **Copy `RUN.md` and check the real VM.** Setup installs the native command
+   automatically. To restore it for handover, run the following from
+   `/opt/solution`.
+
+   ```sh
+   install -m 644 repo/deploy/RUN.md /opt/solution/RUN.md
+   ```
+
+   Place sample PDFs under a fresh case name in `/opt/solution/input`, run
+   the command from `RUN.md` and inspect the matching JSON files. Run
+   `sudo reboot`, reconnect, remove your sample outputs and repeat. Remove
+   your sample inputs and outputs after the check. The organizer owns both
+   directories. Keep them in place for evaluation.
+
+To update, fetch the desired release in `~/kio-release`, check out its commit
+and repeat steps 2–4 using the existing clone. The rules-only profile uses
+**no external services**. For a keyed deployment, create `/opt/solution/.env`
+with mode 600, configure the agreed provider and model there, and identify
+the service in `RUN.md`. [Model profile settings](#use-a-model-endpoint)
+
+**Docker Compose fallback.** On the VM, use Compose v2.24 or later. From
+`/opt/solution`, build the jury image while online, then install the fallback
+command in `RUN.md` if this is the profile the evaluators should run.
+
+```sh
+docker compose -f repo/compose.yaml build cli
+sed 's|^sudo env PYTHONPATH=.*|sudo docker compose -f repo/deploy/compose.vm.yaml run --rm -T cli|' repo/deploy/RUN.md > RUN.md
+```
+
+Run the command in the installed `RUN.md` for the same handover check.
+The CLI mounts the evaluator directories, uses the local image and exits after
+the batch. For the optional upload UI on port 8080, run
+`docker compose -f repo/deploy/compose.vm.yaml up -d gui`. Docker restarts the
+UI after a reboot.
+
+## Run with Docker Compose
+
+Install Docker with Compose v2.24 or later. From the repository root, place case PDFs in
+`input/<case>/` or use the bundled `input/case1/`, then run:
+
+```sh
+docker compose run --rm cli
+```
+
+The first build downloads the Python dependencies and Polish and English OCR data.
+Each input PDF gets a matching file under `output/<case>/`. To upload PDFs in a browser, run:
+
+```sh
+docker compose up gui
+```
+
+Open <http://127.0.0.1:8000> for the upload page or <http://127.0.0.1:8000/api/docs> for
+the API. Press Ctrl+C to stop the server. Both services use local extraction by default.
+To enable a model, copy `.env.example` to `.env`, fill in the three endpoint settings,
+and rerun the service. Keep the key in the ignored `.env` file.
+
+Both services read the host's `config/classes/` directory. See the
+[pipeline architecture](#how-it-works), [class configuration example](#enable-the-fourth-class)
+and [instructions for adding a class](#add-a-class). The handover requirements are in
+[§3.5 of the task rules](docs/task/regulamin.pdf).
+
 ## Run
 
 From the repository root, create a virtual environment with 64-bit CPython 3.13.
@@ -54,16 +152,24 @@ For example, use `export KIO_OCR_ENGINE=rapidocr` in a POSIX shell or
 `$env:KIO_OCR_ENGINE = "rapidocr"` in PowerShell.
 
 Each PDF gets a JSON at the same relative path and file stem. Appeals, powers of attorney and
-bank-transfer confirmations get the organizer's structure. Any other document gets an empty
-file. In the default keyless profile, an unreadable PDF receives an empty file and a diagnostic on stderr. The CLI processes the remaining PDFs and exits with status 1. The keyed organizer profile uses the document recovery described below. A nonblank scan that yields fewer than two alphabetic words after page counters are removed
+bank-transfer confirmations get the organizer's structure. Unrelated documents get `{}`. Transfer accounts preserve the printed country code, if present, and omit whitespace. In the default keyless profile, an unreadable PDF receives `{}` and a diagnostic on stderr. The CLI processes the remaining PDFs and exits with status 1. The keyed organizer profile uses the document recovery described below. A nonblank scan that yields fewer than two alphabetic words after page counters are removed
 reports `no readable text after OCR`. Blank pages may stand alone or appear beside a readable page.
 
 To open the Polish document viewer, run `python -m kio2json.gui`. It opens a browser on
 `127.0.0.1:8000`. Select PDFs and name the case, or enter a folder containing cases. Click
 **Analizuj dokumenty**, choose a document and compare its pages with the JSON. **Pobierz wyniki (.zip)**
-downloads one JSON per PDF under its case folder. Failed documents show the reason and get an
-empty file. The viewer keeps temporary copies for the current session. The default configuration
+downloads one JSON per PDF under its case folder. Failed documents show the reason and get `{}` in the ZIP. The viewer keeps temporary copies for the current session. The default configuration
 works offline. Page provenance is used internally and the output follows the organizer’s JSON schema.
+
+When a case contains an appeal and a mandate or receipt, the viewer flags differences in party
+identifiers, attorney names and procedure numbers. It also flags unusual appeal fees when the
+procurement title identifies the category. Select a document to see which files to compare.
+
+Set `KIO_CASE_REPAIR=1` to enable sibling OCR repair in the CLI or viewer. The CLI finishes its
+parallel PDF reads before comparing documents in each `input/<case>/` folder. A replacement needs
+a damaged printed value and one compatible, independently read spelling in a different document
+class. Registry numbers also need a matching party identifier or name. A native text value can be
+corrected only when its NIP checksum fails. Missing fields stay empty.
 
 | Start from the repository | Windows | Linux or macOS |
 |---|---|---|
@@ -81,8 +187,11 @@ works offline. Page provenance is used internally and the output follows the org
    a possible e-mail address with a missing `@`, an English single-word pass rereads that crop. The extractor accepts the separator
    only when the rest of both readings agrees. Call `read_pages(path, word_boxes=boxes)` with
    an empty list to collect raw words and their rectangles alongside the page strings. Coordinates
-   are PDF points from the top left, with one-based page numbers. Polish Tesseract has 60 seconds per
-   primary page. Verification crops get up to 10 seconds each and optional full-page reads get up to
+   are PDF points from the top left, with one-based page numbers. Required Tesseract and RapidOCR
+   pages use a 180-second recognition watchdog at 300 dpi. After a timeout, the reader retries once
+   at 150 dpi if the document and batch still have time. It gives the retry the smaller of 60 seconds
+   and the remaining budget. Tesseract checks its timer during recognition, so setup and cancellation
+   can add wall time. Verification crops get up to 10 seconds each and optional full-page reads get up to
    180 seconds each. All optional OCR shares a deadline of
    300 seconds from the start of a PDF. The CLI and GUI also share one cutoff across the batch,
    10.8 seconds per input PDF with a minimum of 300 seconds for small batches. For the jury’s 150 PDFs
@@ -95,7 +204,7 @@ works offline. Page provenance is used internally and the output follows the org
    match wins. The three organizer classes share the content classifier in `kio2json/classify.py`.
    It reads headings in document order. A transfer normally needs two distinct accounts, a confirmation
    heading or execution status, and a transaction amount or date. Rejected payments and payment
-   requests get an empty file.
+   requests get `{}`.
 3. The rule extractors recover party blocks and receipt fields from columns. Each page keeps its source,
    so a scanned attachment cannot enable OCR repairs on a native receipt. Configuring an endpoint enables
    first-page model routing after the rules reject a document. The model extracts from the original reading
@@ -116,7 +225,7 @@ cp -R config/classes /tmp/kio-classes
 KIO_CLASSES_DIR=/tmp/kio-classes python -m kio2json --input input --output output
 ```
 
-With the default directory, that form gets an empty file. The end-to-end test writes an invented
+With the default directory, that form gets `{}`. The end-to-end test writes an invented
 PDF, runs the CLI in both configurations and checks the output, including its ISO date.
 
 ```sh
@@ -203,13 +312,14 @@ For compatible servers, `KIO_LLM_OUTPUT=schema` requests native JSON schema supp
 `json`. `KIO_LLM_TIMEOUT_SECONDS` sets the request deadline (1–600 seconds, default 180). The engine
 allows one structured-output correction. On a model or secondary OCR error, the keyed organizer
 profile retries the document with local rules, reports recovery, and continues the batch. An unreadable
-document yields an empty file. Custom class directories use the engine chains in their own TOML files.
+document yields `{}`. Custom class directories use the engine chains in their own TOML files.
 
 ## Measure
 
 ```
 uv run python -m evals.run --quick            # dev subset, before a push
-uv run python -m evals.run                    # all 60 synthetic training cases and the negatives
+uv run python -m evals.run                    # use the original references for all 60 cases and the negatives
+uv run python -m evals.run --correct-training-accounts  # restore prefixes printed in the training PDFs
 uv run python -m evals.run --organizer-scans  # 30 separately labelled scans
 uv run python -m evals.field_report --errors  # which fields fail, with list items paired inside their parent
 uv run python -m evals.field_report --force-ocr --errors   # ignore the text layer: what OCR costs
@@ -227,17 +337,16 @@ Both commands check the selected directories, PDFs and references before reporti
 `--pred`. Invalid inputs or an extractor failure exit with status 2 and preserve the previous results and gate.
 Test-split diagnostics omit local paths. Missing or malformed predictions count as missed reference fields.
 Training mode checks selected files against the organizer inventory committed in `data/uzp/dane`. Each known
-positive reference needs fields for its expected class. The negative-output target requires zero-byte predictions.
+positive reference needs fields for its expected class. The negative-output target requires an empty JSON object. A zero-byte prediction fails. Account fields are compared after removing whitespace, with every printed letter and leading zero retained.
 For a case-level split, put `{"dev": [...], "test": [...]}` in `SPLIT.json` at the corpus root. Each list
 contains case folder names. The default `--split all` scores the whole corpus, including corpora without a split.
 Inspect field errors on dev. Use aggregate scores to evaluate test. The organizer scan mode validates the committed PDF/reference pairs in `data/uzp/dane/skany` and writes `evals/results/organizer-scans.json`. The synthetic training and scan scores have separate result files.
 
-`evals.run` reports pooled micro F1 and macro F1 by document, class and field path.
-The working definitions are in `evals/metrics.py`. The organizer's formula is UNCONFIRMED.
+`evals.run` reports UZP micro F1 and macro F1 by document, class and field path. Empty reference and prediction values contribute zero to F1. A wrong value contributes one FP. Five long strings accept an 80% match, measured here with RapidFuzz normalized Levenshtein. UZP has yet to specify the similarity function. The historical score appears as `micro_f1_strict`. [UZP scoring rules](https://github.com/00200200/HackNation2026-2/issues/59)
 
 ## Results on the training data (synthetic)
 
-Source: `evals/results/latest.json` (full mode; the file records the commit it was run on).
+The full run below uses `--correct-training-accounts`. The original references omit two printed `PL` prefixes in each of 48 transfers. Scoring the same predictions against those references gives 0.9758 UZP micro F1 and 0.9585 strict micro F1 (96 field mismatches). [Full evaluation](evals/results/latest.json) · [Expected changes by training case](evals/results/p0-conventions.json)
 
 | Metric | Value |
 |---|---|
@@ -278,7 +387,7 @@ On corpus 1 the model raised transfer F1 by 0.1407. On corpus 2 dev it raised tr
 
 Exact counts compare the complete JSON, including list order. A/P/T denotes appeals, powers and transfers. Each private set includes 11 unrelated PDFs. Earlier appeal measurements are available separately. [Real appeal round](evals/results/appeal-real-development.json)
 
-Micro F1 pools field matches across documents. Macro F1 averages the three class scores. The combined measurement file includes correct routes for every class and both profiles. The negatives column counts zero-byte outputs. Timing includes OCR and extraction on a shared host. [Earlier appeal development measurements](evals/results/appeal-scan-development.json) · [Earlier grant development measurements](evals/results/poa-development.json) · [Organizer scan report](evals/results/organizer-scans.json)
+Micro F1 pools field matches across documents. Macro F1 averages the three class scores. The combined measurement file includes correct routes for every class and both profiles. This historical measurement counted zero-byte outputs as negatives. Timing includes OCR and extraction on a shared host. [Earlier appeal development measurements](evals/results/appeal-scan-development.json) · [Earlier grant development measurements](evals/results/poa-development.json) · [Organizer scan report](evals/results/organizer-scans.json)
 
 The earlier model-engine experiment compared two profiles on the 17-document corpus 1 holdout. [Model results](evals/results/llm-real-docs.json)
 
@@ -314,6 +423,12 @@ With these limits, eight busy loops and `--jobs 1`, the CLI processed the 150-PD
 (6 min 42 s of the jury’s 45 min). All 150 outputs matched the corresponding four-worker readings.
 The mix contained two copies of each organizer scan and 90 training PDFs. This timing preceded the
 final change to handling expired optional page reads. [Measurements and output digests](evals/results/adaptive-ocr-budget.json)
+
+With the 180-second primary watchdog, two workers processed all 226 public PDFs in 160.75 seconds.
+Every output matched `328f705` byte for byte. In a separate serial run on three scans, suspending the
+OCR worker for 65 seconds during the first page caused one document failure with the old watchdog.
+The new watchdog finished in 83.76 seconds including the pause, and all three outputs matched their
+ordinary readings. [Watchdog measurements](evals/results/first-pass-watchdog.json)
 
 In the earlier runtime-only experiment on a 16 GiB M1 MacBook Air, four workers processed 30 organizer scans in 37.15 seconds and a mix of
 60 scans and 90 training PDFs in 74.42 seconds. Peak sampled process-tree RSS for the mix was
@@ -418,8 +533,6 @@ rules. [OCR results](evals/results/ocr-engines.json)
   signer, a local RapidOCR pass can read a board title and a name in the same stamp column after
   the mandate. It shares the optional full-page OCR budget. A damaged or handwritten signature can still leave the signer missing.
   PDF signer names are extracted from embedded CMS certificates without validating trust or revocation.
-- UNCONFIRMED: what "empty JSON" means for unrelated documents. We write an empty file, as the
-  organizer README words it.
+- UZP confirmed that an unrelated document gets `{}`. Its JSON uses the input PDF’s stem. [Organizer clarification](https://github.com/00200200/HackNation2026-2/issues/57)
 - UNCONFIRMED: value types. `pesel` is a number in the organizer's annotated example and a string
-  in the reference JSONs; we write a string. The annotated transfer example has a 24-digit
-  account, while the rules expect the standard 26 digits.
+  in the reference JSONs. We write a string.

@@ -5,6 +5,14 @@ from dataclasses import dataclass
 
 from stdnum import iban
 
+from .accounts import (
+    ACCOUNT_RE,
+    OCR_ACCOUNT_RE,
+    account_identity,
+    account_matches,
+    complete_account_match,
+    valid_account,
+)
 from .bank_transfer import (
     ACCOUNT_CURRENCY,
     AMOUNT_LABEL,
@@ -17,8 +25,6 @@ from .common import DATE, to_iso
 from .ocr_booking import normalize_booking_rows
 from .receipt_layout import validated_account
 
-# 26-digit Polish account number, optionally 'PL'-prefixed, grouped or wrapped across lines.
-ACCOUNT_RE = re.compile(r"(?<![\w/|*])(?:PL\s?)?(\d{2}(?:[ \n]?\d{4}){6})(?![\w/|*])")
 ACCOUNT_NOUN = r"(?:(?:numer|nr\.?) (?:rachunku|konta)|rachunek|konto)"
 SENDER = r"(?:nadawc[ay]|zleceniodawc[ay]|płatnik(?:a)?)"
 RECIPIENT = r"(?:odbiorc[ay]|beneficjent(?:a)?|adresat(?:a)?(?: przelewu)?)"
@@ -40,34 +46,35 @@ class AccountEvidence:
     distinct_numbers: int
     masked_pair: bool
     declared: frozenset[str]
-    prefixed_roles: frozenset[str] = frozenset()
 
 
 def account_evidence(text: str) -> AccountEvidence:
     """Bind complete numbers or masks to their printed field or ordered table column."""
     numbers = set()
-    prefixed = set()
 
     def compact(match: re.Match) -> str:
+        if not complete_account_match(match):
+            return match[0]
         number = "".join(match[1].split())
-        numbers.add(number)
-        return ("PL" if match[0].startswith("PL") else "") + number
+        numbers.add(account_identity(number))
+        after = text[match.end() :]
+        if after.startswith((" ", "\t")) and ACCOUNT_LABEL.match(after.lstrip(" \t")):
+            return number + "\n"
+        return number
 
     # A party block can contain a name/address and account column on one physical row.
     table_roles = {}
     for header in re.finditer(r"(?im)^dane (nadawcy|odbiorcy)\s*\n[^\n]*\bnumer rachunku\b[^\n]*\n([^\n]+)", text):
-        row = list(ACCOUNT_RE.finditer(header[2]))
+        row = list(account_matches(header[2]))
         if len(row) == 1:
             role = "sender" if header[1].casefold() == "nadawcy" else "recipient"
             number = "".join(row[0][1].split())
             table_roles.setdefault(role, set()).add(number)
-            if row[0][0].startswith("PL"):
-                prefixed.add((role, number))
 
     text = ACCOUNT_RE.sub(compact, text)
     # Preserve inline columns and the two explicit account clauses in bank letters.
     text = re.sub(rf"(?:(?<=[\d*:—–-])|(?<=XXX))[ \t]+(?={ACCOUNT_LABEL.pattern})", "\n", text, flags=re.IGNORECASE)
-    text = re.sub(r"(?i)\b(z rachunku|na rachunek) nr (?=(?:PL)?\d{26}\b)", r"\n\1 ", text)
+    text = re.sub(rf"(?i)\b(z rachunku|na rachunek) nr (?={ACCOUNT_RE.pattern})", r"\n\1 ", text)
     values = {"sender": set(), "recipient": set(), "generic": set()}
     for role, cells in table_roles.items():
         values[role].update(cells)
@@ -117,15 +124,12 @@ def account_evidence(text: str) -> AccountEvidence:
                 continue
         else:
             match = ACCOUNT_VALUE.search(line) if table else ACCOUNT_VALUE.match(line)
-            matches = [match] if match else []
+            matches = [match] if match and (not match[1] or complete_account_match(match)) else []
             if not matches and participant:
                 # A participant heading can name the company before its NRB
                 # on the following line. Consume at most one company row.
                 participant = False
                 continue
-        for role, token in zip(roles[len(cells) :], matches):
-            if token[0].startswith("PL"):
-                prefixed.add((role, token[1]))
         cells.extend(match[1] for match in matches)  # A mask occupies its own cell with value None.
         if len(cells) == len(roles):
             if field and not table and ACCOUNT_VALUE.fullmatch(line):
@@ -150,7 +154,7 @@ def account_evidence(text: str) -> AccountEvidence:
         len(strict) == 2
         and {role for role, _ in strict} == {"sender", "recipient"}
         and sum(number is None for _, number in strict) == 1
-        and any(number and iban.is_valid("PL" + number) for number in (sender, recipient))
+        and any(number and valid_account(number) for number in (sender, recipient))
     )
     # Supplement bank statements in prose and debit tables only with role-specific evidence.
     printed = printed_accounts(text)
@@ -160,18 +164,13 @@ def account_evidence(text: str) -> AccountEvidence:
         recipient = printed.get("recipient", recipient)
     if sender is None and posted_party_debit(text):
         # A bank can restate the holder's own account in international format below the debit.
-        owner = re.findall(r"(?im)^numer IBAN tego rachunku[ :]+PL(\d{26})\b", text)
-        if len(set(owner)) == 1 and iban.is_valid("PL" + owner[0]):
+        owner = re.findall(rf"(?im)^numer IBAN tego rachunku[ :]+{ACCOUNT_RE.pattern}", text)
+        if len(set(owner)) == 1 and owner[0][:2].isalpha() and valid_account(owner[0]):
             sender = owner[0]
-            prefixed.add(("sender", sender))
-    formats = frozenset(
-        role for role, value in (("sender", sender), ("recipient", recipient)) if (role, value) in prefixed
-    )
-    return AccountEvidence(sender, recipient, len(numbers), masked_pair, frozenset(declared | printed.keys()), formats)
+    return AccountEvidence(sender, recipient, len(numbers), masked_pair, frozenset(declared | printed.keys()))
 
 
 # Normalize only complete account tokens and calendar dates read by OCR on a receipt.
-OCR_NRB = re.compile(r"(?<![\w/?*])(?:PL\s?)?([0-9?]{2}(?:[ \n]?[0-9?]{4}){6})(?![\w/?*])")
 # An inserted stroke can split an otherwise complete printed account. Only remove
 # it in an explicit account cell when the remaining 26 digits verify unchanged.
 SLASH_ACCOUNT = re.compile(
@@ -182,11 +181,12 @@ OCR_DATE = re.compile(r"(?<!\d)(\d{2})\.(\d{2})(\d{4})(?!\d)")
 
 def normalize_receipt(text: str) -> str:
     def number(match: re.Match) -> str:
-        compact = "".join(match[1].split())
-        if iban.is_valid("PL" + compact):
+        if not complete_account_match(match):
             return match[0]
-        repaired = validated_account(compact)
-        return ("PL" if match[0].startswith("PL") else "") + repaired if repaired else "?"
+        compact = "".join(match[1].split())
+        if valid_account(compact):
+            return match[0]
+        return validated_account(compact) or "?"
 
     def remove_stroke(match: re.Match) -> str:
         digits = match[2].replace("/", "")
@@ -229,4 +229,4 @@ def normalize_receipt(text: str) -> str:
     text = re.sub(r"(?im)^rachunk(?= odbiorcy\b)", "Rachunek", text)
     text = re.sub(rf"(?im)^data[ :]+({DATE})[ \t]*\nwykonania\b", r"Data wykonania: \1", text)
     text = re.sub(r"(?im)^[+| \t]*numer[ :]+(\d+)[ \t]*\ntransakcji[ |\t]*$", r"Numer transakcji: \1", text)
-    return OCR_NRB.sub(number, OCR_DATE.sub(date, normalize_booking_rows(text)))
+    return OCR_ACCOUNT_RE.sub(number, OCR_DATE.sub(date, normalize_booking_rows(text)))

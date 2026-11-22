@@ -149,10 +149,10 @@ Opłata: 0,00 PLN
     assert bank_transfer.extract(text)["przelew_bankowy"] == {
         "data_operacji": "2025-10-09",
         "kwota": 15000.0,
-        "na_rachunek": "22222222222222222222222222",
+        "na_rachunek": "PL22222222222222222222222222",
         "numer_transakcji": "ABC123456789",
         "tytul": "wpis od odwołania w postępowaniu ZP.1.2025",
-        "z_rachunku": "11111111111111111111111111",
+        "z_rachunku": "PL11111111111111111111111111",
     }
 
 
@@ -209,7 +209,7 @@ def test_required_ocr_failure_reports_path_and_continues(tmp_path, monkeypatch, 
     assert cli.main() == 1
     stderr = capsys.readouterr().err
     assert str(scan) in stderr and str(failure) in stderr
-    assert (outputs / "first.json").read_bytes() == (outputs / "second.json").read_bytes() == b""
+    assert (outputs / "first.json").read_text() == (outputs / "second.json").read_text() == "{}\n"
     scan.unlink()
     assert cli.main() == 0
 

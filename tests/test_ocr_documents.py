@@ -32,7 +32,7 @@ def test_unreadable_batch_reports_only_the_blurred_scan_and_continues(tmp_path, 
     stderr = capsys.readouterr().err
     assert str(blank) in stderr and "no readable text after OCR" in stderr
     assert str(ordinary) not in stderr
-    assert (output / "a.json").read_bytes() == (output / "b.json").read_bytes() == b""
+    assert (output / "a.json").read_text() == (output / "b.json").read_text() == "{}\n"
     blank.unlink()
     assert cli.main() == 0
 

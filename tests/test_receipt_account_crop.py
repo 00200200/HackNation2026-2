@@ -66,3 +66,11 @@ def test_optional_render_failure_preserves_the_original_read(monkeypatch):
     monkeypatch.setattr(receipt_account_crop, "_read_crops", unavailable)
     pages = [line]
     assert receipt_account_crop.recover_account_crops(Path("receipt.pdf"), pages, word_boxes(line)) is pages
+
+
+@pytest.mark.parametrize("country", ["GB", "GB ", "g B", "G b "])
+def test_local_reread_honors_foreign_prefix_and_alphanumeric_bban(monkeypatch, country):
+    raw = country + "82 WEST 1234 5698 7654 33"
+    line = "Na rachunek: " + raw
+    monkeypatch.setattr(receipt_account_crop, "_read_crops", lambda *_: [{"GB82WEST12345698765432"}])
+    assert receipt_account_crop.recover_account_crops(Path("unused"), [line], word_boxes(line)) == [line[:-1] + "2"]

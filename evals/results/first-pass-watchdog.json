@@ -1,0 +1,55 @@
+{
+  "baseline_commit": "328f7059449d9f66dd6ff711749a8d2e56332a83",
+  "watchdog_commit": "21f55e0fe17cd4830d4cece519a1f8ef455e698c",
+  "public_batch": {
+    "input": "All 196 organizer training PDFs and 30 organizer scans, original directory layout.",
+    "command": "python -m kio2json --input data/uzp/dane --output OUT --jobs 2",
+    "conditions": "Two sequential keyless runs on the shared Apple M1, with identical installed dependencies and no added load.",
+    "baseline": {
+      "wall_seconds": 266.021,
+      "outputs": 226,
+      "exit_code": 0,
+      "document_failures": 0,
+      "exact_scans": 29,
+      "manifest_sha256": "d121f5d4da7e47d2e586fb7455e66622ab39d3022f08ff410d67368fae4aeb0e",
+      "load_average_1min_start": 43.59,
+      "load_average_1min_end": 34.65
+    },
+    "watchdog": {
+      "wall_seconds": 160.753,
+      "outputs": 226,
+      "exit_code": 0,
+      "document_failures": 0,
+      "exact_scans": 29,
+      "manifest_sha256": "d121f5d4da7e47d2e586fb7455e66622ab39d3022f08ff410d67368fae4aeb0e",
+      "load_average_1min_start": 34.65,
+      "load_average_1min_end": 32.54
+    },
+    "training_byte_identical_to_baseline": 196,
+    "scan_byte_identical_to_baseline": 30,
+    "training_micro_f1": 1.0,
+    "organizer_scans_micro_f1": 1.0,
+    "organizer_scans_strict_micro_f1": 0.9974226804123711
+  },
+  "serial_stress": {
+    "input": "Three previously affected public appeal scans, skany/odwolania/{0001,0002,0004}.",
+    "method": "Run the same keyless CLI with --jobs 1 on each revision. Mark entry to the first native PyTessBaseAPI.Recognize call, then suspend just that PDF worker with SIGSTOP for 65 seconds and resume it with SIGCONT. Both runs use the real OCR engine. Compare the three output digests with the same revision’s ordinary batch.",
+    "baseline": {
+      "wall_seconds": 91.784,
+      "document_errors": 1,
+      "exit_code": 1,
+      "byte_matches": 2,
+      "suspended_recognition_returned_success": false,
+      "suspended_recognition_wall_seconds": 66.094
+    },
+    "watchdog": {
+      "wall_seconds": 83.758,
+      "document_errors": 0,
+      "exit_code": 0,
+      "byte_matches": 3,
+      "suspended_recognition_returned_success": true,
+      "suspended_recognition_wall_seconds": 69.798
+    },
+    "retry_coverage": "The 65-second stall exercises the longer primary watchdog. Unit tests force a full 180-second timeout and verify the 150-dpi fallback, its remaining budget and the resulting PDF coordinates."
+  }
+}

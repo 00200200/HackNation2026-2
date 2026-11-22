@@ -39,7 +39,7 @@ def test_amount_accepts_only_the_complete_number(group):
         ("krs", "nr 0000374268", "0000374268"),
         ("regon", "76124358967413", "76124358967413"),
         ("pesel", "84163925714", "84163925714"),
-        ("account_number", "PL38" + " 6129" * 6, "38" + "6129" * 6),
+        ("account_number", "PL38" + " 6129" * 6, "PL38" + "6129" * 6),
         ("iso_date", "27.04.2036", "2036-04-27"),
     ],
 )
@@ -73,7 +73,7 @@ def test_offline_model_cannot_ground_partial_field_values(engines):
     cases = {
         "balance": ("money", 876.54, "Saldo: 9 876,54 PLN"),
         "fee": ("money", 234.56, "Fee: 1’234,56 CHF"),
-        "account": ("account_number", "38" + "6129" * 6, "Account: PL38" + " 6129" * 6 + " 7429"),
+        "account": ("account_number", "PL38" + "6129" * 6, "Account: PL38" + " 6129" * 6 + " 7429"),
         "mail": (None, "north@example.org", "Mailbox: audit.north@example.org"),
         "ref": (None, "GULL-81", "Reference: GULL-81-B"),
         "gross": ("money", 87.23, "Gross: 87,23zł"),
@@ -87,6 +87,63 @@ def test_offline_model_cannot_ground_partial_field_values(engines):
     model = OfflineModel(custom_output_args={k: {"value": v, "quote": q} for k, (_, v, q) in cases.items()})
     result = extract(config, "\n".join(q for _, _, q in cases.values()), model=model)
     assert result == {**dict.fromkeys(cases), "gross": 87.23}
+
+
+@pytest.mark.parametrize(
+    ("printed", "expected"),
+    [
+        ("PL 74 1234 5123 4512 3451 2345 1234", "PL74123451234512345123451234"),
+        ("74 1234 5123 4512 3451 2345 1234", "74123451234512345123451234"),
+        ("DE89 3704 0044 0532 0130 00", "DE89370400440532013000"),
+        ("GB82 WEST 1234 5698 7654 32", "GB82WEST12345698765432"),
+        ("gB82 West 1234 5698 7654 32", "gB82West12345698765432"),
+        ("P L74 1234 5123 4512 3451 2345 1234", "PL74123451234512345123451234"),
+        ("g\nB82 West 1234 5698 7654 32", "gB82West12345698765432"),
+        ("FR14 2004 1010 0505 0001 3 m 02 606", "FR1420041010050500013m02606"),
+    ],
+)
+def test_account_evidence_preserves_the_printed_country(printed, expected):
+    from kio2json.llm import grounded
+
+    field = typed_field("account_number")
+    text = f"Na rachunek: {printed}."
+    assert grounded(field, printed, text, text, spans=True) == expected
+    assert cited_value(field, expected, printed, text) == expected
+    if printed.startswith("PL"):
+        assert cited_value(field, expected, printed[2:].strip(), text) is None
+        assert cited_value(field, expected[2:], printed, text) is None
+    if printed[0].isdigit():
+        assert cited_value(field, "PL" + expected, printed, text) is None
+    if printed != printed.upper():
+        assert cited_value(field, expected.upper(), printed, text) is None
+
+
+@pytest.mark.parametrize(
+    ("before", "after"),
+    [
+        ("72 ", ""),
+        ("DE ", ""),
+        ("D E ", ""),
+        ("Z Z ", ""),
+        ("PL-", ""),
+        ("", "  1234"),
+        ("", "-46"),
+        ("", ".46"),
+        ("", " A4BC"),
+    ],
+)
+def test_a_longer_source_number_cannot_support_a_bare_account(before, after):
+    account = "74123451234512345123451234"
+    assert cited_value(typed_field("account_number"), account, account, before + account + after) is None
+
+
+def test_adjacent_complete_accounts_can_each_support_their_own_quote():
+    field = typed_field("account_number")
+    payer = "74123451234512345123451234"
+    payee = "GB82WEST12345698765432"
+    text = f"Accounts: {payer} {payee}"
+    assert cited_value(field, payer, payer, text) == payer
+    assert cited_value(field, payee, payee, text) == payee
 
 
 @pytest.mark.parametrize(

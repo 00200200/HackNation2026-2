@@ -1,20 +1,15 @@
-"""Field-level F1 for Odwołania2json outputs.
+"""Field-level F1 for Odwołania2json outputs, following UZP's rules in issue #59.
 
-The organizer has not published how F1 is computed (UNCONFIRMED). Working definition:
-- Every JSON is flattened to (path, value) pairs over its leaves; list indices become `[]`, so lists are compared
-  as multisets and item order does not matter.
-- `null` leaves count as pairs: predicting null where gold has null is a hit, a value where gold has null is a
-  false positive plus a false negative. `micro_f1_non_null` reports the variant that ignores gold-null fields.
-- Values are normalised before comparison: whitespace and case; numbers by value (`200 == 200.0`); identifier
-  fields (KRS, NIP, REGON, PESEL, account numbers) as digits only. Types and formats are not normalised away:
-  `"3" != 3`, `2026-03-21 != 20260321`, `123456-2026 != 1234562026`.
-- A negative document has an empty gold file: every predicted pair is a false positive.
-- A missing or unreadable prediction scores as all gold pairs missed.
-- Micro F1 pools counts across documents. Macro document F1 averages documents with any gold or predicted leaf.
-- Macro class F1 averages pooled F1 for each of the three target classes with reference or predicted fields.
-  A misrouted document misses the reference class's fields and adds false positives to the predicted class.
-- Macro field F1 averages the pooled F1 of each distinct reference or predicted leaf path.
-- All matches are made within a document. An empty average is undefined (JSON null).
+A present match is TP, a present wrong or extra value is FP, a missing value is FN,
+and both absent is TN (outside F1). Five long strings accept similarity >= 0.80.
+UZP has not specified the similarity function. We use RapidFuzz normalized Levenshtein.
+List entries are assigned one-to-one within their parent by matching field content.
+Micro pools counts within documents, macro averages defined document, class or field scores.
+
+The secondary strict metric preserves the historical normalized leaf multisets, including
+null hits and a double penalty (FP + FN) for a wrong value. Both metrics compare the letters and
+digits of account numbers as printed after removing whitespace. A zero-byte gold file labels a
+negative, whose expected output is `{}` with an optional line ending.
 """
 
 import json
@@ -23,6 +18,8 @@ import stat
 from collections import Counter, defaultdict
 from dataclasses import dataclass, field
 from pathlib import Path
+
+from rapidfuzz.distance import Levenshtein
 
 CLASSES = {
     "odwolanie": "OdwolanieKIO",
@@ -36,22 +33,24 @@ def reject_json_constant(token: str):
     raise ValueError("invalid JSON number")
 
 
-def read_object(path: Path) -> tuple[dict, bool]:
-    """Return the JSON object and whether the file was literally empty."""
+def read_object(path: Path, *, reference: bool = False) -> tuple[dict, bool]:
+    """Return the parsed object and whether the text matches the negative output convention."""
     if not stat.S_ISREG(path.stat().st_mode):
         raise ValueError("expected a regular JSON file")
     try:
-        text = path.read_text(encoding="utf-8")
-        data = json.loads(text, parse_constant=reject_json_constant) if text else {}
+        text = path.read_text(encoding="utf-8", newline="")
+        if reference and text == "":
+            return {}, False
+        data = json.loads(text, parse_constant=reject_json_constant)
     except (ValueError, RecursionError) as exc:
         raise ValueError("a selected reference is not valid UTF-8 JSON") from exc
     if not isinstance(data, dict):
         raise ValueError("a selected reference must be a JSON object")  # noqa: TRY004 - invalid file contents
-    return data, not text
+    return data, text in ("{}", "{}\n", "{}\r\n")
 
 
 def load_reference(path: Path) -> dict:
-    data, _ = read_object(path)
+    data, _ = read_object(path, reference=True)
     return data
 
 
@@ -76,7 +75,8 @@ def doc_class(data: dict | None) -> str | None:
 
 # Identifier fields: compared as digits only, whatever the type (the schema example has PESEL as a number,
 # the gold files as a string) and however the document spaces or dashes them.
-IDENTIFIER_KEYS = {"krs", "nip", "regon", "pesel", "na_rachunek", "z_rachunku"}
+IDENTIFIER_KEYS = {"krs", "nip", "regon", "pesel"}
+ACCOUNT_KEYS = {"na_rachunek", "z_rachunku"}
 
 
 def normalise(value: object, key: str = "") -> str:
@@ -84,6 +84,8 @@ def normalise(value: object, key: str = "") -> str:
     are kept as written; only whitespace and case are ignored, plus spacing inside identifier fields."""
     if value is None:
         return "null"
+    if key in ACCOUNT_KEYS and isinstance(value, str):
+        return "account:" + "".join(value.split())
     if key in IDENTIFIER_KEYS and isinstance(value, int | str) and re.fullmatch(r"[\d\s-]+", str(value).strip()):
         return "id:" + re.sub(r"[\s-]", "", str(value))
     if isinstance(value, bool):
@@ -113,11 +115,13 @@ class Counts:
     tp: int = 0
     fp: int = 0
     fn: int = 0
+    tn: int = 0
 
     def add(self, other: "Counts") -> None:
         self.tp += other.tp
         self.fp += other.fp
         self.fn += other.fn
+        self.tn += other.tn
 
     @property
     def f1(self) -> float | None:
@@ -125,7 +129,7 @@ class Counts:
         return None if denom == 0 else 2 * self.tp / denom
 
 
-def compare(
+def compare_strict(
     pred: dict | None, gold: dict, skip_gold_nulls: bool = False, *, by_field: dict[str, Counts] | None = None
 ) -> Counts:
     gold_pairs = flatten(gold)
@@ -143,6 +147,105 @@ def compare(
     return Counts(tp, sum(pred_pairs.values()) - tp, sum(gold_pairs.values()) - tp)
 
 
+FUZZY_PATHS = {
+    "Odwolujacy[].nazwa",
+    "Odwolujacy[].pelnomocnik.nazwa",
+    "Zamawiajacy[].nazwa",
+    "przelew_bankowy.tytul",
+    "ZamowieniePubliczne.tytul",
+}
+PRINTED_IDS = {
+    "krs",
+    "nip",
+    "regon",
+    "pesel",
+    "numer_bzp",
+    "numer_ted",
+    "numer_postepowania",
+    "numer_transakcji",
+}
+
+
+def matches(pred, gold, path: str) -> bool:
+    key = path.rsplit(".", 1)[-1].removesuffix("[]")
+    if key in ACCOUNT_KEYS:
+        return isinstance(pred, str) and isinstance(gold, str) and normalise(pred, key) == normalise(gold, key)
+    if key in PRINTED_IDS:
+        if type(pred) not in (int, str) or type(gold) not in (int, str):
+            return False
+        return "".join(str(pred).split()) == "".join(str(gold).split())
+    if isinstance(pred, str) and isinstance(gold, str):
+        left, right = normalise(pred), normalise(gold)
+        if path in FUZZY_PATHS:
+            return Levenshtein.normalized_similarity(left, right) >= 0.80
+        return left == right
+    if type(pred) in (int, float) and type(gold) in (int, float):
+        return pred == gold
+    return type(pred) is type(gold) and pred == gold
+
+
+def list_events(pred: list, gold: list, path: str):
+    # Canonical order gives equal-scoring assignments stable per-field diagnostics.
+    def order(item):
+        return json.dumps(item, sort_keys=True)
+
+    pred, gold = sorted(pred, key=order), sorted(gold, key=order)
+    used_pred, used_gold = set(), set()
+    if pred and gold:
+        # Only field-level list scoring needs this dev dependency. The jury batch checks exact JSON.
+        from munkres import linear_sum_assignment
+
+        candidates = [[list(field_events(p, g, path)) for g in gold] for p in pred]
+        # First maximize TP, then pair remaining present values at the same field as wrong.
+        bound = 1 + sum(max(len(pair) for pair in row) for row in candidates)
+        weights = [
+            [sum(bound if event == "tp" else int(event == "wrong") for _, event in pair) for pair in row]
+            for row in candidates
+        ]
+        rows, columns = linear_sum_assignment(weights, maximize=True)
+        for i, j in zip(rows, columns):
+            used_pred.add(i)
+            used_gold.add(j)
+            yield from candidates[i][j]
+    for i, value in enumerate(pred):
+        if i not in used_pred:
+            yield from field_events(value, None, path)
+    for j, value in enumerate(gold):
+        if j not in used_gold:
+            yield from field_events(None, value, path)
+
+
+def field_events(pred, gold, path: str):
+    if isinstance(pred, (list, dict)) and gold is not None and not isinstance(gold, (list, dict)):
+        yield path, "wrong"
+    elif isinstance(gold, (list, dict)) and pred is not None and type(pred) is not type(gold):
+        yield from field_events(pred, None, path)
+        yield from field_events(None, gold, path)
+    elif isinstance(pred, dict) or isinstance(gold, dict):
+        pred, gold = pred or {}, gold or {}
+        for key in pred.keys() | gold.keys():
+            yield from field_events(pred.get(key), gold.get(key), f"{path}.{key}" if path else key)
+    elif isinstance(pred, list) or isinstance(gold, list):
+        yield from list_events(pred or [], gold or [], f"{path}[]")
+    elif pred is None:
+        yield path, "tn" if gold is None else "fn"
+    elif gold is None:
+        yield path, "fp"
+    else:
+        yield path, "tp" if matches(pred, gold, path) else "wrong"
+
+
+def compare(pred: dict | None, gold: dict, *, by_field: dict[str, Counts] | None = None) -> Counts:
+    fields = by_field if by_field is not None else {}
+    total = Counts()
+    for path, event in field_events(pred or {}, gold, ""):
+        count = fields.setdefault(path, Counts())
+        attribute = "fp" if event == "wrong" else event
+        setattr(count, attribute, getattr(count, attribute) + 1)
+        setattr(total, attribute, getattr(total, attribute) + 1)
+    return total
+
+
 @dataclass
 class DocResult:
     case: str
@@ -150,6 +253,7 @@ class DocResult:
     gold_class: str
     pred_class: str | None
     counts: Counts
+    counts_strict: Counts
     counts_non_null: Counts
     empty_output: bool
     errors: list[str] = field(default_factory=list)
@@ -166,7 +270,8 @@ def score_doc(case: str, file: str, pred_path: Path, gold: dict) -> DocResult:
         doc_class(gold) or NEGATIVE,
         doc_class(pred),
         compare(pred, gold, by_field=by_field),
-        compare(pred, gold, skip_gold_nulls=True),
+        compare_strict(pred, gold),
+        compare_strict(pred, gold, skip_gold_nulls=True),
         empty_output,
         errors,
         by_field,
@@ -174,11 +279,12 @@ def score_doc(case: str, file: str, pred_path: Path, gold: dict) -> DocResult:
 
 
 def summarise(docs: list[DocResult]) -> dict:
-    total, non_null = Counts(), Counts()
+    total, strict, non_null = Counts(), Counts(), Counts()
     per_class = {name: Counts() for name in CLASSES}
     per_field: defaultdict[str, Counts] = defaultdict(Counts)
     for d in docs:
         total.add(d.counts)
+        strict.add(d.counts_strict)
         non_null.add(d.counts_non_null)
         if d.gold_class == d.pred_class:
             if d.gold_class in per_class:
@@ -197,6 +303,8 @@ def summarise(docs: list[DocResult]) -> dict:
     field_scores = [score for counts in per_field.values() if (score := counts.f1) is not None]
     return {
         "micro_f1": total.f1,
+        "micro_f1_strict": strict.f1,
+        "counts_strict": {"tp": strict.tp, "fp": strict.fp, "fn": strict.fn},
         "macro_f1_documents": _ratio(sum(document_scores), len(document_scores)),
         "macro_f1_classes": _ratio(sum(class_scores.values()), len(class_scores)),
         "macro_f1_class_count": len(class_scores),
@@ -206,7 +314,7 @@ def summarise(docs: list[DocResult]) -> dict:
         "classification_accuracy": _ratio(sum(d.pred_class == d.gold_class for d in positives), len(positives)),
         "negatives_empty": _ratio(sum(d.empty_output for d in negatives), len(negatives)),
         "outputs_complete": _ratio(sum(not d.errors for d in docs), len(docs)),
-        "counts": {"tp": total.tp, "fp": total.fp, "fn": total.fn},
+        "counts": {"tp": total.tp, "fp": total.fp, "fn": total.fn, "tn": total.tn},
     }
 
 

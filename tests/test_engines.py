@@ -54,7 +54,7 @@ def test_labelled_types_and_repeated_rows():
     values = extract(cfg, text)
     assert values == {
         "amount": 7421.35,
-        "account": "4" * 26,
+        "account": "PL" + "4" * 26,
         "tax": "8881112239",
         "rows": [{"count": 2, "name": "Pins"}, {"count": 3, "name": "Clips"}],
     }
@@ -219,9 +219,9 @@ def test_endpoint_reads_dotenv_and_prioritizes_environment(tmp_path, monkeypatch
         (scalar("Refund", type="number", normalizer="money"), -6543.71, "Refund -6 543,71 PLN", -6543.71),
         (
             scalar("Account", normalizer="account_number"),
-            "73" + "1864" * 6,
+            "PL73" + "1864" * 6,
             "New account PL73" + " 1864" * 6,
-            "73" + "1864" * 6,
+            "PL73" + "1864" * 6,
         ),
         (scalar("Account", normalizer="account_number"), "73" + "1864" * 6, "Old account PL74" + " 1864" * 6, None),
         (scalar("Tax ID", normalizer="nip"), "7842913068", "ID PL784-291-30-68", "7842913068"),

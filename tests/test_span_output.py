@@ -15,14 +15,17 @@ def test_native_transfer_spans_round_trip(monkeypatch):
         "OUTPUT": "spans",
     }.items():
         monkeypatch.setenv("KIO_LLM_" + option, value)
-    source = "Data operacji: 05.04.2024\nKwota: 125,50 zł\nTytuł: Opłata próbna\nNumer: REF-123"
+    source = (
+        "Data operacji: 05.04.2024\nKwota: 125,50 zł\nTytuł: Opłata próbna\nNumer: REF-123\n"
+        "Z rachunku: PL74 1234 5123 4512 3451 2345 1234\nNa rachunek: GB82 WEST 1234 5698 7654 32"
+    )
     transfer = {
         "data_operacji": "05.04.2024",
         "kwota": "125,50 zł",
-        "na_rachunek": None,
+        "na_rachunek": "GB82 WEST 1234 5698 7654 32",
         "numer_transakcji": "REF-12",
         "tytul": "wymyślony opis",
-        "z_rachunku": None,
+        "z_rachunku": "PL74 1234 5123 4512 3451 2345 1234",
     }
     requests = []
 
@@ -57,6 +60,8 @@ def test_native_transfer_spans_round_trip(monkeypatch):
         **transfer,
         "kwota": 125.5,
         "data_operacji": "2024-04-05",
+        "na_rachunek": "GB82WEST12345698765432",
+        "z_rachunku": "PL74123451234512345123451234",
         "numer_transakcji": None,
         "tytul": None,
     }
