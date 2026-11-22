@@ -21,6 +21,7 @@ MONTH_NAMES = "|".join([*ENGLISH_MONTHS, *MONTHS])
 DATE_FORMAT = re.compile(rf"(?:{DATE}|\d{{1,2}}\s+(?:{MONTH_NAMES})\s+\d{{4}})", re.IGNORECASE)
 SPACE = r"[^\S\r\n]"
 ACCOUNT_JOIN = rf"(?:{SPACE}|[.-])*+"
+ACCOUNT_CODE = re.compile(r"[A-Za-z]\s*[A-Za-z]\s*")
 GROUP_MARKS = ".,_'’ \t\xa0\u2009\u202f"
 # An amount with cents followed by a full date is a common two-column PDF row.
 COLUMN_BREAK = rf"(?<=[.,]\d{{2}})(?={SPACE}++{DATE_FORMAT.pattern}(?!\w))"
@@ -125,7 +126,10 @@ def quote_covers(quote: str, text: str, start: int, end: int, visible_end: int |
 def cited_account(value: str, quote: str, text: str, visible_end: int | None) -> str | None:
     spans = list(account_matches(text))
     for index, span in enumerate(spans):
-        if normalize_account(span[0]) != value or not quote_covers(quote, text, *span.span(), visible_end):
+        # As with the PL of a NIP, the quote may leave out the printed country code; the value may not.
+        code = ACCOUNT_CODE.match(span[0])
+        digits = span.start() + (code.end() if code else 0)
+        if normalize_account(span[0]) != value or not quote_covers(quote, text, digits, span.end(), visible_end):
             continue
         # A fixed-width account match can sit inside a longer printed number.
         # Stop at neighboring accounts so two complete numbers can share a row.
