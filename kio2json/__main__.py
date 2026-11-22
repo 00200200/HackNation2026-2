@@ -18,6 +18,10 @@ DEFAULT_WORKER_CAP = 4
 
 
 def main() -> int:
+    # File names in the progress lines need UTF-8. A redirected Windows stream uses the ANSI code page instead.
+    for stream in (sys.stdout, sys.stderr):
+        if hasattr(stream, "reconfigure"):
+            stream.reconfigure(encoding="utf-8", errors="backslashreplace")
     parser = argparse.ArgumentParser(description=__doc__.splitlines()[0])
     parser.add_argument("--input", dest="input_dir", default="input", type=Path)
     parser.add_argument("--output", dest="output_dir", default="output", type=Path)

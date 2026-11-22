@@ -202,6 +202,8 @@ Two and four grant JSONs matched exactly. The ten organizer grants remained exac
 
 - 22.11.2026 · Codex · Fixed appeal party boundaries at numbered headings, parenthesized page counters over scans, labelled OCR receipt accounts and explicit grantor signature blocks. The remaining round-three routing and role errors are tracked in #1.
 
+- 22.11.2026 · Claude · `start.sh` now finds `.venv/bin/python` or `python3`, the CLI writes progress lines as UTF-8 when a Windows redirect uses an ANSI code page, `deploy/RUN.md` says unrelated documents produce `{}`, and the README rehearsal speeds name their revision and profile · fix/jury-run-hardening
+
 ## Frontend branch snapshot before API integration
 
 Public landing https://doc2json.pl (`frontend/`, static nginx, monochrome) runs on the team VPS as `doc2json-web`

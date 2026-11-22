@@ -65,6 +65,21 @@ def test_parallel_cli_preserves_bytes_order_and_failure_status(tmp_path):
     assert len(outputs[0][0]) == 4 and any(outputs[0][0].values())
 
 
+def test_cli_prints_polish_file_names_to_a_legacy_code_page_stream(tmp_path):
+    inputs = tmp_path / "input"
+    inputs.mkdir()
+    (inputs / "pełnomocnictwo.pdf").write_bytes(Path("data/uzp/dane/przyklad_01/pelnomocnictwo.pdf").read_bytes())
+    run = subprocess.run(
+        [sys.executable, "-m", "kio2json", "--input", str(inputs), "--output", str(tmp_path / "out"), "--workers", "1"],
+        capture_output=True,
+        check=False,
+        env={**os.environ, "KIO_LLM_API_KEY": "", "PYTHONIOENCODING": "cp1252"},
+    )
+    assert run.returncode == 0, run.stderr.decode("utf-8", "replace")
+    assert "pełnomocnictwo.json" in run.stdout.decode("utf-8")
+    assert (tmp_path / "out" / "pełnomocnictwo.json").read_text(encoding="utf-8").startswith("{")
+
+
 def test_expired_reread_budget_keeps_primary_ocr(monkeypatch):
     from kio2json import ocr_budget
 
