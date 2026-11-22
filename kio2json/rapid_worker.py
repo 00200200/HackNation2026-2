@@ -29,7 +29,9 @@ def close() -> None:
 atexit.register(close)
 
 
-def recognize(path: Path, page: int, word_boxes: bool | Literal["lines"], timeout: float) -> tuple[str, list]:
+def recognize(
+    path: Path, page: int, word_boxes: bool | Literal["lines"], timeout: float, *, dpi: int | None = None
+) -> tuple[str, list]:
     global _process
     deadline = monotonic() + timeout
     expired = TimeoutError(f"RapidOCR timed out after {timeout:g} seconds")
@@ -51,7 +53,7 @@ def recognize(path: Path, page: int, word_boxes: bool | Literal["lines"], timeou
         timer = Timer(max(0, deadline - monotonic()), _process.kill)
         timer.start()
         try:
-            request = [str(path.resolve()), page, word_boxes]
+            request = [str(path.resolve()), page, word_boxes, dpi]
             _process.stdin.write(json.dumps(request) + "\n")
             _process.stdin.flush()
             line = _process.stdout.readline()
@@ -87,11 +89,11 @@ def _serve() -> None:
         from .pdf_text import _rapidocr
 
         for request in sys.stdin:
-            path, page, want_boxes = json.loads(request)
+            path, page, want_boxes, dpi = json.loads(request)
             boxes = [] if want_boxes else None
             try:
                 with pdfplumber.open(path, pages=[page]) as pdf:
-                    text = _rapidocr(pdf.pages[0], boxes, lines=want_boxes == "lines")
+                    text = _rapidocr(pdf.pages[0], boxes, lines=want_boxes == "lines", dpi=dpi)
                 result = [text, boxes or [], None]
             except Exception as error:  # noqa: BLE001 -- relay PDF and native model errors to the caller.
                 result = [None, [], str(error) or type(error).__name__]
