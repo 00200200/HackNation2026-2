@@ -99,6 +99,31 @@ def act_date(text, reason):
     return None
 
 
+# A completed communication, with no remedy, statute, copy or earlier-proceeding wording in the sentence.
+COMPLETED_NOTICE = re.compile(
+    r"\b(?:poinformowa(?:ł|ła|li|no)|zawiadomi(?:ł|ła|li|ono)|zawiadomion\w*|doręczono|doręczon\w*"
+    r"|opublikowano|opublikowan\w*|udostępniono|udostępnion\w*|otrzyma(?:ł|ła|liśmy)\w*)",
+    re.IGNORECASE,
+)
+NOT_THIS_NOTICE = re.compile(
+    r"\b(?:wniesi\w*|wniosę|może|można|będzie|przysługuj\w*|termin\w*|ustaw\w*|rozporządzeni\w*|kopi\w*|odpis\w*"
+    r"|sporządz\w*|poprzedni\w*|wcześniejsz\w*|uprzedni\w*|ponown\w*|innym postępowaniu)\b|Dz\.\s?U",
+    re.IGNORECASE,
+)
+
+
+def notice_date(text, reason):
+    """The one date of a completed notice of the resolved act; None when no sentence or several disagree."""
+    days = set()
+    for sentence in sentences(text):
+        if _act_in(sentence) != reason or not COMPLETED_NOTICE.search(sentence) or NOT_THIS_NOTICE.search(sentence):
+            continue
+        dates = re.findall(DATE, sentence)
+        if len(dates) == 1:
+            days.add(to_iso(dates[0]))
+    return days.pop() if len(days) == 1 else None
+
+
 def filing_period_start(text, reason):
     """A filing-period heading must date the decision or notice, never the deadline itself."""
     first = CHARGE.search(text)

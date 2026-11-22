@@ -172,3 +172,28 @@ def focus_charge(header: dict, text: str, *, model=None) -> None:
             if not dated or not _same_intro_act(evidence[1], dated[1], proposed):
                 return
         header["czynnosc_dzien"] = _dated(*dated, proposed)
+
+
+class PhraseReason(BaseModel):
+    reason_id: Literal[1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12] | None
+    act_quote: str | None
+
+
+def model_reason(passage: str, *, model=None) -> int | None:
+    """Opt-in comparison on the already localized phrase. Never request a date."""
+    passage = squash(next(raw_sentences(passage)))
+    if not passage or len(passage.encode()) > 2400:
+        return None
+    instructions = (
+        "Klasyfikuj wyłącznie podany fragment odwołania. Zwróć reason_id lub null przy braku "
+        "jednoznacznej podstawy. Dla rozpoznanej czynności przepisz DOSŁOWNIE cały fragment jako "
+        "act_quote, zachowując przeczenia, podmiot i przedmiot. Dla abstencji zwróć dwa pola null. "
+        "Słownik: " + "; ".join(f"{i} = {label}" for i, label in REASONS.items())
+    )
+    try:
+        reply = llm.structured(PhraseReason, instructions, passage, max_tokens=512, model=model, single_request=True)
+    except EndpointError:
+        return None
+    if reply.act_quote != passage:
+        return None
+    return reply.reason_id

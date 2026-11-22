@@ -9,6 +9,7 @@ from pathlib import Path
 
 from . import appeal, bank_transfer, ocr_extract, power_of_attorney, trace
 from .accounts import normalize_account
+from .appeal_charges import notice_date
 from .appeal_layout import (
     apply_appeal_blocks,
     form_columns,
@@ -22,6 +23,7 @@ from .case_repair import Reading, printed_readings
 from .class_config import DocumentClass, load_classes, route
 from .classify import incomplete_booking_scan, resembles_appeal_heading
 from .engines import extract
+from .first_act import fill_missing_action
 from .grant_certificates import add_certificate_signers
 from .model_pages import AlternateOCR
 from .ocr_accounts import (
@@ -189,6 +191,9 @@ def _document_rules(definition, pdf_path, pages, ocr_pages, all_boxes, engine, s
         apply_appeal_blocks(record, blocks)
         if not ocr_pages:
             ocr_extract.complete_text_appeal(record, pages)
+        action = record["OdwolanieKIO"]
+        if action["czynnosc_dzien"] is None and action["czynnosc_powod_id"]:
+            action["czynnosc_dzien"] = notice_date(join_pages(pages[:3]), action["czynnosc_powod_id"])
         if not ocr_pages and len(pages) == MAX_PAGES:
             appeal.complete_signed_filing(record, pdf_path, len(pages))
         if rules_first and boxes:
@@ -418,9 +423,10 @@ def _process(
             python_rules = partial(
                 _document_rules, definition, pdf_path, pages, ocr_pages, boxes, engine, selected, accounts, blocks
             )
+            text = join_pages(pages)
             record = extract(
                 definition,
-                join_pages(pages),
+                text,
                 ocr_python=python_rules,
                 alternate=alternate if definition.profile.dual_ocr else None,
                 model_text=join_pages(model_source) if pages is not model_source else None,
@@ -429,6 +435,8 @@ def _process(
                 source_pages=model_source,
                 on_recovery=on_recovery,
             )
+            if definition.extractor is appeal.extract and (header := record.get("OdwolanieKIO")):
+                fill_missing_action(header, text)
             if definition.extractor is power_of_attorney.extract and not definition.profile.keyed:
                 _grant_signers(pdf_path, record, pages, ocr_pages, engine)
             if case_readings is not None and uses_case_schema(definition):
