@@ -56,6 +56,103 @@ EXECUTION_ATTESTATION = re.compile(
 )
 
 
+# Compare Polish cues after folding, while keeping the original text for value extraction.
+POLISH_FOLD = str.maketrans("ąćęłńóśźż", "acelnoszz")
+COVER_HEADING = re.compile(r"^pismo przewodnie\b", re.IGNORECASE)
+OTHER_FILING = re.compile(
+    r"^(?:odpowiedz na odwolanie|(?:zgloszenie )?przystapieni[ea] do postepowania|"
+    r"(?:odwolanie|wypowiedzenie|cofniecie) pelnomocnictwa|pelnomocnictwo (?:zostalo )?(?:odwolane|cofniete|wypowiedziane|wygaslo)|"
+    r"spis zalacznikow)\b"
+)
+APPEAL_TITLE = re.compile(r"^odwolanie (?:do|w sprawie|wobec|od|na)\b")
+KIO = r"(?:krajow\w* izb\w* odwolawcz\w*|kio)\b"
+APPEAL_CUES = (
+    rf"^(?:do (?:prezesa )?|prezes ){KIO}",
+    r"^(?:niniejszym )?(?:wnosze|wnosimy|skladam|skladamy) (?:niniejsze )?odwolanie\b",
+    r"^(?:odwolujacy|(?:wykonawca|podmiot) wnoszacy odwolanie)\b",
+    r"^(?:zarzut(?:y| nr \d+)?|zadania|wnioski odwolujacego|zaskarzona czynnosc)\b",
+)
+GRANT_TITLE = re.compile(
+    r"(?:pelnomocnictwo|upowaznienie|umocowanie)(?: (?:procesowe|szczegolne|ogolne|rodzajowe))?"
+    r"(?: (?:do reprezentowania|do udzialu|dla)\b[^.!?]*)?"
+)
+GRANT_CUES = (
+    r"^(?:niniejszym )?(?:udzielam(?:y)?|upowazniam(?:y)?|ustanawiam(?:y)?)\b",
+    r"^(?:mocodawc[ay]|udzielajacy pelnomocnictwa)\b",
+    r"(?:do reprezentowania|w charakterze pelnomocnika|^pelnomocni(?:k|cy)\b)",
+)
+PAYMENT_TITLE = re.compile(
+    r"^(?:(?:bankowe|elektroniczne) )?(?:potwierdzenie|dowod|zaswiadczenie|poswiadczenie) (?:bankowe )?(?:(?:o )?"
+    r"(?:wykonani[aeu]|realizacji|zaksiegowania|zrealizowania) )?(?:polecenia )?(?:transakcji|platnosci|operacji|przelewu)\b"
+    r"|^(?:szczegoly|dane) (?:zrealizowan|wykonan|zaksiegowan)(?:ej|ego) (?:transakcji|platnosci|operacji|przelewu)\b"
+)
+
+
+# Bank exports can name the document, the action and its state in separate fields.
+BANK_DOCUMENT = re.compile(
+    r"^(?:(?:bankow[eya]|elektroniczn[eya]) )?(?:potwierdzenie|dowod|poswiadczenie|zaswiadczenie|"
+    r"wydruk|szczegoly|dokument|informacja|raport|zestawienie)\b"
+)
+PAYMENT_SUBJECT = re.compile(r"\b(?:przelew|platnos|operacj|transakcj|obciazeni|dyspozycj)\w*")
+ATTESTS_PAYMENT = re.compile(r"\b(?:potwierdzeni|dowod|poswiadczeni|zaswiadczeni|zaksiegowan|zrealizowan|wykonan)\w*")
+ORDER_OR_COPY = re.compile(
+    r"\b(?:kopi|archiw|wniosk|pros[bz]|przyjeci|zlozeni|anulowan|odrzucon|zaplanowan|"
+    r"niezrealizowan|niewykonan|dyspozycji do realizacji|do akceptacji)\w*"
+)
+
+CURRENCY_VALUE = re.compile(
+    rf"(?im)^(?:(?:kwota|wartosc|suma)\b[^:\n]{{0,35}}:[ \t]*)?"
+    rf"(?:pln[ \t]*{bank_transfer.MONEY}|{bank_transfer.MONEY}[ \t]*(?:pln|zl|eur))[ \t]*$"
+)
+
+
+def _payment_card(first: str, folded: str, amount: float | None, day: str | None) -> bool:
+    """Require account, value and settlement evidence even when no exact receipt title matches."""
+    lines = folded.splitlines()
+    titles = []
+    bank_header = False
+    for line in lines[:10]:
+        if re.search(r"\b(?:zalacznik|w zalaczeniu|przedkladam|przesylam)\w*", line):
+            return False
+        if ORDER_OR_COPY.search(line) or re.match(r"^(?:dyspozycja|polecenie|zlecenie)\b", line):
+            return False
+        bank_header |= bool(re.match(r"^(?:[a-z-]+ ){0,2}bank\b", line))
+        if (BANK_DOCUMENT.match(line) or PAYMENT_SUBJECT.match(line)) and PAYMENT_SUBJECT.search(line):
+            if re.search(r"\b(?:zlecenia|zlecenie|przyjet\w*|rejestracji|autoryzacji|do realizacji)\b", line):
+                return False
+            titles.append(line)
+    if not (titles or bank_header) or not (amount is not None or CURRENCY_VALUE.search(folded)):
+        return False
+    accounts = bank_transfer.ANCILLARY_ACCOUNT.sub("", bank_transfer.normalize_account_spacing(first))
+    numbers = {account_identity("".join(m[1].split())) for m in account_matches(accounts)}
+    if len(numbers) != 2:
+        return False
+    if None in bank_transfer.printed_accounts(accounts).values():
+        return False
+    booked = any(
+        m[1].casefold().endswith(("księgowania", "wykonania", "obciążenia")) and to_iso(m[2])
+        for m in bank_transfer.OPERATION_DATE_RE.finditer(first)
+    )
+    attestation = any(ATTESTS_PAYMENT.search(title) for title in titles)
+    sender, recipient = bank_transfer._accounts(accounts)
+    reference = bool(bank_transfer.REFERENCE_RE.search(first))
+    bound_pair = bool(sender and recipient and account_identity(sender) != account_identity(recipient))
+    if not titles:
+        return bool(bank_header and booked and reference and bound_pair)
+    corroboration = sum(
+        (
+            day is not None,
+            reference,
+            bound_pair,
+        )
+    )
+    return (attestation or booked) and corroboration >= 1
+
+
+def _cue_score(text: str, cues: tuple[str, ...]) -> int:
+    return sum(bool(re.search(cue, text, re.MULTILINE)) for cue in cues)
+
+
 # A "stan" field can also describe a balance or another bank-specific state.
 # It vetoes a confirmation only when the value actually describes a pending or failed payment.
 NONEXECUTED_STATE = re.compile(
@@ -135,7 +232,9 @@ def routing_evidence(first_page: str) -> tuple[set[str], bool]:
     """Return eligible classes and whether the payment details independently confirm a transfer."""
     lines = [line.strip() for line in first_page.splitlines() if line.strip()]
     for i, line in enumerate(lines):
-        if UNRELATED_HEADING.match(line):
+        if COVER_HEADING.match(line):
+            return set(), False
+        if UNRELATED_HEADING.match(line) or OTHER_FILING.match(line.casefold().translate(POLISH_FOLD)):
             if REQUEST_REFERENCE.fullmatch(line) and any(CONFIRMATION_HEADING.match(h) for h in lines[:i]):
                 continue
             return set(), False
@@ -147,7 +246,7 @@ def routing_evidence(first_page: str) -> tuple[set[str], bool]:
         r"\b(?:udzielam(?:y)?\s+(?:niniejszego\s+)?pełnomocnictwa|upoważniam(?:y)?\b)", first_page, re.IGNORECASE
     ):
         labels.add("power_of_attorney")
-    if "PISMOPRZEWODNIE" in headings or _nonexecuted(lines) or bank_transfer.payment_denied(first_page):
+    if _nonexecuted(lines) or bank_transfer.payment_denied(first_page):
         return labels, False
     # The entries below an enclosure introduction describe other documents, even when
     # OCR puts the introduction, a list marker and the receipt heading on separate lines.
@@ -194,6 +293,7 @@ def classify(pages: list[str], *, ocr_accounts: AccountEvidence | None = None) -
     if not pages:
         return None
     head = "\n".join(pages[:2])
+    folded = head.casefold().translate(POLISH_FOLD)
     scan_filing = ocr_accounts is not None and FILING.search(pages[0])
     transfer_heading = False
     register_heading = False
@@ -201,10 +301,20 @@ def classify(pages: list[str], *, ocr_accounts: AccountEvidence | None = None) -
         for row in page.splitlines():
             line = row.strip()
             heading = re.sub(r"\s", "", line).upper()
-            if UNRELATED_HEADING.match(line):
+            cue = line.casefold().translate(POLISH_FOLD)
+            if COVER_HEADING.match(line):
+                # An enclosed filing needs its own evidence. Account details on an
+                # enclosure do not turn a cover letter into a payment receipt.
+                enclosed = classify(pages[1:2]) if index == 0 and len(pages) > 1 else None
+                return enclosed if enclosed in {"appeal", "power_of_attorney"} else None
+            if UNRELATED_HEADING.match(line) or OTHER_FILING.match(cue):
                 return None
             if re.match(r"^(?:rejestr|wykaz|spis|ewidencja)\b", line, re.IGNORECASE):
                 register_heading = True
+            if not register_heading and APPEAL_TITLE.match(cue) and _cue_score(folded, APPEAL_CUES) >= 2:
+                return "appeal"
+            if not register_heading and GRANT_TITLE.fullmatch(cue) and _cue_score(folded, GRANT_CUES) >= 2:
+                return "power_of_attorney"
             if index == 0 and scan_filing:
                 # Flecks at the edge of a scanned title can appear as bullets or quotes.
                 if heading.strip("*•|.,„”'—–-") == "ODWOŁANIE":
@@ -241,6 +351,7 @@ def classify(pages: list[str], *, ocr_accounts: AccountEvidence | None = None) -
                 return "power_of_attorney"
             if (
                 CONFIRMATION_HEADING.match(line)
+                or PAYMENT_TITLE.match(cue)
                 or DEBIT_DETAILS.match(line)
                 or (line.casefold() == "przelew z rachunku szczegóły transakcji" and _debit_printout(page))
                 or booking_heading(line, ocr=index == 0 and ocr_accounts is not None)
@@ -249,6 +360,12 @@ def classify(pages: list[str], *, ocr_accounts: AccountEvidence | None = None) -
                 break
         if transfer_heading:
             break
+    if not transfer_heading and not register_heading:
+        # Without a title, require the addressee and the filer's own declaration.
+        if all(re.search(p, folded, re.MULTILINE) for p in APPEAL_CUES[:2]) and _cue_score(folded, APPEAL_CUES) >= 3:
+            return "appeal"
+        if _cue_score(folded, GRANT_CUES) == len(GRANT_CUES):
+            return "power_of_attorney"
     if not transfer_heading and power_of_attorney.has_notarial_grant(head):
         return "power_of_attorney"
 
@@ -259,17 +376,29 @@ def classify(pages: list[str], *, ocr_accounts: AccountEvidence | None = None) -
     letter = bank_transfer.executed_letter(first)
     debit = ocr_accounts is not None and _debit_printout(first)
     dated_order = ocr_accounts is not None and _executed_order_printout(first)
-    if not (transfer_heading or debit or letter or dated_order or any(EXECUTED.match(line) for line in lines)):
+    attested = any(_confirms_execution(line) for line in lines)
+    conventional = (
+        transfer_heading or debit or letter or dated_order or attested or any(EXECUTED.match(line) for line in lines)
+    )
+    folded_first = first.casefold().translate(POLISH_FOLD)
+    if not conventional and not PAYMENT_SUBJECT.search(folded_first) and "bank" not in folded_first:
         return None
     amount, day = bank_transfer.transaction_values(first)
-    if amount is None and day is None:
-        return None
+    if not conventional or (amount is None and day is None):
+        return "bank_transfer" if _payment_card(first, folded_first, amount, day) else None
 
+    # A receipt can print NRB/IBAN in groups other than the domestic 2+6x4.
+    first = bank_transfer.normalize_account_spacing(first)
     if ocr_accounts is None:
         sender, recipient = bank_transfer._accounts(first)
     else:
         sender, recipient = ocr_accounts.sender, ocr_accounts.recipient
     bound_pair = bool(sender and recipient and account_identity(sender) != account_identity(recipient))
+    # A posted transaction with no confirmation title must bind both accounts,
+    # its amount, and at least one independent ledger date or transaction ID.
+    ledger_score = sum((amount is not None, day is not None, bool(bank_transfer.REFERENCE_RE.search(first))))
+    if attested and bound_pair and amount is not None and ledger_score >= 2:
+        return "bank_transfer"
     # Classic confirmations sometimes give an unlabelled pair. Preserve their routing
     # while keeping explicit commission/refund/archive accounts out of that pair.
     payment_fields = bank_transfer.ANCILLARY_ACCOUNT.sub("", first)
@@ -279,7 +408,7 @@ def classify(pages: list[str], *, ocr_accounts: AccountEvidence | None = None) -
     ) >= 2
     if (
         (bound_pair or known_party or len(candidates) >= 2)
-        and "przelew" in first.casefold()
+        and (transfer_heading or "przelew" in first.casefold())
         and (transfer_heading or any(EXECUTED.match(line) for line in lines))
     ):
         return "bank_transfer"

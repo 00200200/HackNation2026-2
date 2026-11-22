@@ -7,14 +7,14 @@ UPPER = "A-ZĄĆĘŁŃÓŚŹŻ"
 LOWER = "a-ząćęłńóśźż"
 
 PARTY_LABELS = {
-    "appellant": r"odwo[łl]uj[ąa]cy",
+    "appellant": r"odwo[łl]uj[ąa]cy|(?:wykonawca|podmiot) wnosz[ąa]cy odwo[łl]anie",
     "authority": r"zamawiaj[ąa]cy",
     "principal": r"mocodawc[ay]",
     "appointee": r"pełnomocni(?:k|cy)",
     "representation": r"(?:reprezentowan|zastępowan)\w* przez(?: pełnomocnika)?",
     "counsel": r"pełnomocnik odwołującego",
     "other": r"adresat|uczestnik(?: postępowania)?|poświadczający|za zgodność(?: z oryginałem)?",
-    "signer": r"podpisuj[ąa]c[ya]|podpis(?:y)? mocodawc[yó]w?",
+    "signer": r"podpisuj[ąa]c[ya]|podpis(?:y)?(?: mocodawc(?:y|ów))?",
 }
 
 MONTHS = [
@@ -31,10 +31,18 @@ MONTHS = [
     "listopada",
     "grudnia",
 ]
-# 2026-03-21, 21.03.2026, 21-03-2026, 21 marca 2026
-DATE = (
-    r"(?<!\d)(?:\d{4}-\d{2}-\d{2}|\d{1,2}[.\-]\d{1,2}[.\-]\d{4}|\d{1,2}\s+(?i:" + "|".join(MONTHS) + r")\s+\d{4})(?!\d)"
-)
+
+
+def date_pattern(separator: str) -> str:
+    # Native dates use adjacent digits. OCR can insert whitespace after the printed separator.
+    return (
+        rf"(?<!\d)(?:\d{{4}}{separator}\d{{2}}{separator}\d{{2}}|"
+        rf"\d{{1,2}}{separator}\d{{1,2}}{separator}\d{{4}}|"
+        rf"\d{{1,2}}\s+(?i:{'|'.join(MONTHS)})\s+\d{{4}})(?!\d)"
+    )
+
+
+DATE = date_pattern(r"[-/.]")
 DATE_RE = re.compile(DATE)
 
 _NAME_PART = rf"[{UPPER}][{LOWER}]+(?:-[{UPPER}][{LOWER}]+)?"
@@ -48,7 +56,7 @@ def squash(text: str) -> str:
 
 
 def to_iso(text: str) -> str | None:
-    parts = re.split(r"[.\-\s]+", text.strip().lower())
+    parts = re.split(r"[./\-\s]+", text.strip().lower())
     if len(parts[0]) == 4:
         year, month, day = parts
     else:

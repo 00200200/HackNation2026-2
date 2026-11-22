@@ -2,7 +2,13 @@
 
 from copy import deepcopy
 
-NATIVE_IMPROVEMENTS = {"task11/Xacc", "task11/Tb", "task22/single-undotted", "new/bank-archive-third"}
+NATIVE_IMPROVEMENTS = {
+    "task11/Xacc",
+    "task11/Tb",
+    "task22/single-undotted",
+    "new/bank-archive-third",
+    "new/appeal-mask-in-title",
+}
 ABSENT = object()  # distinct from a printed field whose base value is null
 
 REVIEW_SENDER = "46137900000000000000471362"
@@ -67,6 +73,9 @@ def bound_pair(sender, recipient):
 # case id -> (field path, integration-base value, intended value, evidence).
 # A +index inserts a previously absent list member without replacing an existing one.
 INTENDED_CHANGES = {
+    "new/appeal-mask-in-title": [
+        ("ZamowieniePubliczne.tytul", None, "Przędza XXXX i akcesoria", "Nazwa zamówienia explicitly labels the title.")
+    ],
     "task22/single-undotted": [
         (
             "mocodawca.0.podpisujacy.+0",
