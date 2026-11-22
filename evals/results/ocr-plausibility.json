@@ -8,7 +8,7 @@
   "variants": {
     "main": "origin/main d9a3b25",
     "pr_as_opened": "origin/main d9a3b25 with the ocr_plausibility.py and ocr_extract.py call site of fix/ocr-plausibility fe66789: null on any stray symbol, on a letter ratio below 0.6, or on a lawyer name ending in capitals noise; cut after the legal form",
-    "this_branch": "the product commit d857521 merged with origin/main d9a3b25: trim a noise tail after a corporate legal form and trailing stray symbols; null a value that is scanner noise throughout (stray symbols and no letters; mixed-case text with three or more stray-symbol tokens among mostly noise tokens); titles are trim-only; values printed verbatim on native pages are skipped"
+    "this_branch": "the product commit d857521 merged with origin/main d9a3b25: trim a noise tail after a corporate legal form and trailing stray symbols; null a value that is scanner noise throughout (stray symbols and no letters; mixed-case text with three or more stray-symbol tokens where at least half of all tokens are noise); titles are trim-only; values printed verbatim on native pages are skipped"
   },
   "metrics": {
     "strict": "evals.metrics.compare_strict (null = null is a hit, a wrong value is FP and FN, exact strings after whitespace and case normalisation)",

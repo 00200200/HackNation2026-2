@@ -1,9 +1,10 @@
 """Clean up the names and the title of a scanned appeal.
 
 A stamp, a table rule or a redaction box leaves OCR noise at the end of a good value, or in place of one. Under the UZP
-counting (issue #59) a wrong value costs one FP and a missing one one FN, a long string is a hit from 80 % similarity,
-and null is free when the reference holds no value. So a value that is still close is trimmed, never nulled; only a value
-that is scanner noise throughout, which is unlikely to match anyway, becomes null.
+counting (issue #59) a wrong value costs one FP and a missing one one FN, a long string is a hit from 80 % similarity
+(our reading of the rule, UNCONFIRMED by UZP) and null is free when the reference holds no value. So a value that is
+still close is trimmed, never nulled; only a value that is scanner noise throughout, which is unlikely to match anyway,
+becomes null.
 """
 
 import re
@@ -57,8 +58,8 @@ def _cut_after_legal_form(text: str) -> str:
 
 def _garbage(text: str) -> bool:
     """Scanner noise throughout: stray symbols and no letters at all, or, in mixed-case text, three or more stray-symbol
-    tokens among mostly noise tokens. A rule or two inside a name is trimmed, not nulled; in all capitals a short word is
-    a word, so it never counts as noise here."""
+    tokens with at least half of all tokens noise. A rule or two inside a name is trimmed, not nulled; in all capitals a
+    short word is a word, so it never counts as noise here."""
     tokens = text.split()
     strays = sum(bool(_STRAY.search(token)) for token in tokens)
     if not any(c.isalpha() for c in text):
