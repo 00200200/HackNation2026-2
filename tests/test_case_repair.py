@@ -115,7 +115,7 @@ def test_cli_reconciles_each_explicit_folder_after_all_worker_results(tmp_path, 
         path = source / name
         path.parent.mkdir(exist_ok=True, parents=True)
         path.touch()
-    monkeypatch.setattr(cli, "read_batch", lambda paths, *_: (readings[p.stem] for p in paths))
+    monkeypatch.setattr(cli, "read_batch", lambda paths, *_, **__: (readings[p.stem] for p in paths))
     monkeypatch.setattr(sys, "argv", ["kio2json", "--input", str(source), "--output", str(output), "--jobs", "2"])
     monkeypatch.setenv("KIO_CASE_REPAIR", "1")
     assert cli.main() == 0
@@ -208,3 +208,18 @@ def test_recipient_cannot_confirm_a_weak_sender_on_another_page():
     strong = document("bank_transfer", receipt, [recipient, sender], [1], [("Polara", 22)])
     assert reconcile(target, weak)[0] == json.loads(target.text)
     assert reconcile(target, strong)[0]["Odwolujacy"][0]["nazwa"] == "Polara"
+
+
+def test_reconciled_trace_reports_final_value_and_source():
+    from dataclasses import replace
+
+    bad, good = "1234563219", "1234563218"
+    target = appeal({"nazwa": "Witraż", "nip": bad}, ["Witraż NIP " + bad])
+    original = {"field": "Odwolujacy[0].nip", "value": bad, "engine": "rule", "page": 1, "snippet": "NIP " + bad}
+    target = replace(target, trace={"fields": [original]})
+    donor = grant({"nazwa": "Witraż", "nip": good}, ["Witraż NIP " + good])
+    fixed, _ = batch.reconcile_cases([Path("one/appeal.pdf"), Path("one/grant.pdf")], [target, donor])
+    field = fixed.trace["fields"][0]
+    assert field["value"] == json.loads(fixed.text)["Odwolujacy"][0]["nip"] == good
+    assert (field["engine"], field["snippet"], field["page"]) == ("case repair", None, None)
+    assert original["value"] == bad
