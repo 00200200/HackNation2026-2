@@ -1,0 +1,27 @@
+<section id="solution" class="light" data-transition="fade">
+<div class="hdr"><p>Zadanie UZP: Odwołania2json</p><p class="r">HackNation 2026</p></div>
+<h2 class="in" style="--i:0;">Każdy PDF dostaje swój JSON.</h2>
+<div class="in" style="--i:1; display:flex; align-items:center; flex:1;">
+<div style="width:330px; display:flex; flex-direction:column; gap:16px;">
+<div class="node"><p class="a">dokument_01.pdf</p></div>
+<div class="node"><p class="a">dokument_02.pdf</p></div>
+<div class="node"><p class="a">dokument_03.pdf</p></div>
+<div class="node"><p class="a">dokument_04.pdf</p></div>
+</div>
+<div style="width:90px; display:flex; flex-direction:column; gap:16px;"><div class="wire"><div></div></div><div class="wire"><div></div></div><div class="wire"><div></div></div><div class="wire"><div></div></div></div>
+<div class="hub" style="width:420px; height:368px;">
+<svg aria-label="Logo doc2json" width="72" height="72" viewBox="0 0 64 64" style="width:72px; height:72px;"><rect x="0.5" y="0.5" width="63" height="63" rx="15" fill="#000" stroke="#4a4a4a" stroke-width="1"/><g fill="none" stroke="#fff" stroke-width="4.5" stroke-linecap="round" stroke-linejoin="round"><path d="M24 15c-4.5 0-5.5 2-5.5 6v6c0 3-1.5 5-4.5 5 3 0 4.5 2 4.5 5v6c0 4 1 6 5.5 6"/><path d="M40 15c4.5 0 5.5 2 5.5 6v6c0 3 1.5 5 4.5 5-3 0-4.5 2-4.5 5v6c0 4-1 6-5.5 6"/><path d="M28 27h8M28 37h5"/></g></svg>
+<p class="t">doc2json</p>
+<p class="s">klasa z&nbsp;treści<br>pola ze schematu UZP</p>
+</div>
+<div style="width:90px; display:flex; flex-direction:column; gap:16px;"><div class="wire"><div></div></div><div class="wire"><div></div></div><div class="wire"><div></div></div><div class="wire"><div></div></div></div>
+<div style="flex:1; display:flex; flex-direction:column; gap:16px;">
+<div class="node"><p class="a">odwołanie</p></div>
+<div class="node"><p class="a">przelew</p></div>
+<div class="node"><p class="a">pełnomocnictwo</p></div>
+<div class="node empty"><p class="a">{} <span style="color:#666666">dokument spoza klas</span></p></div>
+</div>
+</div>
+<div class="ftr"><div class="brand"><svg aria-label="Logo doc2json" width="40" height="40" viewBox="0 0 64 64" style="width:40px; height:40px;"><rect width="64" height="64" rx="15" fill="#000"/><g fill="none" stroke="#fff" stroke-width="4.5" stroke-linecap="round" stroke-linejoin="round"><path d="M24 15c-4.5 0-5.5 2-5.5 6v6c0 3-1.5 5-4.5 5 3 0 4.5 2 4.5 5v6c0 4 1 6 5.5 6"/><path d="M40 15c4.5 0 5.5 2 5.5 6v6c0 3 1.5 5 4.5 5-3 0-4.5 2-4.5 5v6c0 4-1 6-5.5 6"/><path d="M28 27h8M28 37h5"/></g></svg><p>doc2json</p></div><p class="src">Kontrakt wejścia i&nbsp;wyjścia: README UZP, sekcja 3</p><p class="pg">03 / 12</p></div>
+<aside>Jury wrzuca PDF-y sprawy do folderu input. Nazwy plików bywają dowolne, więc klasę rozpoznajemy z treści. Pola bierzemy ze schematu UZP i zapisujemy JSON o tej samej nazwie co PDF. Dokument spoza trzech klas dostaje {}, czyli pusty obiekt JSON. Czego nie ma w dokumencie, zostaje null.</aside>
+</section>
