@@ -45,6 +45,8 @@ The public training score uses the account prefixes printed in the PDFs. The loc
 
 Run `make eval-cases` for the paired native/scan benchmark. [Case families and scores](docs/readme/reference.md#case-linked-benchmark)
 
+On five held-out cases in a ten-appeal two-column benchmark, field F1 was 0.9700 with native text and 0.8925 with forced OCR. Unlabelled procurement titles remained missing. [Field results and limits](evals/results/two-column-appeals.json)
+
 ## Quick start
 
 Install 64-bit Python 3.13. From the repository root, create and activate a virtual environment.

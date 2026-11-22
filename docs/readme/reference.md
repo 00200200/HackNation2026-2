@@ -507,6 +507,8 @@ rules. [OCR results](../../evals/results/ocr-engines.json)
 
 - In rules-first native-schema mode, a receipt amount, execution date, singleton appeal party name or procurement title can be reconsidered when its first page contains a conflicting, locally readable value. The model selects a candidate ID in one request per disputed block. The extractor copies the corresponding printed span and normalizes it locally. Abstention or a failed request preserves the rule value. If OCR misses the correct digits in every reading, this step cannot recover them.
 
+- For appeals with parallel sections, the reader looks for a persistent gap between overlapping blocks of text with independent headings. A shared heading above full-width prose stays after both columns. Sparse cards and word boxes that disagree with the transcript can leave the original order ambiguous. A procurement title without a readable label can still be missed. [Two-column appeal evaluation](../../evals/results/two-column-appeals.json)
+
 - On two-column receipts a payment amount can sit beside a different label. The reader checks the amount's column and currency. A damaged account, reference or remittance title can still be unreadable after the receipt is identified.
 
 - A receipt that shows only acceptance for future execution can remain unclassified. On damaged scans, a booking date and debit can establish a completed payment even when the account roles are unreadable. The affected account fields stay null.
