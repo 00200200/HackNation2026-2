@@ -6,7 +6,7 @@ from collections import Counter, defaultdict
 from dataclasses import dataclass, field
 
 from . import appeal
-from .common import ATTORNEY_RE, EMAIL_RE, PERSON
+from .common import ATTORNEY_RE, EMAIL_RE, PARTY_LABELS, PERSON
 from .pdf_text import WordBox
 from .personal_names import compatible_names, nominative
 from .power_of_attorney import GRANT, MANDATE_TITLE, NAMED_SIGNATURE
@@ -58,18 +58,8 @@ def restore_party_columns(pages: list[str], boxes: list[WordBox]) -> list[str]:
     ]
 
 
-_LABELS = {
-    "appellant": appeal.APPELLANT_LABEL + r"|(?:wykonawca|podmiot) wnosz[ąa]cy odwo[łl]anie",
-    "authority": r"zamawiaj[ąa]cy",
-    "principal": r"mocodawc[ay]",
-    "appointee": r"pełnomocni(?:k|cy)",
-    "representation": r"(?:reprezentowan|zastępowan)\w* przez(?: pełnomocnika)?",
-    "counsel": r"pełnomocnik odwołującego",
-    "other": r"adresat|uczestnik(?: postępowania)?|poświadczający|za zgodność(?: z oryginałem)?",
-    "signer": r"podpisuj[ąa]c[ya]|podpis(?:y)?(?: mocodawc(?:y|ów))?",
-}
 _HEADING = re.compile(
-    r"^(?:" + "|".join(f"(?P<{k}>{v})" for k, v in _LABELS.items()) + r")(?:\s*:\s*|\s*$)", re.IGNORECASE
+    r"^(?:" + "|".join(f"(?P<{k}>{v})" for k, v in PARTY_LABELS.items()) + r")(?:\s*:\s*|\s*$)", re.IGNORECASE
 )
 _STOP = re.compile(
     r"^(?:udziel\w*|upoważni\w*|ustanawiam\w*|dotyczy|odwołanie|pełnomocnictwo|za zgodność|uzasadnienie|"
