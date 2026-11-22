@@ -177,3 +177,11 @@ def test_booking_date_and_amount_columns_accept_day_heading():
     from kio2json.bank_transfer import transaction_values
 
     assert transaction_values("Dzień zaksięgowania | Suma transakcji\n02.07.2031 | 41,80 PLN") == (41.8, "2031-07-02")
+
+
+def test_cover_letter_evidence_stays_on_its_own_page():
+    cover = "Pismo przewodnie – wykaz załączonych dokumentów\nPEŁNOMOCNICTWO"
+    assert classify([cover]) is None
+    cover = "Pismo przewodnie\nDo Prezesa KIO\nWnoszę odwołanie.\nZarzuty"
+    assert classify([cover, "Sprawozdanie"]) is None
+    assert classify([cover, "ODWOŁANIE\nOdwołujący: Studio Wagi"]) == "appeal"

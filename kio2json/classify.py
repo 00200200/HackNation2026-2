@@ -58,10 +58,11 @@ EXECUTION_ATTESTATION = re.compile(
 
 # Compare Polish cues after folding, while keeping the original text for value extraction.
 POLISH_FOLD = str.maketrans("ąćęłńóśźż", "acelnoszz")
+COVER_HEADING = re.compile(r"^pismo przewodnie\b", re.IGNORECASE)
 OTHER_FILING = re.compile(
     r"^(?:odpowiedz na odwolanie|(?:zgloszenie )?przystapieni[ea] do postepowania|"
     r"(?:odwolanie|wypowiedzenie|cofniecie) pelnomocnictwa|pelnomocnictwo (?:zostalo )?(?:odwolane|cofniete|wypowiedziane|wygaslo)|"
-    r"pismo przewodnie|spis zalacznikow)\b"
+    r"spis zalacznikow)\b"
 )
 APPEAL_TITLE = re.compile(r"^odwolanie (?:do|w sprawie|wobec|od|na)\b")
 KIO = r"(?:krajow\w* izb\w* odwolawcz\w*|kio)\b"
@@ -170,6 +171,8 @@ def routing_evidence(first_page: str) -> tuple[set[str], bool]:
     """Return eligible classes and whether the payment details independently confirm a transfer."""
     lines = [line.strip() for line in first_page.splitlines() if line.strip()]
     for i, line in enumerate(lines):
+        if COVER_HEADING.match(line):
+            return set(), False
         if UNRELATED_HEADING.match(line) or OTHER_FILING.match(line.casefold().translate(POLISH_FOLD)):
             if REQUEST_REFERENCE.fullmatch(line) and any(CONFIRMATION_HEADING.match(h) for h in lines[:i]):
                 continue
@@ -182,7 +185,7 @@ def routing_evidence(first_page: str) -> tuple[set[str], bool]:
         r"\b(?:udzielam(?:y)?\s+(?:niniejszego\s+)?pełnomocnictwa|upoważniam(?:y)?\b)", first_page, re.IGNORECASE
     ):
         labels.add("power_of_attorney")
-    if "PISMOPRZEWODNIE" in headings or _nonexecuted(lines) or bank_transfer.payment_denied(first_page):
+    if _nonexecuted(lines) or bank_transfer.payment_denied(first_page):
         return labels, False
     # The entries below an enclosure introduction describe other documents, even when
     # OCR puts the introduction, a list marker and the receipt heading on separate lines.
@@ -238,6 +241,11 @@ def classify(pages: list[str], *, ocr_accounts: AccountEvidence | None = None) -
             line = row.strip()
             heading = re.sub(r"\s", "", line).upper()
             cue = line.casefold().translate(POLISH_FOLD)
+            if COVER_HEADING.match(line):
+                # An enclosed filing needs its own evidence. Account details on an
+                # enclosure do not turn a cover letter into a payment receipt.
+                enclosed = classify(pages[1:2]) if index == 0 and len(pages) > 1 else None
+                return enclosed if enclosed in {"appeal", "power_of_attorney"} else None
             if UNRELATED_HEADING.match(line) or OTHER_FILING.match(cue):
                 return None
             if re.match(r"^(?:rejestr|wykaz|spis|ewidencja)\b", line, re.IGNORECASE):
