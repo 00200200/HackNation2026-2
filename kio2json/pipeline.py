@@ -30,6 +30,7 @@ from .ocr_grant_register import disputed_register_cells, verified_pages
 from .ocr_signatures import recover_board_stamp
 from .pdf_text import (
     DEFAULT_OCR_ENGINE,
+    MAX_PAGES,
     NoReadableTextError,
     OCRRecognitionError,
     WordBox,
@@ -166,6 +167,8 @@ def _document_rules(definition, pdf_path, pages, ocr_pages, boxes, engine, selec
         else:
             record = appeal.extract(join_pages(pages))
         apply_appeal_blocks(record, blocks)
+        if not ocr_pages and len(pages) == MAX_PAGES:
+            appeal.complete_signed_filing(record, pdf_path, len(pages))
         if rules_first and boxes:
             verify_cells(pdf_path, disputed_register_cells, record, boxes)
         return record

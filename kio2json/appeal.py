@@ -3,6 +3,7 @@
 import re
 
 from .appeal_charges import ACTS, CHARGE, FILING, NEXT_ITEM, act_date, first_sentence, prose_action, sentences
+from .appeal_counsel import before_attachments, filing_counsel, final_native_page, partnership_name, signature_block
 from .common import ATTORNEY_RE, DATE, EMAIL_RE, LOWER, PERSON, UPPER, registry_ids, squash, to_iso
 from .personal_names import nominative, same_nominal_form
 
@@ -532,6 +533,10 @@ def _representative(header: str, text: str, appellant_name: str, explicit_appell
     signature = re.search(
         rf"(?im)^[ \t]*pełnomocnik(?: odwołującego)?[ \t]*\n(?:[^\n]*\d[^\n]*\n)?(?-i:({PERSON}))[ \t]*$", text
     )
+    if signature and "odwołującego" not in signature[0].casefold():
+        preceding = text[: signature.start()].rstrip().splitlines()[-3:]
+        if any(_OTHER_CARD.match(row.strip()) for row in preceding):
+            signature = None
     principal = rf"(?:odwołującego|{re.escape(appellant_name)})(?!\w)"
     mandate = any(
         FILING.search(clause)
@@ -564,6 +569,8 @@ def _representative(header: str, text: str, appellant_name: str, explicit_appell
             return None
         name = nominative(name, "acc") or name
     firm = _employer(after)
+    if not firm and attorney and intro:
+        firm = next(filter(None, map(partnership_name, after.splitlines()[1:3])), None)
     if employee and attorney:
         firm = appellant_name
     elif not firm and attorney:
@@ -581,12 +588,31 @@ def _representative(header: str, text: str, appellant_name: str, explicit_appell
         firms = [line.strip() for line in letterhead.splitlines() if FIRM_NAME.match(line.strip())]
         if len(firms) == 1:
             firm = firms[0]
-    mail = EMAIL_RE.search(after)
+    counsel_contact = re.split(
+        r"(?im)^[^\n:]{0,45}\b(?:adres|e-mail|kontakt)\b[^\n:]{0,35}\b(?:odwołującego|zamawiającego|wykonawcy|spółki)\b[^\n:]*:",
+        after,
+        maxsplit=1,
+    )[0]
+    mail = EMAIL_RE.search(counsel_contact)
     return {
         "imie_nazwisko": name,
         "nazwa": squash(firm) if firm else None,
         "mail": mail.group() if mail else None,
     }
+
+
+def complete_signed_filing(record, pdf_path, retained):
+    """Only an explicitly owned signature can complete the existing appellant."""
+    if len(record["Odwolujacy"]) != 1:
+        return
+    appellant = record["Odwolujacy"][0]
+    if appellant["przez-pelnomocnika"] and all(appellant["pelnomocnik"].values()):
+        return
+    text = signature_block(_unquoted_party_text(final_native_page(pdf_path, retained)))
+    if text:
+        current = appellant["pelnomocnik"] if appellant["przez-pelnomocnika"] else None
+        if rep := filing_counsel(text, appellant["nazwa"], current):
+            appellant.update({"przez-pelnomocnika": 1, "pelnomocnik": rep})
 
 
 def _reason(passage: str) -> int | None:
@@ -801,8 +827,12 @@ def extract(text: str, *, ocr_mail_lines: frozenset[int] = frozenset()) -> dict:
 
     appellants = parties["Odwołujący"]
     leader = next((a for a in appellants if "lider" in a["sublabel"].lower()), appellants[0] if appellants else None)
-    representative = _representative(party_header, party_text, leader["nazwa"], explicit_appellant) if leader else None
+    representative = None
     if leader:
+        counsel_text = before_attachments(_unquoted_party_text(party_text))
+        counsel_header = before_attachments(_unquoted_party_text(party_header))
+        representative = _representative(counsel_header, counsel_text, leader["nazwa"], explicit_appellant)
+        representative = filing_counsel(counsel_text, leader["nazwa"], representative)
         _appellant_registry(party_text, leader)
     authorities = parties["Zamawiający"]
     return {
