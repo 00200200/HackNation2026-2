@@ -586,17 +586,17 @@ The default report is `.cache/case-benchmark.json`. Generation alone requires a 
 
 The development split uses the early modular appeal, six early mandates and seven early receipt layouts. The reserved split uses independently phrased long appeals, company/consortium/sole-trader mandates, the late bank table and the five organizer scan receipt layouts. CCITT Group 4 is reserved for that split. Both splits also contain JPEG scans. A 13-case cycle covers every family. Larger prefixes repeat layouts with new parties, dates and payment facts.
 
-The report gives UZP and strict F1, literal JSON matches, routing and negative rejection by family, class and rendering, plus field counts within each family. Its 95% intervals resample complete cases 1,000 times and are omitted for single-case slices. Family frequencies in the jury set are unknown. The synthetic scores describe these authored layouts.
+The report gives UZP and strict F1, literal JSON matches, routing and negative rejection by family, class and rendering, plus field counts within each family. Its 95% intervals resample complete cases 1,000 times and are omitted for single-case slices. Family frequencies in the jury set are unknown. The synthetic scores describe these authored layouts. Scans retain the page geometry of their native counterparts. Interior pages in the long appeal are more lightly typeset than those in the inspected organizer files.
 
-On the 26-case panel, keyless main `35b1d01` scored **0.6735 UZP F1** (case-bootstrap 95% interval 0.6162–0.7252) and **0.6290 strict F1**. It routed 188/208 PDFs, returned 85 exact JSONs and rejected all 52 negatives. Extraction took 260 seconds with two workers on the shared development Mac.
+On the 26-case panel, keyless main `fa9937e` scored **0.7191 UZP F1** (case-bootstrap 95% interval 0.6780–0.7570) and **0.6617 strict F1**. It routed 188/208 PDFs, returned 85 exact JSONs and rejected all 52 negatives. Extraction took 485 seconds with two workers on the shared development Mac.
 
 | Main on the generated cases | PDFs | UZP F1 | Strict F1 | Exact |
 |---|---:|---:|---:|---:|
-| Appeals | 52 | 0.6491 | 0.5817 | 0 |
+| Appeals | 52 | 0.7285 | 0.6377 | 0 |
 | Mandates | 52 | 0.6667 | 0.6763 | 4 |
 | Transfers | 52 | 0.7557 | 0.7460 | 29 |
-| Native, all classes | 104 | 0.5756 | 0.5146 | 44 |
-| Scans, all classes | 104 | 0.7589 | 0.7401 | 41 |
+| Native, all classes | 104 | 0.6086 | 0.5339 | 44 |
+| Scans, all classes | 104 | 0.8133 | 0.7865 | 41 |
 
 Four receipt layouts are the first routing targets. The early bank letter, transaction history, operation details and order details each missed all four PDFs (two cases in both renditions). The sole-trader mandate routed 8/8 but scored 0.2069 UZP F1, with missed principal names and identifiers. Most families have few independent cases. The scorecard includes every family, codec/DPI combination, sample count and field result. [Benchmark measurements](../../evals/results/case-benchmark.json)
 

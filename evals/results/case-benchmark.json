@@ -1,0 +1,4503 @@
+{
+  "overall": {
+    "cases": 26,
+    "docs": 208,
+    "uzp_f1": 0.7190839694656489,
+    "strict_f1": 0.6616915422885572,
+    "uzp_ci95": [
+      0.67802,
+      0.75702
+    ],
+    "counts": {
+      "tp": 942,
+      "fp": 18,
+      "fn": 718,
+      "tn": 326
+    },
+    "exact": 85,
+    "routed": 188,
+    "rejected": 52,
+    "negatives": 52
+  },
+  "missing_or_invalid": 0,
+  "routing_aware_per_class_f1": {
+    "odwolanie": 0.7284595300261096,
+    "pelnomocnictwo": 0.6666666666666666,
+    "przelew": 0.755741127348643
+  },
+  "macro_f1_classes": 0.7169557746804731,
+  "per_class": {
+    "negatywny": {
+      "cases": 26,
+      "docs": 52,
+      "uzp_f1": null,
+      "strict_f1": null,
+      "uzp_ci95": null,
+      "counts": {
+        "tp": 0,
+        "fp": 0,
+        "fn": 0,
+        "tn": 0
+      },
+      "exact": 52,
+      "routed": 52,
+      "rejected": 52,
+      "negatives": 52
+    },
+    "odwolanie": {
+      "cases": 26,
+      "docs": 52,
+      "uzp_f1": 0.7284595300261096,
+      "strict_f1": 0.637719298245614,
+      "uzp_ci95": [
+        0.70227,
+        0.7508
+      ],
+      "counts": {
+        "tp": 558,
+        "fp": 12,
+        "fn": 404,
+        "tn": 170
+      },
+      "exact": 0,
+      "routed": 52,
+      "rejected": 0,
+      "negatives": 0
+    },
+    "pelnomocnictwo": {
+      "cases": 26,
+      "docs": 52,
+      "uzp_f1": 0.6666666666666666,
+      "strict_f1": 0.6762589928057554,
+      "uzp_ci95": [
+        0.58605,
+        0.73618
+      ],
+      "counts": {
+        "tp": 203,
+        "fp": 4,
+        "fn": 199,
+        "tn": 142
+      },
+      "exact": 4,
+      "routed": 52,
+      "rejected": 0,
+      "negatives": 0
+    },
+    "przelew": {
+      "cases": 26,
+      "docs": 52,
+      "uzp_f1": 0.755741127348643,
+      "strict_f1": 0.746031746031746,
+      "uzp_ci95": [
+        0.60422,
+        0.86907
+      ],
+      "counts": {
+        "tp": 181,
+        "fp": 2,
+        "fn": 115,
+        "tn": 14
+      },
+      "exact": 29,
+      "routed": 32,
+      "rejected": 0,
+      "negatives": 0
+    }
+  },
+  "per_family": {
+    "decision-extract": {
+      "cases": 12,
+      "docs": 24,
+      "uzp_f1": null,
+      "strict_f1": null,
+      "uzp_ci95": null,
+      "counts": {
+        "tp": 0,
+        "fp": 0,
+        "fn": 0,
+        "tn": 0
+      },
+      "exact": 24,
+      "routed": 24,
+      "rejected": 24,
+      "negatives": 24
+    },
+    "early-letterhead": {
+      "cases": 2,
+      "docs": 4,
+      "uzp_f1": 0.8461538461538461,
+      "strict_f1": 0.8333333333333334,
+      "uzp_ci95": [
+        0.81481,
+        0.88
+      ],
+      "counts": {
+        "tp": 22,
+        "fp": 0,
+        "fn": 8,
+        "tn": 12
+      },
+      "exact": 1,
+      "routed": 4,
+      "rejected": 0,
+      "negatives": 0
+    },
+    "early-modular": {
+      "cases": 14,
+      "docs": 28,
+      "uzp_f1": 0.7458432304038005,
+      "strict_f1": 0.650974025974026,
+      "uzp_ci95": [
+        0.73633,
+        0.75524
+      ],
+      "counts": {
+        "tp": 314,
+        "fp": 2,
+        "fn": 212,
+        "tn": 88
+      },
+      "exact": 0,
+      "routed": 28,
+      "rejected": 0,
+      "negatives": 0
+    },
+    "early-panels": {
+      "cases": 2,
+      "docs": 4,
+      "uzp_f1": 0.8695652173913043,
+      "strict_f1": 0.8666666666666667,
+      "uzp_ci95": [
+        0.83333,
+        0.90909
+      ],
+      "counts": {
+        "tp": 20,
+        "fp": 0,
+        "fn": 6,
+        "tn": 8
+      },
+      "exact": 1,
+      "routed": 4,
+      "rejected": 0,
+      "negatives": 0
+    },
+    "early-paragraphs": {
+      "cases": 3,
+      "docs": 6,
+      "uzp_f1": 0.5714285714285714,
+      "strict_f1": 0.5974025974025974,
+      "uzp_ci95": [
+        0.52632,
+        0.6
+      ],
+      "counts": {
+        "tp": 16,
+        "fp": 0,
+        "fn": 24,
+        "tn": 14
+      },
+      "exact": 0,
+      "routed": 6,
+      "rejected": 0,
+      "negatives": 0
+    },
+    "early-procedural": {
+      "cases": 2,
+      "docs": 4,
+      "uzp_f1": 0.8,
+      "strict_f1": 0.7777777777777778,
+      "uzp_ci95": [
+        0.76923,
+        0.83333
+      ],
+      "counts": {
+        "tp": 20,
+        "fp": 2,
+        "fn": 8,
+        "tn": 12
+      },
+      "exact": 0,
+      "routed": 4,
+      "rejected": 0,
+      "negatives": 0
+    },
+    "early-register": {
+      "cases": 3,
+      "docs": 6,
+      "uzp_f1": 0.6666666666666666,
+      "strict_f1": 0.6823529411764706,
+      "uzp_ci95": [
+        0.22222,
+        0.85714
+      ],
+      "counts": {
+        "tp": 21,
+        "fp": 0,
+        "fn": 21,
+        "tn": 14
+      },
+      "exact": 0,
+      "routed": 6,
+      "rejected": 0,
+      "negatives": 0
+    },
+    "early-short": {
+      "cases": 2,
+      "docs": 4,
+      "uzp_f1": 0.6666666666666666,
+      "strict_f1": 0.6666666666666666,
+      "uzp_ci95": [
+        0.47619,
+        0.83333
+      ],
+      "counts": {
+        "tp": 15,
+        "fp": 2,
+        "fn": 13,
+        "tn": 12
+      },
+      "exact": 1,
+      "routed": 4,
+      "rejected": 0,
+      "negatives": 0
+    },
+    "early_cards": {
+      "cases": 2,
+      "docs": 4,
+      "uzp_f1": 1.0,
+      "strict_f1": 1.0,
+      "uzp_ci95": [
+        1.0,
+        1.0
+      ],
+      "counts": {
+        "tp": 24,
+        "fp": 0,
+        "fn": 0,
+        "tn": 0
+      },
+      "exact": 4,
+      "routed": 4,
+      "rejected": 0,
+      "negatives": 0
+    },
+    "early_letter": {
+      "cases": 2,
+      "docs": 4,
+      "uzp_f1": 0.0,
+      "strict_f1": 0.0,
+      "uzp_ci95": [
+        0.0,
+        0.0
+      ],
+      "counts": {
+        "tp": 0,
+        "fp": 0,
+        "fn": 22,
+        "tn": 2
+      },
+      "exact": 0,
+      "routed": 0,
+      "rejected": 0,
+      "negatives": 0
+    },
+    "early_order": {
+      "cases": 2,
+      "docs": 4,
+      "uzp_f1": 1.0,
+      "strict_f1": 1.0,
+      "uzp_ci95": [
+        1.0,
+        1.0
+      ],
+      "counts": {
+        "tp": 24,
+        "fp": 0,
+        "fn": 0,
+        "tn": 0
+      },
+      "exact": 4,
+      "routed": 4,
+      "rejected": 0,
+      "negatives": 0
+    },
+    "early_register": {
+      "cases": 2,
+      "docs": 4,
+      "uzp_f1": 0.9767441860465116,
+      "strict_f1": 0.9583333333333334,
+      "uzp_ci95": [
+        0.94737,
+        1.0
+      ],
+      "counts": {
+        "tp": 21,
+        "fp": 1,
+        "fn": 0,
+        "tn": 2
+      },
+      "exact": 3,
+      "routed": 4,
+      "rejected": 0,
+      "negatives": 0
+    },
+    "early_sections": {
+      "cases": 2,
+      "docs": 4,
+      "uzp_f1": 1.0,
+      "strict_f1": 1.0,
+      "uzp_ci95": [
+        1.0,
+        1.0
+      ],
+      "counts": {
+        "tp": 24,
+        "fp": 0,
+        "fn": 0,
+        "tn": 0
+      },
+      "exact": 4,
+      "routed": 4,
+      "rejected": 0,
+      "negatives": 0
+    },
+    "early_summary": {
+      "cases": 2,
+      "docs": 4,
+      "uzp_f1": 1.0,
+      "strict_f1": 1.0,
+      "uzp_ci95": [
+        1.0,
+        1.0
+      ],
+      "counts": {
+        "tp": 24,
+        "fp": 0,
+        "fn": 0,
+        "tn": 0
+      },
+      "exact": 4,
+      "routed": 4,
+      "rejected": 0,
+      "negatives": 0
+    },
+    "early_thermal": {
+      "cases": 2,
+      "docs": 4,
+      "uzp_f1": 0.6666666666666666,
+      "strict_f1": 0.6666666666666666,
+      "uzp_ci95": [
+        0.66667,
+        0.66667
+      ],
+      "counts": {
+        "tp": 12,
+        "fp": 0,
+        "fn": 12,
+        "tn": 0
+      },
+      "exact": 2,
+      "routed": 2,
+      "rejected": 0,
+      "negatives": 0
+    },
+    "late-company": {
+      "cases": 4,
+      "docs": 8,
+      "uzp_f1": 0.84,
+      "strict_f1": 0.835820895522388,
+      "uzp_ci95": [
+        0.81481,
+        0.88172
+      ],
+      "counts": {
+        "tp": 42,
+        "fp": 0,
+        "fn": 16,
+        "tn": 20
+      },
+      "exact": 1,
+      "routed": 8,
+      "rejected": 0,
+      "negatives": 0
+    },
+    "late-consortium": {
+      "cases": 4,
+      "docs": 8,
+      "uzp_f1": 0.5899280575539568,
+      "strict_f1": 0.6086956521739131,
+      "uzp_ci95": [
+        0.56552,
+        0.61538
+      ],
+      "counts": {
+        "tp": 41,
+        "fp": 0,
+        "fn": 57,
+        "tn": 30
+      },
+      "exact": 0,
+      "routed": 8,
+      "rejected": 0,
+      "negatives": 0
+    },
+    "late-list": {
+      "cases": 12,
+      "docs": 24,
+      "uzp_f1": 0.7072463768115942,
+      "strict_f1": 0.6221374045801527,
+      "uzp_ci95": [
+        0.65476,
+        0.75287
+      ],
+      "counts": {
+        "tp": 244,
+        "fp": 10,
+        "fn": 192,
+        "tn": 82
+      },
+      "exact": 0,
+      "routed": 24,
+      "rejected": 0,
+      "negatives": 0
+    },
+    "late-trader": {
+      "cases": 4,
+      "docs": 8,
+      "uzp_f1": 0.20689655172413793,
+      "strict_f1": 0.2857142857142857,
+      "uzp_ci95": [
+        0.15385,
+        0.25
+      ],
+      "counts": {
+        "tp": 6,
+        "fp": 0,
+        "fn": 46,
+        "tn": 20
+      },
+      "exact": 0,
+      "routed": 8,
+      "rejected": 0,
+      "negatives": 0
+    },
+    "late_table": {
+      "cases": 2,
+      "docs": 4,
+      "uzp_f1": 1.0,
+      "strict_f1": 1.0,
+      "uzp_ci95": [
+        1.0,
+        1.0
+      ],
+      "counts": {
+        "tp": 20,
+        "fp": 0,
+        "fn": 0,
+        "tn": 4
+      },
+      "exact": 4,
+      "routed": 4,
+      "rejected": 0,
+      "negatives": 0
+    },
+    "payment-advice": {
+      "cases": 7,
+      "docs": 14,
+      "uzp_f1": null,
+      "strict_f1": null,
+      "uzp_ci95": null,
+      "counts": {
+        "tp": 0,
+        "fp": 0,
+        "fn": 0,
+        "tn": 0
+      },
+      "exact": 14,
+      "routed": 14,
+      "rejected": 14,
+      "negatives": 14
+    },
+    "request-for-authority": {
+      "cases": 7,
+      "docs": 14,
+      "uzp_f1": null,
+      "strict_f1": null,
+      "uzp_ci95": null,
+      "counts": {
+        "tp": 0,
+        "fp": 0,
+        "fn": 0,
+        "tn": 0
+      },
+      "exact": 14,
+      "routed": 14,
+      "rejected": 14,
+      "negatives": 14
+    },
+    "scan_bordered": {
+      "cases": 2,
+      "docs": 4,
+      "uzp_f1": 0.8292682926829268,
+      "strict_f1": 0.7619047619047619,
+      "uzp_ci95": [
+        0.66667,
+        0.95652
+      ],
+      "counts": {
+        "tp": 17,
+        "fp": 1,
+        "fn": 6,
+        "tn": 0
+      },
+      "exact": 2,
+      "routed": 3,
+      "rejected": 0,
+      "negatives": 0
+    },
+    "scan_history": {
+      "cases": 2,
+      "docs": 4,
+      "uzp_f1": 0.0,
+      "strict_f1": 0.0,
+      "uzp_ci95": [
+        0.0,
+        0.0
+      ],
+      "counts": {
+        "tp": 0,
+        "fp": 0,
+        "fn": 24,
+        "tn": 0
+      },
+      "exact": 0,
+      "routed": 0,
+      "rejected": 0,
+      "negatives": 0
+    },
+    "scan_operation": {
+      "cases": 2,
+      "docs": 4,
+      "uzp_f1": 0.0,
+      "strict_f1": 0.0,
+      "uzp_ci95": [
+        0.0,
+        0.0
+      ],
+      "counts": {
+        "tp": 0,
+        "fp": 0,
+        "fn": 20,
+        "tn": 4
+      },
+      "exact": 0,
+      "routed": 0,
+      "rejected": 0,
+      "negatives": 0
+    },
+    "scan_order": {
+      "cases": 2,
+      "docs": 4,
+      "uzp_f1": 0.0,
+      "strict_f1": 0.0,
+      "uzp_ci95": [
+        0.0,
+        0.0
+      ],
+      "counts": {
+        "tp": 0,
+        "fp": 0,
+        "fn": 24,
+        "tn": 0
+      },
+      "exact": 0,
+      "routed": 0,
+      "rejected": 0,
+      "negatives": 0
+    },
+    "scan_participants": {
+      "cases": 2,
+      "docs": 4,
+      "uzp_f1": 0.8108108108108109,
+      "strict_f1": 0.8095238095238095,
+      "uzp_ci95": [
+        0.66667,
+        0.94737
+      ],
+      "counts": {
+        "tp": 15,
+        "fp": 0,
+        "fn": 7,
+        "tn": 2
+      },
+      "exact": 2,
+      "routed": 3,
+      "rejected": 0,
+      "negatives": 0
+    }
+  },
+  "per_rendering": {
+    "ccitt-150dpi": {
+      "cases": 2,
+      "docs": 8,
+      "uzp_f1": 0.7311827956989247,
+      "strict_f1": 0.6825396825396826,
+      "uzp_ci95": [
+        0.65116,
+        0.8
+      ],
+      "counts": {
+        "tp": 34,
+        "fp": 2,
+        "fn": 23,
+        "tn": 13
+      },
+      "exact": 2,
+      "routed": 7,
+      "rejected": 2,
+      "negatives": 2
+    },
+    "ccitt-200dpi": {
+      "cases": 2,
+      "docs": 8,
+      "uzp_f1": 0.7254901960784313,
+      "strict_f1": 0.7384615384615385,
+      "uzp_ci95": [
+        0.64,
+        0.80769
+      ],
+      "counts": {
+        "tp": 37,
+        "fp": 0,
+        "fn": 28,
+        "tn": 11
+      },
+      "exact": 2,
+      "routed": 6,
+      "rejected": 2,
+      "negatives": 2
+    },
+    "ccitt-300dpi": {
+      "cases": 2,
+      "docs": 8,
+      "uzp_f1": 0.7627118644067796,
+      "strict_f1": 0.7272727272727273,
+      "uzp_ci95": [
+        0.75,
+        0.77419
+      ],
+      "counts": {
+        "tp": 45,
+        "fp": 2,
+        "fn": 26,
+        "tn": 17
+      },
+      "exact": 3,
+      "routed": 8,
+      "rejected": 2,
+      "negatives": 2
+    },
+    "jpeg-gray-150dpi": {
+      "cases": 2,
+      "docs": 8,
+      "uzp_f1": 0.8695652173913043,
+      "strict_f1": 0.8435374149659864,
+      "uzp_ci95": [
+        0.79245,
+        0.93548
+      ],
+      "counts": {
+        "tp": 50,
+        "fp": 1,
+        "fn": 14,
+        "tn": 12
+      },
+      "exact": 4,
+      "routed": 7,
+      "rejected": 2,
+      "negatives": 2
+    },
+    "jpeg-gray-200dpi": {
+      "cases": 4,
+      "docs": 16,
+      "uzp_f1": 0.9012875536480687,
+      "strict_f1": 0.8698630136986302,
+      "uzp_ci95": [
+        0.84163,
+        0.95161
+      ],
+      "counts": {
+        "tp": 105,
+        "fp": 2,
+        "fn": 21,
+        "tn": 23
+      },
+      "exact": 7,
+      "routed": 16,
+      "rejected": 4,
+      "negatives": 4
+    },
+    "jpeg-gray-300dpi": {
+      "cases": 4,
+      "docs": 16,
+      "uzp_f1": 0.7476635514018691,
+      "strict_f1": 0.7152777777777778,
+      "uzp_ci95": [
+        0.67299,
+        0.86996
+      ],
+      "counts": {
+        "tp": 80,
+        "fp": 2,
+        "fn": 52,
+        "tn": 29
+      },
+      "exact": 6,
+      "routed": 13,
+      "rejected": 4,
+      "negatives": 4
+    },
+    "jpeg-rgb-150dpi": {
+      "cases": 5,
+      "docs": 20,
+      "uzp_f1": 0.7906976744186046,
+      "strict_f1": 0.7734138972809668,
+      "uzp_ci95": [
+        0.73029,
+        0.84015
+      ],
+      "counts": {
+        "tp": 102,
+        "fp": 1,
+        "fn": 53,
+        "tn": 31
+      },
+      "exact": 8,
+      "routed": 18,
+      "rejected": 5,
+      "negatives": 5
+    },
+    "jpeg-rgb-200dpi": {
+      "cases": 3,
+      "docs": 12,
+      "uzp_f1": 0.8606060606060606,
+      "strict_f1": 0.8390243902439024,
+      "uzp_ci95": [
+        0.77778,
+        0.94915
+      ],
+      "counts": {
+        "tp": 71,
+        "fp": 0,
+        "fn": 23,
+        "tn": 15
+      },
+      "exact": 6,
+      "routed": 10,
+      "rejected": 3,
+      "negatives": 3
+    },
+    "jpeg-rgb-300dpi": {
+      "cases": 2,
+      "docs": 8,
+      "uzp_f1": 0.8793103448275862,
+      "strict_f1": 0.8571428571428571,
+      "uzp_ci95": [
+        0.83019,
+        0.92063
+      ],
+      "counts": {
+        "tp": 51,
+        "fp": 0,
+        "fn": 14,
+        "tn": 12
+      },
+      "exact": 3,
+      "routed": 7,
+      "rejected": 2,
+      "negatives": 2
+    },
+    "native": {
+      "cases": 26,
+      "docs": 104,
+      "uzp_f1": 0.6086235489220564,
+      "strict_f1": 0.5338556239507555,
+      "uzp_ci95": [
+        0.56149,
+        0.65214
+      ],
+      "counts": {
+        "tp": 367,
+        "fp": 8,
+        "fn": 464,
+        "tn": 163
+      },
+      "exact": 44,
+      "routed": 96,
+      "rejected": 26,
+      "negatives": 26
+    }
+  },
+  "per_view": {
+    "native": {
+      "cases": 26,
+      "docs": 104,
+      "uzp_f1": 0.6086235489220564,
+      "strict_f1": 0.5338556239507555,
+      "uzp_ci95": [
+        0.56149,
+        0.65214
+      ],
+      "counts": {
+        "tp": 367,
+        "fp": 8,
+        "fn": 464,
+        "tn": 163
+      },
+      "exact": 44,
+      "routed": 96,
+      "rejected": 26,
+      "negatives": 26
+    },
+    "scan": {
+      "cases": 26,
+      "docs": 104,
+      "uzp_f1": 0.8132956152758133,
+      "strict_f1": 0.7864554888039322,
+      "uzp_ci95": [
+        0.77415,
+        0.85094
+      ],
+      "counts": {
+        "tp": 575,
+        "fp": 10,
+        "fn": 254,
+        "tn": 163
+      },
+      "exact": 41,
+      "routed": 92,
+      "rejected": 26,
+      "negatives": 26
+    }
+  },
+  "per_split": {
+    "development": {
+      "cases": 14,
+      "docs": 112,
+      "uzp_f1": 0.7698686938493434,
+      "strict_f1": 0.7026476578411406,
+      "uzp_ci95": [
+        0.7329,
+        0.8021
+      ],
+      "counts": {
+        "tp": 557,
+        "fp": 7,
+        "fn": 326,
+        "tn": 164
+      },
+      "exact": 52,
+      "routed": 106,
+      "rejected": 28,
+      "negatives": 28
+    },
+    "reserved": {
+      "cases": 12,
+      "docs": 96,
+      "uzp_f1": 0.6564364876385337,
+      "strict_f1": 0.6130592503022975,
+      "uzp_ci95": [
+        0.60606,
+        0.71261
+      ],
+      "counts": {
+        "tp": 385,
+        "fp": 11,
+        "fn": 392,
+        "tn": 162
+      },
+      "exact": 33,
+      "routed": 82,
+      "rejected": 24,
+      "negatives": 24
+    }
+  },
+  "per_family_and_view": {
+    "decision-extract/native": {
+      "cases": 12,
+      "docs": 12,
+      "uzp_f1": null,
+      "strict_f1": null,
+      "uzp_ci95": null,
+      "counts": {
+        "tp": 0,
+        "fp": 0,
+        "fn": 0,
+        "tn": 0
+      },
+      "exact": 12,
+      "routed": 12,
+      "rejected": 12,
+      "negatives": 12
+    },
+    "decision-extract/scan": {
+      "cases": 12,
+      "docs": 12,
+      "uzp_f1": null,
+      "strict_f1": null,
+      "uzp_ci95": null,
+      "counts": {
+        "tp": 0,
+        "fp": 0,
+        "fn": 0,
+        "tn": 0
+      },
+      "exact": 12,
+      "routed": 12,
+      "rejected": 12,
+      "negatives": 12
+    },
+    "early-letterhead/native": {
+      "cases": 2,
+      "docs": 2,
+      "uzp_f1": 0.6956521739130435,
+      "strict_f1": 0.6451612903225806,
+      "uzp_ci95": [
+        0.66667,
+        0.72727
+      ],
+      "counts": {
+        "tp": 8,
+        "fp": 0,
+        "fn": 7,
+        "tn": 6
+      },
+      "exact": 0,
+      "routed": 2,
+      "rejected": 0,
+      "negatives": 0
+    },
+    "early-letterhead/scan": {
+      "cases": 2,
+      "docs": 2,
+      "uzp_f1": 0.9655172413793104,
+      "strict_f1": 0.975609756097561,
+      "uzp_ci95": [
+        0.93333,
+        1.0
+      ],
+      "counts": {
+        "tp": 14,
+        "fp": 0,
+        "fn": 1,
+        "tn": 6
+      },
+      "exact": 1,
+      "routed": 2,
+      "rejected": 0,
+      "negatives": 0
+    },
+    "early-modular/native": {
+      "cases": 14,
+      "docs": 14,
+      "uzp_f1": 0.5652173913043478,
+      "strict_f1": 0.4805194805194805,
+      "uzp_ci95": [
+        0.55153,
+        0.57838
+      ],
+      "counts": {
+        "tp": 104,
+        "fp": 0,
+        "fn": 160,
+        "tn": 44
+      },
+      "exact": 0,
+      "routed": 14,
+      "rejected": 0,
+      "negatives": 0
+    },
+    "early-modular/scan": {
+      "cases": 14,
+      "docs": 14,
+      "uzp_f1": 0.8860759493670886,
+      "strict_f1": 0.8214285714285714,
+      "uzp_ci95": [
+        0.87526,
+        0.89684
+      ],
+      "counts": {
+        "tp": 210,
+        "fp": 2,
+        "fn": 52,
+        "tn": 44
+      },
+      "exact": 0,
+      "routed": 14,
+      "rejected": 0,
+      "negatives": 0
+    },
+    "early-panels/native": {
+      "cases": 2,
+      "docs": 2,
+      "uzp_f1": 0.7619047619047619,
+      "strict_f1": 0.7407407407407407,
+      "uzp_ci95": [
+        0.72727,
+        0.8
+      ],
+      "counts": {
+        "tp": 8,
+        "fp": 0,
+        "fn": 5,
+        "tn": 4
+      },
+      "exact": 0,
+      "routed": 2,
+      "rejected": 0,
+      "negatives": 0
+    },
+    "early-panels/scan": {
+      "cases": 2,
+      "docs": 2,
+      "uzp_f1": 0.96,
+      "strict_f1": 0.9696969696969697,
+      "uzp_ci95": [
+        0.92308,
+        1.0
+      ],
+      "counts": {
+        "tp": 12,
+        "fp": 0,
+        "fn": 1,
+        "tn": 4
+      },
+      "exact": 1,
+      "routed": 2,
+      "rejected": 0,
+      "negatives": 0
+    },
+    "early-paragraphs/native": {
+      "cases": 3,
+      "docs": 3,
+      "uzp_f1": 0.75,
+      "strict_f1": 0.7142857142857143,
+      "uzp_ci95": [
+        0.72727,
+        0.8
+      ],
+      "counts": {
+        "tp": 12,
+        "fp": 0,
+        "fn": 8,
+        "tn": 7
+      },
+      "exact": 0,
+      "routed": 3,
+      "rejected": 0,
+      "negatives": 0
+    },
+    "early-paragraphs/scan": {
+      "cases": 3,
+      "docs": 3,
+      "uzp_f1": 0.3333333333333333,
+      "strict_f1": 0.45714285714285713,
+      "uzp_ci95": [
+        0.25,
+        0.44444
+      ],
+      "counts": {
+        "tp": 4,
+        "fp": 0,
+        "fn": 16,
+        "tn": 7
+      },
+      "exact": 0,
+      "routed": 3,
+      "rejected": 0,
+      "negatives": 0
+    },
+    "early-procedural/native": {
+      "cases": 2,
+      "docs": 2,
+      "uzp_f1": 0.5714285714285714,
+      "strict_f1": 0.5161290322580645,
+      "uzp_ci95": [
+        0.54545,
+        0.6
+      ],
+      "counts": {
+        "tp": 6,
+        "fp": 2,
+        "fn": 7,
+        "tn": 6
+      },
+      "exact": 0,
+      "routed": 2,
+      "rejected": 0,
+      "negatives": 0
+    },
+    "early-procedural/scan": {
+      "cases": 2,
+      "docs": 2,
+      "uzp_f1": 0.9655172413793104,
+      "strict_f1": 0.975609756097561,
+      "uzp_ci95": [
+        0.93333,
+        1.0
+      ],
+      "counts": {
+        "tp": 14,
+        "fp": 0,
+        "fn": 1,
+        "tn": 6
+      },
+      "exact": 0,
+      "routed": 2,
+      "rejected": 0,
+      "negatives": 0
+    },
+    "early-register/native": {
+      "cases": 3,
+      "docs": 3,
+      "uzp_f1": 0.5517241379310345,
+      "strict_f1": 0.5263157894736842,
+      "uzp_ci95": [
+        0.0,
+        0.8
+      ],
+      "counts": {
+        "tp": 8,
+        "fp": 0,
+        "fn": 13,
+        "tn": 7
+      },
+      "exact": 0,
+      "routed": 3,
+      "rejected": 0,
+      "negatives": 0
+    },
+    "early-register/scan": {
+      "cases": 3,
+      "docs": 3,
+      "uzp_f1": 0.7647058823529411,
+      "strict_f1": 0.8085106382978723,
+      "uzp_ci95": [
+        0.4,
+        0.92308
+      ],
+      "counts": {
+        "tp": 13,
+        "fp": 0,
+        "fn": 8,
+        "tn": 7
+      },
+      "exact": 0,
+      "routed": 3,
+      "rejected": 0,
+      "negatives": 0
+    },
+    "early-short/native": {
+      "cases": 2,
+      "docs": 2,
+      "uzp_f1": 0.5714285714285714,
+      "strict_f1": 0.5161290322580645,
+      "uzp_ci95": [
+        0.54545,
+        0.6
+      ],
+      "counts": {
+        "tp": 6,
+        "fp": 2,
+        "fn": 7,
+        "tn": 6
+      },
+      "exact": 0,
+      "routed": 2,
+      "rejected": 0,
+      "negatives": 0
+    },
+    "early-short/scan": {
+      "cases": 2,
+      "docs": 2,
+      "uzp_f1": 0.75,
+      "strict_f1": 0.8,
+      "uzp_ci95": [
+        0.4,
+        1.0
+      ],
+      "counts": {
+        "tp": 9,
+        "fp": 0,
+        "fn": 6,
+        "tn": 6
+      },
+      "exact": 1,
+      "routed": 2,
+      "rejected": 0,
+      "negatives": 0
+    },
+    "early_cards/native": {
+      "cases": 2,
+      "docs": 2,
+      "uzp_f1": 1.0,
+      "strict_f1": 1.0,
+      "uzp_ci95": [
+        1.0,
+        1.0
+      ],
+      "counts": {
+        "tp": 12,
+        "fp": 0,
+        "fn": 0,
+        "tn": 0
+      },
+      "exact": 2,
+      "routed": 2,
+      "rejected": 0,
+      "negatives": 0
+    },
+    "early_cards/scan": {
+      "cases": 2,
+      "docs": 2,
+      "uzp_f1": 1.0,
+      "strict_f1": 1.0,
+      "uzp_ci95": [
+        1.0,
+        1.0
+      ],
+      "counts": {
+        "tp": 12,
+        "fp": 0,
+        "fn": 0,
+        "tn": 0
+      },
+      "exact": 2,
+      "routed": 2,
+      "rejected": 0,
+      "negatives": 0
+    },
+    "early_letter/native": {
+      "cases": 2,
+      "docs": 2,
+      "uzp_f1": 0.0,
+      "strict_f1": 0.0,
+      "uzp_ci95": [
+        0.0,
+        0.0
+      ],
+      "counts": {
+        "tp": 0,
+        "fp": 0,
+        "fn": 11,
+        "tn": 1
+      },
+      "exact": 0,
+      "routed": 0,
+      "rejected": 0,
+      "negatives": 0
+    },
+    "early_letter/scan": {
+      "cases": 2,
+      "docs": 2,
+      "uzp_f1": 0.0,
+      "strict_f1": 0.0,
+      "uzp_ci95": [
+        0.0,
+        0.0
+      ],
+      "counts": {
+        "tp": 0,
+        "fp": 0,
+        "fn": 11,
+        "tn": 1
+      },
+      "exact": 0,
+      "routed": 0,
+      "rejected": 0,
+      "negatives": 0
+    },
+    "early_order/native": {
+      "cases": 2,
+      "docs": 2,
+      "uzp_f1": 1.0,
+      "strict_f1": 1.0,
+      "uzp_ci95": [
+        1.0,
+        1.0
+      ],
+      "counts": {
+        "tp": 12,
+        "fp": 0,
+        "fn": 0,
+        "tn": 0
+      },
+      "exact": 2,
+      "routed": 2,
+      "rejected": 0,
+      "negatives": 0
+    },
+    "early_order/scan": {
+      "cases": 2,
+      "docs": 2,
+      "uzp_f1": 1.0,
+      "strict_f1": 1.0,
+      "uzp_ci95": [
+        1.0,
+        1.0
+      ],
+      "counts": {
+        "tp": 12,
+        "fp": 0,
+        "fn": 0,
+        "tn": 0
+      },
+      "exact": 2,
+      "routed": 2,
+      "rejected": 0,
+      "negatives": 0
+    },
+    "early_register/native": {
+      "cases": 2,
+      "docs": 2,
+      "uzp_f1": 1.0,
+      "strict_f1": 1.0,
+      "uzp_ci95": [
+        1.0,
+        1.0
+      ],
+      "counts": {
+        "tp": 11,
+        "fp": 0,
+        "fn": 0,
+        "tn": 1
+      },
+      "exact": 2,
+      "routed": 2,
+      "rejected": 0,
+      "negatives": 0
+    },
+    "early_register/scan": {
+      "cases": 2,
+      "docs": 2,
+      "uzp_f1": 0.9523809523809523,
+      "strict_f1": 0.9166666666666666,
+      "uzp_ci95": [
+        0.88889,
+        1.0
+      ],
+      "counts": {
+        "tp": 10,
+        "fp": 1,
+        "fn": 0,
+        "tn": 1
+      },
+      "exact": 1,
+      "routed": 2,
+      "rejected": 0,
+      "negatives": 0
+    },
+    "early_sections/native": {
+      "cases": 2,
+      "docs": 2,
+      "uzp_f1": 1.0,
+      "strict_f1": 1.0,
+      "uzp_ci95": [
+        1.0,
+        1.0
+      ],
+      "counts": {
+        "tp": 12,
+        "fp": 0,
+        "fn": 0,
+        "tn": 0
+      },
+      "exact": 2,
+      "routed": 2,
+      "rejected": 0,
+      "negatives": 0
+    },
+    "early_sections/scan": {
+      "cases": 2,
+      "docs": 2,
+      "uzp_f1": 1.0,
+      "strict_f1": 1.0,
+      "uzp_ci95": [
+        1.0,
+        1.0
+      ],
+      "counts": {
+        "tp": 12,
+        "fp": 0,
+        "fn": 0,
+        "tn": 0
+      },
+      "exact": 2,
+      "routed": 2,
+      "rejected": 0,
+      "negatives": 0
+    },
+    "early_summary/native": {
+      "cases": 2,
+      "docs": 2,
+      "uzp_f1": 1.0,
+      "strict_f1": 1.0,
+      "uzp_ci95": [
+        1.0,
+        1.0
+      ],
+      "counts": {
+        "tp": 12,
+        "fp": 0,
+        "fn": 0,
+        "tn": 0
+      },
+      "exact": 2,
+      "routed": 2,
+      "rejected": 0,
+      "negatives": 0
+    },
+    "early_summary/scan": {
+      "cases": 2,
+      "docs": 2,
+      "uzp_f1": 1.0,
+      "strict_f1": 1.0,
+      "uzp_ci95": [
+        1.0,
+        1.0
+      ],
+      "counts": {
+        "tp": 12,
+        "fp": 0,
+        "fn": 0,
+        "tn": 0
+      },
+      "exact": 2,
+      "routed": 2,
+      "rejected": 0,
+      "negatives": 0
+    },
+    "early_thermal/native": {
+      "cases": 2,
+      "docs": 2,
+      "uzp_f1": 1.0,
+      "strict_f1": 1.0,
+      "uzp_ci95": [
+        1.0,
+        1.0
+      ],
+      "counts": {
+        "tp": 12,
+        "fp": 0,
+        "fn": 0,
+        "tn": 0
+      },
+      "exact": 2,
+      "routed": 2,
+      "rejected": 0,
+      "negatives": 0
+    },
+    "early_thermal/scan": {
+      "cases": 2,
+      "docs": 2,
+      "uzp_f1": 0.0,
+      "strict_f1": 0.0,
+      "uzp_ci95": [
+        0.0,
+        0.0
+      ],
+      "counts": {
+        "tp": 0,
+        "fp": 0,
+        "fn": 12,
+        "tn": 0
+      },
+      "exact": 0,
+      "routed": 0,
+      "rejected": 0,
+      "negatives": 0
+    },
+    "late-company/native": {
+      "cases": 4,
+      "docs": 4,
+      "uzp_f1": 0.7111111111111111,
+      "strict_f1": 0.6779661016949152,
+      "uzp_ci95": [
+        0.66667,
+        0.7619
+      ],
+      "counts": {
+        "tp": 16,
+        "fp": 0,
+        "fn": 13,
+        "tn": 10
+      },
+      "exact": 0,
+      "routed": 4,
+      "rejected": 0,
+      "negatives": 0
+    },
+    "late-company/scan": {
+      "cases": 4,
+      "docs": 4,
+      "uzp_f1": 0.9454545454545454,
+      "strict_f1": 0.96,
+      "uzp_ci95": [
+        0.92593,
+        0.98039
+      ],
+      "counts": {
+        "tp": 26,
+        "fp": 0,
+        "fn": 3,
+        "tn": 10
+      },
+      "exact": 1,
+      "routed": 4,
+      "rejected": 0,
+      "negatives": 0
+    },
+    "late-consortium/native": {
+      "cases": 4,
+      "docs": 4,
+      "uzp_f1": 0.49230769230769234,
+      "strict_f1": 0.47619047619047616,
+      "uzp_ci95": [
+        0.47059,
+        0.51613
+      ],
+      "counts": {
+        "tp": 16,
+        "fp": 0,
+        "fn": 33,
+        "tn": 15
+      },
+      "exact": 0,
+      "routed": 4,
+      "rejected": 0,
+      "negatives": 0
+    },
+    "late-consortium/scan": {
+      "cases": 4,
+      "docs": 4,
+      "uzp_f1": 0.6756756756756757,
+      "strict_f1": 0.72,
+      "uzp_ci95": [
+        0.64865,
+        0.7027
+      ],
+      "counts": {
+        "tp": 25,
+        "fp": 0,
+        "fn": 24,
+        "tn": 15
+      },
+      "exact": 0,
+      "routed": 4,
+      "rejected": 0,
+      "negatives": 0
+    },
+    "late-list/native": {
+      "cases": 12,
+      "docs": 12,
+      "uzp_f1": 0.5231788079470199,
+      "strict_f1": 0.45454545454545453,
+      "uzp_ci95": [
+        0.47183,
+        0.57235
+      ],
+      "counts": {
+        "tp": 79,
+        "fp": 4,
+        "fn": 140,
+        "tn": 41
+      },
+      "exact": 0,
+      "routed": 12,
+      "rejected": 0,
+      "negatives": 0
+    },
+    "late-list/scan": {
+      "cases": 12,
+      "docs": 12,
+      "uzp_f1": 0.8505154639175257,
+      "strict_f1": 0.7923076923076923,
+      "uzp_ci95": [
+        0.78804,
+        0.89926
+      ],
+      "counts": {
+        "tp": 165,
+        "fp": 6,
+        "fn": 52,
+        "tn": 41
+      },
+      "exact": 0,
+      "routed": 12,
+      "rejected": 0,
+      "negatives": 0
+    },
+    "late-trader/native": {
+      "cases": 4,
+      "docs": 4,
+      "uzp_f1": 0.0,
+      "strict_f1": 0.0,
+      "uzp_ci95": [
+        0.0,
+        0.0
+      ],
+      "counts": {
+        "tp": 0,
+        "fp": 0,
+        "fn": 26,
+        "tn": 10
+      },
+      "exact": 0,
+      "routed": 4,
+      "rejected": 0,
+      "negatives": 0
+    },
+    "late-trader/scan": {
+      "cases": 4,
+      "docs": 4,
+      "uzp_f1": 0.375,
+      "strict_f1": 0.5,
+      "uzp_ci95": [
+        0.28571,
+        0.44444
+      ],
+      "counts": {
+        "tp": 6,
+        "fp": 0,
+        "fn": 20,
+        "tn": 10
+      },
+      "exact": 0,
+      "routed": 4,
+      "rejected": 0,
+      "negatives": 0
+    },
+    "late_table/native": {
+      "cases": 2,
+      "docs": 2,
+      "uzp_f1": 1.0,
+      "strict_f1": 1.0,
+      "uzp_ci95": [
+        1.0,
+        1.0
+      ],
+      "counts": {
+        "tp": 10,
+        "fp": 0,
+        "fn": 0,
+        "tn": 2
+      },
+      "exact": 2,
+      "routed": 2,
+      "rejected": 0,
+      "negatives": 0
+    },
+    "late_table/scan": {
+      "cases": 2,
+      "docs": 2,
+      "uzp_f1": 1.0,
+      "strict_f1": 1.0,
+      "uzp_ci95": [
+        1.0,
+        1.0
+      ],
+      "counts": {
+        "tp": 10,
+        "fp": 0,
+        "fn": 0,
+        "tn": 2
+      },
+      "exact": 2,
+      "routed": 2,
+      "rejected": 0,
+      "negatives": 0
+    },
+    "payment-advice/native": {
+      "cases": 7,
+      "docs": 7,
+      "uzp_f1": null,
+      "strict_f1": null,
+      "uzp_ci95": null,
+      "counts": {
+        "tp": 0,
+        "fp": 0,
+        "fn": 0,
+        "tn": 0
+      },
+      "exact": 7,
+      "routed": 7,
+      "rejected": 7,
+      "negatives": 7
+    },
+    "payment-advice/scan": {
+      "cases": 7,
+      "docs": 7,
+      "uzp_f1": null,
+      "strict_f1": null,
+      "uzp_ci95": null,
+      "counts": {
+        "tp": 0,
+        "fp": 0,
+        "fn": 0,
+        "tn": 0
+      },
+      "exact": 7,
+      "routed": 7,
+      "rejected": 7,
+      "negatives": 7
+    },
+    "request-for-authority/native": {
+      "cases": 7,
+      "docs": 7,
+      "uzp_f1": null,
+      "strict_f1": null,
+      "uzp_ci95": null,
+      "counts": {
+        "tp": 0,
+        "fp": 0,
+        "fn": 0,
+        "tn": 0
+      },
+      "exact": 7,
+      "routed": 7,
+      "rejected": 7,
+      "negatives": 7
+    },
+    "request-for-authority/scan": {
+      "cases": 7,
+      "docs": 7,
+      "uzp_f1": null,
+      "strict_f1": null,
+      "uzp_ci95": null,
+      "counts": {
+        "tp": 0,
+        "fp": 0,
+        "fn": 0,
+        "tn": 0
+      },
+      "exact": 7,
+      "routed": 7,
+      "rejected": 7,
+      "negatives": 7
+    },
+    "scan_bordered/native": {
+      "cases": 2,
+      "docs": 2,
+      "uzp_f1": 1.0,
+      "strict_f1": 1.0,
+      "uzp_ci95": [
+        1.0,
+        1.0
+      ],
+      "counts": {
+        "tp": 12,
+        "fp": 0,
+        "fn": 0,
+        "tn": 0
+      },
+      "exact": 2,
+      "routed": 2,
+      "rejected": 0,
+      "negatives": 0
+    },
+    "scan_bordered/scan": {
+      "cases": 2,
+      "docs": 2,
+      "uzp_f1": 0.5882352941176471,
+      "strict_f1": 0.4444444444444444,
+      "uzp_ci95": [
+        0.0,
+        0.90909
+      ],
+      "counts": {
+        "tp": 5,
+        "fp": 1,
+        "fn": 6,
+        "tn": 0
+      },
+      "exact": 0,
+      "routed": 1,
+      "rejected": 0,
+      "negatives": 0
+    },
+    "scan_history/native": {
+      "cases": 2,
+      "docs": 2,
+      "uzp_f1": 0.0,
+      "strict_f1": 0.0,
+      "uzp_ci95": [
+        0.0,
+        0.0
+      ],
+      "counts": {
+        "tp": 0,
+        "fp": 0,
+        "fn": 12,
+        "tn": 0
+      },
+      "exact": 0,
+      "routed": 0,
+      "rejected": 0,
+      "negatives": 0
+    },
+    "scan_history/scan": {
+      "cases": 2,
+      "docs": 2,
+      "uzp_f1": 0.0,
+      "strict_f1": 0.0,
+      "uzp_ci95": [
+        0.0,
+        0.0
+      ],
+      "counts": {
+        "tp": 0,
+        "fp": 0,
+        "fn": 12,
+        "tn": 0
+      },
+      "exact": 0,
+      "routed": 0,
+      "rejected": 0,
+      "negatives": 0
+    },
+    "scan_operation/native": {
+      "cases": 2,
+      "docs": 2,
+      "uzp_f1": 0.0,
+      "strict_f1": 0.0,
+      "uzp_ci95": [
+        0.0,
+        0.0
+      ],
+      "counts": {
+        "tp": 0,
+        "fp": 0,
+        "fn": 10,
+        "tn": 2
+      },
+      "exact": 0,
+      "routed": 0,
+      "rejected": 0,
+      "negatives": 0
+    },
+    "scan_operation/scan": {
+      "cases": 2,
+      "docs": 2,
+      "uzp_f1": 0.0,
+      "strict_f1": 0.0,
+      "uzp_ci95": [
+        0.0,
+        0.0
+      ],
+      "counts": {
+        "tp": 0,
+        "fp": 0,
+        "fn": 10,
+        "tn": 2
+      },
+      "exact": 0,
+      "routed": 0,
+      "rejected": 0,
+      "negatives": 0
+    },
+    "scan_order/native": {
+      "cases": 2,
+      "docs": 2,
+      "uzp_f1": 0.0,
+      "strict_f1": 0.0,
+      "uzp_ci95": [
+        0.0,
+        0.0
+      ],
+      "counts": {
+        "tp": 0,
+        "fp": 0,
+        "fn": 12,
+        "tn": 0
+      },
+      "exact": 0,
+      "routed": 0,
+      "rejected": 0,
+      "negatives": 0
+    },
+    "scan_order/scan": {
+      "cases": 2,
+      "docs": 2,
+      "uzp_f1": 0.0,
+      "strict_f1": 0.0,
+      "uzp_ci95": [
+        0.0,
+        0.0
+      ],
+      "counts": {
+        "tp": 0,
+        "fp": 0,
+        "fn": 12,
+        "tn": 0
+      },
+      "exact": 0,
+      "routed": 0,
+      "rejected": 0,
+      "negatives": 0
+    },
+    "scan_participants/native": {
+      "cases": 2,
+      "docs": 2,
+      "uzp_f1": 1.0,
+      "strict_f1": 1.0,
+      "uzp_ci95": [
+        1.0,
+        1.0
+      ],
+      "counts": {
+        "tp": 11,
+        "fp": 0,
+        "fn": 0,
+        "tn": 1
+      },
+      "exact": 2,
+      "routed": 2,
+      "rejected": 0,
+      "negatives": 0
+    },
+    "scan_participants/scan": {
+      "cases": 2,
+      "docs": 2,
+      "uzp_f1": 0.5333333333333333,
+      "strict_f1": 0.5555555555555556,
+      "uzp_ci95": [
+        0.0,
+        0.88889
+      ],
+      "counts": {
+        "tp": 4,
+        "fp": 0,
+        "fn": 7,
+        "tn": 1
+      },
+      "exact": 0,
+      "routed": 1,
+      "rejected": 0,
+      "negatives": 0
+    }
+  },
+  "per_family_role": {
+    "early-letterhead": {
+      "mocodawca[].data.imie_nazwisko": {
+        "tp": 0,
+        "fp": 0,
+        "fn": 0,
+        "tn": 4,
+        "uzp_f1": null
+      },
+      "mocodawca[].data.krs": {
+        "tp": 4,
+        "fp": 0,
+        "fn": 0,
+        "tn": 0,
+        "uzp_f1": 1.0
+      },
+      "mocodawca[].data.nazwa": {
+        "tp": 4,
+        "fp": 0,
+        "fn": 0,
+        "tn": 0,
+        "uzp_f1": 1.0
+      },
+      "mocodawca[].data.nip": {
+        "tp": 4,
+        "fp": 0,
+        "fn": 0,
+        "tn": 0,
+        "uzp_f1": 1.0
+      },
+      "mocodawca[].data.typ": {
+        "tp": 4,
+        "fp": 0,
+        "fn": 0,
+        "tn": 0,
+        "uzp_f1": 1.0
+      },
+      "mocodawca[].podpisujacy[].imie_nazwisko": {
+        "tp": 2,
+        "fp": 0,
+        "fn": 4,
+        "tn": 0,
+        "uzp_f1": 0.5
+      },
+      "pelnomocnicy[].imie_nazwisko": {
+        "tp": 4,
+        "fp": 0,
+        "fn": 4,
+        "tn": 0,
+        "uzp_f1": 0.6666666666666666
+      },
+      "pelnomocnicy[].pesel": {
+        "tp": 0,
+        "fp": 0,
+        "fn": 0,
+        "tn": 8,
+        "uzp_f1": null
+      }
+    },
+    "early-modular": {
+      "OdwolanieKIO.czynnosc_dzien": {
+        "tp": 0,
+        "fp": 0,
+        "fn": 24,
+        "tn": 4,
+        "uzp_f1": 0.0
+      },
+      "OdwolanieKIO.czynnosc_opis": {
+        "tp": 0,
+        "fp": 0,
+        "fn": 28,
+        "tn": 0,
+        "uzp_f1": 0.0
+      },
+      "OdwolanieKIO.czynnosc_powod_id": {
+        "tp": 0,
+        "fp": 0,
+        "fn": 28,
+        "tn": 0,
+        "uzp_f1": 0.0
+      },
+      "OdwolanieKIO.data": {
+        "tp": 11,
+        "fp": 0,
+        "fn": 11,
+        "tn": 6,
+        "uzp_f1": 0.6666666666666666
+      },
+      "OdwolanieKIO.miejscowosc": {
+        "tp": 11,
+        "fp": 0,
+        "fn": 11,
+        "tn": 6,
+        "uzp_f1": 0.6666666666666666
+      },
+      "Odwolujacy[].krs": {
+        "tp": 14,
+        "fp": 0,
+        "fn": 14,
+        "tn": 0,
+        "uzp_f1": 0.6666666666666666
+      },
+      "Odwolujacy[].nazwa": {
+        "tp": 28,
+        "fp": 0,
+        "fn": 0,
+        "tn": 0,
+        "uzp_f1": 1.0
+      },
+      "Odwolujacy[].nip": {
+        "tp": 14,
+        "fp": 0,
+        "fn": 14,
+        "tn": 0,
+        "uzp_f1": 0.6666666666666666
+      },
+      "Odwolujacy[].pelnomocnik.imie_nazwisko": {
+        "tp": 13,
+        "fp": 0,
+        "fn": 15,
+        "tn": 0,
+        "uzp_f1": 0.6341463414634146
+      },
+      "Odwolujacy[].pelnomocnik.mail": {
+        "tp": 18,
+        "fp": 0,
+        "fn": 10,
+        "tn": 0,
+        "uzp_f1": 0.782608695652174
+      },
+      "Odwolujacy[].pelnomocnik.nazwa": {
+        "tp": 27,
+        "fp": 1,
+        "fn": 0,
+        "tn": 0,
+        "uzp_f1": 0.9818181818181818
+      },
+      "Odwolujacy[].przez-pelnomocnika": {
+        "tp": 28,
+        "fp": 0,
+        "fn": 0,
+        "tn": 0,
+        "uzp_f1": 1.0
+      },
+      "Odwolujacy[].regon": {
+        "tp": 14,
+        "fp": 0,
+        "fn": 14,
+        "tn": 0,
+        "uzp_f1": 0.6666666666666666
+      },
+      "Zamawiajacy[].krs": {
+        "tp": 0,
+        "fp": 0,
+        "fn": 0,
+        "tn": 28,
+        "uzp_f1": null
+      },
+      "Zamawiajacy[].nazwa": {
+        "tp": 28,
+        "fp": 0,
+        "fn": 0,
+        "tn": 0,
+        "uzp_f1": 1.0
+      },
+      "Zamawiajacy[].nip": {
+        "tp": 14,
+        "fp": 0,
+        "fn": 14,
+        "tn": 0,
+        "uzp_f1": 0.6666666666666666
+      },
+      "Zamawiajacy[].prowadzacy_postepowanie": {
+        "tp": 0,
+        "fp": 0,
+        "fn": 0,
+        "tn": 28,
+        "uzp_f1": null
+      },
+      "Zamawiajacy[].regon": {
+        "tp": 14,
+        "fp": 0,
+        "fn": 14,
+        "tn": 0,
+        "uzp_f1": 0.6666666666666666
+      },
+      "ZamowieniePubliczne.numer_bzp": {
+        "tp": 19,
+        "fp": 0,
+        "fn": 1,
+        "tn": 8,
+        "uzp_f1": 0.9743589743589743
+      },
+      "ZamowieniePubliczne.numer_postepowania": {
+        "tp": 13,
+        "fp": 1,
+        "fn": 14,
+        "tn": 0,
+        "uzp_f1": 0.6341463414634146
+      },
+      "ZamowieniePubliczne.numer_ted": {
+        "tp": 20,
+        "fp": 0,
+        "fn": 0,
+        "tn": 8,
+        "uzp_f1": 1.0
+      },
+      "ZamowieniePubliczne.tytul": {
+        "tp": 28,
+        "fp": 0,
+        "fn": 0,
+        "tn": 0,
+        "uzp_f1": 1.0
+      }
+    },
+    "early-panels": {
+      "mocodawca[].data.imie_nazwisko": {
+        "tp": 0,
+        "fp": 0,
+        "fn": 0,
+        "tn": 4,
+        "uzp_f1": null
+      },
+      "mocodawca[].data.krs": {
+        "tp": 4,
+        "fp": 0,
+        "fn": 0,
+        "tn": 0,
+        "uzp_f1": 1.0
+      },
+      "mocodawca[].data.nazwa": {
+        "tp": 4,
+        "fp": 0,
+        "fn": 0,
+        "tn": 0,
+        "uzp_f1": 1.0
+      },
+      "mocodawca[].data.nip": {
+        "tp": 4,
+        "fp": 0,
+        "fn": 0,
+        "tn": 0,
+        "uzp_f1": 1.0
+      },
+      "mocodawca[].data.typ": {
+        "tp": 4,
+        "fp": 0,
+        "fn": 0,
+        "tn": 0,
+        "uzp_f1": 1.0
+      },
+      "mocodawca[].podpisujacy[].imie_nazwisko": {
+        "tp": 2,
+        "fp": 0,
+        "fn": 4,
+        "tn": 0,
+        "uzp_f1": 0.5
+      },
+      "pelnomocnicy[].imie_nazwisko": {
+        "tp": 2,
+        "fp": 0,
+        "fn": 2,
+        "tn": 0,
+        "uzp_f1": 0.6666666666666666
+      },
+      "pelnomocnicy[].pesel": {
+        "tp": 0,
+        "fp": 0,
+        "fn": 0,
+        "tn": 4,
+        "uzp_f1": null
+      }
+    },
+    "early-paragraphs": {
+      "mocodawca[].data.imie_nazwisko": {
+        "tp": 0,
+        "fp": 0,
+        "fn": 0,
+        "tn": 6,
+        "uzp_f1": null
+      },
+      "mocodawca[].data.krs": {
+        "tp": 3,
+        "fp": 0,
+        "fn": 3,
+        "tn": 0,
+        "uzp_f1": 0.6666666666666666
+      },
+      "mocodawca[].data.nazwa": {
+        "tp": 3,
+        "fp": 0,
+        "fn": 3,
+        "tn": 0,
+        "uzp_f1": 0.6666666666666666
+      },
+      "mocodawca[].data.nip": {
+        "tp": 3,
+        "fp": 0,
+        "fn": 3,
+        "tn": 0,
+        "uzp_f1": 0.6666666666666666
+      },
+      "mocodawca[].data.typ": {
+        "tp": 3,
+        "fp": 0,
+        "fn": 3,
+        "tn": 0,
+        "uzp_f1": 0.6666666666666666
+      },
+      "mocodawca[].podpisujacy[].imie_nazwisko": {
+        "tp": 0,
+        "fp": 0,
+        "fn": 8,
+        "tn": 0,
+        "uzp_f1": 0.0
+      },
+      "pelnomocnicy[].imie_nazwisko": {
+        "tp": 4,
+        "fp": 0,
+        "fn": 4,
+        "tn": 0,
+        "uzp_f1": 0.6666666666666666
+      },
+      "pelnomocnicy[].pesel": {
+        "tp": 0,
+        "fp": 0,
+        "fn": 0,
+        "tn": 8,
+        "uzp_f1": null
+      }
+    },
+    "early-procedural": {
+      "mocodawca[].data.imie_nazwisko": {
+        "tp": 0,
+        "fp": 0,
+        "fn": 0,
+        "tn": 4,
+        "uzp_f1": null
+      },
+      "mocodawca[].data.krs": {
+        "tp": 4,
+        "fp": 0,
+        "fn": 0,
+        "tn": 0,
+        "uzp_f1": 1.0
+      },
+      "mocodawca[].data.nazwa": {
+        "tp": 2,
+        "fp": 2,
+        "fn": 0,
+        "tn": 0,
+        "uzp_f1": 0.6666666666666666
+      },
+      "mocodawca[].data.nip": {
+        "tp": 4,
+        "fp": 0,
+        "fn": 0,
+        "tn": 0,
+        "uzp_f1": 1.0
+      },
+      "mocodawca[].data.typ": {
+        "tp": 4,
+        "fp": 0,
+        "fn": 0,
+        "tn": 0,
+        "uzp_f1": 1.0
+      },
+      "mocodawca[].podpisujacy[].imie_nazwisko": {
+        "tp": 2,
+        "fp": 0,
+        "fn": 4,
+        "tn": 0,
+        "uzp_f1": 0.5
+      },
+      "pelnomocnicy[].imie_nazwisko": {
+        "tp": 4,
+        "fp": 0,
+        "fn": 4,
+        "tn": 0,
+        "uzp_f1": 0.6666666666666666
+      },
+      "pelnomocnicy[].pesel": {
+        "tp": 0,
+        "fp": 0,
+        "fn": 0,
+        "tn": 8,
+        "uzp_f1": null
+      }
+    },
+    "early-register": {
+      "mocodawca[].data.imie_nazwisko": {
+        "tp": 0,
+        "fp": 0,
+        "fn": 0,
+        "tn": 6,
+        "uzp_f1": null
+      },
+      "mocodawca[].data.krs": {
+        "tp": 4,
+        "fp": 0,
+        "fn": 2,
+        "tn": 0,
+        "uzp_f1": 0.8
+      },
+      "mocodawca[].data.nazwa": {
+        "tp": 4,
+        "fp": 0,
+        "fn": 2,
+        "tn": 0,
+        "uzp_f1": 0.8
+      },
+      "mocodawca[].data.nip": {
+        "tp": 4,
+        "fp": 0,
+        "fn": 2,
+        "tn": 0,
+        "uzp_f1": 0.8
+      },
+      "mocodawca[].data.typ": {
+        "tp": 4,
+        "fp": 0,
+        "fn": 2,
+        "tn": 0,
+        "uzp_f1": 0.8
+      },
+      "mocodawca[].podpisujacy[].imie_nazwisko": {
+        "tp": 1,
+        "fp": 0,
+        "fn": 9,
+        "tn": 0,
+        "uzp_f1": 0.18181818181818182
+      },
+      "pelnomocnicy[].imie_nazwisko": {
+        "tp": 4,
+        "fp": 0,
+        "fn": 4,
+        "tn": 0,
+        "uzp_f1": 0.6666666666666666
+      },
+      "pelnomocnicy[].pesel": {
+        "tp": 0,
+        "fp": 0,
+        "fn": 0,
+        "tn": 8,
+        "uzp_f1": null
+      }
+    },
+    "early-short": {
+      "mocodawca[].data.imie_nazwisko": {
+        "tp": 0,
+        "fp": 0,
+        "fn": 0,
+        "tn": 4,
+        "uzp_f1": null
+      },
+      "mocodawca[].data.krs": {
+        "tp": 3,
+        "fp": 0,
+        "fn": 1,
+        "tn": 0,
+        "uzp_f1": 0.8571428571428571
+      },
+      "mocodawca[].data.nazwa": {
+        "tp": 1,
+        "fp": 2,
+        "fn": 1,
+        "tn": 0,
+        "uzp_f1": 0.4
+      },
+      "mocodawca[].data.nip": {
+        "tp": 3,
+        "fp": 0,
+        "fn": 1,
+        "tn": 0,
+        "uzp_f1": 0.8571428571428571
+      },
+      "mocodawca[].data.typ": {
+        "tp": 3,
+        "fp": 0,
+        "fn": 1,
+        "tn": 0,
+        "uzp_f1": 0.8571428571428571
+      },
+      "mocodawca[].podpisujacy[].imie_nazwisko": {
+        "tp": 1,
+        "fp": 0,
+        "fn": 5,
+        "tn": 0,
+        "uzp_f1": 0.2857142857142857
+      },
+      "pelnomocnicy[].imie_nazwisko": {
+        "tp": 4,
+        "fp": 0,
+        "fn": 4,
+        "tn": 0,
+        "uzp_f1": 0.6666666666666666
+      },
+      "pelnomocnicy[].pesel": {
+        "tp": 0,
+        "fp": 0,
+        "fn": 0,
+        "tn": 8,
+        "uzp_f1": null
+      }
+    },
+    "early_cards": {
+      "przelew_bankowy.data_operacji": {
+        "tp": 4,
+        "fp": 0,
+        "fn": 0,
+        "tn": 0,
+        "uzp_f1": 1.0
+      },
+      "przelew_bankowy.kwota": {
+        "tp": 4,
+        "fp": 0,
+        "fn": 0,
+        "tn": 0,
+        "uzp_f1": 1.0
+      },
+      "przelew_bankowy.na_rachunek": {
+        "tp": 4,
+        "fp": 0,
+        "fn": 0,
+        "tn": 0,
+        "uzp_f1": 1.0
+      },
+      "przelew_bankowy.numer_transakcji": {
+        "tp": 4,
+        "fp": 0,
+        "fn": 0,
+        "tn": 0,
+        "uzp_f1": 1.0
+      },
+      "przelew_bankowy.tytul": {
+        "tp": 4,
+        "fp": 0,
+        "fn": 0,
+        "tn": 0,
+        "uzp_f1": 1.0
+      },
+      "przelew_bankowy.z_rachunku": {
+        "tp": 4,
+        "fp": 0,
+        "fn": 0,
+        "tn": 0,
+        "uzp_f1": 1.0
+      }
+    },
+    "early_letter": {
+      "przelew_bankowy.data_operacji": {
+        "tp": 0,
+        "fp": 0,
+        "fn": 4,
+        "tn": 0,
+        "uzp_f1": 0.0
+      },
+      "przelew_bankowy.kwota": {
+        "tp": 0,
+        "fp": 0,
+        "fn": 4,
+        "tn": 0,
+        "uzp_f1": 0.0
+      },
+      "przelew_bankowy.na_rachunek": {
+        "tp": 0,
+        "fp": 0,
+        "fn": 4,
+        "tn": 0,
+        "uzp_f1": 0.0
+      },
+      "przelew_bankowy.numer_transakcji": {
+        "tp": 0,
+        "fp": 0,
+        "fn": 2,
+        "tn": 2,
+        "uzp_f1": 0.0
+      },
+      "przelew_bankowy.tytul": {
+        "tp": 0,
+        "fp": 0,
+        "fn": 4,
+        "tn": 0,
+        "uzp_f1": 0.0
+      },
+      "przelew_bankowy.z_rachunku": {
+        "tp": 0,
+        "fp": 0,
+        "fn": 4,
+        "tn": 0,
+        "uzp_f1": 0.0
+      }
+    },
+    "early_order": {
+      "przelew_bankowy.data_operacji": {
+        "tp": 4,
+        "fp": 0,
+        "fn": 0,
+        "tn": 0,
+        "uzp_f1": 1.0
+      },
+      "przelew_bankowy.kwota": {
+        "tp": 4,
+        "fp": 0,
+        "fn": 0,
+        "tn": 0,
+        "uzp_f1": 1.0
+      },
+      "przelew_bankowy.na_rachunek": {
+        "tp": 4,
+        "fp": 0,
+        "fn": 0,
+        "tn": 0,
+        "uzp_f1": 1.0
+      },
+      "przelew_bankowy.numer_transakcji": {
+        "tp": 4,
+        "fp": 0,
+        "fn": 0,
+        "tn": 0,
+        "uzp_f1": 1.0
+      },
+      "przelew_bankowy.tytul": {
+        "tp": 4,
+        "fp": 0,
+        "fn": 0,
+        "tn": 0,
+        "uzp_f1": 1.0
+      },
+      "przelew_bankowy.z_rachunku": {
+        "tp": 4,
+        "fp": 0,
+        "fn": 0,
+        "tn": 0,
+        "uzp_f1": 1.0
+      }
+    },
+    "early_register": {
+      "przelew_bankowy.data_operacji": {
+        "tp": 4,
+        "fp": 0,
+        "fn": 0,
+        "tn": 0,
+        "uzp_f1": 1.0
+      },
+      "przelew_bankowy.kwota": {
+        "tp": 4,
+        "fp": 0,
+        "fn": 0,
+        "tn": 0,
+        "uzp_f1": 1.0
+      },
+      "przelew_bankowy.na_rachunek": {
+        "tp": 4,
+        "fp": 0,
+        "fn": 0,
+        "tn": 0,
+        "uzp_f1": 1.0
+      },
+      "przelew_bankowy.numer_transakcji": {
+        "tp": 2,
+        "fp": 0,
+        "fn": 0,
+        "tn": 2,
+        "uzp_f1": 1.0
+      },
+      "przelew_bankowy.tytul": {
+        "tp": 3,
+        "fp": 1,
+        "fn": 0,
+        "tn": 0,
+        "uzp_f1": 0.8571428571428571
+      },
+      "przelew_bankowy.z_rachunku": {
+        "tp": 4,
+        "fp": 0,
+        "fn": 0,
+        "tn": 0,
+        "uzp_f1": 1.0
+      }
+    },
+    "early_sections": {
+      "przelew_bankowy.data_operacji": {
+        "tp": 4,
+        "fp": 0,
+        "fn": 0,
+        "tn": 0,
+        "uzp_f1": 1.0
+      },
+      "przelew_bankowy.kwota": {
+        "tp": 4,
+        "fp": 0,
+        "fn": 0,
+        "tn": 0,
+        "uzp_f1": 1.0
+      },
+      "przelew_bankowy.na_rachunek": {
+        "tp": 4,
+        "fp": 0,
+        "fn": 0,
+        "tn": 0,
+        "uzp_f1": 1.0
+      },
+      "przelew_bankowy.numer_transakcji": {
+        "tp": 4,
+        "fp": 0,
+        "fn": 0,
+        "tn": 0,
+        "uzp_f1": 1.0
+      },
+      "przelew_bankowy.tytul": {
+        "tp": 4,
+        "fp": 0,
+        "fn": 0,
+        "tn": 0,
+        "uzp_f1": 1.0
+      },
+      "przelew_bankowy.z_rachunku": {
+        "tp": 4,
+        "fp": 0,
+        "fn": 0,
+        "tn": 0,
+        "uzp_f1": 1.0
+      }
+    },
+    "early_summary": {
+      "przelew_bankowy.data_operacji": {
+        "tp": 4,
+        "fp": 0,
+        "fn": 0,
+        "tn": 0,
+        "uzp_f1": 1.0
+      },
+      "przelew_bankowy.kwota": {
+        "tp": 4,
+        "fp": 0,
+        "fn": 0,
+        "tn": 0,
+        "uzp_f1": 1.0
+      },
+      "przelew_bankowy.na_rachunek": {
+        "tp": 4,
+        "fp": 0,
+        "fn": 0,
+        "tn": 0,
+        "uzp_f1": 1.0
+      },
+      "przelew_bankowy.numer_transakcji": {
+        "tp": 4,
+        "fp": 0,
+        "fn": 0,
+        "tn": 0,
+        "uzp_f1": 1.0
+      },
+      "przelew_bankowy.tytul": {
+        "tp": 4,
+        "fp": 0,
+        "fn": 0,
+        "tn": 0,
+        "uzp_f1": 1.0
+      },
+      "przelew_bankowy.z_rachunku": {
+        "tp": 4,
+        "fp": 0,
+        "fn": 0,
+        "tn": 0,
+        "uzp_f1": 1.0
+      }
+    },
+    "early_thermal": {
+      "przelew_bankowy.data_operacji": {
+        "tp": 2,
+        "fp": 0,
+        "fn": 2,
+        "tn": 0,
+        "uzp_f1": 0.6666666666666666
+      },
+      "przelew_bankowy.kwota": {
+        "tp": 2,
+        "fp": 0,
+        "fn": 2,
+        "tn": 0,
+        "uzp_f1": 0.6666666666666666
+      },
+      "przelew_bankowy.na_rachunek": {
+        "tp": 2,
+        "fp": 0,
+        "fn": 2,
+        "tn": 0,
+        "uzp_f1": 0.6666666666666666
+      },
+      "przelew_bankowy.numer_transakcji": {
+        "tp": 2,
+        "fp": 0,
+        "fn": 2,
+        "tn": 0,
+        "uzp_f1": 0.6666666666666666
+      },
+      "przelew_bankowy.tytul": {
+        "tp": 2,
+        "fp": 0,
+        "fn": 2,
+        "tn": 0,
+        "uzp_f1": 0.6666666666666666
+      },
+      "przelew_bankowy.z_rachunku": {
+        "tp": 2,
+        "fp": 0,
+        "fn": 2,
+        "tn": 0,
+        "uzp_f1": 0.6666666666666666
+      }
+    },
+    "late-company": {
+      "mocodawca[].data.imie_nazwisko": {
+        "tp": 0,
+        "fp": 0,
+        "fn": 0,
+        "tn": 8,
+        "uzp_f1": null
+      },
+      "mocodawca[].data.krs": {
+        "tp": 8,
+        "fp": 0,
+        "fn": 0,
+        "tn": 0,
+        "uzp_f1": 1.0
+      },
+      "mocodawca[].data.nazwa": {
+        "tp": 8,
+        "fp": 0,
+        "fn": 0,
+        "tn": 0,
+        "uzp_f1": 1.0
+      },
+      "mocodawca[].data.nip": {
+        "tp": 8,
+        "fp": 0,
+        "fn": 0,
+        "tn": 0,
+        "uzp_f1": 1.0
+      },
+      "mocodawca[].data.typ": {
+        "tp": 8,
+        "fp": 0,
+        "fn": 0,
+        "tn": 0,
+        "uzp_f1": 1.0
+      },
+      "mocodawca[].podpisujacy[].imie_nazwisko": {
+        "tp": 4,
+        "fp": 0,
+        "fn": 10,
+        "tn": 0,
+        "uzp_f1": 0.4444444444444444
+      },
+      "pelnomocnicy[].imie_nazwisko": {
+        "tp": 6,
+        "fp": 0,
+        "fn": 6,
+        "tn": 0,
+        "uzp_f1": 0.6666666666666666
+      },
+      "pelnomocnicy[].pesel": {
+        "tp": 0,
+        "fp": 0,
+        "fn": 0,
+        "tn": 12,
+        "uzp_f1": null
+      }
+    },
+    "late-consortium": {
+      "mocodawca[].data.imie_nazwisko": {
+        "tp": 0,
+        "fp": 0,
+        "fn": 0,
+        "tn": 16,
+        "uzp_f1": null
+      },
+      "mocodawca[].data.krs": {
+        "tp": 8,
+        "fp": 0,
+        "fn": 8,
+        "tn": 0,
+        "uzp_f1": 0.6666666666666666
+      },
+      "mocodawca[].data.nazwa": {
+        "tp": 8,
+        "fp": 0,
+        "fn": 8,
+        "tn": 0,
+        "uzp_f1": 0.6666666666666666
+      },
+      "mocodawca[].data.nip": {
+        "tp": 8,
+        "fp": 0,
+        "fn": 8,
+        "tn": 0,
+        "uzp_f1": 0.6666666666666666
+      },
+      "mocodawca[].data.typ": {
+        "tp": 8,
+        "fp": 0,
+        "fn": 8,
+        "tn": 0,
+        "uzp_f1": 0.6666666666666666
+      },
+      "mocodawca[].podpisujacy[].imie_nazwisko": {
+        "tp": 2,
+        "fp": 0,
+        "fn": 18,
+        "tn": 0,
+        "uzp_f1": 0.18181818181818182
+      },
+      "pelnomocnicy[].imie_nazwisko": {
+        "tp": 7,
+        "fp": 0,
+        "fn": 7,
+        "tn": 0,
+        "uzp_f1": 0.6666666666666666
+      },
+      "pelnomocnicy[].pesel": {
+        "tp": 0,
+        "fp": 0,
+        "fn": 0,
+        "tn": 14,
+        "uzp_f1": null
+      }
+    },
+    "late-list": {
+      "OdwolanieKIO.czynnosc_dzien": {
+        "tp": 1,
+        "fp": 0,
+        "fn": 19,
+        "tn": 4,
+        "uzp_f1": 0.09523809523809523
+      },
+      "OdwolanieKIO.czynnosc_opis": {
+        "tp": 4,
+        "fp": 0,
+        "fn": 20,
+        "tn": 0,
+        "uzp_f1": 0.2857142857142857
+      },
+      "OdwolanieKIO.czynnosc_powod_id": {
+        "tp": 4,
+        "fp": 0,
+        "fn": 20,
+        "tn": 0,
+        "uzp_f1": 0.2857142857142857
+      },
+      "OdwolanieKIO.data": {
+        "tp": 9,
+        "fp": 0,
+        "fn": 9,
+        "tn": 6,
+        "uzp_f1": 0.6666666666666666
+      },
+      "OdwolanieKIO.miejscowosc": {
+        "tp": 9,
+        "fp": 0,
+        "fn": 9,
+        "tn": 6,
+        "uzp_f1": 0.6666666666666666
+      },
+      "Odwolujacy[].krs": {
+        "tp": 7,
+        "fp": 0,
+        "fn": 9,
+        "tn": 8,
+        "uzp_f1": 0.6086956521739131
+      },
+      "Odwolujacy[].nazwa": {
+        "tp": 23,
+        "fp": 0,
+        "fn": 1,
+        "tn": 0,
+        "uzp_f1": 0.9787234042553191
+      },
+      "Odwolujacy[].nip": {
+        "tp": 11,
+        "fp": 0,
+        "fn": 13,
+        "tn": 0,
+        "uzp_f1": 0.6285714285714286
+      },
+      "Odwolujacy[].pelnomocnik.imie_nazwisko": {
+        "tp": 7,
+        "fp": 0,
+        "fn": 17,
+        "tn": 0,
+        "uzp_f1": 0.45161290322580644
+      },
+      "Odwolujacy[].pelnomocnik.mail": {
+        "tp": 9,
+        "fp": 0,
+        "fn": 15,
+        "tn": 0,
+        "uzp_f1": 0.5454545454545454
+      },
+      "Odwolujacy[].pelnomocnik.nazwa": {
+        "tp": 14,
+        "fp": 1,
+        "fn": 9,
+        "tn": 0,
+        "uzp_f1": 0.7368421052631579
+      },
+      "Odwolujacy[].przez-pelnomocnika": {
+        "tp": 15,
+        "fp": 8,
+        "fn": 1,
+        "tn": 0,
+        "uzp_f1": 0.7692307692307693
+      },
+      "Odwolujacy[].regon": {
+        "tp": 11,
+        "fp": 0,
+        "fn": 13,
+        "tn": 0,
+        "uzp_f1": 0.6285714285714286
+      },
+      "Zamawiajacy[].krs": {
+        "tp": 0,
+        "fp": 0,
+        "fn": 0,
+        "tn": 24,
+        "uzp_f1": null
+      },
+      "Zamawiajacy[].nazwa": {
+        "tp": 24,
+        "fp": 0,
+        "fn": 0,
+        "tn": 0,
+        "uzp_f1": 1.0
+      },
+      "Zamawiajacy[].nip": {
+        "tp": 12,
+        "fp": 0,
+        "fn": 12,
+        "tn": 0,
+        "uzp_f1": 0.6666666666666666
+      },
+      "Zamawiajacy[].prowadzacy_postepowanie": {
+        "tp": 0,
+        "fp": 0,
+        "fn": 0,
+        "tn": 24,
+        "uzp_f1": null
+      },
+      "Zamawiajacy[].regon": {
+        "tp": 11,
+        "fp": 1,
+        "fn": 12,
+        "tn": 0,
+        "uzp_f1": 0.6285714285714286
+      },
+      "ZamowieniePubliczne.numer_bzp": {
+        "tp": 19,
+        "fp": 0,
+        "fn": 1,
+        "tn": 4,
+        "uzp_f1": 0.9743589743589743
+      },
+      "ZamowieniePubliczne.numer_postepowania": {
+        "tp": 12,
+        "fp": 0,
+        "fn": 12,
+        "tn": 0,
+        "uzp_f1": 0.6666666666666666
+      },
+      "ZamowieniePubliczne.numer_ted": {
+        "tp": 18,
+        "fp": 0,
+        "fn": 0,
+        "tn": 6,
+        "uzp_f1": 1.0
+      },
+      "ZamowieniePubliczne.tytul": {
+        "tp": 24,
+        "fp": 0,
+        "fn": 0,
+        "tn": 0,
+        "uzp_f1": 1.0
+      }
+    },
+    "late-trader": {
+      "mocodawca[].data.imie_nazwisko": {
+        "tp": 0,
+        "fp": 0,
+        "fn": 8,
+        "tn": 0,
+        "uzp_f1": 0.0
+      },
+      "mocodawca[].data.krs": {
+        "tp": 0,
+        "fp": 0,
+        "fn": 0,
+        "tn": 8,
+        "uzp_f1": null
+      },
+      "mocodawca[].data.nazwa": {
+        "tp": 0,
+        "fp": 0,
+        "fn": 8,
+        "tn": 0,
+        "uzp_f1": 0.0
+      },
+      "mocodawca[].data.nip": {
+        "tp": 0,
+        "fp": 0,
+        "fn": 8,
+        "tn": 0,
+        "uzp_f1": 0.0
+      },
+      "mocodawca[].data.typ": {
+        "tp": 0,
+        "fp": 0,
+        "fn": 8,
+        "tn": 0,
+        "uzp_f1": 0.0
+      },
+      "mocodawca[].podpisujacy[].imie_nazwisko": {
+        "tp": 0,
+        "fp": 0,
+        "fn": 8,
+        "tn": 0,
+        "uzp_f1": 0.0
+      },
+      "pelnomocnicy[].imie_nazwisko": {
+        "tp": 6,
+        "fp": 0,
+        "fn": 6,
+        "tn": 0,
+        "uzp_f1": 0.6666666666666666
+      },
+      "pelnomocnicy[].pesel": {
+        "tp": 0,
+        "fp": 0,
+        "fn": 0,
+        "tn": 12,
+        "uzp_f1": null
+      }
+    },
+    "late_table": {
+      "przelew_bankowy.data_operacji": {
+        "tp": 4,
+        "fp": 0,
+        "fn": 0,
+        "tn": 0,
+        "uzp_f1": 1.0
+      },
+      "przelew_bankowy.kwota": {
+        "tp": 4,
+        "fp": 0,
+        "fn": 0,
+        "tn": 0,
+        "uzp_f1": 1.0
+      },
+      "przelew_bankowy.na_rachunek": {
+        "tp": 4,
+        "fp": 0,
+        "fn": 0,
+        "tn": 0,
+        "uzp_f1": 1.0
+      },
+      "przelew_bankowy.numer_transakcji": {
+        "tp": 0,
+        "fp": 0,
+        "fn": 0,
+        "tn": 4,
+        "uzp_f1": null
+      },
+      "przelew_bankowy.tytul": {
+        "tp": 4,
+        "fp": 0,
+        "fn": 0,
+        "tn": 0,
+        "uzp_f1": 1.0
+      },
+      "przelew_bankowy.z_rachunku": {
+        "tp": 4,
+        "fp": 0,
+        "fn": 0,
+        "tn": 0,
+        "uzp_f1": 1.0
+      }
+    },
+    "scan_bordered": {
+      "przelew_bankowy.data_operacji": {
+        "tp": 3,
+        "fp": 0,
+        "fn": 1,
+        "tn": 0,
+        "uzp_f1": 0.8571428571428571
+      },
+      "przelew_bankowy.kwota": {
+        "tp": 3,
+        "fp": 0,
+        "fn": 1,
+        "tn": 0,
+        "uzp_f1": 0.8571428571428571
+      },
+      "przelew_bankowy.na_rachunek": {
+        "tp": 3,
+        "fp": 0,
+        "fn": 1,
+        "tn": 0,
+        "uzp_f1": 0.8571428571428571
+      },
+      "przelew_bankowy.numer_transakcji": {
+        "tp": 2,
+        "fp": 1,
+        "fn": 1,
+        "tn": 0,
+        "uzp_f1": 0.6666666666666666
+      },
+      "przelew_bankowy.tytul": {
+        "tp": 3,
+        "fp": 0,
+        "fn": 1,
+        "tn": 0,
+        "uzp_f1": 0.8571428571428571
+      },
+      "przelew_bankowy.z_rachunku": {
+        "tp": 3,
+        "fp": 0,
+        "fn": 1,
+        "tn": 0,
+        "uzp_f1": 0.8571428571428571
+      }
+    },
+    "scan_history": {
+      "przelew_bankowy.data_operacji": {
+        "tp": 0,
+        "fp": 0,
+        "fn": 4,
+        "tn": 0,
+        "uzp_f1": 0.0
+      },
+      "przelew_bankowy.kwota": {
+        "tp": 0,
+        "fp": 0,
+        "fn": 4,
+        "tn": 0,
+        "uzp_f1": 0.0
+      },
+      "przelew_bankowy.na_rachunek": {
+        "tp": 0,
+        "fp": 0,
+        "fn": 4,
+        "tn": 0,
+        "uzp_f1": 0.0
+      },
+      "przelew_bankowy.numer_transakcji": {
+        "tp": 0,
+        "fp": 0,
+        "fn": 4,
+        "tn": 0,
+        "uzp_f1": 0.0
+      },
+      "przelew_bankowy.tytul": {
+        "tp": 0,
+        "fp": 0,
+        "fn": 4,
+        "tn": 0,
+        "uzp_f1": 0.0
+      },
+      "przelew_bankowy.z_rachunku": {
+        "tp": 0,
+        "fp": 0,
+        "fn": 4,
+        "tn": 0,
+        "uzp_f1": 0.0
+      }
+    },
+    "scan_operation": {
+      "przelew_bankowy.data_operacji": {
+        "tp": 0,
+        "fp": 0,
+        "fn": 4,
+        "tn": 0,
+        "uzp_f1": 0.0
+      },
+      "przelew_bankowy.kwota": {
+        "tp": 0,
+        "fp": 0,
+        "fn": 4,
+        "tn": 0,
+        "uzp_f1": 0.0
+      },
+      "przelew_bankowy.na_rachunek": {
+        "tp": 0,
+        "fp": 0,
+        "fn": 4,
+        "tn": 0,
+        "uzp_f1": 0.0
+      },
+      "przelew_bankowy.numer_transakcji": {
+        "tp": 0,
+        "fp": 0,
+        "fn": 0,
+        "tn": 4,
+        "uzp_f1": null
+      },
+      "przelew_bankowy.tytul": {
+        "tp": 0,
+        "fp": 0,
+        "fn": 4,
+        "tn": 0,
+        "uzp_f1": 0.0
+      },
+      "przelew_bankowy.z_rachunku": {
+        "tp": 0,
+        "fp": 0,
+        "fn": 4,
+        "tn": 0,
+        "uzp_f1": 0.0
+      }
+    },
+    "scan_order": {
+      "przelew_bankowy.data_operacji": {
+        "tp": 0,
+        "fp": 0,
+        "fn": 4,
+        "tn": 0,
+        "uzp_f1": 0.0
+      },
+      "przelew_bankowy.kwota": {
+        "tp": 0,
+        "fp": 0,
+        "fn": 4,
+        "tn": 0,
+        "uzp_f1": 0.0
+      },
+      "przelew_bankowy.na_rachunek": {
+        "tp": 0,
+        "fp": 0,
+        "fn": 4,
+        "tn": 0,
+        "uzp_f1": 0.0
+      },
+      "przelew_bankowy.numer_transakcji": {
+        "tp": 0,
+        "fp": 0,
+        "fn": 4,
+        "tn": 0,
+        "uzp_f1": 0.0
+      },
+      "przelew_bankowy.tytul": {
+        "tp": 0,
+        "fp": 0,
+        "fn": 4,
+        "tn": 0,
+        "uzp_f1": 0.0
+      },
+      "przelew_bankowy.z_rachunku": {
+        "tp": 0,
+        "fp": 0,
+        "fn": 4,
+        "tn": 0,
+        "uzp_f1": 0.0
+      }
+    },
+    "scan_participants": {
+      "przelew_bankowy.data_operacji": {
+        "tp": 3,
+        "fp": 0,
+        "fn": 1,
+        "tn": 0,
+        "uzp_f1": 0.8571428571428571
+      },
+      "przelew_bankowy.kwota": {
+        "tp": 3,
+        "fp": 0,
+        "fn": 1,
+        "tn": 0,
+        "uzp_f1": 0.8571428571428571
+      },
+      "przelew_bankowy.na_rachunek": {
+        "tp": 2,
+        "fp": 0,
+        "fn": 2,
+        "tn": 0,
+        "uzp_f1": 0.6666666666666666
+      },
+      "przelew_bankowy.numer_transakcji": {
+        "tp": 1,
+        "fp": 0,
+        "fn": 1,
+        "tn": 2,
+        "uzp_f1": 0.6666666666666666
+      },
+      "przelew_bankowy.tytul": {
+        "tp": 3,
+        "fp": 0,
+        "fn": 1,
+        "tn": 0,
+        "uzp_f1": 0.8571428571428571
+      },
+      "przelew_bankowy.z_rachunku": {
+        "tp": 3,
+        "fp": 0,
+        "fn": 1,
+        "tn": 0,
+        "uzp_f1": 0.8571428571428571
+      }
+    }
+  },
+  "weakest_positive_families": [
+    "early_letter",
+    "scan_history",
+    "scan_operation",
+    "scan_order",
+    "late-trader",
+    "early-paragraphs",
+    "late-consortium",
+    "early-register",
+    "early-short",
+    "early_thermal",
+    "late-list",
+    "early-modular",
+    "early-procedural",
+    "scan_participants",
+    "scan_bordered",
+    "late-company",
+    "early-letterhead",
+    "early-panels",
+    "early_register",
+    "early_cards",
+    "early_order",
+    "early_sections",
+    "early_summary",
+    "late_table"
+  ],
+  "case_prefix": 26,
+  "seed": 92026,
+  "split": "all",
+  "commit": "7c44c8da205f723e7f06f4bbbe7c8f41b5d499ae",
+  "dirty": false,
+  "dataset_sha256": "9a0290871b89fa10c691c4e6f84d84764bb0929bd72ac4be6419782a8bf0f1aa",
+  "extraction_seconds": 485.0,
+  "extractor_commit": "fa9937e881ccd389f6d32c6f3b2b48f60bd0c865",
+  "generator_commit": "46da3bd217a02a812776029218a524a39204226f",
+  "extractor_profile": "Main, default local rules, two workers. Keyless.",
+  "extractor_tree": "1f454cf820ee10060497311b722164c1cfc5041b",
+  "variants_comparison": {
+    "seed": 63059,
+    "cases": 60,
+    "docs": 240,
+    "dataset_sha256": "53414e5959d93426f1553cc36fcbe86968fca23edb80a959740654790b20dd03",
+    "micro_f1": 0.9124966550709125,
+    "micro_f1_strict": 0.8742997983419225,
+    "counts": {
+      "tp": 1705,
+      "fp": 32,
+      "fn": 295,
+      "tn": 284
+    },
+    "per_class_f1": {
+      "odwolanie": 0.8918302145139206,
+      "pelnomocnictwo": 0.9373549883990719,
+      "przelew": 0.9473684210526315
+    },
+    "classification_accuracy": 1.0,
+    "negatives_empty": 1.0,
+    "selection": "Complete PR 69 panel replayed from previously staged synthetic PDFs and references; verified original dataset digest; 5-case chunks, same extractor and workers."
+  },
+  "controls": {
+    "scans": {
+      "docs": 30,
+      "exact": 28,
+      "micro_f1": 0.9901960784313726,
+      "micro_f1_strict": 0.9896103896103896,
+      "macro_f1_classes": 0.9803921568627452,
+      "classification_accuracy": 0.9666666666666667,
+      "per_class_f1": {
+        "odwolanie": 1.0,
+        "pelnomocnictwo": 1.0,
+        "przelew": 0.9411764705882353
+      },
+      "negatives_empty": null
+    },
+    "dev1": {
+      "docs": 22,
+      "exact": 10,
+      "micro_f1": 0.9285714285714286,
+      "micro_f1_strict": 0.8821138211382114,
+      "macro_f1_classes": 0.9012626262626263,
+      "classification_accuracy": 1.0,
+      "per_class_f1": {
+        "odwolanie": 0.9454545454545454,
+        "pelnomocnictwo": 0.9583333333333334,
+        "przelew": 0.8
+      },
+      "negatives_empty": 1.0,
+      "class_counts": {
+        "odwolanie": 8,
+        "pelnomocnictwo": 3,
+        "negatywny": 7,
+        "przelew": 4
+      }
+    },
+    "dev2": {
+      "docs": 39,
+      "exact": 22,
+      "micro_f1": 0.9243697478991597,
+      "micro_f1_strict": 0.8951406649616368,
+      "macro_f1_classes": 0.948527346879887,
+      "classification_accuracy": 1.0,
+      "per_class_f1": {
+        "odwolanie": 0.8976897689768977,
+        "pelnomocnictwo": 0.9836065573770492,
+        "przelew": 0.9642857142857143
+      },
+      "negatives_empty": 1.0,
+      "class_counts": {
+        "odwolanie": 13,
+        "negatywny": 11,
+        "przelew": 10,
+        "pelnomocnictwo": 5
+      }
+    }
+  },
+  "panel": {
+    "paired_documents": 104,
+    "pages_per_view": 235,
+    "value_boxes": 1428,
+    "observed_families": 27,
+    "uncertainty": "1,000 whole-case bootstrap resamples, fixed seed, pooled UZP F1 2.5th and 97.5th percentiles; null for singleton cases.",
+    "target_population": "Authored synthetic case panels; hidden family frequencies unknown."
+  },
+  "training_parity": {
+    "docs": 196,
+    "byte_identical": 196,
+    "uzp_f1": 1.0,
+    "strict_f1": 1.0,
+    "reference_convention": "printed-prefix"
+  },
+  "comparison_main_35b1d01": {
+    "extractor_commit": "35b1d0159b580268d10aaebbbd6ce7c01aeb2911",
+    "dataset_sha256": "9a0290871b89fa10c691c4e6f84d84764bb0929bd72ac4be6419782a8bf0f1aa",
+    "overall": {
+      "cases": 26,
+      "docs": 208,
+      "uzp_f1": 0.6735177865612648,
+      "strict_f1": 0.6290228203627852,
+      "uzp_ci95": [
+        0.6162,
+        0.72516
+      ],
+      "counts": {
+        "tp": 852,
+        "fp": 10,
+        "fn": 816,
+        "tn": 326
+      },
+      "exact": 85,
+      "routed": 188,
+      "rejected": 52,
+      "negatives": 52
+    },
+    "per_class": {
+      "negatywny": {
+        "cases": 26,
+        "docs": 52,
+        "uzp_f1": null,
+        "strict_f1": null,
+        "uzp_ci95": null,
+        "counts": {
+          "tp": 0,
+          "fp": 0,
+          "fn": 0,
+          "tn": 0
+        },
+        "exact": 52,
+        "routed": 52,
+        "rejected": 52,
+        "negatives": 52
+      },
+      "odwolanie": {
+        "cases": 26,
+        "docs": 52,
+        "uzp_f1": 0.6490984743411928,
+        "strict_f1": 0.5817307692307693,
+        "uzp_ci95": [
+          0.57999,
+          0.7058
+        ],
+        "counts": {
+          "tp": 468,
+          "fp": 4,
+          "fn": 502,
+          "tn": 170
+        },
+        "exact": 0,
+        "routed": 52,
+        "rejected": 0,
+        "negatives": 0
+      },
+      "pelnomocnictwo": {
+        "cases": 26,
+        "docs": 52,
+        "uzp_f1": 0.6666666666666666,
+        "strict_f1": 0.6762589928057554,
+        "uzp_ci95": [
+          0.58605,
+          0.73618
+        ],
+        "counts": {
+          "tp": 203,
+          "fp": 4,
+          "fn": 199,
+          "tn": 142
+        },
+        "exact": 4,
+        "routed": 52,
+        "rejected": 0,
+        "negatives": 0
+      },
+      "przelew": {
+        "cases": 26,
+        "docs": 52,
+        "uzp_f1": 0.755741127348643,
+        "strict_f1": 0.746031746031746,
+        "uzp_ci95": [
+          0.60422,
+          0.86907
+        ],
+        "counts": {
+          "tp": 181,
+          "fp": 2,
+          "fn": 115,
+          "tn": 14
+        },
+        "exact": 29,
+        "routed": 32,
+        "rejected": 0,
+        "negatives": 0
+      }
+    },
+    "per_view": {
+      "native": {
+        "cases": 26,
+        "docs": 104,
+        "uzp_f1": 0.5755517826825127,
+        "strict_f1": 0.5145573380867499,
+        "uzp_ci95": [
+          0.51703,
+          0.62684
+        ],
+        "counts": {
+          "tp": 339,
+          "fp": 4,
+          "fn": 496,
+          "tn": 163
+        },
+        "exact": 44,
+        "routed": 96,
+        "rejected": 26,
+        "negatives": 26
+      },
+      "scan": {
+        "cases": 26,
+        "docs": 104,
+        "uzp_f1": 0.7588757396449705,
+        "strict_f1": 0.7400576368876081,
+        "uzp_ci95": [
+          0.69922,
+          0.8129
+        ],
+        "counts": {
+          "tp": 513,
+          "fp": 6,
+          "fn": 320,
+          "tn": 163
+        },
+        "exact": 41,
+        "routed": 92,
+        "rejected": 26,
+        "negatives": 26
+      }
+    },
+    "per_family": {
+      "decision-extract": {
+        "cases": 12,
+        "docs": 24,
+        "uzp_f1": null,
+        "strict_f1": null,
+        "uzp_ci95": null,
+        "counts": {
+          "tp": 0,
+          "fp": 0,
+          "fn": 0,
+          "tn": 0
+        },
+        "exact": 24,
+        "routed": 24,
+        "rejected": 24,
+        "negatives": 24
+      },
+      "early-letterhead": {
+        "cases": 2,
+        "docs": 4,
+        "uzp_f1": 0.8461538461538461,
+        "strict_f1": 0.8333333333333334,
+        "uzp_ci95": [
+          0.81481,
+          0.88
+        ],
+        "counts": {
+          "tp": 22,
+          "fp": 0,
+          "fn": 8,
+          "tn": 12
+        },
+        "exact": 1,
+        "routed": 4,
+        "rejected": 0,
+        "negatives": 0
+      },
+      "early-modular": {
+        "cases": 14,
+        "docs": 28,
+        "uzp_f1": 0.7458432304038005,
+        "strict_f1": 0.650974025974026,
+        "uzp_ci95": [
+          0.73633,
+          0.75524
+        ],
+        "counts": {
+          "tp": 314,
+          "fp": 2,
+          "fn": 212,
+          "tn": 88
+        },
+        "exact": 0,
+        "routed": 28,
+        "rejected": 0,
+        "negatives": 0
+      },
+      "early-panels": {
+        "cases": 2,
+        "docs": 4,
+        "uzp_f1": 0.8695652173913043,
+        "strict_f1": 0.8666666666666667,
+        "uzp_ci95": [
+          0.83333,
+          0.90909
+        ],
+        "counts": {
+          "tp": 20,
+          "fp": 0,
+          "fn": 6,
+          "tn": 8
+        },
+        "exact": 1,
+        "routed": 4,
+        "rejected": 0,
+        "negatives": 0
+      },
+      "early-paragraphs": {
+        "cases": 3,
+        "docs": 6,
+        "uzp_f1": 0.5714285714285714,
+        "strict_f1": 0.5974025974025974,
+        "uzp_ci95": [
+          0.52632,
+          0.6
+        ],
+        "counts": {
+          "tp": 16,
+          "fp": 0,
+          "fn": 24,
+          "tn": 14
+        },
+        "exact": 0,
+        "routed": 6,
+        "rejected": 0,
+        "negatives": 0
+      },
+      "early-procedural": {
+        "cases": 2,
+        "docs": 4,
+        "uzp_f1": 0.8,
+        "strict_f1": 0.7777777777777778,
+        "uzp_ci95": [
+          0.76923,
+          0.83333
+        ],
+        "counts": {
+          "tp": 20,
+          "fp": 2,
+          "fn": 8,
+          "tn": 12
+        },
+        "exact": 0,
+        "routed": 4,
+        "rejected": 0,
+        "negatives": 0
+      },
+      "early-register": {
+        "cases": 3,
+        "docs": 6,
+        "uzp_f1": 0.6666666666666666,
+        "strict_f1": 0.6823529411764706,
+        "uzp_ci95": [
+          0.22222,
+          0.85714
+        ],
+        "counts": {
+          "tp": 21,
+          "fp": 0,
+          "fn": 21,
+          "tn": 14
+        },
+        "exact": 0,
+        "routed": 6,
+        "rejected": 0,
+        "negatives": 0
+      },
+      "early-short": {
+        "cases": 2,
+        "docs": 4,
+        "uzp_f1": 0.6666666666666666,
+        "strict_f1": 0.6666666666666666,
+        "uzp_ci95": [
+          0.47619,
+          0.83333
+        ],
+        "counts": {
+          "tp": 15,
+          "fp": 2,
+          "fn": 13,
+          "tn": 12
+        },
+        "exact": 1,
+        "routed": 4,
+        "rejected": 0,
+        "negatives": 0
+      },
+      "early_cards": {
+        "cases": 2,
+        "docs": 4,
+        "uzp_f1": 1.0,
+        "strict_f1": 1.0,
+        "uzp_ci95": [
+          1.0,
+          1.0
+        ],
+        "counts": {
+          "tp": 24,
+          "fp": 0,
+          "fn": 0,
+          "tn": 0
+        },
+        "exact": 4,
+        "routed": 4,
+        "rejected": 0,
+        "negatives": 0
+      },
+      "early_letter": {
+        "cases": 2,
+        "docs": 4,
+        "uzp_f1": 0.0,
+        "strict_f1": 0.0,
+        "uzp_ci95": [
+          0.0,
+          0.0
+        ],
+        "counts": {
+          "tp": 0,
+          "fp": 0,
+          "fn": 22,
+          "tn": 2
+        },
+        "exact": 0,
+        "routed": 0,
+        "rejected": 0,
+        "negatives": 0
+      },
+      "early_order": {
+        "cases": 2,
+        "docs": 4,
+        "uzp_f1": 1.0,
+        "strict_f1": 1.0,
+        "uzp_ci95": [
+          1.0,
+          1.0
+        ],
+        "counts": {
+          "tp": 24,
+          "fp": 0,
+          "fn": 0,
+          "tn": 0
+        },
+        "exact": 4,
+        "routed": 4,
+        "rejected": 0,
+        "negatives": 0
+      },
+      "early_register": {
+        "cases": 2,
+        "docs": 4,
+        "uzp_f1": 0.9767441860465116,
+        "strict_f1": 0.9583333333333334,
+        "uzp_ci95": [
+          0.94737,
+          1.0
+        ],
+        "counts": {
+          "tp": 21,
+          "fp": 1,
+          "fn": 0,
+          "tn": 2
+        },
+        "exact": 3,
+        "routed": 4,
+        "rejected": 0,
+        "negatives": 0
+      },
+      "early_sections": {
+        "cases": 2,
+        "docs": 4,
+        "uzp_f1": 1.0,
+        "strict_f1": 1.0,
+        "uzp_ci95": [
+          1.0,
+          1.0
+        ],
+        "counts": {
+          "tp": 24,
+          "fp": 0,
+          "fn": 0,
+          "tn": 0
+        },
+        "exact": 4,
+        "routed": 4,
+        "rejected": 0,
+        "negatives": 0
+      },
+      "early_summary": {
+        "cases": 2,
+        "docs": 4,
+        "uzp_f1": 1.0,
+        "strict_f1": 1.0,
+        "uzp_ci95": [
+          1.0,
+          1.0
+        ],
+        "counts": {
+          "tp": 24,
+          "fp": 0,
+          "fn": 0,
+          "tn": 0
+        },
+        "exact": 4,
+        "routed": 4,
+        "rejected": 0,
+        "negatives": 0
+      },
+      "early_thermal": {
+        "cases": 2,
+        "docs": 4,
+        "uzp_f1": 0.6666666666666666,
+        "strict_f1": 0.6666666666666666,
+        "uzp_ci95": [
+          0.66667,
+          0.66667
+        ],
+        "counts": {
+          "tp": 12,
+          "fp": 0,
+          "fn": 12,
+          "tn": 0
+        },
+        "exact": 2,
+        "routed": 2,
+        "rejected": 0,
+        "negatives": 0
+      },
+      "late-company": {
+        "cases": 4,
+        "docs": 8,
+        "uzp_f1": 0.84,
+        "strict_f1": 0.835820895522388,
+        "uzp_ci95": [
+          0.81481,
+          0.88172
+        ],
+        "counts": {
+          "tp": 42,
+          "fp": 0,
+          "fn": 16,
+          "tn": 20
+        },
+        "exact": 1,
+        "routed": 8,
+        "rejected": 0,
+        "negatives": 0
+      },
+      "late-consortium": {
+        "cases": 4,
+        "docs": 8,
+        "uzp_f1": 0.5899280575539568,
+        "strict_f1": 0.6086956521739131,
+        "uzp_ci95": [
+          0.56552,
+          0.61538
+        ],
+        "counts": {
+          "tp": 41,
+          "fp": 0,
+          "fn": 57,
+          "tn": 30
+        },
+        "exact": 0,
+        "routed": 8,
+        "rejected": 0,
+        "negatives": 0
+      },
+      "late-list": {
+        "cases": 12,
+        "docs": 24,
+        "uzp_f1": 0.5133333333333333,
+        "strict_f1": 0.4811320754716981,
+        "uzp_ci95": [
+          0.38971,
+          0.62222
+        ],
+        "counts": {
+          "tp": 154,
+          "fp": 2,
+          "fn": 290,
+          "tn": 82
+        },
+        "exact": 0,
+        "routed": 24,
+        "rejected": 0,
+        "negatives": 0
+      },
+      "late-trader": {
+        "cases": 4,
+        "docs": 8,
+        "uzp_f1": 0.20689655172413793,
+        "strict_f1": 0.2857142857142857,
+        "uzp_ci95": [
+          0.15385,
+          0.25
+        ],
+        "counts": {
+          "tp": 6,
+          "fp": 0,
+          "fn": 46,
+          "tn": 20
+        },
+        "exact": 0,
+        "routed": 8,
+        "rejected": 0,
+        "negatives": 0
+      },
+      "late_table": {
+        "cases": 2,
+        "docs": 4,
+        "uzp_f1": 1.0,
+        "strict_f1": 1.0,
+        "uzp_ci95": [
+          1.0,
+          1.0
+        ],
+        "counts": {
+          "tp": 20,
+          "fp": 0,
+          "fn": 0,
+          "tn": 4
+        },
+        "exact": 4,
+        "routed": 4,
+        "rejected": 0,
+        "negatives": 0
+      },
+      "payment-advice": {
+        "cases": 7,
+        "docs": 14,
+        "uzp_f1": null,
+        "strict_f1": null,
+        "uzp_ci95": null,
+        "counts": {
+          "tp": 0,
+          "fp": 0,
+          "fn": 0,
+          "tn": 0
+        },
+        "exact": 14,
+        "routed": 14,
+        "rejected": 14,
+        "negatives": 14
+      },
+      "request-for-authority": {
+        "cases": 7,
+        "docs": 14,
+        "uzp_f1": null,
+        "strict_f1": null,
+        "uzp_ci95": null,
+        "counts": {
+          "tp": 0,
+          "fp": 0,
+          "fn": 0,
+          "tn": 0
+        },
+        "exact": 14,
+        "routed": 14,
+        "rejected": 14,
+        "negatives": 14
+      },
+      "scan_bordered": {
+        "cases": 2,
+        "docs": 4,
+        "uzp_f1": 0.8292682926829268,
+        "strict_f1": 0.7619047619047619,
+        "uzp_ci95": [
+          0.66667,
+          0.95652
+        ],
+        "counts": {
+          "tp": 17,
+          "fp": 1,
+          "fn": 6,
+          "tn": 0
+        },
+        "exact": 2,
+        "routed": 3,
+        "rejected": 0,
+        "negatives": 0
+      },
+      "scan_history": {
+        "cases": 2,
+        "docs": 4,
+        "uzp_f1": 0.0,
+        "strict_f1": 0.0,
+        "uzp_ci95": [
+          0.0,
+          0.0
+        ],
+        "counts": {
+          "tp": 0,
+          "fp": 0,
+          "fn": 24,
+          "tn": 0
+        },
+        "exact": 0,
+        "routed": 0,
+        "rejected": 0,
+        "negatives": 0
+      },
+      "scan_operation": {
+        "cases": 2,
+        "docs": 4,
+        "uzp_f1": 0.0,
+        "strict_f1": 0.0,
+        "uzp_ci95": [
+          0.0,
+          0.0
+        ],
+        "counts": {
+          "tp": 0,
+          "fp": 0,
+          "fn": 20,
+          "tn": 4
+        },
+        "exact": 0,
+        "routed": 0,
+        "rejected": 0,
+        "negatives": 0
+      },
+      "scan_order": {
+        "cases": 2,
+        "docs": 4,
+        "uzp_f1": 0.0,
+        "strict_f1": 0.0,
+        "uzp_ci95": [
+          0.0,
+          0.0
+        ],
+        "counts": {
+          "tp": 0,
+          "fp": 0,
+          "fn": 24,
+          "tn": 0
+        },
+        "exact": 0,
+        "routed": 0,
+        "rejected": 0,
+        "negatives": 0
+      },
+      "scan_participants": {
+        "cases": 2,
+        "docs": 4,
+        "uzp_f1": 0.8108108108108109,
+        "strict_f1": 0.8095238095238095,
+        "uzp_ci95": [
+          0.66667,
+          0.94737
+        ],
+        "counts": {
+          "tp": 15,
+          "fp": 0,
+          "fn": 7,
+          "tn": 2
+        },
+        "exact": 2,
+        "routed": 3,
+        "rejected": 0,
+        "negatives": 0
+      }
+    },
+    "per_rendering": {
+      "ccitt-150dpi": {
+        "cases": 2,
+        "docs": 8,
+        "uzp_f1": 0.7311827956989247,
+        "strict_f1": 0.6825396825396826,
+        "uzp_ci95": [
+          0.65116,
+          0.8
+        ],
+        "counts": {
+          "tp": 34,
+          "fp": 2,
+          "fn": 23,
+          "tn": 13
+        },
+        "exact": 2,
+        "routed": 7,
+        "rejected": 2,
+        "negatives": 2
+      },
+      "ccitt-200dpi": {
+        "cases": 2,
+        "docs": 8,
+        "uzp_f1": 0.5227272727272727,
+        "strict_f1": 0.5357142857142857,
+        "uzp_ci95": [
+          0.4878,
+          0.55319
+        ],
+        "counts": {
+          "tp": 23,
+          "fp": 0,
+          "fn": 42,
+          "tn": 11
+        },
+        "exact": 2,
+        "routed": 6,
+        "rejected": 2,
+        "negatives": 2
+      },
+      "ccitt-300dpi": {
+        "cases": 2,
+        "docs": 8,
+        "uzp_f1": 0.5961538461538461,
+        "strict_f1": 0.60431654676259,
+        "uzp_ci95": [
+          0.57143,
+          0.61818
+        ],
+        "counts": {
+          "tp": 31,
+          "fp": 0,
+          "fn": 42,
+          "tn": 17
+        },
+        "exact": 3,
+        "routed": 8,
+        "rejected": 2,
+        "negatives": 2
+      },
+      "jpeg-gray-150dpi": {
+        "cases": 2,
+        "docs": 8,
+        "uzp_f1": 0.8695652173913043,
+        "strict_f1": 0.8435374149659864,
+        "uzp_ci95": [
+          0.79245,
+          0.93548
+        ],
+        "counts": {
+          "tp": 50,
+          "fp": 1,
+          "fn": 14,
+          "tn": 12
+        },
+        "exact": 4,
+        "routed": 7,
+        "rejected": 2,
+        "negatives": 2
+      },
+      "jpeg-gray-200dpi": {
+        "cases": 4,
+        "docs": 16,
+        "uzp_f1": 0.852017937219731,
+        "strict_f1": 0.8243727598566308,
+        "uzp_ci95": [
+          0.7963,
+          0.90435
+        ],
+        "counts": {
+          "tp": 95,
+          "fp": 2,
+          "fn": 31,
+          "tn": 23
+        },
+        "exact": 7,
+        "routed": 16,
+        "rejected": 4,
+        "negatives": 4
+      },
+      "jpeg-gray-300dpi": {
+        "cases": 4,
+        "docs": 16,
+        "uzp_f1": 0.66,
+        "strict_f1": 0.648854961832061,
+        "uzp_ci95": [
+          0.48421,
+          0.83333
+        ],
+        "counts": {
+          "tp": 66,
+          "fp": 0,
+          "fn": 68,
+          "tn": 29
+        },
+        "exact": 6,
+        "routed": 13,
+        "rejected": 4,
+        "negatives": 4
+      },
+      "jpeg-rgb-150dpi": {
+        "cases": 5,
+        "docs": 20,
+        "uzp_f1": 0.7906976744186046,
+        "strict_f1": 0.7734138972809668,
+        "uzp_ci95": [
+          0.73029,
+          0.84015
+        ],
+        "counts": {
+          "tp": 102,
+          "fp": 1,
+          "fn": 53,
+          "tn": 31
+        },
+        "exact": 8,
+        "routed": 18,
+        "rejected": 5,
+        "negatives": 5
+      },
+      "jpeg-rgb-200dpi": {
+        "cases": 3,
+        "docs": 12,
+        "uzp_f1": 0.7870967741935484,
+        "strict_f1": 0.7708333333333334,
+        "uzp_ci95": [
+          0.57143,
+          0.94915
+        ],
+        "counts": {
+          "tp": 61,
+          "fp": 0,
+          "fn": 33,
+          "tn": 15
+        },
+        "exact": 6,
+        "routed": 10,
+        "rejected": 3,
+        "negatives": 3
+      },
+      "jpeg-rgb-300dpi": {
+        "cases": 2,
+        "docs": 8,
+        "uzp_f1": 0.8793103448275862,
+        "strict_f1": 0.8571428571428571,
+        "uzp_ci95": [
+          0.83019,
+          0.92063
+        ],
+        "counts": {
+          "tp": 51,
+          "fp": 0,
+          "fn": 14,
+          "tn": 12
+        },
+        "exact": 3,
+        "routed": 7,
+        "rejected": 2,
+        "negatives": 2
+      },
+      "native": {
+        "cases": 26,
+        "docs": 104,
+        "uzp_f1": 0.5755517826825127,
+        "strict_f1": 0.5145573380867499,
+        "uzp_ci95": [
+          0.51703,
+          0.62684
+        ],
+        "counts": {
+          "tp": 339,
+          "fp": 4,
+          "fn": 496,
+          "tn": 163
+        },
+        "exact": 44,
+        "routed": 96,
+        "rejected": 26,
+        "negatives": 26
+      }
+    },
+    "variants_comparison": {
+      "seed": 63059,
+      "cases": 60,
+      "docs": 240,
+      "dataset_sha256": "53414e5959d93426f1553cc36fcbe86968fca23edb80a959740654790b20dd03",
+      "micro_f1": 0.9124966550709125,
+      "micro_f1_strict": 0.8742997983419225,
+      "counts": {
+        "tp": 1705,
+        "fp": 32,
+        "fn": 295,
+        "tn": 284
+      },
+      "per_class_f1": {
+        "odwolanie": 0.8918302145139206,
+        "pelnomocnictwo": 0.9373549883990719,
+        "przelew": 0.9473684210526315
+      },
+      "classification_accuracy": 1.0,
+      "negatives_empty": 1.0,
+      "selection": "Complete PR 69 panel replayed from previously staged synthetic PDFs and references; verified original dataset digest; 5-case chunks, same extractor and workers."
+    },
+    "controls": {
+      "scans": {
+        "docs": 30,
+        "exact": 29,
+        "micro_f1": 1.0,
+        "micro_f1_strict": 0.9974226804123711,
+        "macro_f1_classes": 1.0,
+        "classification_accuracy": 1.0,
+        "per_class_f1": {
+          "odwolanie": 1.0,
+          "pelnomocnictwo": 1.0,
+          "przelew": 1.0
+        },
+        "negatives_empty": null
+      },
+      "dev1": {
+        "docs": 22,
+        "exact": 10,
+        "micro_f1": 0.9285714285714286,
+        "micro_f1_strict": 0.8821138211382114,
+        "macro_f1_classes": 0.9012626262626263,
+        "classification_accuracy": 1.0,
+        "per_class_f1": {
+          "odwolanie": 0.9454545454545454,
+          "pelnomocnictwo": 0.9583333333333334,
+          "przelew": 0.8
+        },
+        "negatives_empty": 1.0,
+        "class_counts": {
+          "odwolanie": 8,
+          "pelnomocnictwo": 3,
+          "negatywny": 7,
+          "przelew": 4
+        }
+      },
+      "dev2": {
+        "docs": 39,
+        "exact": 22,
+        "micro_f1": 0.9243697478991597,
+        "micro_f1_strict": 0.8951406649616368,
+        "macro_f1_classes": 0.948527346879887,
+        "classification_accuracy": 1.0,
+        "per_class_f1": {
+          "odwolanie": 0.8976897689768977,
+          "pelnomocnictwo": 0.9836065573770492,
+          "przelew": 0.9642857142857143
+        },
+        "negatives_empty": 1.0,
+        "class_counts": {
+          "odwolanie": 13,
+          "negatywny": 11,
+          "przelew": 10,
+          "pelnomocnictwo": 5
+        }
+      }
+    },
+    "training_parity": {
+      "docs": 196,
+      "byte_identical": 196,
+      "uzp_f1": 1.0,
+      "strict_f1": 1.0,
+      "reference_convention": "printed-prefix"
+    },
+    "extraction_seconds": 260.05
+  },
+  "repeat_generation": "All 208 PDF and reference bytes produced the same SHA-256 dataset digest in two independently generated panels; complete evidence manifests also matched.",
+  "corpus1_final_blind": {
+    "micro_f1": 0.9202898550724637,
+    "micro_f1_strict": 0.9022869022869023,
+    "classification_accuracy": 1.0,
+    "negatives_empty": 1.0,
+    "docs": 17
+  }
+}
