@@ -64,10 +64,10 @@ label patterns or an optional language model.
    directories. Keep them in place for evaluation.
 
 To update, fetch the desired release in `~/kio-release`, check out its commit
-and repeat steps 2–4 using the existing clone. The rules-only profile uses
-**no external services**. For a keyed deployment, create `/opt/solution/.env`
-with mode 600, configure the agreed provider and model there, and identify
-the service in `RUN.md`. [Model profile settings](#use-a-model-endpoint)
+and repeat steps 2–4 using the existing clone. On first install, setup creates
+`/opt/solution/.env` with mode 600, the jury endpoint and model, and a blank
+key. It preserves an existing file. Set the key before handover. Leaving it
+blank runs the local rules offline. [Jury settings and command](../../deploy/RUN.md)
 
 **Docker Compose fallback.** On the VM, use Compose v2.24 or later. From
 `/opt/solution`, build the jury image while online, then install the fallback
@@ -210,10 +210,11 @@ corrected only when its NIP checksum fails. Missing fields stay empty.
    heading or execution status, and a transaction amount or date. Rejected payments and payment
    requests get `{}`.
 3. The rule extractors recover party blocks and receipt fields from columns. Each page keeps its source,
-   so a scanned attachment cannot enable OCR repairs on a native receipt. Configuring an endpoint enables
-   first-page model routing after the rules reject a document. The model extracts from the original reading
-   and, on scans, an independent OCR reading. Each accepted value needs a supporting span. The class rules
-   fill gaps using the reconstructed layout. The CLI and viewer share this pipeline.
+   so a scanned attachment cannot enable OCR repairs on a native receipt. The jury profile applies the
+   local rules first. For routed documents, it can ask Ministral only about fields the rules left null.
+   Every populated rule value is final. Each
+   accepted answer needs a verbatim quote on the page and evidence for the field’s role. A failed
+   request or an abstention preserves the rule result.
 
 [Pipeline diagram (PDF)](../../docs/pipeline/pipeline.pdf)
 
@@ -281,11 +282,12 @@ extractor paths load Python callables.
 
 ## Use a model endpoint
 
-The primary small-model candidate is Mistral’s open-weight `ministral-3b-2512` (3,849,090,048 total parameters). Both the language and vision weights count toward the 8B ceiling. The regional API supports native JSON Schema. Its documented processing geography includes EU and EFTA countries, so the jury deployment needs a narrower location commitment. [Provider comparison and sources](../../docs/small-model-providers.md)
+The jury CLI uses Mistral’s `ministral-3b-2512` (3,849,090,048 parameters including vision weights). To select it, put the three settings from the jury handover in the working directory’s `.env`. The organizer specifies EU/EEA servers. Mistral lists EU and EFTA data centers for this endpoint, leaving the exact serving country unconfirmed. [Jury configuration](../../deploy/RUN.md) · [Organizer requirements](../../data/uzp/README.md) · [Mistral regional inference](https://docs.mistral.ai/inference/regional-inference) · [Data Processing Addendum](https://legal.mistral.ai/terms/data-processing-addendum/)
 
-To run the measured rules-first profile, export the Mistral credential in your shell and run the following command.
+To reproduce the earlier three-worker experiment, set its explicit overrides in a subshell with the Mistral credential available.
 
 ```sh
+(
 export KIO_LLM_BASE_URL=https://api.eu.mistral.ai/v1
 export KIO_LLM_MODEL=ministral-3b-2512
 export KIO_LLM_API_KEY="$MISTRAL_API_KEY"
@@ -294,6 +296,7 @@ export KIO_LLM_GAP_SCOPE=incomplete KIO_LLM_CHARGE_FOCUS=true
 export KIO_LLM_DUAL_OCR=false KIO_LLM_TOKEN_PARAMETER=max_tokens
 export KIO_LLM_INLINE_SYSTEM_PROMPTS=false KIO_LLM_TIMEOUT_SECONDS=120
 python -m kio2json --input input --output output --jobs 3
+)
 ```
 
 In `spans` mode the model copies one short passage per scalar into a class-specific native schema. The application locates the passage in up to 8,192 UTF-8 bytes of page text, checks token boundaries and derives dates, amounts, identifiers and organizer codes locally. Each class can supply a short `span_instructions` string in its TOML. The example uses local Tesseract for scans. The model receives text; its vision encoder is included in the published parameter count. The measured model profile selects three document workers.
@@ -309,13 +312,13 @@ Environment values take precedence. The application has no built-in endpoint or 
 | `KIO_LLM_MODEL` | Model ID served at that endpoint |
 | `KIO_LLM_API_KEY` | Credential accepted by the endpoint |
 
-Other OpenAI-compatible providers can use the same CLI or viewer. When only the three connection variables are set, the bundled classes use model-first
+Other OpenAI-compatible providers can use the same CLI or viewer. For other endpoint/model pairs, when only the three connection variables are set, the bundled classes use model-first
 extraction with rule fallback (`KIO_LLM_MODE=LR`). The router asks the model about the first page after
 the local rules reject the document (`KIO_LLM_ROUTING=fallback`). On a scan, RapidOCR provides a second
 reading alongside Tesseract. The two readings share a 16,384-byte budget. A citation must match one
 displayed source. Dates, amounts and identifiers must cover complete printed values.
 
-For compatible servers, `KIO_LLM_OUTPUT=schema` requests native JSON schema support. The default is
+For those providers, `KIO_LLM_OUTPUT=schema` requests native JSON schema support. Their default is
 `json`. `KIO_LLM_TIMEOUT_SECONDS` sets the request deadline (1–600 seconds, default 180). The engine
 allows one structured-output correction. On a model or secondary OCR error, the keyed organizer
 profile retries the document with local rules, reports recovery, and continues the batch. An unreadable
@@ -377,7 +380,7 @@ current rules, select `KIO_OCR_ENGINE=tesseract-dpi` and run
 
 ## Rules on real documents and organizer scans
 
-Revision `ca2975392` was evaluated with local rules and with the documented live Ministral 3B profile. The two local datasets contain real documents and use whole-case splits. Corpus 1 contributes all 39 development PDFs, including its previously evaluated split. Corpus 2 contributes 39 development PDFs from 14 cases. Its 60 test PDFs are reserved for the merged system. The organizer supplied a separate set of 30 labelled scans, ten per target class. The scan command stages the committed PDF/reference pairs as one batch with neutral filenames. [Organizer scan set at the measured revision](https://github.com/Urzad-Zamowien-Publicznych/hacknation-2026/tree/0b360a9da4b482a6a280696df6714404e0953505/dane/skany)
+This historical comparison used local rules and the experimental three-worker Ministral 3B profile at revision `ca2975392`. The two local datasets contain real documents and use whole-case splits. Corpus 1 contributes all 39 development PDFs, including its previously evaluated split. Corpus 2 contributes 39 development PDFs from 14 cases. Its 60 test PDFs are reserved for the merged system. The organizer supplied a separate set of 30 labelled scans, ten per target class. The scan command stages the committed PDF/reference pairs as one batch with neutral filenames. [Organizer scan set at the measured revision](https://github.com/Urzad-Zamowien-Publicznych/hacknation-2026/tree/0b360a9da4b482a6a280696df6714404e0953505/dane/skany)
 
 | Dataset | Profile | Micro F1 | Macro F1 | Appeal F1 | Power F1 | Transfer F1 | Exact A/P/T | Empty negatives | Wall s/PDF |
 |---|---|---:|---:|---:|---:|---:|---|---:|---:|
@@ -447,11 +450,11 @@ OCR service would count toward model parameters. [Organizer evaluation rules](..
 
 ## Ministral on development documents
 
-The paired comparison uses the rules at `eabbb31`. The cold 150-PDF run used `bf57506`. Replaying the same model responses after the date fix reproduced all 108 development outputs byte for byte. The combined table above includes the subsequent receipt-routing and attorney-name fixes.
+This historical experiment used explicit routing and extraction overrides with the rules at `eabbb31`. The cold 150-PDF run used `bf57506`. Replaying the same model responses after the date fix reproduced all 108 development outputs byte for byte. The combined table above includes the subsequent receipt-routing and attorney-name fixes.
 
 A cold run of the production CLI processed **150 PDFs in 335.64 seconds** on a 16 GB Apple M1 with three workers, including local OCR and 106 successful regional API requests. The mix comprised 108 development PDFs and 42 public training PDFs. The organizer scan group averaged 3.33 wall seconds per PDF. All outputs completed, with zero retries or recoveries. On the 91-PDF development pool, the fresh responses scored **.7208 micro and .7079 macro**. The live micro / macro scores were .7097 / .6701 on corpus 1 dev, .7104 / .6747 on corpus 2 dev, and .7394 / .7040 on organizer scans. The jury’s 45-minute allowance applies to its own machine and document mix.
 
-The rules-first profile above uses `ministral-3b-2512` and local Tesseract. The paired comparison below uses the same primary readings and captured API responses for each policy. Corpus 1 all includes its 22 dev PDFs and 17 additional development PDFs. The 91-PDF row pools corpus 1 dev, corpus 2 dev and all organizer scans. The coordinator reserved corpus 2 test for the final integrated system.
+The experimental three-worker profile used `ministral-3b-2512` and local Tesseract. The paired comparison below uses the same primary readings and captured API responses for each policy. Corpus 1 all includes its 22 dev PDFs and 17 additional development PDFs. The 91-PDF row pools corpus 1 dev, corpus 2 dev and all organizer scans. The coordinator reserved corpus 2 test for the final integrated system.
 
 | Development set | PDFs | Rules micro / macro | 3B micro / macro | 3B appeal / mandate / transfer F1 | 8B comparison micro / macro |
 |---|---:|---:|---:|---:|---:|
@@ -507,7 +510,7 @@ rules. [OCR results](../../evals/results/ocr-engines.json)
 
 - An appeal can name the contracting authority by its role in conducting or awarding the procurement. A numbered list can identify joint authorities and mark one as the lead. An unfamiliar caption or a nearby name without local organization, address or registry evidence can leave the party list empty.
 
-- In rules-first native-schema mode, a receipt amount, execution date, singleton appeal party name or procurement title can be reconsidered when its first page contains a conflicting, locally readable value. The model selects a candidate ID in one request per disputed block. The extractor copies the corresponding printed span and normalizes it locally. Abstention or a failed request preserves the rule value. If OCR misses the correct digits in every reading, this step cannot recover them.
+- The jury model preserves every populated rule value, including an incorrect reading. In the experimental rules-first native-schema mode, a receipt amount, execution date, singleton appeal party name or procurement title can be reconsidered when its first page contains a conflicting, locally readable value. The model selects a candidate ID in one request per disputed block. The extractor copies the corresponding printed span and normalizes it locally. Abstention or a failed request preserves the rule value. If OCR misses the correct digits in every reading, this step cannot recover them.
 
 - For appeals with parallel sections, the reader looks for a persistent gap between overlapping blocks of text with independent headings. A shared heading above full-width prose stays after both columns. Sparse cards and word boxes that disagree with the transcript can leave the original order ambiguous. A procurement title without a readable label can still be missed. [Two-column appeal evaluation](../../evals/results/two-column-appeals.json)
 

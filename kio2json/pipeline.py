@@ -30,6 +30,7 @@ from .ocr_grant_register import disputed_register_cells, verified_pages
 from .ocr_signatures import recover_board_stamp
 from .pdf_text import (
     DEFAULT_OCR_ENGINE,
+    MAX_PAGES,
     NoReadableTextError,
     OCRRecognitionError,
     WordBox,
@@ -166,6 +167,8 @@ def _document_rules(definition, pdf_path, pages, ocr_pages, boxes, engine, selec
         else:
             record = appeal.extract(join_pages(pages))
         apply_appeal_blocks(record, blocks)
+        if not ocr_pages and len(pages) == MAX_PAGES:
+            appeal.complete_signed_filing(record, pdf_path, len(pages))
         if rules_first and boxes:
             verify_cells(pdf_path, disputed_register_cells, record, boxes)
         return record
@@ -224,7 +227,7 @@ def _process_with_recovery(
         return pages, scanned, boxes
 
     try:
-        return _process(pdf_path, definitions, read, page_sizes, case_readings)
+        return _process(pdf_path, definitions, read, page_sizes, case_readings, on_recovery)
     except Exception:  # The PDF, OCR and model libraries raise unrelated per-document errors.
         if not any(d.enabled and d.profile.keyed for d in definitions):
             raise
@@ -251,6 +254,7 @@ def _process(
     read: Callable[[str], tuple[list[str], list[int], list[WordBox]]],
     page_sizes: dict[int, tuple[float, float]],
     case_readings: list[Reading] | None,
+    on_recovery: Callable[[str], None] | None = None,
 ) -> tuple[str | None, dict]:
     selected = os.getenv("KIO_OCR_ENGINE", DEFAULT_OCR_ENGINE)
     engines = ("tesseract-dpi", "rapidocr") if selected == "hybrid" else (selected,)
@@ -391,6 +395,8 @@ def _process(
                 model_text=join_pages(model_source) if pages is not model_source else None,
                 first_page=primary[0] if primary else None,
                 check_core_fields=check_core_fields,
+                source_pages=model_source,
+                on_recovery=on_recovery,
             )
             if definition.extractor is power_of_attorney.extract and not definition.profile.keyed:
                 _grant_signers(pdf_path, record, pages, ocr_pages, engine)
