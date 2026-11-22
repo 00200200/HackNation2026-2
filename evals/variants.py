@@ -6,7 +6,7 @@ import os
 import random
 import sys
 import tempfile
-from collections import defaultdict
+from collections import Counter, defaultdict
 from dataclasses import asdict
 from itertools import batched, islice
 from pathlib import Path
@@ -89,8 +89,13 @@ def evaluate_variants(n, data, cmd, destination, baseline, seed=SEED):
             report["negative_families"][group] = {"docs": len(docs), "empty": sum(d.empty_output for d in docs)}
         else:
             part = summarise(docs)
+            totals = Counter(doc.gold_class for doc in docs)
+            correct = Counter(doc.gold_class for doc in docs if doc.pred_class == doc.gold_class)
             report["per_variant"][group] = {
                 "docs": len(docs),
+                "routing_by_class": {
+                    label: {"correct": correct[label], "total": n} for label, n in sorted(totals.items())
+                },
                 **{k: part[k] for k in ("micro_f1", "per_class_f1", "counts")},
             }
     report["weakest_first"] = sorted(report["per_variant"], key=lambda k: report["per_variant"][k]["micro_f1"])
