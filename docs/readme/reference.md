@@ -42,9 +42,12 @@ label patterns or an optional language model.
 
    The development host’s Docker engine timed out before starting Ubuntu.
    The Ubuntu offline run, two-vCPU timing and reboot result are unverified.
-   On the shared Apple M1 host, the network-denied run matched all 226 local
-   files byte for byte in 399.77 seconds with two workers. The same mix scales
-   to about 4 min 25 s for 150 PDFs on that host. [Rehearsal measurements](../../evals/results/vm-2vcpu.json)
+   On the shared Apple M1 host, the network-denied run (rules-only profile,
+   extraction revision `7a1c45b`) wrote output byte-identical to the reference
+   run for all 226 local files (196 synthetic training PDFs, 30 organizer scans)
+   in 399.77 seconds with two workers. The same mix scales to about 4 min 25 s
+   for 150 PDFs on that host.
+   [Rehearsal measurements](../../evals/results/vm-2vcpu.json)
 
 4. **Copy `RUN.md` and check the real VM.** Setup installs the native command
    automatically. To restore it for handover, run the following from
@@ -107,7 +110,7 @@ The image is built for x86-64, because two dependencies, libsass and morfeusz2, 
 on Apple Silicon runs it under emulation, which is slower.
 
 Both services read the host's `config/classes/` directory. See the
-[pipeline architecture](#how-it-works), [class configuration example](#enable-the-fourth-class)
+[pipeline architecture](#how-it-works), [class configuration example](#class-file-reference)
 and [instructions for adding a class](#add-a-class). The handover requirements are in
 [§3.5 of the task rules](../../docs/task/regulamin.pdf).
 
@@ -200,7 +203,7 @@ corrected only when its NIP checksum fails. Missing fields stay empty.
    expires, extraction uses the readings already available. Every required first-pass page keeps its full
    recognition timeout. RapidOCR runs in a reusable
    child process. A watchdog kills a stalled RapidOCR worker at its page deadline.
-2. The CLI loads `config/classes/*.toml` once per batch. `kio2json/class_config.py` matches the
+2. The CLI loads `config/classes/*.toml` and the files selected by `--classes` once per batch. `kio2json/class_config.py` matches the
    page text against enabled definitions in ascending `priority`, then class ID order. The first
    match wins. The three organizer classes share the content classifier in `kio2json/classify.py`.
    It reads headings in document order. A transfer normally needs two distinct accounts, a confirmation
@@ -214,64 +217,67 @@ corrected only when its NIP checksum fails. Missing fields stay empty.
 
 [Pipeline diagram (PDF)](../../docs/pipeline/pipeline.pdf)
 
-## Enable the fourth class
-
-The optional `participation.toml` recognizes a form headed **Karta uczestnika**. It extracts the
-participant, filing date and reference. To try it, copy the directory and set `enabled = true`
-in the copy of `participation.toml`. Point the CLI at that directory for one run.
-
-```sh
-cp -R config/classes /tmp/kio-classes
-# Edit /tmp/kio-classes/participation.toml, then run:
-KIO_CLASSES_DIR=/tmp/kio-classes python -m kio2json --input input --output output
-```
-
-With the default directory, that form gets `{}`. The end-to-end test writes an invented
-PDF, runs the CLI in both configurations and checks the output, including its ISO date.
-
-```sh
-uv run pytest -q tests/test_class_config.py -k fourth
-```
-
 ## Add a class
 
-The three organizer class definitions supply the field descriptions, types and grounding rules for the model profiles. For a new class in a custom directory, its own TOML selects the routing cues and engine order.
+A new document class needs one TOML file and no Python. Without extra flags the CLI and viewer load
+only the three organizer classes, so unrelated documents in the jury's set still get no fields.
 
-1. Create one TOML file in your class directory and choose a unique English `id`. This example
-   adds a receipt with one reference field.
+1. Generate a class file from a sample PDF. The tool reads the `Label: value` lines on page 1,
+   writes `classes/accession.toml` and prints how that file routes and reads the sample.
 
-   ```toml
-   id = "receipt"
-   engines = ["labelled_fields"]
-
-   [routing]
-   required = ['^Receipt$', '^Reference:']
-   forbidden = ['^Draft\b']
-
-   [fields.reference]
-   type = "string"
-   instruction = "Reference printed on the receipt."
-   pattern = '^Reference:[ \t]*(.+)$'
+   ```sh
+   python -m kio2json.classes new accession --from-pdf examples/input/sprawa-demo/zgloszenie_przystapienia.pdf
    ```
 
-2. Set the routing cues. Patterns are case-insensitive and support line anchors. Every
-   `required` pattern must match and any `forbidden` match rejects the class. Each optional
-   `headings` pattern must match a whole line with whitespace removed. `routing.pages` limits
-   the search to the first N available pages (default 1). To require distinct references, for
-   example, add `[routing.evidence]` with `pattern = 'Reference: (\w+)'` and `minimum = 2`.
-   Classes with a Python router can set `classifier = "kio2json.classify.classify"` in
-   `[routing]` in place of the cues. The function receives the page texts and returns a class ID
-   or `None`. Each organizer class uses this setting.
-3. Define one field per output key. Scalars support `string`, `integer`, `number` and `boolean`.
-   Object fields have a `fields` table, and list fields declare an `items` schema, which can
-   itself contain lists. All fields carry an `instruction`. Fields are nullable by default.
-   A labelled field's `pattern` captures the value in one group. On a list, each capture is
-   one row, and its child patterns search within that row. Available normalizers are
-   `iso_date`, `money`, `account_number`, `krs`, `nip`, `regon` and `pesel`.
-4. Run the CLI with a PDF containing the new heading and labels. For the example above,
-   a document with lines `Receipt` and `Reference: HX-7` yields `{"reference": "HX-7"}`.
-   Test a near miss such as a draft. Changes take effect on the next invocation.
-   Treat class files as trusted application configuration. Extractor and classifier paths load Python callables.
+2. Edit the file: the routing cues and threshold, the output keys, normalizers and checks. The
+   reference below lists every key. [examples/classes/accession.toml](../../examples/classes/accession.toml)
+   is a finished example for a notice joining an appeal (zgłoszenie przystąpienia).
+3. Run the CLI with the class directory. `--classes` also accepts a single TOML file and can be repeated.
+
+   ```sh
+   python -m kio2json --classes classes --input input --output output
+   ```
+
+4. Open the viewer with the same flag: `python -m kio2json.gui --classes classes`. It lists the loaded
+   classes and names the cues that chose each document's class. The viewer reads the class files again
+   on every click on **Analizuj dokumenty**, so a file dropped into `classes/` applies without a restart.
+5. Add `--explain DIR` to the CLI run to write `DIR/<case>/<name>.trace.json` for each PDF. It records the
+   class, the matched cues and score, each field's page, source line and engine, and every failed check.
+   The folder must be outside `--output`, because every JSON there is scored.
+
+`python -m kio2json.classes list --classes classes` prints the classes a run would load.
+`config/classes/participation.toml` is a disabled demo class. Turn it on for one run with
+`python -m kio2json --enable participation`; `--enable` works for any class whose file sets `enabled = false`.
+
+To see the example end to end, run the CLI on the invented sample with and without the example class:
+
+```sh
+python -m kio2json --input examples/input --output /tmp/demo           # the notice produces {}
+python -m kio2json --input examples/input --output /tmp/demo --classes examples/classes --explain /tmp/demo-trace
+```
+
+### Class file reference
+
+| Key | Meaning |
+|---|---|
+| `id` | Unique lower-case ID, also used in logs and traces |
+| `name` | Name shown in the viewer |
+| `enabled` | `false` keeps the class off until `--enable <id>` (default `true`) |
+| `priority` | Classes are tried in ascending priority, then ID; the first match wins (default 100; organizer classes use 10 to 30) |
+| `engines` | `["labelled_fields"]` reads values after printed labels. `"llm"` asks the configured model endpoint and needs the `KIO_LLM_*` variables |
+| `[routing.cues]` with `threshold` | Phrase = weight. The class applies when the weights of the phrases found reach the threshold. Phrases match whole words, ignoring case and line breaks. A negative weight counts against the class |
+| `routing.required`, `routing.forbidden` | Regular expressions (case-insensitive, `^` and `$` per line). Every `required` one must match; any `forbidden` match rejects the class |
+| `routing.headings`, `routing.pages`, `[routing.evidence]` | A whole-line pattern with spaces removed; how many pages to search (default 1); a capture that must find `minimum` distinct values |
+| `[fields.<key>]` | One output key. `type` is `string`, `integer`, `number`, `boolean`, `object` (with `fields`) or `list` (with `items`). `pattern` captures the value in one group. `nullable` defaults to `true` |
+| `normalizer` | `iso_date`, `money`, `account_number`, `krs`, `nip`, `regon` or `pesel` |
+| `validators` | `"nip"`, `"regon"`, `"pesel"`, `"iban"` (checksums), `{ name = "date_range", min = 2021-01-01, max = 2030-12-31 }` (needs `iso_date`), `{ name = "one_of", values = ["A", "B"] }` |
+| `on_invalid` | `"null"` (default) writes null for a value that fails a check; `"warn"` keeps it and reports it in the trace and viewer |
+
+The `labelled_fields` engine needs values printed after fixed labels. A layout without labels needs the
+`llm` engine and a model endpoint; the jury configuration runs without one. The three organizer classes
+route through `classifier = "kio2json.classify.classify"` and extract with Python, because their real
+layouts vary more than labels can describe. Treat class files as trusted configuration: classifier and
+extractor paths load Python callables.
 
 ## Use a model endpoint
 
@@ -497,7 +503,7 @@ rules. [OCR results](../../evals/results/ocr-engines.json)
 
 ## Known limits
 
-- Appeal party cards can use inflected role captions. An unfamiliar caption or a nearby name without local organization, address or registry evidence can leave the party list empty.
+- An appeal can name the contracting authority by its role in conducting or awarding the procurement. A numbered list can identify joint authorities and mark one as the lead. An unfamiliar caption or a nearby name without local organization, address or registry evidence can leave the party list empty.
 
 - In rules-first native-schema mode, a receipt amount, execution date, singleton appeal party name or procurement title can be reconsidered when its first page contains a conflicting, locally readable value. The model selects a candidate ID in one request per disputed block. The extractor copies the corresponding printed span and normalizes it locally. Abstention or a failed request preserves the rule value. If OCR misses the correct digits in every reading, this step cannot recover them.
 
@@ -568,3 +574,33 @@ unrelated documents with an empty JSON object against the committed baseline. It
 the historical strict score, per-field counts and F1, class F1, positive layout profiles ranked
 by F1, and negative outcomes by family. Profiles use different synthetic cases in each cycle,
 so the ranking also reflects differences in case difficulty. Hidden-set performance is unknown.
+
+### Case-linked benchmark
+
+Run `make eval-cases` to score 26 invented cases with the local jury CLI. Each case supplies a short or long appeal, a mandate with identified grantors and signers, a bank receipt, and a related out-of-scope document. Each set of four appears in a separate case folder in native and image-only form. The two folders share case facts, independently of their opaque filenames. Only the PDFs enter the extractor.
+
+```sh
+make eval-cases CASE_ARGS="--split development"
+make eval-cases CASE_ARGS="--split reserved"
+make eval-cases CASE_ARGS="--seed 104 --cases 13 --generate-to .cache/case-inspection"
+```
+
+The default report is `.cache/case-benchmark.json`. Generation alone requires a new directory and writes `input/`, `gold/` and `manifest.json`. The manifest gives the reference path, paired PDF paths, case, split, family, scan settings, section bounds and printed field boxes. Page indices start at zero. Boxes are in native PDF points from the top left. To locate them on a scan, rotate their corners about the page center by the recorded counterclockwise angle and scale by DPI/72.
+
+The development split uses the early modular appeal, six early mandates and seven early receipt layouts. The reserved split uses independently phrased long appeals, company/consortium/sole-trader mandates, the late bank table and the five organizer scan receipt layouts. CCITT Group 4 is reserved for that split. Both splits also contain JPEG scans. A 13-case cycle covers every family. Larger prefixes repeat layouts with new parties, dates and payment facts.
+
+The report gives UZP and strict F1, literal JSON matches, routing and negative rejection by family, class and rendering, plus field counts within each family. Its 95% intervals resample complete cases 1,000 times and are omitted for single-case slices. Family frequencies in the jury set are unknown. The synthetic scores describe these authored layouts. Scans retain the page geometry of their native counterparts. Interior pages in the long appeal are more lightly typeset than those in the inspected organizer files.
+
+On the 26-case panel, keyless main `fa9937e` scored **0.7191 UZP F1** (case-bootstrap 95% interval 0.6780–0.7570) and **0.6617 strict F1**. It routed 188/208 PDFs, returned 85 exact JSONs and rejected all 52 negatives. Extraction took 485 seconds with two workers on the shared development Mac.
+
+| Main on the generated cases | PDFs | UZP F1 | Strict F1 | Exact |
+|---|---:|---:|---:|---:|
+| Appeals | 52 | 0.7285 | 0.6377 | 0 |
+| Mandates | 52 | 0.6667 | 0.6763 | 4 |
+| Transfers | 52 | 0.7557 | 0.7460 | 29 |
+| Native, all classes | 104 | 0.6086 | 0.5339 | 44 |
+| Scans, all classes | 104 | 0.8133 | 0.7865 | 41 |
+
+Four receipt layouts are the first routing targets. The early bank letter, transaction history, operation details and order details each missed all four PDFs (two cases in both renditions). The sole-trader mandate routed 8/8 but scored 0.2069 UZP F1, with missed principal names and identifiers. Most families have few independent cases. The scorecard includes every family, codec/DPI combination, sample count and field result. [Benchmark measurements](../../evals/results/case-benchmark.json)
+
+On the same main revision, #69’s 240 compact-form PDFs scored 0.9125 UZP and 0.8743 strict, with 60/60 negatives rejected. The replay matched #69’s published PDF/reference digest and five-case batching. The two panels differ in both facts and layouts.
