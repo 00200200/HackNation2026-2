@@ -187,8 +187,11 @@ corrected only when its NIP checksum fails. Missing fields stay empty.
    a possible e-mail address with a missing `@`, an English single-word pass rereads that crop. The extractor accepts the separator
    only when the rest of both readings agrees. Call `read_pages(path, word_boxes=boxes)` with
    an empty list to collect raw words and their rectangles alongside the page strings. Coordinates
-   are PDF points from the top left, with one-based page numbers. Polish Tesseract has 60 seconds per
-   primary page. Verification crops get up to 10 seconds each and optional full-page reads get up to
+   are PDF points from the top left, with one-based page numbers. Required Tesseract and RapidOCR
+   pages use a 180-second recognition watchdog at 300 dpi. After a timeout, the reader retries once
+   at 150 dpi if the document and batch still have time. It gives the retry the smaller of 60 seconds
+   and the remaining budget. Tesseract checks its timer during recognition, so setup and cancellation
+   can add wall time. Verification crops get up to 10 seconds each and optional full-page reads get up to
    180 seconds each. All optional OCR shares a deadline of
    300 seconds from the start of a PDF. The CLI and GUI also share one cutoff across the batch,
    10.8 seconds per input PDF with a minimum of 300 seconds for small batches. For the jury’s 150 PDFs
@@ -420,6 +423,12 @@ With these limits, eight busy loops and `--jobs 1`, the CLI processed the 150-PD
 (6 min 42 s of the jury’s 45 min). All 150 outputs matched the corresponding four-worker readings.
 The mix contained two copies of each organizer scan and 90 training PDFs. This timing preceded the
 final change to handling expired optional page reads. [Measurements and output digests](evals/results/adaptive-ocr-budget.json)
+
+With the 180-second primary watchdog, two workers processed all 226 public PDFs in 160.75 seconds.
+Every output matched `328f705` byte for byte. In a separate serial run on three scans, suspending the
+OCR worker for 65 seconds during the first page caused one document failure with the old watchdog.
+The new watchdog finished in 83.76 seconds including the pause, and all three outputs matched their
+ordinary readings. [Watchdog measurements](evals/results/first-pass-watchdog.json)
 
 In the earlier runtime-only experiment on a 16 GiB M1 MacBook Air, four workers processed 30 organizer scans in 37.15 seconds and a mix of
 60 scans and 90 training PDFs in 74.42 seconds. Peak sampled process-tree RSS for the mix was
