@@ -19,7 +19,6 @@ from collections import Counter, defaultdict
 from dataclasses import dataclass, field
 from pathlib import Path
 
-from munkres import linear_sum_assignment
 from rapidfuzz.distance import Levenshtein
 
 CLASSES = {
@@ -193,6 +192,9 @@ def list_events(pred: list, gold: list, path: str):
     pred, gold = sorted(pred, key=order), sorted(gold, key=order)
     used_pred, used_gold = set(), set()
     if pred and gold:
+        # Only field-level list scoring needs this dev dependency. The jury batch checks exact JSON.
+        from munkres import linear_sum_assignment
+
         candidates = [[list(field_events(p, g, path)) for g in gold] for p in pred]
         # First maximize TP, then pair remaining present values at the same field as wrong.
         bound = 1 + sum(max(len(pair) for pair in row) for row in candidates)
