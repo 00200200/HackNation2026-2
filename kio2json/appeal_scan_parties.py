@@ -85,7 +85,7 @@ def _layout_cover(page: str, boxes: list[WordBox]) -> str:
     """Read label and value columns together only when both printed roles support that layout."""
     if not boxes or not re.search(r"(?im)^\s*(?:zamawiaj[ąa]cy|odwo[łl]uj[ąa]cy|dotyczy)\s*:\s*$", page):
         return page
-    rows, height = word_rows(boxes)
+    rows, height = word_rows([word.layout_box for word in boxes])
     anchors = []
     for i, row in enumerate(rows):
         # A left column can consist of just the role word and a separate colon.

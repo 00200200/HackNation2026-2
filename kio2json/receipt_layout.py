@@ -335,7 +335,7 @@ def _amount_beside_label(rows, labels, index, anchor, height):
 
 
 def receipt_cell_fields(boxes: list[WordBox], *, ocr: bool = False) -> dict[str, str]:
-    first_page = [word for word in boxes if word.page == 1]
+    first_page = [word.layout_box for word in boxes if word.page == 1]
     rows, height = word_rows(_level_scan_rows(first_page) if ocr else first_page)
     labels = [_row_headers(row, following, height, ocr) for row, following in zip(rows, rows[1:] + [[]])]
     evidence = defaultdict(set)

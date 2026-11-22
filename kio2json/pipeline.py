@@ -365,17 +365,26 @@ def _process(
                 and definition.profile.mode == "RL"
                 and definition.profile.gap_scope == "incomplete"
             )
+            # Keep physical boxes for all crop and provenance readers below. A
+            # document can mix native, upright OCR and independently rotated pages.
+            layout_boxes = [word.layout_box for word in boxes]
+            layout_sizes = page_sizes | {
+                word.page: word.upright_page_size for word in boxes if hasattr(word, "upright_page_size")
+            }
             page_gutters = {}
             if definition.extractor is appeal.extract:
                 # Match boxes against their original transcript, before routing reordered native cards.
                 appeal_pages = [original_first, *pages[1:]] if original_first and 1 not in ocr_pages else pages
-                ordered, page_gutters = read_appeal_columns(appeal_pages, boxes, page_sizes, ocr_pages)
+                ordered, page_gutters = read_appeal_columns(appeal_pages, layout_boxes, layout_sizes, ocr_pages)
                 if page_gutters:
                     pages = [ordered[i] if i + 1 in page_gutters else page for i, page in enumerate(pages)]
             model_source = pages if page_gutters else primary
             blocks = (
                 party_inventory(
-                    boxes, page_sizes, appeal_cards=definition.extractor is appeal.extract, page_gutters=page_gutters
+                    layout_boxes,
+                    layout_sizes,
+                    appeal_cards=definition.extractor is appeal.extract,
+                    page_gutters=page_gutters,
                 )
                 if definition.extractor in (appeal.extract, power_of_attorney.extract)
                 and definition.profile.rules_first
@@ -383,7 +392,7 @@ def _process(
             )
             pages = read_role_columns(pages, blocks)
             if definition.id == "appeal":
-                pages = restore_party_columns(pages, boxes)
+                pages = restore_party_columns(pages, layout_boxes)
             scan_boxes = [box for box in boxes if box.page in ocr_pages]
             python_rules = partial(
                 _document_rules, definition, pdf_path, pages, ocr_pages, scan_boxes, engine, selected, accounts, blocks
