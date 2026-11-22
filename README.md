@@ -519,7 +519,9 @@ rules. [OCR results](evals/results/ocr-engines.json)
   accounts. A booking table or bank letter needs both an amount and a date. The extractor binds payer
   and payee separately from fee and refund accounts. Explicit operation or execution dates and transaction IDs take
   precedence over posting dates and daily sequence numbers. An unclear role or conflicting value can
-  leave a field empty.
+  leave a field empty. For an unfamiliar split confirmation heading, the fallback requires a single
+  labelled amount, a transaction date and distinct, explicitly owned accounts. A register or a
+  payment with an explicit refusal can therefore produce an empty object.
 - First-page word positions can recover fields whose labels and values occupy different rows or columns.
   OCR can still split a title or change an amount. For an unrouted scan with confirmation and transaction
   evidence, the default engine can reread the first page at automatic resolution. Conflicting dates,
@@ -541,3 +543,28 @@ rules. [OCR results](evals/results/ocr-engines.json)
 - UZP confirmed that an unrelated document gets `{}`. Its JSON uses the input PDF’s stem. [Organizer clarification](https://github.com/00200200/HackNation2026-2/issues/57)
 - UNCONFIRMED: value types. `pesel` is a number in the organizer's annotated example and a string
   in the reference JSONs. We write a string.
+
+### Generated layout evaluation
+
+Run `uv run python -m evals.run --variants 60` to regenerate 240 individual PDFs and write
+`evals/results/variants.json`. Each cycle of 60 visits every public synthetic case once.
+A case contributes an appeal, a power of attorney, a completed transfer and one generated
+look-alike. The six negative families are BZP and TED notices, KIO rulings, invoices,
+payment requests and pro-forma invoices. All names and identifiers come from synthetic
+case facts or the seeded generator. No external documents need to be downloaded.
+
+The generator builds references from the facts it prints, including substituted references
+in the transfer title and the presence or absence of a country prefix on each account.
+It varies typography and spacing and distributes six profiles across cases. The scan profile
+rasterizes pages at 150–300 dpi with rotation, blur, noise and JPEG compression. ReportLab is
+a development dependency for writing searchable Polish PDFs and embedding the scanned pages.
+The evaluator runs five cases per temporary directory and uses two CLI workers by default.
+Use the keyless configuration for comparison with the committed baseline.
+
+For each rule change run `make eval-variants` alongside the corpus development evaluations.
+The gate compares the generated input/reference digest, pooled UZP micro F1 and fraction of
+unrelated documents with an empty JSON object against the committed baseline. It writes the candidate report under
+`.cache/` and exits unsuccessfully on a regression or incomplete outputs. The report includes
+the historical strict score, per-field counts and F1, class F1, positive layout profiles ranked
+by F1, and negative outcomes by family. Profiles use different synthetic cases in each cycle,
+so the ranking also reflects differences in case difficulty. Hidden-set performance is unknown.
