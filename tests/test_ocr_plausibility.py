@@ -1,8 +1,44 @@
-"""OCR noise in free-text fields becomes null or loses its noisy tail (invented strings only)."""
+"""OCR noise is trimmed off the end of names and titles; a present value is never replaced with null (invented strings)."""
 
 import pytest
 
-from kio2json.ocr_plausibility import gate_appeal, plausible_text
+from kio2json.ocr_plausibility import trim_appeal, trim_name, trim_title
+
+
+@pytest.mark.parametrize(
+    ("raw", "clean"),
+    [
+        (
+            "Wodociągi Przykładowe Spółka z ograniczoną odpowiedzialnością K TRAZI NJ OMMO Opole W QXRT BE",
+            "Wodociągi Przykładowe Spółka z ograniczoną odpowiedzialnością",
+        ),
+        ("Testowa Firma S.A. | EBX", "Testowa Firma S.A."),
+        ("Testowa Firma S.A. ` EBX", "Testowa Firma S.A."),
+        ("Testowa Firma S.A. |EBX", "Testowa Firma S.A."),
+        ("Biuro Wzorcowe Nowak sp. z o.o. sp.k. =— Lublin O |]", "Biuro Wzorcowe Nowak sp. z o.o. sp.k."),
+    ],
+)
+def test_noisy_tail_after_legal_form_is_cut(raw, clean):
+    assert trim_name(raw) == clean
+
+
+@pytest.mark.parametrize(
+    ("raw", "clean"),
+    [
+        ("Gmina Przykładowo |]", "Gmina Przykładowo"),
+        ("Firma Alfa `", "Firma Alfa"),
+        ("Firma Alfa ~ ^ =", "Firma Alfa"),
+        ("OMEGA S.A. i SIGMA BUD |", "OMEGA S.A. i SIGMA BUD"),
+        ("Przedsiębiorstwo AG-BUD Adam Gil |", "Przedsiębiorstwo AG-BUD Adam Gil"),
+        ("Kancelaria AG Legal |", "Kancelaria AG Legal"),
+        ("Testowa S.A. Centrum Usług Wspólnych |", "Testowa S.A. Centrum Usług Wspólnych"),
+        ("Wzorcowa Spółka S.A. W KRAKOWIE |", "Wzorcowa Spółka S.A. W KRAKOWIE"),
+        ("ZWIK SP. Z O.O. W ŁODZI |", "ZWIK SP. Z O.O. W ŁODZI"),
+        ("Wzorcowa Energia SA ODDZIAŁ PN WSCH |", "Wzorcowa Energia SA ODDZIAŁ PN WSCH"),
+    ],
+)
+def test_trailing_stray_symbols_are_stripped(raw, clean):
+    assert trim_name(raw) == clean
 
 
 @pytest.mark.parametrize(
@@ -10,11 +46,23 @@ from kio2json.ocr_plausibility import gate_appeal, plausible_text
     [
         "ąz =— KQ WWWW Lublin I |] OKA | Te XYV |",
         "[| ~~ 12 # 7 <> |",
-        "== ## 4.5.6 // ..",
+        "Kancelaria Praw — Radca Prawny Ola QBX |",
     ],
 )
-def test_noise_becomes_null(noise):
-    assert plausible_text(noise) is None
+def test_damaged_value_is_trimmed_never_nulled(noise):
+    trimmed = trim_name(noise)
+    assert trimmed
+    assert noise.startswith(trimmed)
+
+
+@pytest.mark.parametrize("noise", ["| ]", "=== |", " ` "])
+def test_name_made_only_of_stray_symbols_has_nothing_left(noise):
+    assert trim_name(noise) is None
+
+
+@pytest.mark.parametrize("noise", ["=== |", " ` ", "||"])
+def test_title_made_only_of_stray_symbols_has_nothing_left(noise):
+    assert trim_title(noise) is None
 
 
 @pytest.mark.parametrize(
@@ -25,6 +73,8 @@ def test_noise_becomes_null(noise):
         "Biuro Wzorcowe Nowak sp. z o.o. sp.k.",
         "Gmina Przykładowo",
         "Fikcyjna Firma S.A. Oddział w Opolu",
+        "Wzorcowa Energia SA ODDZIAŁ PN WSCH",
+        "Wzorzec SA W LIKWIDACJI",
         "OMEGA S.A. i SIGMA SA",
         "Wzorzec Sp. z o.o. & KAPPA SA",
         "Lider: DELTA S.A., Partner: TAU SC",
@@ -36,51 +86,93 @@ def test_noise_becomes_null(noise):
         "Kancelaria Radców Prawnych QWZ",
         "OMEGA SP. Z O.O. I SIGMA BUD OPOL",
         "OMEGA S.A. ORAZ SIGMA BUD OPOL",
+        "Nowak | Kowalski Kancelaria Prawna",
+        "Przedsiębiorstwo AG-BUD Adam Gil",
+        "Kancelaria AG Legal",
+        "Testowa S.A. Centrum Usług Wspólnych",
+        "Testowa S.A. Departament | Zakupów",
+        "Wzorcowa Wytwórnia S.A. – ZW Jaworzno",
+        "Wzorcowa Spółka SP. Z O.O. W NOWYM SĄCZU",
+        "PGKIM SP. Z O.O. W ZIELONEJ GÓRZE",
+        "ABC S.A. Z SIEDZIBĄ W ŁODZI",
+        "WZORCOWA WYTWÓRNIA S.A. ZW JAWORZNO III",
+        "PHU ABC SC JAN NOWAK ADAM KOT",
+        "FHU ABC SC ANNA KOWALSKA PIOTR NOWAK MAREK LIS",
+        "FHU ABC SC JAN KOWALSKI ADAM KOWALSKI EWA NOWAK",
+        "ABC SPÓŁKA CYWILNA ANNA NOWAK PIOTR LIS ADAM KOT MAREK WÓJT",
+        "ABC S.A. ZW PN 2",
+        "ABC S.A. ZW | PN 2",
+        None,
+        "",
+    ],
+)
+def test_clean_names_are_kept(name):
+    assert trim_name(name) == name
+
+
+@pytest.mark.parametrize(
+    "title",
+    [
+        "Dostawa olejów [ON, B7]",
+        "Przebudowa linii <15 kV",
+        "Usługa #2 odśnieżania",
+        "Dostawa 2026/03/04 - 05/2026",
+        "Dostawa elementów A=B",
+        "Dostawa dla OMEGA S.A. UPS APC 3000",
         "Dostawa sprzętu komputerowego dla szkół w 2026 r. (część 1–3)",
         None,
         "",
     ],
 )
-def test_plausible_values_are_kept(name):
-    assert plausible_text(name) == name
+def test_titles_keep_brackets_numbers_and_legal_forms(title):
+    assert trim_title(title) == title
 
 
-@pytest.mark.parametrize(
-    "title",
-    ["Dostawa olejów [ON, B7]", "Przebudowa linii <15 kV", "Usługa #2 odśnieżania", "Dostawa 2026/03/04 - 05/2026"],
-)
-def test_titles_with_brackets_and_numbers_are_kept(title):
-    assert plausible_text(title, min_letters=0.0) == title
+def test_title_loses_only_trailing_stray_symbols():
+    assert trim_title("Dostawa olejów [ON, B7] |") == "Dostawa olejów [ON, B7]"
 
 
-def test_law_firm_ending_in_noise_after_title_becomes_null():
-    assert plausible_text("Kancelaria Praw — Radca Prawny Ola QBX") is None
-
-
-@pytest.mark.parametrize(
-    ("raw", "clean"),
-    [
-        (
-            "Wodociągi Przykładowe Spółka z ograniczoną odpowiedzialnością K TRAZI NJ OMMO Opole W QXRT BE",
-            "Wodociągi Przykładowe Spółka z ograniczoną odpowiedzialnością",
-        ),
-        ("Testowa Firma S.A. | EBX", "Testowa Firma S.A."),
-    ],
-)
-def test_noisy_tail_after_legal_form_is_cut(raw, clean):
-    assert plausible_text(raw) == clean
-
-
-def test_gate_appeal_touches_only_free_text():
-    lawyer = {"imie_nazwisko": "Jan Przykładowy", "nazwa": "| ][ =", "mail": "a@b.pl"}
-    record = {
-        "Odwolujacy": [{"nazwa": "wą =— QQ |] |", "nip": "1234567890", "pelnomocnik": lawyer}],
+def _appeal(**fields):
+    lawyer = {"imie_nazwisko": "Jan Przykładowy |", "nazwa": "Kancelaria Wzorcowa | ][ =", "mail": "a@b.pl"}
+    party = {"nazwa": "Testowa Firma S.A. | EBX", "nip": "1234567890", "pelnomocnik": lawyer}
+    return {
+        "Odwolujacy": [party],
         "Zamawiajacy": [{"nazwa": "Gmina Przykładowo", "nip": None}],
-        "ZamowieniePubliczne": {"tytul": "Budowa drogi gminnej 2026/1", "numer_bzp": "2026/BZP00000001"},
+        "ZamowieniePubliczne": {"tytul": "Budowa drogi gminnej 2026/1 ~", "numer_bzp": "2026/BZP00000001"},
+    } | fields
+
+
+def test_trim_appeal_touches_only_free_text():
+    record = _appeal()
+    trim_appeal(record)
+    party = record["Odwolujacy"][0]
+    assert party["nazwa"] == "Testowa Firma S.A."
+    assert party["nip"] == "1234567890"
+    assert party["pelnomocnik"] == {
+        "imie_nazwisko": "Jan Przykładowy",
+        "nazwa": "Kancelaria Wzorcowa",
+        "mail": "a@b.pl",
     }
-    gate_appeal(record)
+    assert record["Zamawiajacy"][0] == {"nazwa": "Gmina Przykładowo", "nip": None}
+    assert record["ZamowieniePubliczne"] == {"tytul": "Budowa drogi gminnej 2026/1", "numer_bzp": "2026/BZP00000001"}
+
+
+def test_trim_appeal_leaves_null_fields_null():
+    record = _appeal()
+    record["Odwolujacy"][0].update(nazwa=None, pelnomocnik={"imie_nazwisko": None, "nazwa": None, "mail": None})
+    record["ZamowieniePubliczne"]["tytul"] = None
+    trim_appeal(record)
     assert record["Odwolujacy"][0]["nazwa"] is None
-    assert record["Odwolujacy"][0]["nip"] == "1234567890"
-    assert lawyer == {"imie_nazwisko": "Jan Przykładowy", "nazwa": None, "mail": "a@b.pl"}
-    assert record["Zamawiajacy"][0]["nazwa"] == "Gmina Przykładowo"
-    assert record["ZamowieniePubliczne"]["tytul"] == "Budowa drogi gminnej 2026/1"
+    assert record["Odwolujacy"][0]["pelnomocnik"] == {"imie_nazwisko": None, "nazwa": None, "mail": None}
+    assert record["ZamowieniePubliczne"]["tytul"] is None
+
+
+def test_value_printed_on_a_native_page_is_not_trimmed():
+    native = "Odwołujący: Testowa Firma S.A. | EBX\nBudowa drogi gminnej 2026/1 ~\nKancelaria  Wzorcowa | ][ ="
+    record = _appeal()
+    trim_appeal(record, native)
+    party = record["Odwolujacy"][0]
+    assert party["nazwa"] == "Testowa Firma S.A. | EBX"
+    assert party["pelnomocnik"]["nazwa"] == "Kancelaria Wzorcowa | ][ ="
+    assert party["pelnomocnik"]["imie_nazwisko"] == "Jan Przykładowy"
+    assert record["ZamowieniePubliczne"]["tytul"] == "Budowa drogi gminnej 2026/1 ~"

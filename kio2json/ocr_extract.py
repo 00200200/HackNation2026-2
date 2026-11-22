@@ -13,7 +13,7 @@ from .appeal_scan_procurement import apply_procurement
 from .grant_declarations import complete_represented_company, read_declaration
 from .ocr_accounts import AccountEvidence, account_evidence
 from .ocr_normalize import MAIL_TOKEN_RE
-from .ocr_plausibility import gate_appeal
+from .ocr_plausibility import trim_appeal
 from .pdf_text import WordBox, iter_page_lines, join_pages
 from .personal_names import repair_appointment_initials
 
@@ -40,7 +40,8 @@ def extract_scanned_appeal(pages: list[str], ocr_pages: Collection[int], pdf_pat
     if 1 in ocr_pages:
         verify_cover(record, pages[0], words, pdf_path)
     if ocr_pages:
-        gate_appeal(record)
+        native_pages = (page for number, page in enumerate(pages, 1) if number not in ocr_pages)
+        trim_appeal(record, "\n".join(native_pages))
     return record
 
 
