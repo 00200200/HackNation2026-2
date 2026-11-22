@@ -247,7 +247,7 @@ def test_the_app_sees_neutral_folders_and_no_model_endpoint(tmp_path, monkeypatc
     assert sorted(line.split(" ")[0] for line in seen) == [
         "delivered/przyklad_01/dokument_01.pdf",
         "delivered/przyklad_02/dokument_01.pdf",
-    ]  # no class, group or scan number in a path
+    ]  # no class, group or organizer scan id in a path
     assert all(line.endswith(" []") for line in seen)  # neither KIO_ variable of the shell reached the app with a value
 
 

@@ -69,15 +69,17 @@ Only the selected split's gold and PDFs are scored. Inspect field errors on dev 
 For a run that includes designated test cases, the field report requires an external `--detail-out` for
 `--errors` and sends document diagnostics to that file.
 
-Scan stress (`evals/scan_stress.py`, `make scan-stress`): the organizer's 30 scans score 1.000 because the app was tuned
-on those files, so this re-renders every page from a fixed seed (150/200/300 dpi, grey JPEG or one-bit CCITT, skew of
+Scan stress (`evals/scan_stress.py`, `make scan-stress`): the organizer's 30 scans score 1.000 and the app was tuned on
+those files, so this re-renders every page from a fixed seed (150/200/300 dpi, grey JPEG or one-bit CCITT, skew of
 up to ±3° on top of the scan's own, noise, three mixed sets) and runs the app on the result as a black box. It writes
 `evals/results/scan-stress.json`: per-variant UZP micro F1, routing per class, the loss split into routing errors
 (documents routed to the wrong class) and field errors (the rest), the misrouted documents and the failing fields.
-`--list` shows the variants, `--variants delivered,skew+3` runs some. The PDFs live in `.cache/scan-stress` (ignored by
-git); only the report is committed. The app sees neutral `przyklad_NN` folders and runs as the jury's default run does:
-no model endpoint (even if a `.env` holds one), default OCR engine and classes. A diagnostic, not a gate: compare two reports to see whether a change helps, and check a fix on
-another `--seed` and on the private corpora too, because one seed is one set of renders.
+`--list` shows the variants. `--variants delivered,skew+3 --out /tmp/part.json` runs some without overwriting the full
+report. The PDFs live in `.cache/scan-stress` (ignored by git); only the report is committed. The app sees neutral
+`przyklad_NN` folders and runs as the jury's default run does: no model endpoint (even if a `.env` holds one), default
+OCR engine and classes. A diagnostic, not a gate: compare two reports to see whether a change helps, and check a fix on
+another `--seed` and on the private corpora too, because one seed is one set of renders. A re-render also loses detail
+that the delivered file keeps, so part of the drop is the generator's own loss.
 
 ## F1 definition (`evals/metrics.py`)
 

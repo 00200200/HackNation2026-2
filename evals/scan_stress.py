@@ -1,12 +1,14 @@
 """Scan stress eval (issue #81): score the app on fresh renders of the organizer's 30 scans.
 
-The organizer's scans score 1.000 because the app was tuned on those exact files. This re-renders every page from a
+The organizer's scans score 1.000 and the app was tuned on those exact files. This re-renders every page from a
 fixed seed with another resolution, encoding, skew and noise, runs the app on the result as a black box (the jury's
 contract, through `evals.run`) and reports, per variant, the UZP micro F1, the routing per class, how much of the loss is
-routing and how much is fields, and the fields that fail.
+routing and how much is fields, and the fields that fail. A re-render also loses detail to resampling and JPEG, which
+the delivered file does not, so the drop measures how the app copes with another copy of a page, not how much of it is
+tuning.
 
     uv run python -m evals.scan_stress                          # every variant
-    uv run python -m evals.scan_stress --variants delivered,skew+3,mixed-1
+    uv run python -m evals.scan_stress --variants delivered,skew+3,mixed-1 --out /tmp/scan-stress-part.json
     uv run python -m evals.scan_stress --list                   # the variants and what each changes
     uv run python -m evals.scan_stress --build-only             # only write the PDFs, to look at them
 
@@ -15,7 +17,8 @@ source file changes. Nothing but the report is committed. A variant skews the pa
 (median 1.53 degrees and maximum 2.59 over the organizer's pages, issue #81), so `skew+3` is up to 5.6 degrees in all.
 The app runs as the jury's default run does (no model endpoint, even when a `.env` holds one; default OCR engine and
 classes) and sees neutral case folders.
-A diagnostic, not a gate: compare two reports to see whether a change helps.
+A diagnostic, not a gate: compare two reports to see whether a change helps. A partial run (`--variants`) writes the
+same report path as a full one, so give it another `--out` to keep the full report.
 """
 
 import argparse
@@ -261,7 +264,8 @@ def app_env() -> dict[str, str]:
 def score(sources: list[Source], name: str, root: Path, cmd: str) -> Run:
     """Run the app on one variant and score it. A document the app left without JSON scores as all misses.
 
-    The app sees `<variant>/przyklad_NN/dokument_01.pdf`: no class, group or scan number in a folder or file name.
+    The app sees `<variant>/przyklad_NN/dokument_01.pdf`: no class, group or organizer scan id in a folder or file name.
+    NN is the position in the sorted sources, so it still follows the class order; nothing in the app reads it.
     """
     with tempfile.TemporaryDirectory(prefix="odw-scan-stress-") as tmp:
         data, input_dir, output_dir = Path(tmp) / "data", Path(tmp) / "input", Path(tmp) / "output"
@@ -313,7 +317,7 @@ def show(results: dict) -> None:
 
 def parser() -> argparse.ArgumentParser:
     p = argparse.ArgumentParser(description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter)
-    p.add_argument("--variants", help="comma-separated names (default: all, see --list)")
+    p.add_argument("--variants", help="comma-separated names (default: all, see --list); pass --out too")
     p.add_argument("--list", action="store_true", help="print the variants and exit")
     p.add_argument("--build-only", action="store_true", help="write the PDFs into the cache and exit")
     p.add_argument("--seed", type=int, default=2026)
