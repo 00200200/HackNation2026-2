@@ -153,15 +153,16 @@ function wire() {
     if (input.files.length) handleFiles(input.files);
     input.value = "";
   });
+  const carriesFiles = (e) => e.dataTransfer?.types.includes("Files");
+  // The zone accepts every drag so that nothing dropped on it navigates away, but only files light it up.
   ["dragenter", "dragover"].forEach((t) =>
     drop.addEventListener(t, (e) => {
       e.preventDefault();
-      drop.classList.add("is-over");
+      if (carriesFiles(e)) drop.classList.add("is-over");
     }),
   );
   ["dragleave", "drop"].forEach((t) => drop.addEventListener(t, () => drop.classList.remove("is-over")));
   // Files dropped anywhere on the page go to the upload; otherwise the browser would open the PDF and leave the app.
-  const carriesFiles = (e) => e.dataTransfer?.types.includes("Files");
   window.addEventListener("dragover", (e) => {
     if (carriesFiles(e)) e.preventDefault();
   });
