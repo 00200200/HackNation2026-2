@@ -23,7 +23,13 @@ from .classify import incomplete_booking_scan, resembles_appeal_heading
 from .engines import extract
 from .grant_certificates import add_certificate_signers
 from .model_pages import AlternateOCR
-from .ocr_accounts import AccountEvidence, account_evidence, disputed_account_cells, normalize_receipt
+from .ocr_accounts import (
+    AccountEvidence,
+    account_evidence,
+    disputed_account_cells,
+    normalize_receipt,
+    repair_receipt_layout,
+)
 from .ocr_budget import RereadExpired, document_budget, remaining_ms
 from .ocr_choices import verify_cells
 from .ocr_grant_register import disputed_register_cells, verified_pages
@@ -92,10 +98,14 @@ def _read_receipt(
         return pages, definition, accounts
     original = pages
     fields = {}
-    if scanned and (definition is not None or incomplete_booking_scan(pages[0])):
-        if boxes:
-            pages = recover_account_crops(pdf_path, pages, boxes)
-        pages = [normalize_receipt(pages[0]), *pages[1:]]
+    if definition is not None or incomplete_booking_scan(pages[0]):
+        if scanned:
+            if boxes:
+                pages = recover_account_crops(pdf_path, pages, boxes)
+            pages = [normalize_receipt(pages[0]), *pages[1:]]
+        else:
+            # The checksum substitution corrects OCR digits only; a text layer keeps its accounts as printed.
+            pages = [repair_receipt_layout(pages[0]), *pages[1:]]
     if has_detached_labels(pages, ocr=scanned):
         fields = receipt_cell_fields(boxes, ocr=scanned)
         # Keep the complete title already bound to a native label, including wrapped lines.
@@ -166,6 +176,8 @@ def _document_rules(definition, pdf_path, pages, ocr_pages, boxes, engine, selec
         else:
             record = appeal.extract(join_pages(pages))
         apply_appeal_blocks(record, blocks)
+        if not ocr_pages:
+            ocr_extract.complete_text_appeal(record, pages)
         if rules_first and boxes:
             verify_cells(pdf_path, disputed_register_cells, record, boxes)
         return record
@@ -175,6 +187,7 @@ def _document_rules(definition, pdf_path, pages, ocr_pages, boxes, engine, selec
             record = ocr_extract.extract_power_of_attorney(grant_pages, ocr_pages)
         else:
             record = power_of_attorney.extract(join_pages(pages))
+            ocr_extract.read_grant_declaration(pages, record)
         power_of_attorney.apply_grant_blocks(record, blocks, join_pages(pages))
         if rules_first and boxes:
             verify_cells(pdf_path, disputed_register_cells, record, boxes)

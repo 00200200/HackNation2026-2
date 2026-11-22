@@ -1,4 +1,5 @@
-"""Apply OCR rules only to fields originating on OCR pages."""
+"""Apply OCR rules only to fields originating on OCR pages; a text layer gets the scan-set readers only through
+`complete_text_appeal` and `read_grant_declaration` (#101)."""
 
 import re
 from collections.abc import Collection
@@ -9,7 +10,7 @@ from . import appeal, bank_transfer, ocr_signatures, power_of_attorney
 from .accounts import account_identity
 from .appeal_scan_action import apply_action
 from .appeal_scan_crops import verify_cover
-from .appeal_scan_parties import apply_parties
+from .appeal_scan_parties import apply_parties, apply_text_parties
 from .appeal_scan_procurement import apply_procurement
 from .grant_declarations import check_ocr_trade_names, complete_represented_company, read_declaration
 from .ocr_accounts import AccountEvidence, account_evidence
@@ -135,10 +136,28 @@ def extract_power_of_attorney(pages: list[str], ocr_pages: Collection[int]) -> d
         for owner, found in zip(signers, names, strict=True):
             owner.extend(name for name in found if name not in owner)
     record = power_of_attorney.finish_record(text, principals, officers, attorneys, signers)
-    if pages and 1 in ocr_pages and not any(power_of_attorney.GRANT.search(page) for page in pages[1:]):
-        read_declaration(pages[0], record)
-        complete_represented_company(pages[0], record)
-        ocr_signatures.confirmed_scan_signer(pages[0], record)
+    if 1 in ocr_pages:
+        read_grant_declaration(pages, record)
     if ocr_pages:
         check_ocr_trade_names(record, pages, ocr_pages)
     return record
+
+
+def read_grant_declaration(pages: list[str], record: dict) -> None:
+    """The scan-set grant keeps its declaration, represented company and signer on page one."""
+    if pages and not any(power_of_attorney.GRANT.search(page) for page in pages[1:]):
+        read_declaration(pages[0], record)
+        complete_represented_company(pages[0], record)
+        ocr_signatures.confirmed_scan_signer(pages[0], record)
+
+
+def complete_text_appeal(record: dict, pages: list[str]) -> None:
+    """A text layer in the scan-set wording: with no act date from the text reader, the scan reader reads the act again.
+
+    The dateline the text reader found stays: the scan reader's header rule is written for OCR lines."""
+    action = record["OdwolanieKIO"]
+    if action["czynnosc_dzien"] is None:
+        dateline = {key: action[key] for key in ("data", "miejscowosc") if action[key] is not None}
+        apply_action(record, pages, range(1, len(pages) + 1))
+        action.update(dateline)
+    apply_text_parties(record, pages)
