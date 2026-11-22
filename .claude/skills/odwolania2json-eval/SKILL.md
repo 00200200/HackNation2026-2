@@ -79,7 +79,7 @@ report. The PDFs live in `.cache/scan-stress` (ignored by git); only the report 
 `przyklad_NN` folders and runs as the jury's default run does: no model endpoint (even if a `.env` holds one), default
 OCR engine and classes. A diagnostic, not a gate: compare two reports to see whether a change helps, and check a fix on
 another `--seed` and on the private corpora too, because one seed is one set of renders. A re-render also loses detail
-that the delivered file keeps, so part of the drop is the generator's own loss.
+that the delivered file keeps, so part of the drop may be the generator's own loss; no variant measures that share.
 
 ## F1 definition (`evals/metrics.py`)
 
