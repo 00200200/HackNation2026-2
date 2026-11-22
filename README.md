@@ -96,8 +96,8 @@ Install Docker with Compose v2.24 or later. From the repository root, place case
 docker compose run --rm cli
 ```
 
-The first build downloads the Python dependencies from PyPI. The Polish and English OCR data ship in the repository
-(`kio2json/tessdata/`), so nothing else is fetched.
+The first build pulls the `python:3.13-slim` base image and downloads the Python dependencies from PyPI. The Polish
+and English OCR data ship in the repository (`kio2json/tessdata/`).
 Each input PDF gets a matching file under `output/<case>/`. To upload PDFs in a browser, run:
 
 ```sh
@@ -108,6 +108,10 @@ Open <http://127.0.0.1:8000> for the upload page or <http://127.0.0.1:8000/api/d
 the API. Press Ctrl+C to stop the server. Both services use local extraction by default.
 To enable a model, copy `.env.example` to `.env`, fill in the three endpoint settings,
 and rerun the service. Keep the key in the ignored `.env` file.
+
+The image is built for x86-64, because two dependencies, libsass and morfeusz2, have no Linux ARM wheels. Docker Desktop
+on Apple Silicon runs it under emulation, which is slower. We have not yet run these two services end to end in a
+container and compared their output with the CLI's; that check is open in [WORKLOG.md](WORKLOG.md).
 
 Both services read the host's `config/classes/` directory. See the
 [pipeline architecture](#how-it-works), [class configuration example](#enable-the-fourth-class)
@@ -376,6 +380,8 @@ current rules, select `KIO_OCR_ENGINE=tesseract-dpi` and run
 
 Revision `ca2975392` was evaluated with local rules and with the documented live Ministral 3B profile. The two local datasets contain real documents and use whole-case splits. Corpus 1 contributes all 39 development PDFs, including its previously evaluated split. Corpus 2 contributes 39 development PDFs from 14 cases. Its 60 test PDFs are reserved for the merged system. The organizer supplied a separate set of 30 labelled scans, ten per target class. The scan command stages the committed PDF/reference pairs as one batch with neutral filenames. [Organizer scan set at the measured revision](https://github.com/Urzad-Zamowien-Publicznych/hacknation-2026/tree/0b360a9da4b482a6a280696df6714404e0953505/dane/skany)
 
+This round is history. It uses the earlier strict metric (`method.f1` in [`round2-integration.json`](evals/results/round2-integration.json): pooled normalized leaf F1 with nulls) at product commit `ca29753` (`product_commit`), so its figures are not comparable with UZP micro F1. The later UZP runs are in [`p0-conventions.json`](evals/results/p0-conventions.json): 0.9212 on corpus 1 all and 0.9244 on corpus 2 dev (`integration.corpus1all.micro_f1` and `integration.corpus2.micro_f1`, product commit `55dc2a1`), and 1.0000 on the 30 organizer scans (`final_verification.organizer_scans_uzp`, product commit `97dc53e`).
+
 | Dataset | Profile | Micro F1 | Macro F1 | Appeal F1 | Power F1 | Transfer F1 | Exact A/P/T | Empty negatives | Wall s/PDF |
 |---|---|---:|---:|---:|---:|---:|---|---:|---:|
 | Synthetic training | Rules | 1.0000 | 1.0000 | 1.0000 | 1.0000 | 1.0000 | 60/60/60 | 16/16 | 0.04 |
@@ -391,7 +397,7 @@ On corpus 1 the model raised transfer F1 by 0.1407. On corpus 2 dev it raised tr
 
 Exact counts compare the complete JSON, including list order. A/P/T denotes appeals, powers and transfers. Each private set includes 11 unrelated PDFs. Earlier appeal measurements are available separately. [Real appeal round](evals/results/appeal-real-development.json)
 
-Micro F1 pools field matches across documents. Macro F1 averages the three class scores. The combined measurement file includes correct routes for every class and both profiles. This historical measurement counted zero-byte outputs as negatives. Timing includes OCR and extraction on a shared host. [Earlier appeal development measurements](evals/results/appeal-scan-development.json) · [Earlier grant development measurements](evals/results/poa-development.json) · [Organizer scan report](evals/results/organizer-scans.json)
+Micro F1 pools field matches across documents. Macro F1 averages the three class scores. The combined measurement file includes correct routes for every class and both profiles. This historical measurement counted zero-byte outputs as negatives. Timing includes OCR and extraction on a shared host. The Wall s/PDF cells are `datasets.<set>.<profile>.seconds_per_pdf` in the combined file, where `<set>` is `training`, `organizer`, `corpus1` or `corpus2` and `<profile>` is `keyless` (Rules) or `keyed` (Ministral 3B). [Earlier appeal development measurements](evals/results/appeal-scan-development.json) · [Earlier grant development measurements](evals/results/poa-development.json) · [Organizer scan report](evals/results/organizer-scans.json)
 
 The earlier model-engine experiment compared two profiles on the 17-document corpus 1 holdout. [Model results](evals/results/llm-real-docs.json)
 
@@ -409,7 +415,7 @@ scaled by the number of input PDFs. Required page reads continue after the cutof
 On a 16 GiB Apple M1 with 8 logical CPUs, four local rules workers produced byte-identical outputs in both runs below.
 The CPU was 76.5% idle before the ordinary scan run (`runs[1].cpu_idle_pct_before`). The loaded run added one busy loop per CPU core
 and reached a one-minute load average of 89.7 (`runs[3].load_end[0]`). Training outputs also matched the baseline at
-`dbda151` byte for byte, including all 16 empty negatives.
+`dbda151` byte for byte, including all 16 empty negatives (zero-byte files at that commit; the product now writes `{}` for them).
 
 | Input | No added load | Eight busy loops | Bytes matched | Accuracy |
 |---|---:|---:|---:|---|
@@ -418,12 +424,17 @@ and reached a one-minute load average of 89.7 (`runs[3].load_end[0]`). Training 
 
 The four times are in `adaptive-ocr-budget.json`: `runs[1].seconds` (41.537; profile `ordinary`, dataset `scans`), `runs[3].seconds` (216.89; `loaded`, `scans`), `runs[2].seconds` (13.651; `ordinary`, `training`) and `runs[4].seconds` (47.352; `loaded`, `training`). All four used four workers. The file records `product` `59aa13a`, `base` `dbda151` and the `machine` (Apple M1, 8 logical CPUs, 16 GiB). `runs` counts from zero.
 
-The 108-document calibration covered all 30 scans and both private development pools. The longest
-optional work in that pass took 33.18 seconds. A separate cold repeat of a repaired scan took 48.59
-seconds for optional OCR and 51.85 seconds for the whole document. At four times that wall time the
-document would take 207.4 seconds, within the 300-second document allowance. A separate run advanced
-the deadline clock four times as fast and divided optional engine timeouts by four. All 135 optional
-Tesseract reads and three RapidOCR reads finished across the 108 PDFs.
+The calibration figures are also in `adaptive-ocr-budget.json` (`product` `59aa13a`). It covered all 30 scans
+and both private development pools, 108 PDFs (`profile.organizer.pdfs`, `profile.private-1.pdfs` and
+`profile.private-2.pdfs`: 30, 39 and 39). The longest optional work in that pass took 33.18 seconds
+(`profile.private-1.max_optional_seconds`, 33.181). A separate cold repeat of one document from the `private-1`
+pool took 48.59 seconds for optional OCR and 51.85 seconds for the whole document (`cold_recheck.max_optional_seconds`,
+48.588, and `cold_recheck.document_seconds`, 51.851, on a busy shared host). At four times that wall time the document
+would take 207.4 seconds (4 × 51.851), within the 300-second document allowance (`watchdogs_seconds.document`, 300).
+A separate run advanced the deadline clock four times as fast and divided optional engine timeouts by four
+(`method.simulation`, which ran before the change to handling expired optional page reads). All 135 optional Tesseract reads and three RapidOCR reads finished across the 108 PDFs, with
+no cutoff (the sums of `profile.<pool>.simulated_4x_optional_tesseract_reads`: 71, 38 and 26, and of
+`profile.<pool>.simulated_4x_optional_rapidocr_reads`: 0, 2 and 1; `simulated_4x_cutoffs` is 0 in all three pools).
 
 With these limits, eight busy loops and `--jobs 1`, the CLI processed the 150-PDF mix in **401.87 seconds**
 (`runs[5].seconds`, profile `loaded-serial`, dataset `mix`; 6 min 42 s of the jury’s 45 min). All 150 outputs matched the corresponding four-worker readings.
@@ -452,9 +463,9 @@ OCR service would count toward model parameters. [Organizer evaluation rules](da
 
 ## Ministral on development documents
 
-The paired comparison uses the rules at `eabbb31`. The cold 150-PDF run used `bf57506`. Replaying the same model responses after the date fix reproduced all 108 development outputs byte for byte. The combined table above includes the subsequent receipt-routing and attorney-name fixes.
+These figures are history. The paired comparison uses the rules at `eabbb31` and the earlier strict metric (`primary_metric` in [`small-model.json`](evals/results/small-model.json)), so it is not comparable with UZP micro F1. The cold 150-PDF run used `bf57506` (`rerun_protocol.cold_cli_source`). Replaying the same model responses after the date fix reproduced all 108 development outputs byte for byte. The combined table above includes the subsequent receipt-routing and attorney-name fixes.
 
-A cold run of the production CLI processed **150 PDFs in 335.64 seconds** with three workers (`cold_regional_cli.timing.whole_command_s`, 335.6418, and `timing.workers`), including local OCR and 106 successful regional API requests (`cold_regional_cli.all150.http`). The result file does not record the host for this run. The mix comprised 108 development PDFs and 42 public training PDFs. The 30 organizer scans finished within a 99.88 s window, which is 3.33 s per scan (`cold_regional_cli.scans.active_span_s` and `active_span_s_pdf`, 3.3294). The window may overlap other documents, as `timing.method` notes, so it is not the time one scan takes. One scan took 9.13 s on average (`cold_regional_cli.scans.mean_doc_s`, 9.1329). All outputs completed, with zero retries or recoveries. On the 91-PDF development pool, the fresh responses scored **.7208 micro and .7079 macro**. The live micro / macro scores were .7097 / .6701 on corpus 1 dev, .7104 / .6747 on corpus 2 dev, and .7394 / .7040 on organizer scans. The jury’s 45-minute allowance applies to its own machine and document mix.
+A cold run of the production CLI processed **150 PDFs in 335.64 seconds** with three workers (`small-model.json`, `cold_regional_cli.timing.whole_command_s`, 335.6418, and `cold_regional_cli.timing.workers`, 3), including local OCR and 106 successful regional API requests (`cold_regional_cli.all150.http`). The result file does not record the host for this run. The mix comprised 108 development PDFs and 42 public training PDFs. The 30 organizer scans finished within a 99.88 s window, which is 3.33 s per scan (`cold_regional_cli.scans.active_span_s` and `active_span_s_pdf`, 3.3294). The window may overlap other documents, as `timing.method` notes, so it is not the time one scan takes. One scan took 9.13 s on average (`cold_regional_cli.scans.mean_doc_s`, 9.1329). All outputs completed, with zero retries or recoveries. On the 91-PDF development pool, the fresh responses scored **.7208 micro and .7079 macro**. The live micro / macro scores were .7097 / .6701 on corpus 1 dev, .7104 / .6747 on corpus 2 dev, and .7394 / .7040 on organizer scans. The jury’s 45-minute allowance applies to its own machine and document mix.
 
 The rules-first profile above uses `ministral-3b-2512` and local Tesseract. The paired comparison below uses the same primary readings and captured API responses for each policy. Corpus 1 all includes its 22 dev PDFs and 17 additional development PDFs. The 91-PDF row pools corpus 1 dev, corpus 2 dev and all organizer scans. The coordinator reserved corpus 2 test for the final integrated system.
 
@@ -483,7 +494,7 @@ python -m kio2json --input input --output output --jobs 1
 
 All five runs used the same frozen extraction rules and 20 real development PDFs. Native text was
 used where available. Tesseract's explicit-DPI mode gained **0.0301** dev micro-F1 over automatic DPI.
-In that rules-only experiment, the hybrid improved on explicit DPI by **0.0133**. Keyless extraction keeps the `tesseract-dpi` setting. The earlier DeepSeek Flash run combined Tesseract and RapidOCR on scans. The regional Ministral recipe above uses Tesseract alone. [OCR measurements](evals/results/ocr-engines.json) · [Flash configuration](evals/results/llm-real-docs.json)
+In that rules-only experiment, the hybrid improved on explicit DPI by **0.0133**. Keyless extraction keeps the `tesseract-dpi` setting. The earlier DeepSeek Flash run, a development experiment and not the submitted profile, combined Tesseract and RapidOCR on scans. The regional Ministral recipe above uses Tesseract alone. [OCR measurements](evals/results/ocr-engines.json) · [Flash configuration](evals/results/llm-real-docs.json)
 
 | Variant | Field micro-F1 | Macro-F1 | Routed correctly, appeal / power / transfer / other | Wall s / OCR page | CPU s / OCR page | Peak RSS, MiB | Installed MB |
 |---|---:|---:|---|---:|---:|---:|---:|
