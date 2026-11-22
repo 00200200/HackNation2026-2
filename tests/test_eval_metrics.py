@@ -291,3 +291,32 @@ def test_quick_target_uses_uzp_and_reports_strict(tmp_path):
     assert result["metrics"]["micro_f1"] == {"value": 1.0, "target": F1_TARGET, "pass": True}
     assert result["metrics"]["micro_f1_strict"] == {"value": 0.0, "target": None, "pass": None}
     assert result["overall_pass"]
+
+
+def test_jury_batch_counts_corrected_transfers_and_empty_objects(tmp_path, monkeypatch):
+    from snapshots.generate_native import write_native_pdf
+
+    from evals.jury_batch import exact_output
+
+    monkeypatch.chdir(tmp_path)
+    case = Path("data/uzp/dane/case")
+    case.mkdir(parents=True)
+    account = "12" + "0" * 24
+    write_native_pdf(case / "potwierdzenie_przelewu.pdf", [f"Account: PL{account}"])
+    reference = {"przelew_bankowy": {"z_rachunku": account}}
+    (case / "przelew.json").write_text(json.dumps(reference), encoding="utf-8-sig")
+    prediction = tmp_path / "prediction.json"
+    transfer = Path("training/case/potwierdzenie_przelewu.json")
+    prediction.write_text(json.dumps(reference))
+    assert not exact_output(transfer, prediction)
+    scan = Path("scan1/case/potwierdzenie_przelewu.json")
+    assert exact_output(scan, prediction)
+    reference["przelew_bankowy"]["z_rachunku"] = "PL" + account
+    prediction.write_text(json.dumps(reference))
+    assert exact_output(transfer, prediction)
+    assert not exact_output(scan, prediction)
+    negative = Path("training/case/unrelated.json")
+    prediction.write_bytes(b"")
+    assert not exact_output(negative, prediction)
+    prediction.write_bytes(b"{}\n")
+    assert exact_output(negative, prediction)

@@ -48,7 +48,7 @@ def main() -> int:
             failed += 1
         target = args.output_dir / pdf.relative_to(args.input_dir).with_suffix(".json")
         target.parent.mkdir(parents=True, exist_ok=True)
-        target.write_text(result.text, encoding="utf-8")
+        target.write_text(result.text, encoding="utf-8", newline="\n")
         label = "failed" if result.error else result.label
         print(f"{label or 'other':18} {target}")
     print(f"{len(pdfs)} PDF -> {args.output_dir}" + (f", {failed} failed" if failed else ""))
