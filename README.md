@@ -8,6 +8,78 @@ Without endpoint credentials the jury configuration runs three rule-based extrac
 that selects its routing rules, output fields and extraction engines. New classes can use
 label patterns or an optional language model.
 
+## Deploy on the evaluation VM
+
+1. **Request the VM.** Submit one request per team using the form in the
+   organizer’s instructions. When the login arrives, connect over SSH. The
+   deployment account needs read access to the private GitHub repository.
+   [Organizer’s VM instructions and request form](data/uzp/VM.md)
+
+2. **Run `vm_setup.sh`.** While the VM is online, run these commands as the
+   deployment user. Before the kit merges, use `deploy/vm-kit` in place of
+   `main`. Setup copies the checked-out commit into `/opt/solution/repo`,
+   installs Python 3.13 and the pinned requirements, and smoke-tests a transfer
+   and a scanned appeal outside the evaluator directories.
+
+   ```sh
+   git clone --single-branch --branch main git@github.com:00200200/HackNation2026-2.git ~/kio-release
+   cd /opt/solution
+   bash ~/kio-release/deploy/vm_setup.sh
+   ```
+
+3. **Run the offline rehearsal.** On the VM, the following command prepares a
+   disposable x86-64 Ubuntu 24.04 container with two CPUs and 16 GiB. It uses
+   the installed Python as the reference. For both the network-disabled run
+   and the run after a container restart, it compares all 226 organizer files
+   by path and bytes and prints a time estimate for 150 PDFs. The script
+   removes its temporary outputs, containers and snapshot image when it exits.
+
+   ```sh
+   cd /opt/solution
+   bash repo/deploy/rehearse_vm.sh /opt/solution/.venv/bin/python
+   ```
+
+   The development host’s Docker engine timed out before starting Ubuntu.
+   The Ubuntu offline run, two-vCPU timing and reboot result are unverified.
+   On the shared Apple M1 host, the network-denied run matched all 226 local
+   files byte for byte in 399.77 seconds with two workers. The same mix scales
+   to about 4 min 25 s for 150 PDFs on that host. [Rehearsal measurements](evals/results/vm-2vcpu.json)
+
+4. **Copy `RUN.md` and check the real VM.** Setup installs the native command
+   automatically. To restore it for handover, run the following from
+   `/opt/solution`.
+
+   ```sh
+   install -m 644 repo/deploy/RUN.md /opt/solution/RUN.md
+   ```
+
+   Place sample PDFs under a fresh case name in `/opt/solution/input`, run
+   the command from `RUN.md` and inspect the matching JSON files. Run
+   `sudo reboot`, reconnect, remove your sample outputs and repeat. Remove
+   your sample inputs and outputs after the check. The organizer owns both
+   directories. Keep them in place for evaluation.
+
+To update, fetch the desired release in `~/kio-release`, check out its commit
+and repeat steps 2–4 using the existing clone. The rules-only profile uses
+**no external services**. For a keyed deployment, create `/opt/solution/.env`
+with mode 600, configure the agreed provider and model there, and identify
+the service in `RUN.md`. [Model profile settings](#use-a-model-endpoint)
+
+**Docker Compose fallback.** On the VM, use Compose v2.24 or later. From
+`/opt/solution`, build the jury image while online, then install the fallback
+command in `RUN.md` if this is the profile the evaluators should run.
+
+```sh
+docker compose -f repo/compose.yaml build cli
+sed 's|^sudo env PYTHONPATH=.*|sudo docker compose -f repo/deploy/compose.vm.yaml run --rm -T cli|' repo/deploy/RUN.md > RUN.md
+```
+
+Run the command in the installed `RUN.md` for the same handover check.
+The CLI mounts the evaluator directories, uses the local image and exits after
+the batch. For the optional upload UI on port 8080, run
+`docker compose -f repo/deploy/compose.vm.yaml up -d gui`. Docker restarts the
+UI after a reboot.
+
 ## Run with Docker Compose
 
 Install Docker with Compose v2.24 or later. From the repository root, place case PDFs in
