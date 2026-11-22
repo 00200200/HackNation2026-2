@@ -1,0 +1,73 @@
+# Bank-transfer confirmations in unfamiliar formats
+
+The fixed-seed alternative-formats profile lost all ten receipts at the class gate. Calling the baseline transfer extractor on the same PDF text returned 10/10 exact values for each of execution date, amount, debit account, credit account, reference and title. The compact forms used unambiguous labelled rows. The baseline already handled their decimal/currency notation, numeric dates, nonstandard digit groups, printed country prefixes and wrapped titles. The heading named the transaction and attested settlement in separate segments. The router required a particular opening construction and emitted an empty object before the field extractor ran.
+
+The new fallback composes a single-payment subject with a separate affirmative settlement caption on the opening line or the next line, including an optional issuer header. It requires a transaction date, one labelled amount, an unambiguous explicit debit/credit pair, distinct account identities and at most one transaction reference. Collection headings, requested execution, refusal and ambiguous ownership have regression tests with the same ledger values. Receipt-specific typed readers also accept whole amounts with leading currency and validated Roman-month dates. Print dates, fees, masked numbers and title text cannot independently establish settlement. Runtime uses the existing local classifier, regex, word boxes and account validators.
+
+## Development and held-out profiles
+
+The baseline merges main and the variant-robustness product code at `7c9e792`. The candidate product commit is `18a9b32`. A fixed seed assigns disjoint case records to the six profiles. Alternative formats supplied the routing diagnosis. Single-column and the paired table prototype were development controls. The other four profiles were held out from **this change**. Previous work on the inherited branch used this benchmark. Each profile has ten transfer PDFs. Source facts vary across profiles, so comparisons are paired within each row. Exact means equality of the complete parsed JSON, including null and printed prefix.
+
+| Profile | Use | Routed before → after | Exact before → after | Transfer UZP F1 before → after | Strict F1 before → after |
+|---|---|---:|---:|---:|---:|
+| Alternative formats | Tuning | 0 → 10 | 0 → 10 | .0000 → 1.0000 | .0000 → 1.0000 |
+| Single column | Control | 10 → 10 | 10 → 10 | 1.0000 → 1.0000 | 1.0000 → 1.0000 |
+| Reordered | Held out | 10 → 10 | 10 → 10 | 1.0000 → 1.0000 | 1.0000 → 1.0000 |
+| Synonyms | Held out | 10 → 10 | 0 → 0 | .7629 → .7629 | .5000 → .5000 |
+| Two columns | Held out | 10 → 10 | 0 → 0 | .9091 → .9091 | .8333 → .8333 |
+| Scan | Held out | 10 → 10 | 3 → 3 | .9286 → .9091 | .8667 → .8333 |
+
+The maintained `make eval-variants` target agreed on all five native profile scores. The variant-robustness measurement at `82a57bb` and the new candidate run shared dataset digest `53414e5959d93426f1553cc36fcbe86968fca23edb80a959740654790b20dd03`. Its pooled UZP was .8902 → .9119 and the scan transfer score was .8350 → .9565. All 60 negatives remained empty.
+
+The exact-document comparison in the table stages the same 240 generated PDFs once and runs the normal CLI with two workers on each revision. Overall UZP micro F1 moved from .8932 to .9105 and strict F1 from .8567 to .8712. All 60 negatives yielded empty objects on both revisions. All 40 native transfer outputs in the four remaining native profiles matched the baseline byte for byte.
+
+The scan comparison changed eight account cells. All ten scans routed on both runs. A separate intermediate run had 1/10 exact and .8679 transfer F1. The candidate retains the same account recognizers and OCR engine. The runs shared a heavily loaded host with time-limited OCR rereads, so a change measured on different OCR readings cannot be attributed to the caption rule alone.
+
+## Additional checks
+
+The paired prototype repeats 12 case records across original rows, swapped blocks, alternative labels and their combination. Both revisions returned 48/48 exact native outputs. For the four corresponding bilevel PDFs per arm, exact counts were 0, 3, 1 and 2, respectively, on each revision. Across the 64 PDFs both had .9834 UZP and .9606 strict F1. The prototype supports stability on row order and label variation and leaves an OCR gap on account and reference characters.
+
+On the authorized regional Ministral 3B rules-first profile, the ten alternative-format transfers went from 0/10 to 10/10 exact and the ten matched negatives stayed empty. The baseline and candidate received the same 20 synthetic PDFs. The rule path adds no model calls.
+
+The 20-PDF native timing set contains ten alternative-format and ten single-column transfers. Four fresh keyless CLI runs with two workers executed baseline, candidate, candidate, baseline. Baseline took 13.92 and 12.62 seconds, candidate 12.60 and 16.60 seconds. That is .664 versus .730 seconds/PDF, a measured increase of .066 seconds/PDF. One-minute host load at batch boundaries ranged from 110 to 127. Linear projection gives 110 seconds for 150 receipts of this native mix. Docker's local daemon timed out and the private CI runner was unavailable due to billing. These measurements are a two-worker Apple M1 estimate for the 2-vCPU target. The jury VM and an arbitrary mixture of long scans still require their own timing.
+
+| Real development set | PDFs | UZP micro before → after | Strict before → after | Macro over classes | Appeal / power / transfer F1 | Correct routing and empty negatives |
+|---|---:|---:|---:|---:|---|---|
+| Corpus 1 dev | 22 | .9221 → .9221 | .8740 → .8740 | .8982 | .9364 / .9583 / .8000 | 8/8 + 3/3 + 4/4, 7/7 empty |
+| Corpus 2 dev | 39 | .9244 → .9244 | .8951 → .8951 | .9485 | .8977 / .9836 / .9643 | 13/13 + 5/5 + 10/10, 11/11 empty |
+
+The per-class values, macro scores and routing totals shown above were identical on the two revisions. All 196 organizer native predictions were byte-identical, all 16 negatives were empty and all 180 positives matched the printed-prefix-corrected references. The benchmark covers new renderings of organizer facts and ten documents per profile. It establishes a routing improvement on the split-heading family, with no demonstrated gain on real development documents.
+
+The 240-PDF mixed variant batch took 258.28 seconds at baseline and 328.68 seconds on the candidate with two workers, or 1.076 and 1.370 seconds/PDF. A 150-PDF batch with that same mix would take about 205 seconds at the candidate rate. The four-run native comparison better controls for the variable concurrent workload. The clean 196-PDF organizer native harness run averaged .341 seconds/PDF and scored 1.000 on cases 51–60 as well as overall.
+
+The single final corpus 1 test run (17 PDFs, aggregate only) scored 0.9203 UZP and 0.9023 strict F1. Pooling the dev and test counts gives .9212 UZP and .8880 strict F1 across all 39 corpus 1 PDFs. No corpus 2 test case or corpus 3 file was accessed.
+
+A second paired scan check processed one held-out variant PDF at a time on both revisions, alternating which revision ran first. The ten receipts yielded 6/10 → 7/10 exact, .9655 → .9744 UZP and .9333 → .9500 strict F1. Both revisions produced different results between the batch and isolated protocols. The evidence supports a native routing gain and workload-sensitive scan performance.
+
+The organizer scan baseline routed 30/30, was exact on 29/30 and scored 1.0000 UZP / .9974 strict. An intermediate class-ordered run lost one route. On the frozen candidate, the two-worker class-ordered batch finished in 415.77 seconds, scored .9819 UZP / .9712 strict and was exact on 22/30. The shared optional OCR deadline for 30 PDFs is 324 seconds. The heavy appeals appear first in this order. Interleaving the same three document classes by opaque filename in one default four-worker batch produced 29/30 exact, including 9/10 receipts, with 30/30 routed and 1.0000 UZP / .9974 strict. No settings or OCR budgets in the product were changed.
+
+A clean repeat through the default, class-ordered organizer harness also reached 29/30 exact, 30/30 routed and 1.0000 UZP / .9974 strict, at 5.554 seconds/PDF. This is the acceptance measurement.
+
+Serial verification on organizer scan receipts 0007 and 0008 routed both as transfers and scored 1.0000 UZP. Receipt 0007 was exact. Receipt 0008 had one title transcription difference. Corpus 1 dev's four receipts had ten strict substitutions: four titles, two amounts, two payee accounts, one payer account and one transaction reference. All four dates were exact. On corpus 2 dev, the ten receipts had five strict title mismatches and one mismatch in each account role. All ten dates, amounts and transaction references were exact.
+## Research and choice of method
+
+The useful abstraction is a candidate with a type, a source cell or clause, and an owner. Majumder et al. generate candidates using field types and score them with surrounding text and spatial context. The same formulation fits two accounts of identical shape: a checksum tests the digits, while a debit or credit label assigns their roles. The existing extractor already implements same-row and same-column binding with PDF/OCR word boxes, preserves a printed country prefix and supports checksum validation through python-stdnum. The additional routing decision reuses those readers. A clearly printed but checksum-invalid synthetic number in an explicitly labelled cell remains evidence of what was printed. [Form-like document extraction](https://research.google/pubs/representation-learning-for-information-extraction-from-form-like-documents/) · [SWIFT IBAN registry](https://www.swift.com/sites/default/files/files/iban-registry-v101.pdf)
+
+PICK connects OCR boxes in a graph and decodes sequence tags with a CRF. CloudScan evaluates feature-based and recurrent extraction on unseen invoice layouts. A small CPU alternative would train a linear-chain CRF on synthetic BIO-tagged cells with digit shape, neighboring label stems, column overlap and section boundaries. It would need independently authored issuer families, negatives and held-out row orders to measure generalization. DocILE separates layout exposure and supplies synthetic training data. In this experiment direct extraction already recovered all 60 tuning fields, leaving no observed field gain to justify training a tagger. These studies cover different documents and give no estimate of Polish transfer accuracy or local latency. [PICK](https://arxiv.org/abs/2004.07464) · [CloudScan](https://arxiv.org/abs/1708.07403) · [DocILE](https://arxiv.org/abs/2302.05658)
+
+IBM's ICDAR 2026 study fine-tunes a 256M-parameter SmolDocling model to identify regions and link keys with values. Synthetic form filling and crops preserve complete key–value relationships. Its layout-aware evaluation combines text and bounding-box agreement, which helps distinguish two correctly transcribed accounts assigned to opposite parties. KVP10k also evaluates discovery of previously unspecified keys. These are alternatives for future role or OCR errors. Their published results do not measure this deployment's two-vCPU latency. [ICDAR 2026 paper](https://research.ibm.com/publications/identify-locate-link-end-to-end-key-value-extraction-from-document-images) · [KVP10k](https://research.ibm.com/publications/kvp10k-a-comprehensive-dataset-for-key-value-pair-extraction-in-business-documents)
+
+PKO BP documents two printable confirmations, one for an order that can still be cancelled and one for an executed transfer. Its field inventory distinguishes the parties, operation date, amount, title and order details. mBank exposes the transaction's parties, date, amount and title in history alongside balances, fees and commissions, with different confirmation availability by transfer type. ING and Credit Agricole generate a PDF from an individual operation. Alior explains where the user can obtain that PDF. These conventions support assigning amounts and dates to the transaction itself and requiring affirmative execution evidence. [PKO BP](https://bankomania.pkobp.pl/bankofinanse/bankowosc-internetowa-i-mobilna/zlecenie-przelewu-skorzystaj-z-mozliwosci-jakie-daje-potwierdzenie-transakcji/) · [mBank](https://www.mbank.pl/indywidualny/aplikacja-i-serwis/pytania-i-odpowiedzi-serwis/historia-w-serwisie-transakcyjnym/) · [ING](https://www.ing.pl/pomoc-i-kontakt/centrum-pomocy-konta/jak-moge-pobrac-potwierdzenie-transakcji) · [Credit Agricole](https://www.credit-agricole.pl/pytania-i-odpowiedzi/aplikacja-ca24-mobile/jak-pobrac-potwierdzenie-przelewu-i-innych-transakcji-w-aplikacji) · [Alior](https://www.aliorbank.pl/dodatkowe-informacje/pomoc/pytania-i-odpowiedzi/w-jaki-sposob-wygenerowac-potwierdzenie-przelewu-pdf.html)
+
+Corporate portals also distinguish reporting, batches, orders and individual transactions. CitiDirect's guide illustrates transaction confirmation reports. BNP Paribas's Connexis manual separates batch details from the transaction view and describes order-level execution dates and client references. Bank Millennium, Pekao and Santander publish customer workflows. These sources establish differing document scopes and product vocabulary. They supply no field-level accuracy benchmark for those issuers. The public organizer sample adds seven early structures, one late table and five scan layouts, including participant panels and bank letters. [CitiDirect](https://www.citibank.pl/poland/citidirect/polish/pdf/citidirecteb-potwierdzenie-transakcji.pdf) · [BNP Paribas](https://www.bnpparibas.pl/_fileserver/item/1505244) · [Millennium](https://www.bankmillennium.pl/przedsiebiorstwa/bankowosc-elektroniczna/bank-w-internecie/millenet/pytania-i-odpowiedzi) · [Pekao](https://www.pekao.com.pl/klient-indywidualny/bankowosc-elektroniczna/serwis-internetowy-pekao24.html) · [Santander](https://www.santander.pl/regulation_file_server/time20250917143405/download?id=150327&lang=pl_PL) · [Organizer fixtures](https://github.com/Urzad-Zamowien-Publicznych/hacknation-2026/tree/eadffbce531eeac876d0f7e62c1cc6e857b05796/dane)
+
+## Reproduction
+
+Run the following on the baseline and candidate revisions with the keyless profile. The maintained variant target generates the same seeded case/profile schedule in chunks of five cases. The whole-batch comparison above uses the same generated PDFs in one CLI call. Compare receipt JSON objects by case within each profile to count exact documents. The training evaluation uses the documented printed-prefix correction.
+
+```sh
+make check
+make eval-variants
+uv run python -m evals.run --correct-training-accounts
+uv run python -m evals.run --organizer-scans
+```

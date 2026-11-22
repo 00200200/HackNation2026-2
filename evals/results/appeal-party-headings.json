@@ -1,0 +1,494 @@
+{
+  "extractor_commit": "aa49e8c5c47ce2f855f422ee31c261ca9f60175c",
+  "comparison": "Final keyless dev and variant comparisons use 35b1d01 (#89). Caption and keyed control baselines use the companion extractor eb9bfa1, whose party rules are included on main. The single corpus 1 test run used the same party change before later main-only OCR and transfer integrations.",
+  "controls": {
+    "method": "Eight organizer appeals; first-page captions rewritten at their original baselines with Arial Bold; original case facts and references. Independent captions were written before scoring, opened after the grammar was frozen, and fitted to the original width.",
+    "cases": [
+      1,
+      2,
+      3,
+      4,
+      40,
+      41,
+      43,
+      44
+    ],
+    "blind_captions": [
+      {
+        "appellant": "Wykonawca wnoszący odwołanie:",
+        "authority": "Instytucja zamawiająca:"
+      },
+      {
+        "appellant": "Dane podmiotu składającego odwołanie",
+        "authority": "Dane podmiotu prowadzącego postępowanie"
+      }
+    ],
+    "before": {
+      "original": {
+        "uzp_tp": 158,
+        "uzp_fp": 0,
+        "uzp_fn": 0,
+        "strict_tp": 176,
+        "strict_fp": 0,
+        "strict_fn": 0,
+        "routed": 8,
+        "exact": 8,
+        "app": 8,
+        "auth": 8,
+        "owners": 8,
+        "correct_owner": 8,
+        "wrong_counsel": 0,
+        "uzp_f1": 1.0,
+        "strict_f1": 1.0
+      },
+      "sham": {
+        "uzp_tp": 158,
+        "uzp_fp": 0,
+        "uzp_fn": 0,
+        "strict_tp": 176,
+        "strict_fp": 0,
+        "strict_fn": 0,
+        "routed": 8,
+        "exact": 8,
+        "app": 8,
+        "auth": 8,
+        "owners": 8,
+        "correct_owner": 8,
+        "wrong_counsel": 0,
+        "uzp_f1": 1.0,
+        "strict_f1": 1.0
+      },
+      "genitive": {
+        "uzp_tp": 64,
+        "uzp_fp": 0,
+        "uzp_fn": 94,
+        "strict_tp": 72,
+        "strict_fp": 0,
+        "strict_fn": 104,
+        "routed": 8,
+        "exact": 0,
+        "app": 0,
+        "auth": 0,
+        "owners": 8,
+        "correct_owner": 0,
+        "wrong_counsel": 0,
+        "uzp_f1": 0.5765766,
+        "strict_f1": 0.5806452
+      },
+      "blind0": {
+        "uzp_tp": 158,
+        "uzp_fp": 0,
+        "uzp_fn": 0,
+        "strict_tp": 176,
+        "strict_fp": 0,
+        "strict_fn": 0,
+        "routed": 8,
+        "exact": 8,
+        "app": 8,
+        "auth": 8,
+        "owners": 8,
+        "correct_owner": 8,
+        "wrong_counsel": 0,
+        "uzp_f1": 1.0,
+        "strict_f1": 1.0
+      },
+      "blind1": {
+        "uzp_tp": 64,
+        "uzp_fp": 0,
+        "uzp_fn": 94,
+        "strict_tp": 72,
+        "strict_fp": 0,
+        "strict_fn": 104,
+        "routed": 8,
+        "exact": 0,
+        "app": 0,
+        "auth": 0,
+        "owners": 8,
+        "correct_owner": 0,
+        "wrong_counsel": 0,
+        "uzp_f1": 0.5765766,
+        "strict_f1": 0.5806452
+      }
+    },
+    "after": {
+      "original": {
+        "uzp_tp": 158,
+        "uzp_fp": 0,
+        "uzp_fn": 0,
+        "strict_tp": 176,
+        "strict_fp": 0,
+        "strict_fn": 0,
+        "routed": 8,
+        "exact": 8,
+        "app": 8,
+        "auth": 8,
+        "owners": 8,
+        "correct_owner": 8,
+        "wrong_counsel": 0,
+        "uzp_f1": 1.0,
+        "strict_f1": 1.0
+      },
+      "sham": {
+        "uzp_tp": 158,
+        "uzp_fp": 0,
+        "uzp_fn": 0,
+        "strict_tp": 176,
+        "strict_fp": 0,
+        "strict_fn": 0,
+        "routed": 8,
+        "exact": 8,
+        "app": 8,
+        "auth": 8,
+        "owners": 8,
+        "correct_owner": 8,
+        "wrong_counsel": 0,
+        "uzp_f1": 1.0,
+        "strict_f1": 1.0
+      },
+      "genitive": {
+        "uzp_tp": 158,
+        "uzp_fp": 0,
+        "uzp_fn": 0,
+        "strict_tp": 176,
+        "strict_fp": 0,
+        "strict_fn": 0,
+        "routed": 8,
+        "exact": 8,
+        "app": 8,
+        "auth": 8,
+        "owners": 8,
+        "correct_owner": 8,
+        "wrong_counsel": 0,
+        "uzp_f1": 1.0,
+        "strict_f1": 1.0
+      },
+      "blind0": {
+        "uzp_tp": 158,
+        "uzp_fp": 0,
+        "uzp_fn": 0,
+        "strict_tp": 176,
+        "strict_fp": 0,
+        "strict_fn": 0,
+        "routed": 8,
+        "exact": 8,
+        "app": 8,
+        "auth": 8,
+        "owners": 8,
+        "correct_owner": 8,
+        "wrong_counsel": 0,
+        "uzp_f1": 1.0,
+        "strict_f1": 1.0
+      },
+      "blind1": {
+        "uzp_tp": 127,
+        "uzp_fp": 0,
+        "uzp_fn": 31,
+        "strict_tp": 136,
+        "strict_fp": 0,
+        "strict_fn": 40,
+        "routed": 8,
+        "exact": 0,
+        "app": 8,
+        "auth": 0,
+        "owners": 8,
+        "correct_owner": 8,
+        "wrong_counsel": 0,
+        "uzp_f1": 0.8912281,
+        "strict_f1": 0.8717949
+      }
+    },
+    "keyed_genitive": {
+      "profile": "Ministral 3B, EU regional endpoint, RL, supported routing, incomplete span gaps; organizer controls only.",
+      "before": {
+        "uzp_tp": 145,
+        "uzp_fp": 5,
+        "uzp_fn": 11,
+        "strict_tp": 160,
+        "strict_fp": 16,
+        "strict_fn": 16,
+        "routed": 8,
+        "exact": 0,
+        "app": 0,
+        "auth": 8,
+        "owners": 8,
+        "correct_owner": 5,
+        "wrong_counsel": 0,
+        "uzp_f1": 0.9477124,
+        "strict_f1": 0.9090909
+      },
+      "after": {
+        "uzp_tp": 158,
+        "uzp_fp": 0,
+        "uzp_fn": 0,
+        "strict_tp": 176,
+        "strict_fp": 0,
+        "strict_fn": 0,
+        "routed": 8,
+        "exact": 8,
+        "app": 8,
+        "auth": 8,
+        "owners": 8,
+        "correct_owner": 8,
+        "wrong_counsel": 0,
+        "uzp_f1": 1.0,
+        "strict_f1": 1.0
+      }
+    }
+  },
+  "real_development": {
+    "c1": {
+      "before": {
+        "n": 22,
+        "exact": 10,
+        "sec": 126.08,
+        "routing": {
+          "odwolanie": [
+            8,
+            8
+          ],
+          "przelew": [
+            4,
+            4
+          ],
+          "negatywny": [
+            7,
+            7
+          ],
+          "pelnomocnictwo": [
+            3,
+            3
+          ]
+        },
+        "micro_f1": 0.9285714285714286,
+        "micro_f1_strict": 0.8821138211382114,
+        "macro_f1_classes": 0.9012626262626263,
+        "per_class_f1": {
+          "odwolanie": 0.9454545454545454,
+          "pelnomocnictwo": 0.9583333333333334,
+          "przelew": 0.8
+        },
+        "negatives_empty": 1.0
+      },
+      "after": {
+        "n": 22,
+        "exact": 10,
+        "sec": 198.01,
+        "routing": {
+          "przelew": [
+            4,
+            4
+          ],
+          "negatywny": [
+            7,
+            7
+          ],
+          "pelnomocnictwo": [
+            3,
+            3
+          ],
+          "odwolanie": [
+            8,
+            8
+          ]
+        },
+        "micro_f1": 0.9285714285714286,
+        "micro_f1_strict": 0.8821138211382114,
+        "macro_f1_classes": 0.9012626262626263,
+        "per_class_f1": {
+          "odwolanie": 0.9454545454545454,
+          "pelnomocnictwo": 0.9583333333333334,
+          "przelew": 0.8
+        },
+        "negatives_empty": 1.0
+      },
+      "identical_bytes": 22
+    },
+    "c2": {
+      "before": {
+        "n": 39,
+        "exact": 22,
+        "sec": 196.5,
+        "routing": {
+          "odwolanie": [
+            13,
+            13
+          ],
+          "przelew": [
+            10,
+            10
+          ],
+          "negatywny": [
+            11,
+            11
+          ],
+          "pelnomocnictwo": [
+            5,
+            5
+          ]
+        },
+        "micro_f1": 0.9243697478991597,
+        "micro_f1_strict": 0.8951406649616368,
+        "macro_f1_classes": 0.948527346879887,
+        "per_class_f1": {
+          "odwolanie": 0.8976897689768977,
+          "pelnomocnictwo": 0.9836065573770492,
+          "przelew": 0.9642857142857143
+        },
+        "negatives_empty": 1.0
+      },
+      "after": {
+        "n": 39,
+        "exact": 22,
+        "sec": 219.95,
+        "routing": {
+          "przelew": [
+            10,
+            10
+          ],
+          "negatywny": [
+            11,
+            11
+          ],
+          "pelnomocnictwo": [
+            5,
+            5
+          ],
+          "odwolanie": [
+            13,
+            13
+          ]
+        },
+        "micro_f1": 0.9243697478991597,
+        "micro_f1_strict": 0.8951406649616368,
+        "macro_f1_classes": 0.948527346879887,
+        "per_class_f1": {
+          "odwolanie": 0.8976897689768977,
+          "pelnomocnictwo": 0.9836065573770492,
+          "przelew": 0.9642857142857143
+        },
+        "negatives_empty": 1.0
+      },
+      "identical_bytes": 39
+    }
+  },
+  "fixed_variants": {
+    "before": {
+      "micro_f1": 0.9124966550709125,
+      "micro_f1_strict": 0.8742997983419225,
+      "classification_accuracy": 1.0,
+      "per_class_f1": {
+        "odwolanie": 0.8918302145139206,
+        "pelnomocnictwo": 0.9373549883990719,
+        "przelew": 0.9473684210526315
+      },
+      "dataset_sha256": "53414e5959d93426f1553cc36fcbe86968fca23edb80a959740654790b20dd03",
+      "negatives_empty": 1.0,
+      "docs": 240,
+      "per_profile": {
+        "alternative-formats": 0.9622926093514329,
+        "reordered": 0.9628482972136223,
+        "scan": 0.9526813880126183,
+        "single-column": 0.9847094801223242,
+        "synonyms": 0.8980891719745223,
+        "two-column": 0.66015625
+      }
+    },
+    "after": {
+      "micro_f1": 0.9124966550709125,
+      "micro_f1_strict": 0.8742997983419225,
+      "classification_accuracy": 1.0,
+      "per_class_f1": {
+        "odwolanie": 0.8918302145139206,
+        "pelnomocnictwo": 0.9373549883990719,
+        "przelew": 0.9473684210526315
+      },
+      "dataset_sha256": "53414e5959d93426f1553cc36fcbe86968fca23edb80a959740654790b20dd03",
+      "negatives_empty": 1.0,
+      "docs": 240,
+      "per_profile": {
+        "alternative-formats": 0.9622926093514329,
+        "reordered": 0.9628482972136223,
+        "scan": 0.9526813880126183,
+        "single-column": 0.9847094801223242,
+        "synonyms": 0.8980891719745223,
+        "two-column": 0.66015625
+      }
+    }
+  },
+  "training": {
+    "pdfs": 196,
+    "exact": 196,
+    "byte_identical_to_companion": 196,
+    "uzp": 1.0,
+    "strict": 1.0,
+    "zero_byte_negatives": 16,
+    "references": "Organizer printed account prefixes."
+  },
+  "scans": {
+    "micro_f1": 1.0,
+    "micro_f1_strict": 0.9974226804123711,
+    "macro_f1_classes": 1.0,
+    "per_class_f1": {
+      "odwolanie": 1.0,
+      "pelnomocnictwo": 1.0,
+      "przelew": 1.0
+    },
+    "classification_accuracy": 1.0,
+    "negatives_empty": null,
+    "n": 30,
+    "exact": 29,
+    "context": "30 scans within the normal 150-PDF mixed keyless batch",
+    "routing": {
+      "odwolanie": [
+        10,
+        10
+      ],
+      "pelnomocnictwo": [
+        10,
+        10
+      ],
+      "przelew": [
+        10,
+        10
+      ]
+    }
+  },
+  "runtime": {
+    "docs": 150,
+    "seconds": 299.7552668340504,
+    "jobs": 2,
+    "scans": 30,
+    "mix": "120 native PDFs and 30 organizer scans in the same keyless CLI run on shared Apple M1."
+  },
+  "corpus_1_test": {
+    "n": 17,
+    "exact": 7,
+    "micro_f1": 0.9202898550724637,
+    "micro_f1_strict": 0.9022869022869023,
+    "macro_f1_classes": 0.925964425964426,
+    "per_class_f1": {
+      "odwolanie": 0.918918918918919,
+      "pelnomocnictwo": 0.9743589743589743,
+      "przelew": 0.8846153846153846
+    },
+    "routing_by_class": {
+      "odwolanie": {
+        "correct": 5,
+        "total": 5
+      },
+      "pelnomocnictwo": {
+        "correct": 3,
+        "total": 3
+      },
+      "przelew": {
+        "correct": 5,
+        "total": 5
+      },
+      "negatywny": {
+        "correct": 4,
+        "total": 4
+      }
+    },
+    "extractor_commit": "1db8fdb"
+  }
+}
