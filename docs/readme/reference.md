@@ -18,10 +18,10 @@ label patterns or an optional language model.
    [Organizer’s VM instructions and request form](../../data/uzp/VM.md)
 
 2. **Run `vm_setup.sh`.** While the VM is online, run these commands as the
-   deployment user. Before the kit merges, use `deploy/vm-kit` in place of
-   `main`. Setup copies the checked-out commit into `/opt/solution/repo`,
-   installs Python 3.13 and the pinned requirements, and smoke-tests a transfer
-   and a scanned appeal outside the evaluator directories.
+   deployment user. Setup copies the checked-out commit into
+   `/opt/solution/repo`, installs Python 3.13 and the pinned requirements, and
+   smoke-tests a transfer and a scanned appeal outside the evaluator
+   directories.
 
    ```sh
    git clone --single-branch --branch main git@github.com:00200200/HackNation2026-2.git ~/kio-release
@@ -44,8 +44,15 @@ label patterns or an optional language model.
    The development host’s Docker engine timed out before starting Ubuntu.
    The Ubuntu offline run, two-vCPU timing and reboot result are unverified.
    On the shared Apple M1 host, the network-denied run matched all 226 local
-   files byte for byte in 399.77 seconds with two workers. The same mix scales
-   to about 4 min 25 s for 150 PDFs on that host. [Rehearsal measurements](../../evals/results/vm-2vcpu.json)
+   files byte for byte in 399.77 seconds with two workers
+   (`fallback_host.byte_identical_including_paths`, 226, and
+   `fallback_host.offline_wall_seconds`). The same mix scales to about 4 min 25 s
+   for 150 PDFs on that host (`fallback_host.estimate_150_pdfs_seconds_same_host_mix`,
+   265.33). Both figures come from extraction revision `7a1c45b` (`extraction_revision`),
+   which predates the first-pass watchdog (#79) and the `{}` output for unrelated
+   PDFs (#57), so 16 of those 226 outputs are zero-byte files
+   (`fallback_host.zero_byte_predictions`).
+   [Rehearsal measurements](../../evals/results/vm-2vcpu.json)
 
 4. **Copy `RUN.md` and check the real VM.** Setup installs the native command
    automatically. To restore it for handover, run the following from
@@ -402,7 +409,7 @@ current rules, select `KIO_OCR_ENGINE=tesseract-dpi` and run
 | Corpus 1 all | 39 | 0.9212 | 0.8880 | 269 / 20 / 26 | `55dc2a1` |
 | Corpus 2 dev | 39 | 0.9244 | 0.8951 | 220 / 12 / 24 | `55dc2a1` |
 
-Each row is one keyless CLI run with two PDF workers (`profile`: local offline rules, neutral input names, `--jobs 2`, isolated timeout retries with one worker) recorded in [`p0-conventions.json`](../../evals/results/p0-conventions.json). The scores of the training and scan rows are `final_verification.training_corrected_uzp`, `training_corrected_strict`, `organizer_scans_uzp` and `organizer_scans_strict`, measured at product commit `97dc53e`. Its 196 training outputs are byte-identical to those of `55dc2a1` (`training_files_matching_integration_by_sha256`). The counts and both corpus rows are the `integration` block at `55dc2a1`: `micro_f1` is the UZP score, `micro_f1_strict` the strict one, and `field_counts` the UZP counts. The private corpora were not re-run at `97dc53e`, whose code differs from `55dc2a1`. Since `97dc53e`, main has also merged the first-pass watchdog (#79), the vendored OCR data (#54) and rule fixes (#75), which the file does not cover, and the corpus rows predate them. [`latest.json`](../../evals/results/latest.json) and [`organizer-scans.json`](../../evals/results/organizer-scans.json) were refreshed at commit `d808ee0`, whose extractor code equals main at `257a6af`. They record the same training and scan scores: UZP 1.0000 and strict 1.0000 on the training cases (`metrics.micro_f1.value`, `metrics.micro_f1_strict.value`), UZP 1.0000 and strict 0.9974 on the scans with all 30 routed (`detail.micro_f1`, `detail.micro_f1_strict`, `metrics.classification_accuracy.value`). The metric definitions are under [Measure](#measure).
+Each row is one keyless CLI run with two PDF workers (`profile`: local offline rules, neutral input names, `--jobs 2`, isolated timeout retries with one worker) recorded in [`p0-conventions.json`](../../evals/results/p0-conventions.json). The scores of the training and scan rows are `final_verification.training_corrected_uzp`, `training_corrected_strict`, `organizer_scans_uzp` and `organizer_scans_strict`, measured at product commit `97dc53e`. Its 196 training outputs are byte-identical to those of `55dc2a1` (`training_files_matching_integration_by_sha256`). The counts and both corpus rows are the `integration` block at `55dc2a1`: `micro_f1` is the UZP score, `micro_f1_strict` the strict one, and `field_counts` the UZP counts. The private corpora were not re-run at `97dc53e`, whose code differs from `55dc2a1`. Since `97dc53e`, main has also merged the first-pass watchdog (#79), the vendored OCR data (#54), rule fixes (#75), candidate selection (#72) and OCR alternatives (#82), which the file does not cover, and the corpus rows predate them. [`latest.json`](../../evals/results/latest.json) and [`organizer-scans.json`](../../evals/results/organizer-scans.json) are refreshed by later runs. When this was written both recorded commit `17fae15` (`commit`) and the same training and scan scores: UZP 1.0000 and strict 1.0000 on the training cases (`metrics.micro_f1.value`, `metrics.micro_f1_strict.value`), UZP 1.0000 and strict 0.9974 on the scans with all 30 routed (`detail.micro_f1`, `detail.micro_f1_strict`, `metrics.classification_accuracy.value`). The metric definitions are under [Measure](#measure).
 
 The training row scores against references with the two printed `PL` prefixes restored in each of 48 transfers (`--correct-training-accounts`; `expected_fields` counts 48 `na_rachunek` and 48 `z_rachunku` changes), because UZP answered that a transfer account keeps the printed country code ([issue #58](https://github.com/00200200/HackNation2026-2/issues/58)). Against the original references the same outputs score 0.9758 UZP and 0.9585 strict, with 96 field mismatches (`integration.training_raw`). The earlier run at extractor `f7f3ee9` ([`uzp-metric.json`](../../evals/results/uzp-metric.json)) scored the organizer scans 0.9869 UZP and 0.9740 strict, with one transfer scan routed wrongly (`organizer_scan_note`), where the Round 3 run below routed 30 of 30. That run predates #65, which merged into main at `6ff2966`, and the newer runs have no false negative on the scans. The cause of the difference is not established. The 60 test PDFs of corpus 2 are not in these figures.
 
@@ -558,6 +565,8 @@ rules. [OCR results](../../evals/results/ocr-engines.json)
 The table columns are the `variants.<name>` entries `micro_f1`, `macro_three_classes`, `routing`, `wall_seconds_per_ocr_page`, `cpu_seconds_per_ocr_page`, `peak_rss_mib` and `installed_bytes` of that file (rules commit `865b1ea`; `machine` records an Apple M1 with 16 GiB).
 
 ## Known limits
+
+- In rules-first native-schema mode, a receipt amount, execution date, singleton appeal party name or procurement title can be reconsidered when its first page contains a conflicting, locally readable value. The model selects a candidate ID in one request per disputed block. The extractor copies the corresponding printed span and normalizes it locally. Abstention or a failed request preserves the rule value. If OCR misses the correct digits in every reading, this step cannot recover them.
 
 - On two-column receipts a payment amount can sit beside a different label. The reader checks the amount's column and currency. A damaged account, reference or remittance title can still be unreadable after the receipt is identified.
 

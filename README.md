@@ -60,12 +60,12 @@ Each row is one rules-only CLI run (no API key, two PDF workers) recorded in
 `97dc53e` (`final_verification`). The corpus rows are the earlier product commit `55dc2a1` (`integration.corpus1all` and
 `integration.corpus2`, where `micro_f1` is the UZP score and `micro_f1_strict` the strict one), because the private
 corpora were not re-run at `97dc53e`, whose code differs. Since `97dc53e`, main has also merged the first-pass watchdog
-(#79), the vendored OCR data (#54) and rule fixes (#75), which that file does not cover, and the corpus rows predate
-them. [`latest.json`](evals/results/latest.json) and [`organizer-scans.json`](evals/results/organizer-scans.json) were
-refreshed at commit `d808ee0`, whose extractor code equals main at `257a6af`. They record the same training and scan
-scores: UZP 1.0000 and strict 1.0000 on the training cases (`metrics.micro_f1.value`, `metrics.micro_f1_strict.value`),
-UZP 1.0000 and strict 0.9974 on the scans with all 30 routed (`detail.micro_f1`, `detail.micro_f1_strict`,
-`metrics.classification_accuracy.value`).
+(#79), the vendored OCR data (#54), rule fixes (#75), candidate selection (#72) and OCR alternatives (#82), which that
+file does not cover, and the corpus rows predate them. [`latest.json`](evals/results/latest.json) and
+[`organizer-scans.json`](evals/results/organizer-scans.json) are refreshed by later runs. When this was written both
+recorded commit `17fae15` (`commit`) and the same training and scan scores: UZP 1.0000 and strict 1.0000 on the training
+cases (`metrics.micro_f1.value`, `metrics.micro_f1_strict.value`), UZP 1.0000 and strict 0.9974 on the scans with all 30
+routed (`detail.micro_f1`, `detail.micro_f1_strict`, `metrics.classification_accuracy.value`).
 
 UZP micro F1 follows the scoring rules UZP gave on the hackathon Discord, as recorded in
 [issue #59](https://github.com/00200200/HackNation2026-2/issues/59) and implemented in `evals/metrics.py`: a field that is
@@ -137,8 +137,8 @@ Install Docker with Compose v2.24 or later. From the repository root, place case
 docker compose run --rm cli
 ```
 
-The first build downloads the Python dependencies from PyPI. The Polish and English OCR data ship in the repository
-(`kio2json/tessdata/`), so nothing else is fetched.
+The first build pulls the `python:3.13-slim` base image and downloads the Python dependencies from PyPI. The Polish
+and English OCR data ship in the repository (`kio2json/tessdata/`).
 Each input PDF gets a matching file under `output/<case>/`. To upload PDFs in a browser, run:
 
 ```sh
@@ -149,6 +149,9 @@ Open <http://127.0.0.1:8000> for the upload page or <http://127.0.0.1:8000/api/d
 the API. Press Ctrl+C to stop the server. Both services use local extraction by default.
 To enable a model, copy `.env.example` to `.env`, fill in the three endpoint settings,
 and rerun the service. Keep the key in the ignored `.env` file.
+
+The image is built for x86-64, because two dependencies, libsass and morfeusz2, have no Linux ARM wheels. Docker Desktop
+on Apple Silicon runs it under emulation, which is slower.
 
 Both services read the host's `config/classes/` directory. See the
 [pipeline architecture](docs/readme/reference.md#how-it-works),
