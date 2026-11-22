@@ -261,7 +261,7 @@ Inspect field errors on dev. Use aggregate scores to evaluate test. The organize
 
 ## Results on the training data (synthetic)
 
-Source: `evals/results/latest.json` (full mode; the file records the commit it was run on).
+The full run below uses `--correct-training-accounts`. The original references omit two printed `PL` prefixes in each of 48 transfers. Scoring the same predictions against those references gives 0.9758 UZP micro F1 and 0.9585 strict micro F1 (96 field mismatches). [Full evaluation](evals/results/latest.json) · [Expected changes by training case](evals/results/p0-conventions.json)
 
 | Metric | Value |
 |---|---|

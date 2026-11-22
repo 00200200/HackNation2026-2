@@ -21,6 +21,18 @@ The jury can run the batch CLI and upload UI locally with the root Compose file.
 
 ## Last eval
 
+The empty-object writer preserved all 180 positive training files byte for byte and wrote `{}\n` for all 16 negatives. Keeping printed country codes then changed two fields in each of 48 transfers. The comparison used local rules and two PDF workers. The integrated run includes the UZP scorer and the fix for a printed underline in a recipient account cell.
+
+| Dataset | Main strict `f7f3ee9` | Candidate strict `41903d1` | Integrated strict | Integrated UZP |
+|---|---:|---:|---:|---:|
+| Training, original references | 1.0000 | 0.9585 | 0.9585 | 0.9758 |
+| Training, corrected references | 0.9585 | 1.0000 | 1.0000 | 1.0000 |
+| Organizer scans (30) | 0.9766 | 0.9974 | 0.9974 | 1.0000 |
+| Corpus 1 all (39) | 0.8889 | 0.8873 | 0.8880 | 0.9212 |
+| Corpus 2 dev (39) | 0.8926 | 0.8926 | 0.8951 | 0.9244 |
+
+The first main scan batch required one isolated OCR timeout retry on the shared host. All 196 training files matched byte for byte before and after integration. The jury CI checker matched all 90 training entries against corrected references. [Field counts and expected changes by case](evals/results/p0-conventions.json)
+
 Main `f7f3ee9` ran with local rules and two PDF workers. Both scores below use the same predictions and original references. The difference is UZP F1 minus historical strict F1.
 
 | Dataset | PDFs | UZP micro F1 | Strict micro F1 | Difference |

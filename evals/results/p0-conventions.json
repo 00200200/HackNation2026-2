@@ -1,0 +1,434 @@
+{
+  "baseline": "f7f3ee97951817e9899c949f2078b1d9075b6846",
+  "profile": "Local offline rules, neutral input names, --jobs 2; isolated timeout retries use one worker.",
+  "training": {
+    "main_raw": {
+      "documents": 196,
+      "field_counts": {
+        "tp": 2316,
+        "fp": 0,
+        "fn": 0
+      },
+      "micro_f1": 1.0,
+      "negatives_empty": 0.0,
+      "isolated_retries": 0
+    },
+    "main_corrected": {
+      "documents": 196,
+      "field_counts": {
+        "tp": 2220,
+        "fp": 96,
+        "fn": 96
+      },
+      "micro_f1": 0.9585492227979274,
+      "negatives_empty": 0.0,
+      "isolated_retries": 0
+    },
+    "branch_raw": {
+      "documents": 196,
+      "field_counts": {
+        "tp": 2220,
+        "fp": 96,
+        "fn": 96
+      },
+      "micro_f1": 0.9585492227979274,
+      "negatives_empty": 1.0,
+      "isolated_retries": 0
+    },
+    "branch_corrected": {
+      "documents": 196,
+      "field_counts": {
+        "tp": 2316,
+        "fp": 0,
+        "fn": 0
+      },
+      "micro_f1": 1.0,
+      "negatives_empty": 1.0,
+      "isolated_retries": 0
+    },
+    "measurement_note": "The #57-only control had the same 180 positive files as main by SHA-256. Its corrected positive field counts therefore also score main against corrected references. Main emitted zero-byte files for all 16 negatives, which fail the new convention.",
+    "negative_documents": 16,
+    "positive_documents": 180,
+    "positive_bytes_identical_with_57_only": 180,
+    "positive_files_changed_with_58": 48,
+    "positive_files_identical_after_reversing_expected_prefix_changes": 180,
+    "expected_fields": {
+      "na_rachunek": 48,
+      "z_rachunku": 48
+    },
+    "expected_changes_by_training_case": {
+      "przyklad_01": [
+        "na_rachunek",
+        "z_rachunku"
+      ],
+      "przyklad_03": [
+        "na_rachunek",
+        "z_rachunku"
+      ],
+      "przyklad_04": [
+        "na_rachunek",
+        "z_rachunku"
+      ],
+      "przyklad_05": [
+        "na_rachunek",
+        "z_rachunku"
+      ],
+      "przyklad_06": [
+        "na_rachunek",
+        "z_rachunku"
+      ],
+      "przyklad_07": [
+        "na_rachunek",
+        "z_rachunku"
+      ],
+      "przyklad_08": [
+        "na_rachunek",
+        "z_rachunku"
+      ],
+      "przyklad_10": [
+        "na_rachunek",
+        "z_rachunku"
+      ],
+      "przyklad_11": [
+        "na_rachunek",
+        "z_rachunku"
+      ],
+      "przyklad_13": [
+        "na_rachunek",
+        "z_rachunku"
+      ],
+      "przyklad_14": [
+        "na_rachunek",
+        "z_rachunku"
+      ],
+      "przyklad_17": [
+        "na_rachunek",
+        "z_rachunku"
+      ],
+      "przyklad_19": [
+        "na_rachunek",
+        "z_rachunku"
+      ],
+      "przyklad_20": [
+        "na_rachunek",
+        "z_rachunku"
+      ],
+      "przyklad_23": [
+        "na_rachunek",
+        "z_rachunku"
+      ],
+      "przyklad_24": [
+        "na_rachunek",
+        "z_rachunku"
+      ],
+      "przyklad_25": [
+        "na_rachunek",
+        "z_rachunku"
+      ],
+      "przyklad_26": [
+        "na_rachunek",
+        "z_rachunku"
+      ],
+      "przyklad_28": [
+        "na_rachunek",
+        "z_rachunku"
+      ],
+      "przyklad_29": [
+        "na_rachunek",
+        "z_rachunku"
+      ],
+      "przyklad_31": [
+        "na_rachunek",
+        "z_rachunku"
+      ],
+      "przyklad_34": [
+        "na_rachunek",
+        "z_rachunku"
+      ],
+      "przyklad_35": [
+        "na_rachunek",
+        "z_rachunku"
+      ],
+      "przyklad_36": [
+        "na_rachunek",
+        "z_rachunku"
+      ],
+      "przyklad_37": [
+        "na_rachunek",
+        "z_rachunku"
+      ],
+      "przyklad_38": [
+        "na_rachunek",
+        "z_rachunku"
+      ],
+      "przyklad_39": [
+        "na_rachunek",
+        "z_rachunku"
+      ],
+      "przyklad_40": [
+        "na_rachunek",
+        "z_rachunku"
+      ],
+      "przyklad_41": [
+        "na_rachunek",
+        "z_rachunku"
+      ],
+      "przyklad_42": [
+        "na_rachunek",
+        "z_rachunku"
+      ],
+      "przyklad_43": [
+        "na_rachunek",
+        "z_rachunku"
+      ],
+      "przyklad_44": [
+        "na_rachunek",
+        "z_rachunku"
+      ],
+      "przyklad_45": [
+        "na_rachunek",
+        "z_rachunku"
+      ],
+      "przyklad_46": [
+        "na_rachunek",
+        "z_rachunku"
+      ],
+      "przyklad_47": [
+        "na_rachunek",
+        "z_rachunku"
+      ],
+      "przyklad_48": [
+        "na_rachunek",
+        "z_rachunku"
+      ],
+      "przyklad_49": [
+        "na_rachunek",
+        "z_rachunku"
+      ],
+      "przyklad_50": [
+        "na_rachunek",
+        "z_rachunku"
+      ],
+      "przyklad_51": [
+        "na_rachunek",
+        "z_rachunku"
+      ],
+      "przyklad_52": [
+        "na_rachunek",
+        "z_rachunku"
+      ],
+      "przyklad_53": [
+        "na_rachunek",
+        "z_rachunku"
+      ],
+      "przyklad_54": [
+        "na_rachunek",
+        "z_rachunku"
+      ],
+      "przyklad_55": [
+        "na_rachunek",
+        "z_rachunku"
+      ],
+      "przyklad_56": [
+        "na_rachunek",
+        "z_rachunku"
+      ],
+      "przyklad_57": [
+        "na_rachunek",
+        "z_rachunku"
+      ],
+      "przyklad_58": [
+        "na_rachunek",
+        "z_rachunku"
+      ],
+      "przyklad_59": [
+        "na_rachunek",
+        "z_rachunku"
+      ],
+      "przyklad_60": [
+        "na_rachunek",
+        "z_rachunku"
+      ]
+    }
+  },
+  "scans": {
+    "main": {
+      "documents": 30,
+      "field_counts": {
+        "tp": 376,
+        "fp": 6,
+        "fn": 12
+      },
+      "micro_f1": 0.9766233766233766,
+      "negatives_empty": null,
+      "isolated_retries": 1
+    },
+    "branch": {
+      "documents": 30,
+      "field_counts": {
+        "tp": 387,
+        "fp": 1,
+        "fn": 1
+      },
+      "micro_f1": 0.9974226804123711,
+      "negatives_empty": null,
+      "isolated_retries": 0
+    }
+  },
+  "corpus1all": {
+    "main": {
+      "documents": 39,
+      "field_counts": {
+        "tp": 432,
+        "fp": 52,
+        "fn": 56
+      },
+      "micro_f1": 0.8888888888888888,
+      "negatives_empty": 0.0,
+      "isolated_retries": 0
+    },
+    "branch": {
+      "documents": 39,
+      "field_counts": {
+        "tp": 429,
+        "fp": 50,
+        "fn": 59
+      },
+      "micro_f1": 0.8872802481902792,
+      "negatives_empty": 1.0,
+      "isolated_retries": 0
+    }
+  },
+  "corpus2": {
+    "main": {
+      "documents": 39,
+      "field_counts": {
+        "tp": 349,
+        "fp": 39,
+        "fn": 45
+      },
+      "micro_f1": 0.8925831202046036,
+      "negatives_empty": 0.0,
+      "isolated_retries": 0
+    },
+    "branch": {
+      "documents": 39,
+      "field_counts": {
+        "tp": 349,
+        "fp": 39,
+        "fn": 45
+      },
+      "micro_f1": 0.8925831202046036,
+      "negatives_empty": 1.0,
+      "isolated_retries": 0
+    }
+  },
+  "metric": "The frozen main/branch comparison uses the strict field-level metric shipped at the fork. Negative-format compliance is scored against {} on both revisions. The integration check also reports the UZP metric introduced by PR #71.",
+  "candidate": "41903d1",
+  "integration": {
+    "product_commit": "55dc2a1f8724f1688f25717fe3c1483d99a15b70",
+    "training_raw": {
+      "documents": 196,
+      "micro_f1": 0.9758064516129032,
+      "micro_f1_strict": 0.9585492227979274,
+      "field_counts": {
+        "tp": 1936,
+        "fp": 96,
+        "fn": 0,
+        "tn": 284
+      },
+      "field_counts_strict": {
+        "tp": 2220,
+        "fp": 96,
+        "fn": 96
+      },
+      "negatives_empty": 1.0,
+      "classification_accuracy": 1.0,
+      "isolated_retries": 0
+    },
+    "training_corrected": {
+      "documents": 196,
+      "micro_f1": 1.0,
+      "micro_f1_strict": 1.0,
+      "field_counts": {
+        "tp": 2032,
+        "fp": 0,
+        "fn": 0,
+        "tn": 284
+      },
+      "field_counts_strict": {
+        "tp": 2316,
+        "fp": 0,
+        "fn": 0
+      },
+      "negatives_empty": 1.0,
+      "classification_accuracy": 1.0,
+      "isolated_retries": 0
+    },
+    "scans": {
+      "documents": 30,
+      "micro_f1": 1.0,
+      "micro_f1_strict": 0.9974226804123711,
+      "field_counts": {
+        "tp": 309,
+        "fp": 0,
+        "fn": 0,
+        "tn": 79
+      },
+      "field_counts_strict": {
+        "tp": 387,
+        "fp": 1,
+        "fn": 1
+      },
+      "negatives_empty": null,
+      "classification_accuracy": 1.0,
+      "isolated_retries": 0
+    },
+    "corpus1all": {
+      "documents": 39,
+      "micro_f1": 0.9212328767123288,
+      "micro_f1_strict": 0.8879753340184995,
+      "field_counts": {
+        "tp": 269,
+        "fp": 20,
+        "fn": 26,
+        "tn": 173
+      },
+      "field_counts_strict": {
+        "tp": 432,
+        "fp": 53,
+        "fn": 56
+      },
+      "negatives_empty": 1.0,
+      "classification_accuracy": 1.0,
+      "isolated_retries": 0
+    },
+    "corpus2": {
+      "documents": 39,
+      "micro_f1": 0.9243697478991597,
+      "micro_f1_strict": 0.8951406649616368,
+      "field_counts": {
+        "tp": 220,
+        "fp": 12,
+        "fn": 24,
+        "tn": 138
+      },
+      "field_counts_strict": {
+        "tp": 350,
+        "fp": 38,
+        "fn": 44
+      },
+      "negatives_empty": 1.0,
+      "classification_accuracy": 1.0,
+      "isolated_retries": 0
+    },
+    "training_files_matching_candidate_by_sha256": 196
+  },
+  "jury_ci_integration": {
+    "product_commit": "4f691de1f82063cffdaf64195d0ed2177599577c",
+    "training_files_matching_integration_by_sha256": 196,
+    "jury_batch_training_exact": 90,
+    "jury_batch_training_total": 90,
+    "corrected_full_training_eval": "evals/results/latest.json"
+  }
+}

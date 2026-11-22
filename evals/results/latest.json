@@ -1,8 +1,8 @@
 {
-  "commit": "fb3db29b8b041b0ac5503c4962850637eceee468",
+  "commit": "4f691de1f82063cffdaf64195d0ed2177599577c",
   "dirty": false,
   "mode": "full",
-  "timestamp": "2026-11-22T00:12:38+00:00",
+  "timestamp": "2026-11-22T00:44:26+00:00",
   "n_cases": 60,
   "n_docs": 196,
   "coverage_ok": true,
@@ -30,7 +30,7 @@
       "pass": true
     },
     "seconds_per_doc": {
-      "value": 0.31953149064377484,
+      "value": null,
       "target": null,
       "pass": true
     },
@@ -97,6 +97,7 @@
     }
   },
   "f1_definition": "UZP #59 with RapidFuzz normalized Levenshtein >= 0.80 on five long fields",
+  "training_account_references": "printed-prefix",
   "docs": [
     {
       "case": "negatywne",
