@@ -396,21 +396,33 @@ def _signed_mandate(party: dict, pages: list[str]) -> None:
         party["przez-pelnomocnika"] = 1
 
 
+_LEAD_CAPTION = "zamawiajacy prowadzacy postepowanie"
+
+
+def _lead_caption(name: str, block: list[str], *, whole_line: bool = False) -> bool:
+    """A marginal "prowadzący postępowanie" caption belongs to the numbered institution immediately above it.
+
+    OCR may add noise to the caption line. A text layer prints it as a line of its own (`whole_line`), so a sentence
+    that only contains the words is not a caption."""
+    entry = next((i for i, line in enumerate(block) if name in line), None)
+    if entry is None:
+        return False
+    for line in block[entry + 1 :]:
+        if appeal.MEMBER.match(line) or appeal.SECTION_RE.match(line):
+            return False
+        folded = _fold(line)
+        if (folded.strip(_TRIM + "()-") == _LEAD_CAPTION) if whole_line else (_LEAD_CAPTION in folded):
+            return True
+    return False
+
+
 def _authority_rows(parties: list[dict], block: list[str]) -> list[dict]:
     rows = []
     for party in parties:
         name = re.sub(r"(?<=\w)-\s+(?=[A-ZĄĆĘŁŃÓŚŹŻ])", "-", party["nazwa"])
-        # A marginal "prowadzący postępowanie" caption belongs to the numbered
-        # institution immediately above it.
-        entry = next((i for i, line in enumerate(block) if party["nazwa"] in line), None)
-        leading = bool(re.search(r"prowadząc|lider", party["sublabel"], re.IGNORECASE))
-        if entry is not None:
-            for line in block[entry + 1 :]:
-                if appeal.MEMBER.match(line) or appeal.SECTION_RE.match(line):
-                    break
-                if "zamawiajacy prowadzacy postepowanie" in _fold(line):
-                    leading = True
-                    break
+        leading = bool(re.search(r"prowadząc|lider", party["sublabel"], re.IGNORECASE)) or _lead_caption(
+            party["nazwa"], block
+        )
         rows.append(
             {
                 "nazwa": name,
@@ -419,6 +431,28 @@ def _authority_rows(parties: list[dict], block: list[str]) -> list[dict]:
             }
         )
     return rows
+
+
+def sole_trader_name(printed: str) -> str:
+    """Sole traders are identified by the registered name following "pod firmą"."""
+    trade = re.search(r"\bprowadz[\w]+ dzialalnosc gospodarcza pod firma\s+", _fold(printed))
+    if trade and printed[: trade.start()].strip() in printed[trade.end() :]:
+        return printed[trade.end() :]
+    return printed
+
+
+def apply_text_parties(record: dict, pages: list[str]) -> None:
+    """The two cover-sheet rules of the scan reader that a text layer in the same wording needs as well."""
+    for appellant in record["Odwolujacy"]:
+        appellant["nazwa"] = sole_trader_name(appellant["nazwa"])
+    authorities = record["Zamawiajacy"]
+    if pages and len(authorities) > 1 and not any(a["prowadzacy_postepowanie"] for a in authorities):
+        cover = _cover(pages[0])
+        # A caption names one lead. Reached from several authorities, it is not attached to any numbered entry.
+        # The cover lines lose a leading quotation mark or dash, so the names lose it as well.
+        captioned = [a for a in authorities if _lead_caption(a["nazwa"].lstrip(_TRIM), cover, whole_line=True)]
+        if len(captioned) == 1:
+            captioned[0]["prowadzacy_postepowanie"] = 1
 
 
 def apply_parties(
@@ -443,11 +477,7 @@ def apply_parties(
                 }
             ]
         current = record["Odwolujacy"][0]
-        # Sole traders are identified by the registered name following "pod firmą".
-        printed = leader["nazwa"]
-        trade = re.search(r"\bprowadz[\w]+ dzialalnosc gospodarcza pod firma\s+", _fold(printed))
-        if trade and printed[: trade.start()].strip() in printed[trade.end() :]:
-            printed = printed[trade.end() :]
+        printed = sole_trader_name(leader["nazwa"])
         if "lider" in _fold(leader["sublabel"]) and re.search(r"wspolnie|konsorcjum", _fold(current["nazwa"])):
             current.update({k: leader[k] for k in ("nazwa", "krs", "nip", "regon")})
         if current["nazwa"] == leader["nazwa"] or re.match(r"^\s+u[ił]\. ", current["nazwa"].removeprefix(printed)):
