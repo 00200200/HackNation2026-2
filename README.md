@@ -43,7 +43,7 @@ Routing reads the document text. Each class configuration supplies its routing r
 
 The public training score uses the account prefixes printed in the PDFs. The local rows report the `fast` Tesseract arm of the OCR-alternatives experiment. All four rows used local rules without a model endpoint. UZP accepts approximate matches for five long fields. Our scorer uses normalized Levenshtein similarity for those fields. The strict column uses the project's earlier scoring method. [Scoring rules](https://github.com/00200200/HackNation2026-2/issues/59) · [Evaluation method](docs/readme/reference.md#measure)
 
-Run `make eval-cases` for the paired native/scan benchmark. [Case families and scores](docs/readme/reference.md#case-linked-benchmark)
+Run `make eval-cases` for the paired native/scan benchmark. The rules recovered all four development bank letters. The three reserved history and detail layouts still missed all 12 PDFs. [Case families and scores](docs/readme/reference.md#case-linked-benchmark)
 
 On five held-out cases in a ten-appeal two-column benchmark, field F1 was 0.9700 with native text and 0.8925 with forced OCR. Unlabelled procurement titles remained missing. [Field results and limits](evals/results/two-column-appeals.json)
 

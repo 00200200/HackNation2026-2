@@ -250,3 +250,45 @@ def test_account_prefix_belongs_to_the_role_on_its_source_page():
     ]
     fields = extract_bank_transfer(pages, {1, 2})["przelew_bankowy"]
     assert (fields["z_rachunku"], fields["na_rachunek"]) == (SENDER, "PL" + RECIPIENT)
+
+
+def test_selected_history_scan_keeps_only_selected_accounts_and_title(monkeypatch):
+    from kio2json import pipeline
+
+    text = f"""Historia transakcji
+Data operacji | Opis | Kwota
+02.01.2030 | Ubezpieczenie | -80,45 PLN
+Tytuł: Składka polisy
+Z rachunku: {RECIPIENT}
+Na rachunek: {SENDER}
+Szczegóły wybranej operacji
+Status operacji: wykonana
+Data operacji: 18.01.2030
+Kwota: 110,15 PLN
+Z rachunku: {SENDER}
+Na rachunek: {RECIPIENT}
+Numer transakcji: YT988
+Tytuł: Wpis w sprawie MX/92
+Pozostałe transakcje
+Tytuł: Zakup narzędzi"""
+
+    def read(path, *, word_boxes, ocr_pages, **kwargs):
+        ocr_pages.append(1)
+        word_boxes.append(pipeline.WordBox(1, "Składka", 10, 10, 40, 20))
+        return [text]
+
+    def wrong_scope(*args, **kwargs):
+        pytest.fail("unselected pixels reached receipt field recovery")
+
+    monkeypatch.setattr(pipeline, "read_pages", read)
+    monkeypatch.setattr(pipeline, "reread_title", wrong_scope)
+    kind, result = pipeline.process_pdf("invented.pdf")
+    assert kind == "bank_transfer"
+    assert result["przelew_bankowy"] == {
+        "z_rachunku": SENDER,
+        "na_rachunek": RECIPIENT,
+        "kwota": 110.15,
+        "data_operacji": "2030-01-18",
+        "tytul": "Wpis w sprawie MX/92",
+        "numer_transakcji": "YT988",
+    }
