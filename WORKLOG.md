@@ -136,6 +136,8 @@ Two and four grant JSONs matched exactly. The ten organizer grants remained exac
 
 ## Log
 
+- 22.11.2026 · Codex · Recovered role-labelled appeal cards with inflected captions and nearby party evidence. The paired PDF controls cover names, registry IDs and counsel attached to each appellant. [Development measurements](evals/results/appeal-party-headings.json)
+
 - 22.11.2026 · Claude · Brought `docs/task/BRIEF.md` up to UZP's Discord answers (#64), the Regulamin (`docs/task/regulamin.pdf`) and the organizer's `VM.md`; refreshed `data/uzp` to `eadffbc` (adds `VM.md` only). In WORKLOG: recorded the `{}` and account-number decisions, put the VM row first, scoped the Ministral row to #38, split the UZP-answer issues into per-issue rows with their owners, flagged the eval's `negatives_empty` check and merged main and dropped the rows it finished (#60, #59, #61) · docs/brief-update
 
 - 22.11.2026 · Codex · Integrated the signed judging criteria, VM instructions and UZP clarifications from #49 and refreshed the README visuals from #36 against recorded results.
