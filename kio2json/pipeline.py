@@ -328,7 +328,7 @@ def _process(
                 and definition.profile.gap_scope == "incomplete"
             )
             blocks = (
-                party_inventory(boxes, page_sizes)
+                party_inventory(boxes, page_sizes, appeal_cards=definition.extractor is appeal.extract)
                 if definition.extractor in (appeal.extract, power_of_attorney.extract)
                 and definition.profile.rules_first
                 else []
