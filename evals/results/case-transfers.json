@@ -2166,5 +2166,178 @@
         "tn": 164
       }
     }
+  },
+  "integration_on_cf67694": {
+    "extractor": "95c87f314633b355bc896772f265b12e330242c5",
+    "baseline": "cf676944be1a82b59307107264fe43a337a4a6de",
+    "reserved_baseline_source": "evals/results/case-mandates-appeals.md",
+    "development_baseline": {
+      "overall": {
+        "docs": 112,
+        "routed": 106,
+        "exact": 88,
+        "uzp_f1": 0.9602803738317757,
+        "strict_f1": 0.956564177647633,
+        "rejected": 28,
+        "negatives": 28
+      },
+      "target_families": {
+        "early_letter": {
+          "docs": 4,
+          "routed": 0,
+          "exact": 0,
+          "uzp_f1": 0.0,
+          "strict_f1": 0.0,
+          "rejected": 0,
+          "negatives": 0
+        }
+      },
+      "pdf_reference_sha256": "78c3787a990fe7201ae26bb504d43e3a2f7ebda18b1c8d4c1a3c0fc4e4ce415c"
+    },
+    "development": {
+      "overall": {
+        "docs": 112,
+        "routed": 110,
+        "exact": 90,
+        "uzp_f1": 0.9728793998845932,
+        "strict_f1": 0.9667149059334298,
+        "rejected": 28,
+        "negatives": 28
+      },
+      "target_families": {
+        "early_letter": {
+          "docs": 4,
+          "routed": 4,
+          "exact": 2,
+          "uzp_f1": 0.9767441860465116,
+          "strict_f1": 0.9166666666666666,
+          "rejected": 0,
+          "negatives": 0
+        }
+      },
+      "pdf_reference_sha256": "78c3787a990fe7201ae26bb504d43e3a2f7ebda18b1c8d4c1a3c0fc4e4ce415c"
+    },
+    "reserved_baseline": {
+      "overall": {
+        "pdfs": 96,
+        "uzp_f1": 0.7923,
+        "strict_f1": 0.7705,
+        "exact": 41,
+        "routes": 82
+      },
+      "transfers": {
+        "pdfs": 24,
+        "uzp_f1": 0.5591,
+        "strict_f1": 0.5588,
+        "exact": 8,
+        "routes": 10
+      },
+      "negatives": {
+        "pdfs": 24,
+        "exact": 24,
+        "routes": 24
+      },
+      "families_uzp_and_exact": {
+        "scan_history": [
+          0,
+          0,
+          4
+        ],
+        "scan_operation": [
+          0,
+          0,
+          4
+        ],
+        "scan_order": [
+          0,
+          0,
+          4
+        ]
+      }
+    },
+    "reserved": {
+      "overall": {
+        "docs": 96,
+        "routed": 82,
+        "exact": 41,
+        "uzp_f1": 0.7923371647509578,
+        "strict_f1": 0.7704918032786885,
+        "rejected": 24,
+        "negatives": 24
+      },
+      "target_families": {
+        "scan_history": {
+          "docs": 4,
+          "routed": 0,
+          "exact": 0,
+          "uzp_f1": 0.0,
+          "strict_f1": 0.0,
+          "rejected": 0,
+          "negatives": 0
+        },
+        "scan_operation": {
+          "docs": 4,
+          "routed": 0,
+          "exact": 0,
+          "uzp_f1": 0.0,
+          "strict_f1": 0.0,
+          "rejected": 0,
+          "negatives": 0
+        },
+        "scan_order": {
+          "docs": 4,
+          "routed": 0,
+          "exact": 0,
+          "uzp_f1": 0.0,
+          "strict_f1": 0.0,
+          "rejected": 0,
+          "negatives": 0
+        }
+      },
+      "pdf_reference_sha256": "0b0dd6dab52ebf8a2c745f3c52fb516bb51b23de14c4383e310988d2305b3895"
+    },
+    "unaltered_development_families": [
+      "early-letterhead",
+      "early-modular",
+      "early-panels",
+      "early-paragraphs",
+      "early-procedural",
+      "early-register",
+      "early-short",
+      "early_cards",
+      "early_order",
+      "early_register",
+      "early_sections",
+      "early_summary",
+      "early_thermal",
+      "payment-advice",
+      "request-for-authority"
+    ],
+    "training": {
+      "docs": 196,
+      "byte_identical": 196,
+      "uzp_f1": 1.0,
+      "strict_f1": 1.0
+    },
+    "serial_organizer_scans": {
+      "docs": 30,
+      "exact": 29,
+      "micro_f1": 1.0,
+      "micro_f1_strict": 0.9974226804123711,
+      "routing_by_class": {
+        "odwolanie": {
+          "correct": 10,
+          "total": 10
+        },
+        "pelnomocnictwo": {
+          "correct": 10,
+          "total": 10
+        },
+        "przelew": {
+          "correct": 10,
+          "total": 10
+        }
+      }
+    }
   }
 }
