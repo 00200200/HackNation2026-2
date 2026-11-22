@@ -3,12 +3,12 @@
   "decision": "Trim: cut a scanner-noise tail and strip trailing stray symbols, so a value that is still close keeps its match. Null: only a value that is scanner noise throughout and is unlikely to match anyway (FP -> FN is neutral, FP -> TN when the reference is absent is a gain). Titles are trim-only. A titled law-firm name is never nulled for its ending: capitals after a full name leave it a match.",
   "date": "2026-11-22",
   "product_commit": "d857521",
-  "baseline_commit": "4222472",
-  "measured_commit": "087c272",
+  "baseline_commit": "d9a3b25",
+  "measured_commit": "b664515",
   "variants": {
-    "main": "origin/main 4222472",
-    "pr_as_opened": "origin/main 4222472 with the ocr_plausibility.py and ocr_extract.py call site of fix/ocr-plausibility fe66789: null on any stray symbol, on a letter ratio below 0.6, or on a lawyer name ending in capitals noise; cut after the legal form",
-    "this_branch": "the product commit d857521 merged with origin/main 4222472: trim a noise tail after a corporate legal form and trailing stray symbols; null a value that is scanner noise throughout (stray symbols and no letters; mixed-case text with three or more stray-symbol tokens among mostly noise tokens); titles are trim-only; values printed verbatim on native pages are skipped"
+    "main": "origin/main d9a3b25",
+    "pr_as_opened": "origin/main d9a3b25 with the ocr_plausibility.py and ocr_extract.py call site of fix/ocr-plausibility fe66789: null on any stray symbol, on a letter ratio below 0.6, or on a lawyer name ending in capitals noise; cut after the legal form",
+    "this_branch": "the product commit d857521 merged with origin/main d9a3b25: trim a noise tail after a corporate legal form and trailing stray symbols; null a value that is scanner noise throughout (stray symbols and no letters; mixed-case text with three or more stray-symbol tokens among mostly noise tokens); titles are trim-only; values printed verbatim on native pages are skipped"
   },
   "metrics": {
     "strict": "evals.metrics.compare_strict (null = null is a hit, a wrong value is FP and FN, exact strings after whitespace and case normalisation)",
