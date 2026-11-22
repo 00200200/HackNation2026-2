@@ -1,0 +1,12 @@
+{
+  "workflow": "Jury batch",
+  "run_url": "https://github.com/00200200/HackNation2026-2/actions/runs/44964099278",
+  "head_sha": "ab3c8faf000f015662729584e01d5ce4f478774a",
+  "attempt": 1,
+  "event": "pull_request",
+  "conclusion": "failure",
+  "runners_blocked_before_checkout": ["windows-latest", "ubuntu-latest", "macos-latest"],
+  "reason": "GitHub Actions reported a failed account payment or spending limit.",
+  "timing_artifacts": 0,
+  "measurements": null
+}
