@@ -1,4 +1,8 @@
 % Odwołania2json: processing pipeline. Compile with: pdflatex pipeline.tex
+% Status 22.11.2026: the "Empty object" node follows the {} convention UZP gave on Discord, recorded in issue #57.
+% docs/pipeline/pipeline.pdf was built before that change and still shows "Empty file". Rebuild it with the
+% command above. The "In review" panel is out of date too: #24, #26 and #28 merged on 21.11.2026, so move
+% their text into the main boxes when the PDF is rebuilt. The README diagram is the current one.
 \documentclass[tikz,border=10pt]{standalone}
 \usepackage[T1]{fontenc}
 \usepackage[utf8]{inputenc}
@@ -85,7 +89,7 @@
 \foreach \cls in {appeal,poa,transfer}
   \draw[arrow] (\cls.south) -- (\cls.south |- json.north);
 \node[fail=2.8cm, anchor=north] (empty) at (other.center |- json.north)
-  {\textbf{Empty file}\\Zero bytes at the matching JSON path.};
+  {\textbf{Empty object}\\\texttt{\{\}} at the matching JSON path.};
 \draw[failarrow] (other) -- (empty);
 
 % Side panels describe configuration, optional behavior and its review status.

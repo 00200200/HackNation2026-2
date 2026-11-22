@@ -30,6 +30,25 @@ A KIO case can include an appeal, a power of attorney and a payment receipt. Eac
 
 Routing reads the document text. Each class configuration supplies its routing rules, fields and extraction engines. The default CLI runs on CPU with local OCR and rule-based extraction. It writes `null` for missing values. An optional language model can extract fields from cited source spans. [Pipeline](docs/readme/reference.md#how-it-works) · [Model configuration](docs/readme/reference.md#use-a-model-endpoint)
 
+The default configuration needs no GPU and no API key and calls no language model, so it has no per-document API cost. The optional model profile we measured calls Mistral's open-weight `ministral-3b-2512` (3,849,090,048 parameters) through the regional endpoint `api.eu.mistral.ai`. Its documented processing geography includes EU and EFTA countries, so a narrower location commitment is still open, and we have not measured its cost per 100 documents.
+
+Where each step lives in `kio2json/`:
+
+| Modules | Responsibility |
+|---|---|
+| `__main__.py`, `batch.py` | Batch CLI, and the per-document output and diagnostics it shares with the viewer |
+| `gui.py`, `gui_files.py`, `gui_explain.py` | Local document viewer, with panels for the class list and a document's trace |
+| `web_api.py`, `web_worker.py`, `jury_web.py` | HTTP API and upload page; each upload is read in a disposable process |
+| `pipeline.py`, `trace.py` | One PDF to a document class and canonical JSON, and the opt-in trace of the routing reason and the source of each field |
+| `pdf_text.py`, `ocr_*.py`, `rapid_worker.py` | Page text from the PDF text layer, local OCR for pages without one with wall-clock limits on optional OCR, and the rules and checks that apply only to OCR text |
+| `class_config.py`, `classify.py`, `validators.py`, `classes.py` | Load the class TOML files (`config/classes/` by default), route each document from its own content, apply the field checks a class declares, and scaffold a class from a sample PDF (`python -m kio2json.classes`) |
+| `appeal.py`, `appeal_*.py` | Appeal to KIO: the appeal, the appellants, the contracting authorities and the procurement |
+| `power_of_attorney.py`, `grant_*.py`, `attorney_spans.py` | Power of attorney: the principals with their signatories, and the attorneys |
+| `bank_transfer.py`, `receipt_*.py`, `accounts.py` | Transfer confirmation, and printed account numbers |
+| `engines.py`, `llm.py`, `model_*.py`, `charge_model.py`, `derived_evidence.py`, `endpoint_error.py` | Run the configured extractors in order and fill gaps; the optional model engine |
+| `output_schema.py`, `common.py`, `personal_names.py` | Output models built from the class fields, the patterns and normalisers the extractors share, and inflected Polish personal names |
+| `case_checks.py`, `case_repair.py`, `doubtful_values.py` | Checks across the documents of one case, repair of a damaged value from an independent reading, choice among local readings of a doubtful value |
+
 ## Results
 
 <p align="center"><img src="docs/readme/results.png" alt="Keyless UZP micro-F1 results, with exact values and source files in the table below" width="100%"></p>
@@ -44,6 +63,16 @@ Routing reads the document text. Each class configuration supplies its routing r
 The public training score uses the account prefixes printed in the PDFs. The local rows report the `fast` Tesseract arm of the OCR-alternatives experiment. All four rows used local rules without a model endpoint. UZP accepts approximate matches for five long fields. Our scorer uses normalized Levenshtein similarity for those fields. The strict column uses the project's earlier scoring method. [Scoring rules](https://github.com/00200200/HackNation2026-2/issues/59) · [Evaluation method](docs/readme/reference.md#measure)
 
 Run `make eval-cases` for the paired native/scan benchmark. [Case families and scores](docs/readme/reference.md#case-linked-benchmark)
+
+The original training references omit the printed `PL` prefix of two accounts in each of 48 transfers, so the training row scores against references with them restored (`--correct-training-accounts`, [issue #58](https://github.com/00200200/HackNation2026-2/issues/58)). At product commit `55dc2a1` the outputs scored 0.9758 UZP and 0.9585 strict against the original references, with 96 field mismatches (`integration.training_raw` in [`p0-conventions.json`](evals/results/p0-conventions.json)).
+
+All four rows are development sets. The rules were developed against the training cases, the organizer scans and the two local corpora, and the corpora are private sets of real documents that are not in this repository. We have no held-out score for the current extractor: these figures are not estimates for unseen cases, and the 60 test PDFs of corpus 2 are reserved and not scored. A held-out run on 21.11.2026 of two DeepSeek model profiles, not the Mistral profile above, scored 0.7002 and 0.6055 micro F1 on 17 PDFs from 7 cases under the metric of that time (`test.deepseek_v4_pro.micro_f1` and `test.deepseek_flash.micro_f1` in [`llm-real-docs.json`](evals/results/llm-real-docs.json), runtime commits `d288af1` and `15f4fbb`). It measured older code, and [WORKLOG.md](WORKLOG.md) notes that corpus 1's previously evaluated split now sits inside its 39 development PDFs. The files behind the rows record different commits (`23b58dd` for training, `17fae15` for the scans and `7a1c45b` for the corpora) and the extractor has changed since, so a measurement on the submission commit is still open ([WORKLOG.md](WORKLOG.md)).
+
+Rendering the 30 organizer scans again lowers the scan row. In [issue #81](https://github.com/00200200/HackNation2026-2/issues/81#issuecomment-7073288215) they were rendered from a fixed seed in 15 variants on main `fecdca5` and scored 0.791 to 0.965 UZP F1, against 1.000 for the delivered files. Plain re-renders at 150 to 300 dpi scored 0.922 to 0.965, added noise 0.931, one-bit images 0.882 and 0.904, up to 3 degrees of skew 0.791 to 0.901, and three mixed variants 0.856 pooled. Documents returned as `{}`, mostly transfer confirmations, cost 0.000 to 0.099 of F1, and wrong fields in routed documents cost 0.033 to 0.125. The script is not on main yet, so these numbers come from the issue comment.
+
+[Known limits](docs/readme/reference.md#known-limits) lists what the extractor does not handle, and the [task brief](docs/task/BRIEF.md) lists the unconfirmed organizer details. The `{}` for an unrelated document is UZP's answer on Discord, which the brief records next to the organizer README's "empty `.json` file".
+
+Timing (keyless, local rules): with the 180-second primary watchdog (`watchdog_commit` `21f55e0`), two workers processed all 226 public PDFs in 160.75 s on a shared Apple M1 ([`first-pass-watchdog.json`](evals/results/first-pass-watchdog.json), `public_batch.watchdog.wall_seconds`, 160.753). The one-minute load average of the host was 34.65 at the start and 32.54 at the end (`public_batch.watchdog.load_average_1min_start` and `load_average_1min_end`). In an earlier stress run, 150 PDFs took 401.873 s with one worker while eight busy loops occupied the 8 logical CPUs ([`adaptive-ocr-budget.json`](evals/results/adaptive-ocr-budget.json), `runs[5].seconds`, product `59aa13a`). That run preceded the final change to optional page reads, and the test suite ran during part of it (`serial_measurement`). Both timings predate #54, #72, #75, #82, #87 and #89. The organizer allows 45 minutes for 150 PDFs ([`data/uzp/README.md`](data/uzp/README.md)), and the jury's machine will differ from ours.
 
 ## Quick start
 
@@ -77,11 +106,11 @@ OCR engines, offline install of the language data, the optional model endpoint a
 
 ## Deploy on the evaluation VM
 
-The setup script installs the jury CLI in `/opt/solution`. The reference includes the offline rehearsal and reboot checks. [VM setup](docs/readme/reference.md#deploy-on-the-evaluation-vm)
+UZP runs the command from `RUN.md` in `/opt/solution` on a Linux VM, without the team present, after it cuts the team's access at 11:00 on 22.11.2026 ([`data/uzp/VM.md`](data/uzp/VM.md)). `deploy/vm_setup.sh` installs the pinned requirements and smoke-tests a transfer and a scanned appeal, and `deploy/RUN.md` is the command we hand over. The reference includes the offline rehearsal, the reboot checks and the Docker Compose fallback. [VM setup](docs/readme/reference.md#deploy-on-the-evaluation-vm) The Ubuntu 24.04 offline run with two CPUs is recorded as unverified (`ubuntu_24_04_amd64_2vcpu_16g.status` in [`vm-2vcpu.json`](evals/results/vm-2vcpu.json)), because Docker Desktop did not respond on the development host, and the Docker Compose fallback has not been run end to end either.
 
 ## Run with Docker Compose
 
-Run `docker compose run --rm cli` for the batch or `docker compose up gui` for the local upload page. [Compose setup](docs/readme/reference.md#run-with-docker-compose)
+Run `docker compose run --rm cli` for the batch or `docker compose up gui` for the local upload page. We have not yet run these two services end to end in a container and compared their output with the CLI's; that check is open in [WORKLOG.md](WORKLOG.md). [Compose setup](docs/readme/reference.md#run-with-docker-compose)
 
 ## Add a document type
 
@@ -102,13 +131,45 @@ pattern = '^Reference:[ \t]*(.+)$'
 Save this file as `classes/receipt.toml` and run `python -m kio2json --classes classes --input input --output output`. Add `--explain trace` to record the routing decision and field sources separately. The reference shows how to generate a class from a sample PDF and configure field checks.
 [Add a class](docs/readme/reference.md#add-a-class).
 
+## REST API
+
+The upload page and doc2json.pl call one HTTP API. In the installed environment, `python -m uvicorn kio2json.jury_web:app --host 127.0.0.1 --port 8000` serves it. `docker compose up gui` is configured to serve it too, but the Compose services have not been run end to end yet. OpenAPI is at <http://127.0.0.1:8000/api/docs> and, for the hosted copy, <https://doc2json.pl/api/docs>. Swagger UI loads from cdn.jsdelivr.net, so that page is blank offline, while `/api/openapi.json` still works.
+
+```bash
+curl -F files=@appeal.pdf -F files=@power.pdf http://127.0.0.1:8000/api/extract
+```
+
+The answer has one result per uploaded file, in upload order: `{"results": [{"index": 0, "file": "appeal.pdf", "class": "appeal", "data": {...}, "error": null}]}`. A document outside every class has `"class": null` and `"data": {}`. A file that is not a PDF, or a document that fails, also has `"data": {}`, with the reason in `error`. One request takes up to ten files of 20 MB each. Each document gets 90 seconds (300 in the `gui` service of `compose.yaml`), and a request that runs past 500 seconds ends with HTTP 408 and no results. The server reads one document at a time and accepts at most four requests at once (one being read, three waiting), so a fifth gets HTTP 503. `GET /api/health` answers `{"status": "ok"}`, or `"busy"` while a document is being read or the queue is full. The limits are the environment variables `KIO_WEB_MAX_FILES`, `KIO_WEB_MAX_FILE_MB`, `KIO_WEB_DOC_TIMEOUT_S`, `KIO_WEB_REQUEST_BUDGET_S` and `KIO_WEB_MAX_QUEUED`. The extraction is the same one the CLI runs.
+
+## Data handling
+
+The default configuration processes everything on one machine: PDFs are read, OCR'd and extracted locally, and no document text goes anywhere else. The API stores no uploads and no results. An upload is held in memory, or in a temporary file for a large one, until the request ends (`extract` closes the form in `kio2json/web_api.py`), and the copy a worker reads sits in a temporary directory that is deleted as soon as its document has been read (`_read`). A model endpoint is used only when `KIO_LLM_BASE_URL`, `KIO_LLM_MODEL` and `KIO_LLM_API_KEY` are set in the environment or in a `.env` file in the working directory, and then page text goes to that endpoint. For the profile we measured that is Mistral's regional API (see [How it works](#how-it-works) for what is confirmed about its location). The public page runs on a team VPS at OVHcloud, and the repository does not record the datacentre region (UNCONFIRMED). For documents with personal data, use the CLI or the local viewer, which keep the files on your machine. The real documents we developed against are private and not in this repository, and `data/uzp/` is the organizer's published copy of their data.
+
+## Licences
+
+The repository has no `LICENSE` file for our own code yet. Under § 4 of the [task rules](docs/task/regulamin.pdf) the winning teams transfer the copyright of their solution to the organizer in a written agreement, and external solutions must be named in the presentation. The organizer allows only open-source components ([FAQ](docs/task/FAQ.md), [`data/uzp/README.md`](data/uzp/README.md)). Ours, with the licence each declares in its package metadata at the pinned versions (transitive dependencies are in `uv.lock`):
+
+| Component | Licence |
+|---|---|
+| pdfplumber, pydantic, pydantic-ai-slim, pydantic-settings, tesserocr, onnxruntime, Shiny, RapidFuzz, asn1crypto, FastAPI | MIT |
+| RapidOCR | Apache-2.0 |
+| Babel | BSD-3-Clause |
+| pypdfium2 | BSD-3-Clause and Apache-2.0, with the licences of its bundled dependencies |
+| python-stdnum | LGPL v2 or later |
+| Morfeusz 2 (`morfeusz2`) | BSD 2-clause ([its licence page](http://morfeusz.sgjp.pl/doc/license/)) |
+| Tesseract language data in `kio2json/tessdata/` | Apache-2.0 (`kio2json/tessdata/LICENSE`) |
+| Geist font on the page and in the README images | SIL OFL 1.1 (`frontend/public/fonts/LICENSE-Geist.txt`) |
+| `ministral-3b-2512`, the optional model (not in the repository) | Apache-2.0 ([provider notes](docs/small-model-providers.md)) |
+
 ## Repository
 
 | Path | What is there |
 |---|---|
 | `kio2json/` | The extractor: PDF text and OCR, routing, rule extractors, optional model engine, CLI and viewer |
 | `config/classes/` | One TOML per document class |
-| `evals/` | Field-level F1 harness and recorded results |
+| `evals/` | Field-level F1 harness, recorded results and the generated layout benchmark (`make eval-variants`) |
+| `compose.yaml`, `api.Dockerfile` | Docker Compose services for the batch CLI and the local upload page |
+| `deploy/` | VM setup script, handover `RUN.md`, offline rehearsal and the Compose file for the VM |
 | `frontend/`, `docs/deploy.md` | The doc2json.pl page and how it is deployed |
 | `data/uzp/` | Organizer data and schemas (copy of their repository) |
 | `docs/task/` | Challenge brief, FAQ and details |
