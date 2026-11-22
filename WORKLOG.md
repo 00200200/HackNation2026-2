@@ -319,3 +319,4 @@ These runs used local rules with the three endpoint variables unset. The two loc
 - 2026-11-22 — Jury profile: use regional Ministral 3B for evidence-checked field completion after local extraction, with shared time and concurrency limits across PDF workers.
 - 22.11.2026 · Refreshed the [jury pipeline diagram](docs/pipeline/pipeline.pdf) and [README results](README.md#results) with the merged-main scorecard at `725765b` and the later receipt-routing results.
 - 22.11.2026 · Codex · The default router rejects all five development transmission forms that main misclassified as grants, in native and scan views. The independent panel matched main on every output. [Delivery-proof measurements](evals/results/delivery-proofs.md)
+- 22.11.2026 · Added a lemma-based fallback for appeals whose existing reader leaves the first act unknown. The constrained model comparison remains opt-in.
