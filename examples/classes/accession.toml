@@ -1,0 +1,54 @@
+# Notice joining a KIO appeal (zgłoszenie przystąpienia do postępowania odwoławczego).
+# A class defined only in this file: weighted routing cues, labelled fields and named checks.
+id = "accession"
+name = "Zgłoszenie przystąpienia"
+engines = ["labelled_fields"]
+
+[routing]
+# The class applies when the phrases found add up to the threshold.
+threshold = 4
+forbidden = ['^Projekt\b', '^Wzór\b']
+
+[routing.cues]
+"zgłoszenie przystąpienia" = 3
+"postępowania odwoławczego" = 1
+"Przystępujący:" = 1
+"Sygnatura akt:" = 1
+
+[fields.sygnatura]
+type = "string"
+instruction = "KIO case reference, for example KIO 1234/26."
+pattern = '^Sygnatura akt[ \t]*:[ \t]*(KIO[ \t]*\d+/\d{2})[ \t]*$'
+
+[fields.przystepujacy]
+type = "string"
+instruction = "Name of the contractor joining the appeal."
+pattern = '^Przystępujący[ \t]*:[ \t]*(.+)$'
+
+[fields.nip]
+type = "string"
+normalizer = "nip"
+validators = ["nip"]
+instruction = "NIP of the joining contractor, ten digits."
+pattern = '^NIP[ \t]*:[ \t]*(.+)$'
+
+[fields.regon]
+type = "string"
+normalizer = "regon"
+validators = ["regon"]
+instruction = "REGON of the joining contractor, nine or fourteen digits."
+pattern = '^REGON[ \t]*:[ \t]*(.+)$'
+
+[fields.strona]
+type = "string"
+validators = [{ name = "one_of", values = ["Zamawiającego", "Odwołującego"] }]
+instruction = "Side the contractor joins: Zamawiającego or Odwołującego."
+pattern = '^Po stronie[ \t]*:[ \t]*(.+)$'
+
+[fields.data_wezwania]
+type = "string"
+normalizer = "iso_date"
+validators = [{ name = "date_range", min = 2021-01-01, max = 2030-12-31 }]
+on_invalid = "warn"
+instruction = "Date the contractor received the invitation to join, as YYYY-MM-DD."
+pattern = '^Data doręczenia wezwania[ \t]*:[ \t]*(.+)$'

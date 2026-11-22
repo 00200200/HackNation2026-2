@@ -84,7 +84,7 @@ Run `docker compose run --rm cli` for the batch or `docker compose up gui` for t
 ## Add a document type
 
 ```toml
-# config/classes/receipt.toml
+# classes/receipt.toml
 id = "receipt"
 engines = ["labelled_fields"]
 
@@ -97,7 +97,7 @@ instruction = "Reference printed on the receipt."
 pattern = '^Reference:[ \t]*(.+)$'
 ```
 
-The reference explains how to load the file and configure lists, normalizers and model engines.
+Save this file as `classes/receipt.toml` and run `python -m kio2json --classes classes --input input --output output`. Add `--explain trace` to record the routing decision and field sources separately. The reference shows how to generate a class from a sample PDF and configure field checks.
 [Add a class](docs/readme/reference.md#add-a-class).
 
 ## Repository

@@ -17,7 +17,7 @@ def test_cli_worker_count(tmp_path, monkeypatch, cpu_count, options, expected):
 
     selected = []
 
-    def record_workers(pdfs, sources, workers):
+    def record_workers(pdfs, sources, workers, explain=False):
         selected.append(workers)
         return iter(())
 
