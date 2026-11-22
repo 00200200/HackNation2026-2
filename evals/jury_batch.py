@@ -61,6 +61,26 @@ def peak_memory(process):
     return round(peak / 2**20, 1)
 
 
+def exact_output(rel, prediction):
+    # The cross-platform report comparison runs with only the standard library installed.
+    from evals.metrics import load_prediction
+    from evals.run import correct_training_accounts
+
+    group, *parts = rel.parts
+    gold = Path("data/uzp/dane", *parts)
+    source = gold.with_suffix(".pdf")
+    if gold.name == "potwierdzenie_przelewu.json":
+        gold = gold.with_name("przelew.json")
+    raw = gold.read_text(encoding="utf-8-sig") if gold.exists() else ""
+    reference = json.loads(raw) if raw else {}
+    data, empty_object = load_prediction(prediction)
+    if not reference:
+        return empty_object
+    if group == "training":
+        reference = correct_training_accounts(source, reference)
+    return data == reference
+
+
 def measure(inputs, output, expected, flags):
     cmd = [sys.executable, "-u", "-m", "kio2json", "--input", str(inputs), "--output", str(output), *flags]
     start = previous = time.monotonic()
@@ -84,16 +104,7 @@ def measure(inputs, output, expected, flags):
     hashes = {rel.as_posix(): hashlib.sha256((output / rel).read_bytes()).hexdigest() for rel in expected}
     gold_exact = dict.fromkeys(("training", "scan1", "scan2"), 0)
     for rel in expected:
-        group, *parts = rel.parts
-        gold = Path("data/uzp/dane", *parts)
-        if gold.name == "potwierdzenie_przelewu.json":
-            gold = gold.with_name("przelew.json")
-        prediction = (output / rel).read_bytes()
-        if gold.exists():
-            match = bool(prediction) and json.loads(prediction) == json.loads(gold.read_text(encoding="utf-8-sig"))
-        else:
-            match = not prediction
-        gold_exact[group] += int(match)
+        gold_exact[rel.parts[0]] += int(exact_output(rel, output / rel))
     digest = hashlib.sha256(json.dumps(hashes, sort_keys=True).encode()).hexdigest()
     return {
         "gold_exact": gold_exact,

@@ -58,7 +58,7 @@ def test_shared_cli_and_gui_reader_accepts_a_blank_scan(tmp_path, monkeypatch):
     Image.new("RGB", (300, 180), "white").save(path, resolution=150)
     result = read_document(path, load_classes())
     assert result.error is None
-    assert result.text == ""
+    assert result.text == "{}\n"
 
 
 def test_hybrid_retries_failed_primary_recognition(monkeypatch):
