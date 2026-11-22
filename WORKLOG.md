@@ -139,6 +139,8 @@ Two and four grant JSONs matched exactly. The ten organizer grants remained exac
 
 ## Log
 
+- 22.11.2026 · Codex · Added contracting-authority descriptions and inflected captions to the appeal party reader. Joint authority cards preserve the printed names, registry IDs and lead marker. [Caption measurements](evals/results/authority-captions.json)
+
 - 22.11.2026 · Codex · Recovered role-labelled appeal cards with inflected captions and nearby party evidence. The paired PDF controls cover names, registry IDs and counsel attached to each appellant. [Development measurements](evals/results/appeal-party-headings.json)
 
 - 22.11.2026 · Claude · Brought `docs/task/BRIEF.md` up to UZP's Discord answers (#64), the Regulamin (`docs/task/regulamin.pdf`) and the organizer's `VM.md`; refreshed `data/uzp` to `eadffbc` (adds `VM.md` only). In WORKLOG: recorded the `{}` and account-number decisions, put the VM row first, scoped the Ministral row to #38, split the UZP-answer issues into per-issue rows with their owners, flagged the eval's `negatives_empty` check and merged main and dropped the rows it finished (#60, #59, #61) · docs/brief-update
@@ -289,3 +291,4 @@ These runs used local rules with the three endpoint variables unset. The two loc
 - 22.11.2026 · Codex · Synced the rule fixes in #75 with main at `b9c2c7f`, preserving the printed account prefix during OCR slash repair.
 - 22.11.2026 · Codex · Integrated the merged #75 rule fixes into #72 at main `257a6af`.
 - 2026-11-22 · Transfer confirmations can bind a split execution heading to a single dated amount and two explicitly owned accounts. Receipt dates also accept Roman months and labelled whole amounts can place the currency first.
+- 22.11.2026 · Codex · Added the seeded case-linked benchmark on `feat/case-benchmark`, pairing each native appeal, mandate, transfer and near-negative with a scan and grouping the results by case and layout. Main `fa9937e` scored 0.7191 UZP and 0.6617 strict on 208 PDFs. [Measurements](evals/results/case-benchmark.json)
