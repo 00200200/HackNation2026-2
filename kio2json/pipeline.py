@@ -8,7 +8,9 @@ from functools import cache, partial
 from pathlib import Path
 
 from . import appeal, bank_transfer, ocr_extract, power_of_attorney
+from .accounts import normalize_account
 from .appeal_layout import apply_appeal_blocks, party_inventory, read_role_columns, restore_party_columns
+from .case_repair import Reading, printed_readings
 from .class_config import DocumentClass, load_classes, route
 from .classify import incomplete_booking_scan, resembles_appeal_heading
 from .engines import extract
@@ -32,6 +34,16 @@ from .receipt_layout import append_receipt_fields, has_detached_labels, receipt_
 from .receipt_title import reread_title
 
 
+def uses_case_schema(definition: DocumentClass) -> bool:
+    expected = {
+        "appeal": appeal.extract,
+        "power_of_attorney": power_of_attorney.extract,
+        "bank_transfer": bank_transfer.extract,
+    }
+    rules = definition.rules_only
+    return rules.engines == ["python"] and rules.extractor is not None and rules.extractor is expected.get(rules.id)
+
+
 def _is_receipt(definition: DocumentClass | None) -> bool:
     return definition is not None and definition.rules_only.extractor is bank_transfer.extract
 
@@ -43,19 +55,10 @@ def _route_receipt(
     if evidence is not None and cells:
         # A source cell keeps its owner even if the linear transcript interleaves the columns.
         roles = {}
-        prefixed = set(evidence.prefixed_roles)
         for label, role in (("Rachunek nadawcy", "sender"), ("Rachunek odbiorcy", "recipient")):
             if label in cells:
-                raw = "".join(cells[label].split())
-                digits = raw.removeprefix("PL")
-                roles[role] = digits if digits.isdigit() else None
-                if raw.startswith("PL"):
-                    prefixed.add(role)
-                else:
-                    prefixed.discard(role)
-        evidence = replace(
-            evidence, **roles, declared=evidence.declared | roles.keys(), prefixed_roles=frozenset(prefixed)
-        )
+                roles[role] = normalize_account(cells[label])
+        evidence = replace(evidence, **roles, declared=evidence.declared | roles.keys())
     return route(pages, definitions, ocr_accounts=evidence, rules_only=True), evidence
 
 
@@ -165,16 +168,21 @@ def process_pdf(
     *,
     classes: list[DocumentClass] | None = None,
     on_recovery: Callable[[str], None] | None = None,
+    case_readings: list[Reading] | None = None,
     batch_deadline: float | None = None,
 ) -> tuple[str | None, dict]:
     """Return the class and JSON, using local recovery for a failed keyed organizer document."""
     with document_budget(batch_deadline):
         definitions = classes if classes is not None else load_classes()
-        return _process_with_recovery(pdf_path, definitions, force_ocr, on_recovery)
+        return _process_with_recovery(pdf_path, definitions, force_ocr, on_recovery, case_readings)
 
 
 def _process_with_recovery(
-    pdf_path: Path, definitions: list[DocumentClass], force_ocr: bool, on_recovery: Callable[[str], None] | None
+    pdf_path: Path,
+    definitions: list[DocumentClass],
+    force_ocr: bool,
+    on_recovery: Callable[[str], None] | None,
+    case_readings: list[Reading] | None,
 ) -> tuple[str | None, dict]:
     page_sizes = {}
 
@@ -194,18 +202,20 @@ def _process_with_recovery(
         return pages, scanned, boxes
 
     try:
-        return _process(pdf_path, definitions, read, page_sizes)
+        return _process(pdf_path, definitions, read, page_sizes, case_readings)
     except Exception:  # The PDF, OCR and model libraries raise unrelated per-document errors.
         if not any(d.enabled and d.profile.keyed for d in definitions):
             raise
     result = None, {}
-    message = "Could not read document. Returning empty output."
+    message = "Could not read document. Returning {}."
     if read.cache_info().currsize:
         try:
-            result = _process(pdf_path, [d.rules_only for d in definitions if d.profile.keyed], read, page_sizes)
+            result = _process(
+                pdf_path, [d.rules_only for d in definitions if d.profile.keyed], read, page_sizes, case_readings
+            )
             message = "Used rules after document processing failed."
-        except Exception:  # noqa: BLE001 - a failed per-document rule retry must yield an empty output
-            message = "Document processing and rule recovery failed. Returning empty output."
+        except Exception:  # noqa: BLE001 - a failed per-document rule retry must yield an empty object
+            message = "Document processing and rule recovery failed. Returning {}."
     print(f"{str(pdf_path)!r}: {message}", file=sys.stderr)
     if on_recovery:
         on_recovery(message)
@@ -217,6 +227,7 @@ def _process(
     definitions: list[DocumentClass],
     read: Callable[[str], tuple[list[str], list[int], list[WordBox]]],
     page_sizes: dict[int, tuple[float, float]],
+    case_readings: list[Reading] | None,
 ) -> tuple[str | None, dict]:
     selected = os.getenv("KIO_OCR_ENGINE", DEFAULT_OCR_ENGINE)
     engines = ("tesseract-dpi", "rapidocr") if selected == "hybrid" else (selected,)
@@ -328,6 +339,8 @@ def _process(
             )
             if definition.extractor is power_of_attorney.extract and not definition.profile.keyed:
                 _grant_signers(pdf_path, record, pages, ocr_pages, engine)
+            if case_readings is not None and uses_case_schema(definition):
+                case_readings.extend(printed_readings(definition.id, record, primary, ocr_pages, boxes))
             return definition.id, record
         if not ocr_pages:
             break

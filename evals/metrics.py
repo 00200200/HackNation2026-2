@@ -7,7 +7,9 @@ List entries are assigned one-to-one within their parent by matching field conte
 Micro pools counts within documents, macro averages defined document, class or field scores.
 
 The secondary strict metric preserves the historical normalized leaf multisets, including
-null hits, numeric identifier normalization and a double penalty (FP + FN) for a wrong value.
+null hits and a double penalty (FP + FN) for a wrong value. Both metrics compare the letters and
+digits of account numbers as printed after removing whitespace. A zero-byte gold file labels a
+negative, whose expected output is `{}` with an optional line ending.
 """
 
 import json
@@ -17,7 +19,6 @@ from collections import Counter, defaultdict
 from dataclasses import dataclass, field
 from pathlib import Path
 
-from munkres import linear_sum_assignment
 from rapidfuzz.distance import Levenshtein
 
 CLASSES = {
@@ -32,22 +33,24 @@ def reject_json_constant(token: str):
     raise ValueError("invalid JSON number")
 
 
-def read_object(path: Path) -> tuple[dict, bool]:
-    """Return the JSON object and whether the file was literally empty."""
+def read_object(path: Path, *, reference: bool = False) -> tuple[dict, bool]:
+    """Return the parsed object and whether the text matches the negative output convention."""
     if not stat.S_ISREG(path.stat().st_mode):
         raise ValueError("expected a regular JSON file")
     try:
-        text = path.read_text(encoding="utf-8")
-        data = json.loads(text, parse_constant=reject_json_constant) if text else {}
+        text = path.read_text(encoding="utf-8", newline="")
+        if reference and text == "":
+            return {}, False
+        data = json.loads(text, parse_constant=reject_json_constant)
     except (ValueError, RecursionError) as exc:
         raise ValueError("a selected reference is not valid UTF-8 JSON") from exc
     if not isinstance(data, dict):
         raise ValueError("a selected reference must be a JSON object")  # noqa: TRY004 - invalid file contents
-    return data, not text
+    return data, text in ("{}", "{}\n", "{}\r\n")
 
 
 def load_reference(path: Path) -> dict:
-    data, _ = read_object(path)
+    data, _ = read_object(path, reference=True)
     return data
 
 
@@ -72,7 +75,8 @@ def doc_class(data: dict | None) -> str | None:
 
 # Identifier fields: compared as digits only, whatever the type (the schema example has PESEL as a number,
 # the gold files as a string) and however the document spaces or dashes them.
-IDENTIFIER_KEYS = {"krs", "nip", "regon", "pesel", "na_rachunek", "z_rachunku"}
+IDENTIFIER_KEYS = {"krs", "nip", "regon", "pesel"}
+ACCOUNT_KEYS = {"na_rachunek", "z_rachunku"}
 
 
 def normalise(value: object, key: str = "") -> str:
@@ -80,6 +84,8 @@ def normalise(value: object, key: str = "") -> str:
     are kept as written; only whitespace and case are ignored, plus spacing inside identifier fields."""
     if value is None:
         return "null"
+    if key in ACCOUNT_KEYS and isinstance(value, str):
+        return "account:" + "".join(value.split())
     if key in IDENTIFIER_KEYS and isinstance(value, int | str) and re.fullmatch(r"[\d\s-]+", str(value).strip()):
         return "id:" + re.sub(r"[\s-]", "", str(value))
     if isinstance(value, bool):
@@ -148,8 +154,7 @@ FUZZY_PATHS = {
     "przelew_bankowy.tytul",
     "ZamowieniePubliczne.tytul",
 }
-ACCOUNT_KEYS = {"na_rachunek", "z_rachunku"}
-PRINTED_IDS = ACCOUNT_KEYS | {
+PRINTED_IDS = {
     "krs",
     "nip",
     "regon",
@@ -163,6 +168,8 @@ PRINTED_IDS = ACCOUNT_KEYS | {
 
 def matches(pred, gold, path: str) -> bool:
     key = path.rsplit(".", 1)[-1].removesuffix("[]")
+    if key in ACCOUNT_KEYS:
+        return isinstance(pred, str) and isinstance(gold, str) and normalise(pred, key) == normalise(gold, key)
     if key in PRINTED_IDS:
         if type(pred) not in (int, str) or type(gold) not in (int, str):
             return False
@@ -185,6 +192,9 @@ def list_events(pred: list, gold: list, path: str):
     pred, gold = sorted(pred, key=order), sorted(gold, key=order)
     used_pred, used_gold = set(), set()
     if pred and gold:
+        # Only field-level list scoring needs this dev dependency. The jury batch checks exact JSON.
+        from munkres import linear_sum_assignment
+
         candidates = [[list(field_events(p, g, path)) for g in gold] for p in pred]
         # First maximize TP, then pair remaining present values at the same field as wrong.
         bound = 1 + sum(max(len(pair) for pair in row) for row in candidates)

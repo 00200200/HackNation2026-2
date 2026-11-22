@@ -12,6 +12,8 @@ The opt-in small-model profile uses Mistral’s regional API, compact source spa
 
 The batch CLI defaults to up to four PDF workers, with one thread per Tesseract instance and up to three concurrent page reads per PDF. The first OCR pass supplies layout word boxes, and optional OCR has up to 300 seconds per document. A shared batch cutoff stops rereads after 27 minutes for 150 PDFs.
 
+The local viewer flags disagreements between an appeal, its mandate and its receipt. The CLI and viewer can use independently printed sibling values to repair a damaged reading within one case folder.
+
 The grant certificate and board-stamp readers share the copy-attestation check so that a certifier cannot be counted as the issuing officer.
 
 Public landing https://doc2json.pl (`frontend/`, static nginx, monochrome) runs on the team VPS as `doc2json-web`
@@ -20,6 +22,18 @@ behind the faktczyfejk Caddy; deploy in `docs/deploy.md`. Its upload calls `kio2
 The jury can run the batch CLI and upload UI locally with the root Compose file. [Docker instructions](README.md#run-with-docker-compose)
 
 ## Last eval
+
+The empty-object writer preserved all 180 positive training files byte for byte and wrote `{}\n` for all 16 negatives. Keeping printed country codes then changed two fields in each of 48 transfers. The comparison used local rules and two PDF workers. The integrated run includes the UZP scorer and the fix for a printed underline in a recipient account cell.
+
+| Dataset | Main strict `f7f3ee9` | Candidate strict `41903d1` | Integrated strict | Integrated UZP |
+|---|---:|---:|---:|---:|
+| Training, original references | 1.0000 | 0.9585 | 0.9585 | 0.9758 |
+| Training, corrected references | 0.9585 | 1.0000 | 1.0000 | 1.0000 |
+| Organizer scans (30) | 0.9766 | 0.9974 | 0.9974 | 1.0000 |
+| Corpus 1 all (39) | 0.8889 | 0.8873 | 0.8880 | 0.9212 |
+| Corpus 2 dev (39) | 0.8926 | 0.8926 | 0.8951 | 0.9244 |
+
+The first main scan batch required one isolated OCR timeout retry on the shared host. All 196 training files matched byte for byte before and after integration. The jury CI checker matched all 90 training entries against corrected references. [Field counts and expected changes by case](evals/results/p0-conventions.json)
 
 Main `f7f3ee9` ran with local rules and two PDF workers. Both scores below use the same predictions and original references. The difference is UZP F1 minus historical strict F1.
 
@@ -81,7 +95,6 @@ Two and four grant JSONs matched exactly. The ten organizer grants remained exac
 | Improve receipt routing and recover damaged party names on development inputs | Open |
 | Ask UZP the questions `docs/task/BRIEF.md` marks UNCONFIRMED (`grep -n UNCONFIRMED docs/task/BRIEF.md`). The ones that change the build: is a team without a VM evaluated from GitHub, does `.env` replace the form's key field, where "no private hosting" ends, the `RUN.md` format, whether the 45-minute limit is measured on the VM, how files unprocessed at the cutoff count, how F1 counts are aggregated, whether a solution without an LLM gets the maximum LLM-size score (only the #64 relay says so) and whether the PDF's 30/20 split still stands. The long-string similarity function is the next row | Open |
 | Confirm the long-string similarity function with UZP and record the Stage II weights | Open |
-| `{}` for unrelated documents (#57), including the eval's `negatives_empty` check, which still scores zero bytes as compliant and `{}` as not (`evals/metrics.py`, `evals/run.py`, `tests/test_eval_metrics.py`), and the printed country code in account numbers (#58) | Dominik-Galus (`fix/p0-conventions`) |
 | Robustness eval on seeded layout variants and generated negatives (#63) | Dominik-Galus (`feat/variant-eval`, PR #69) |
 | Class-config flag, TOML validators, weighted routing and a scaffold for new classes (#62) | 00200200 (`claude/config-classes-case-ab8189`) |
 | Promote HackNation2026 PR #48 to `prod` after the faktczyfejk demo, so the doc2json.pl Caddy block survives a redeploy | Open |
@@ -99,15 +112,19 @@ Two and four grant JSONs matched exactly. The ten organizer grants remained exac
   the introductory sentence describing the dated act. In cases 01–39 that sentence supplies the reference reason.
 - 22.11.2026: unrelated documents get a JSON containing only `{}`, not a 0-byte file. UZP confirmed it on Discord on
   21.11 at 13:50, 22:19 and 22:32, after an ambiguous first answer at 13:27 (issue #57, `docs/task/BRIEF.md`).
-  Supersedes the 21.11 empty-file decision. The code still writes an empty file until #57 lands.
+  Supersedes the 21.11 empty-file decision. The CLI and GUI also write `{}` for a PDF that failed and report the
+  failure separately (PR #78).
 - 22.11.2026: account numbers are written as printed in the document: a printed country code (`PL` or another) is
   kept and all whitespace is removed (UZP on Discord; issues #46, #58). UZP calls the training references without `PL`
-  an error that the hidden set will not repeat. The text-layer path still drops `PL` until #58 lands; the OCR path keeps it.
+  an error that the hidden set will not repeat. PR #78 implements it, and the training scorer can restore the missing
+  prefixes from each transfer PDF (`--correct-training-accounts`).
 - 21.11.2026: file, module and identifier names are English; the jury GUI, organizer's JSON keys and original file stems use Polish.
 - 21.11.2026: delegated work and reviews (pre-commit review, pre-push judge) go to Codex workers through
   `/orchestrator`, not to Claude subagents.
 
 ## Log
+
+- 22.11.2026 · Codex · Added case warnings and opt-in sibling OCR repair for #61. All 304 keyless outputs matched main byte for byte. UZP F1 stayed at 0.9231 on corpus 1 all, 0.9221 on corpus 1 dev and 0.9244 on corpus 2 dev. Training scored 1.000 with 196 exact outputs. The 30 singleton scans had 29 exact outputs and UZP F1 of 1.000. [Paired case measurements](evals/results/case-siblings.json)
 
 - 22.11.2026 · Codex · Grouped appeal and mandate word boxes by printed role and column. Added regressions for wrapped names, repeated stationery, extra appointees and principal-specific signatures.
 
@@ -210,8 +227,9 @@ These runs used local rules with the three endpoint variables unset. The two loc
 | Wire the doc2json.pl upload to the extraction (serve the GUI backend behind `/api/` or point the page at it) | Open |
 
 - 21.11.2026 · Codex · Round 3 traced 130 field errors on 78 real development PDFs. Recovered identifiers from matching party records, checked damaged company names against declarations and read debit amounts across bank columns. The single-field Ministral whitespace trial lost one correct title in 12 calls and was dropped.
+- 22.11.2026 · Codex · Implemented UZP’s empty-object and printed-account conventions on `fix/p0-conventions`. The training scorer can restore missing country codes from each transfer PDF with `--correct-training-accounts`.
 
 - 22.11.2026 · Codex · Added a Python 3.13 jury install and 150-PDF CLI comparison for Windows x64, Linux x64 and macOS in `ab3c8fa`. GitHub blocked all three jobs before checkout due to account billing. The run produced no timings. [Run record](evals/results/jury-batch.json)
 - 22.11.2026 · Codex · Implemented the UZP scorer and retained historical strict micro F1 on `feat/uzp-metric` (#59).
 - 22.11.2026 · Codex · Added local jury Compose services and the signed task rules for #60. Compose configuration validated. Docker Desktop did not answer its health probe, so container byte parity is pending.
-- 22.11.2026 · Claude · Brought `docs/task/BRIEF.md` up to UZP's Discord answers (#64), the Regulamin (`docs/task/regulamin.pdf`) and the organizer's `VM.md`; refreshed `data/uzp` to `eadffbc` (adds `VM.md` only). In WORKLOG: recorded the `{}` and account-number decisions, put the VM row first, scoped the Ministral row to #38, split the UZP-answer issues into per-issue rows with their owners, flagged the eval's `negatives_empty` check and merged main and dropped the rows it finished (#60, #59, #61) · docs/brief-update
+- 22.11.2026 · Claude · Brought `docs/task/BRIEF.md` up to UZP's Discord answers (#64), the Regulamin (`docs/task/regulamin.pdf`) and the organizer's `VM.md`; refreshed `data/uzp` to `eadffbc` (adds `VM.md` only). In WORKLOG: recorded the `{}` and account-number decisions, put the VM row first, scoped the Ministral row to #38 and split the UZP-answer issues into per-issue rows with their owners. Merged main (latest: PRs #74 and #78) · docs/brief-update

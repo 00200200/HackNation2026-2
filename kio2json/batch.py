@@ -4,20 +4,22 @@ import json
 import logging
 import os
 import sys
+from collections import defaultdict
 from collections.abc import Iterator
 from concurrent.futures import FIRST_COMPLETED, ProcessPoolExecutor, wait
 from concurrent.futures.process import BrokenProcessPool
 from contextlib import ExitStack, redirect_stderr
-from dataclasses import dataclass
+from dataclasses import dataclass, replace
 from io import StringIO
 from multiprocessing import get_context
 from pathlib import Path
 
+from .case_repair import Reading, case_repair_enabled, repairs
 from .class_config import DocumentClass, parse_classes
 from .endpoint_error import EndpointError
 from .ocr_budget import batch_deadline
 from .pdf_text import NoReadableTextError
-from .pipeline import process_pdf
+from .pipeline import process_pdf, uses_case_schema
 
 
 def configure_logging(classes: list[DocumentClass]) -> None:
@@ -32,21 +34,60 @@ def configure_logging(classes: list[DocumentClass]) -> None:
 @dataclass(frozen=True)
 class Result:
     label: str | None
-    text: str
+    text: str = "{}\n"
     error: str | None = None
     used_recovery: bool = False
+    readings: tuple[Reading, ...] = ()
+    custom_schema: bool = False
 
 
 def read_document(path: Path, classes: list[DocumentClass], *, batch_deadline: float | None = None) -> Result:
     recoveries = []
+    readings = [] if case_repair_enabled() else None
     try:
-        label, data = process_pdf(path, classes=classes, on_recovery=recoveries.append, batch_deadline=batch_deadline)
-        text = json.dumps(data, ensure_ascii=False, indent=2) + "\n" if data else ""
-        return Result(label, text, used_recovery=bool(recoveries))
+        label, data = process_pdf(
+            path, classes=classes, on_recovery=recoveries.append, batch_deadline=batch_deadline, case_readings=readings
+        )
+        text = json.dumps(data, ensure_ascii=False, indent=2) + "\n"
+        custom = any(c.id == label and not uses_case_schema(c) for c in classes)
+        return Result(label, text, used_recovery=bool(recoveries), readings=tuple(readings or ()), custom_schema=custom)
     except (EndpointError, NoReadableTextError) as error:
-        return Result(None, "", str(error))
+        return Result(None, error=str(error))
     except Exception as error:  # noqa: BLE001 - PDF and OCR backends raise unrelated types.
-        return Result(None, "", f"{type(error).__name__}: {error}")
+        return Result(None, error=f"{type(error).__name__}: {error}")
+
+
+def reconcile_cases(names: list[Path], results: list[Result]) -> list[Result]:
+    """Use original readings only. Keep output order, diagnostics and unrelated bytes intact."""
+    if not any(result.readings for result in results):
+        return results
+    grouped = defaultdict(list)
+    for index, (name, result) in enumerate(zip(names, results, strict=True)):
+        if name.parent != Path(".") and not result.error and (result.readings or result.label == "appeal"):
+            grouped[name.parent].append(index)
+    output = results.copy()
+    for indices in grouped.values():
+        if sum(results[i].label == "appeal" for i in indices) > 1:
+            continue  # No document link distinguishes separate appeals within a folder.
+        for i in indices:
+            result = results[i]
+            siblings = [reading for j in indices if results[j].label != result.label for reading in results[j].readings]
+            changes = list(repairs(result.readings, siblings))
+            if not changes:
+                continue
+            data = json.loads(result.text)
+            # Edit title spans from right to left to preserve their original offsets.
+            for reading, value in sorted(changes, key=lambda change: change[0].span or (0, 0), reverse=True):
+                node = data
+                for key in reading.path[:-1]:
+                    node = node[key]
+                field = reading.path[-1]
+                if reading.span:
+                    start, end = reading.span
+                    value = node[field][:start] + value + node[field][end:]
+                node[field] = value
+            output[i] = replace(result, text=json.dumps(data, ensure_ascii=False, indent=2) + "\n")
+    return output
 
 
 _worker_classes: list[DocumentClass]
@@ -63,7 +104,7 @@ def _read_in_worker(path: Path, deadline: float) -> tuple[Result, str]:
         try:
             result = read_document(path, _worker_classes, batch_deadline=deadline)
         except SystemExit as error:
-            result = Result(None, "", f"PDF worker requested exit ({error.code})")
+            result = Result(None, error=f"PDF worker requested exit ({error.code})")
     return result, diagnostics.getvalue()
 
 
@@ -100,7 +141,7 @@ def read_batch(pdfs: list[Path], sources: dict[Path, bytes], workers: int) -> It
                 try:
                     ready[index] = future.result()
                 except BrokenProcessPool:
-                    ready[index] = (Result(None, "", "PDF worker exited unexpectedly"), "")
+                    ready[index] = (Result(None, error="PDF worker exited unexpectedly"), "")
                     pool.shutdown()
                     pool = None
                 submit_next(pool)

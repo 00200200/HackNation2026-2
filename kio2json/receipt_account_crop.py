@@ -1,4 +1,4 @@
-"""Reread a checksum-invalid Polish account in its printed receipt field."""
+"""Reread a checksum-invalid account in its printed receipt field."""
 
 import re
 from itertools import pairwise
@@ -7,9 +7,8 @@ from pathlib import Path
 import pdfplumber
 from pdfplumber.utils.exceptions import PdfminerException
 from PIL import ImageFilter
-from stdnum import iban
 
-from .ocr_accounts import ACCOUNT_RE
+from .accounts import account_matches, valid_account
 from .ocr_budget import CROP_TIMEOUT_MS, RereadExpired, remaining_ms, require_remaining_ms
 from .pdf_text import OCR_DPI, WordBox, _language_dir
 
@@ -28,7 +27,7 @@ def _number_boxes(words: list[WordBox], label: str, token: str) -> list[WordBox]
         span = words[i : i + len(tokens)]
         if [w.text for w in span] != tokens:
             continue
-        digits = [w for w in span[1:] if w.text != "PL"]
+        digits = list(span[2:] if re.fullmatch(r"[A-Za-z]{2}", tokens[1]) else span[1:])
         if all(b.x0 >= a.x1 and abs(a.y0 - b.y0) <= max(a.y1 - a.y0, b.y1 - b.y0) for a, b in pairwise(digits)):
             matches.append(digits)
     return matches[0] if len(matches) == 1 else []
@@ -45,8 +44,10 @@ def _read_crops(path: Path, groups: list[list[WordBox]]) -> list[set[str]]:
     left, top = image.bbox[:2]
     readings = []
     with PyTessBaseAPI(path=_language_dir(), lang="pol", psm=PSM.SINGLE_LINE) as api:
-        api.SetVariable("tessedit_char_whitelist", "0123456789")
         for group in groups:
+            letters = any(c.isalpha() for w in group for c in w.text.removeprefix("PL"))
+            alphabet = "0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ" if letters else "0123456789"
+            api.SetVariable("tessedit_char_whitelist", alphabet)
             require_remaining_ms()
             bounds = (
                 (min(w.x0 for w in group) - left - 2) * image.scale,
@@ -72,10 +73,10 @@ def recover_account_crops(path: Path, pages: list[str], boxes: list[WordBox]) ->
     words = [w for w in boxes if w.page == 1]
     targets = []
     for line in re.finditer(r"[^\n]+", pages[0]):
-        for match in ACCOUNT_RE.finditer(line[0]):
+        for match in account_matches(line[0]):
             raw = "".join(match[1].split())
             prefix = line[0][: match.start()].rstrip()
-            if iban.is_valid("PL" + raw) or not _ACCOUNT_LABEL.search(prefix):
+            if valid_account(raw) or not _ACCOUNT_LABEL.search(prefix):
                 continue
             span = _number_boxes(words, prefix.split()[-1], match[0])
             if span:
@@ -89,11 +90,22 @@ def recover_account_crops(path: Path, pages: list[str], boxes: list[WordBox]) ->
         # An optional reread can fail after the primary receipt was read successfully.
         return pages
     for (offset, printed, raw, _), candidates in zip(targets, readings, strict=True):
-        valid = {c for c in candidates if re.fullmatch(r"[0-9]{26}", c) and iban.is_valid("PL" + c)}
+        country = raw[:2] if raw[:2].isalpha() else ""
+        # Crops can exclude a separately printed country code or read only the
+        # digits in PL-prefixed fields. Never change the printed country.
+        readings_with_prefix = {country + c if country and len(c) == len(raw) - 2 else c for c in candidates}
+        valid = {
+            c
+            for c in readings_with_prefix
+            if len(c) == len(raw) and c.upper().startswith(country.upper()) and valid_account(c)
+        }
         if len(valid) == 1:
             candidate = valid.pop()
-            if sum(a != b for a, b in zip(candidate, raw, strict=True)) == 1:
-                digits = iter(candidate)
-                corrected = "".join(next(digits) if c.isdigit() else c for c in printed)
+            # Tesseract's account whitelist reads letters in uppercase. Retain
+            # each printed letter's case when the readings agree on that glyph.
+            corrected_number = [a if a.upper() == b.upper() else b for a, b in zip(raw, candidate, strict=True)]
+            if sum(a != b for a, b in zip(raw, corrected_number, strict=True)) == 1:
+                digits = iter(corrected_number)
+                corrected = "".join(c if c.isspace() else next(digits) for c in printed)
                 text = text[:offset] + corrected + text[offset + len(printed) :]
     return [text, *pages[1:]] if text != pages[0] else pages

@@ -45,15 +45,16 @@ Value conventions (Discord):
 - Personal names in the nominative: "Jan Kowalski", not "Jana Kowalskiego".
 - The grantor's (`mocodawca`) company name exactly as printed in the document, even when it differs from CEIDG.
 - Account numbers as printed in the document: keep the country code when one is printed (`PL` or another country's
-  code) and remove all whitespace. This answers #46. The code change is #58.
+  code) and remove all whitespace. This answers #46; the code follows it since PR #78 (#58).
 
 ## Input and output contract (organizer README, section 3)
 
 - `input/` and `output/` folders in the app root. The jury drops cases into `input/<case>/*.pdf`.
 - Output: `output/<case>/<input stem>.json`, one per input PDF, same tree (README, "Wynik działania"). The Discord
-  answer in #64 gives the example `potwierdzenie_przelewu.pdf` → `potwierdzenie_przelewu.json`.
+  answer in #64 gives the example `potwierdzenie_przelewu.pdf` → `potwierdzenie_przelewu.json`. The implementation
+  also writes `{}` when it cannot process a PDF; the CLI and GUI report the failure separately.
 - Negatives: the README says "empty `.json` file". UZP clarified on Discord that the file must contain only `{}`,
-  not zero bytes (#57).
+  not zero bytes (#57). The CLI, GUI and eval follow it since PR #78.
 - A CLI with instructions is **required** (FAQ 12a); a wrapper script (e.g. `start.bat`) is fine.
 - GUI is optional and scores extra: upload PDF, run, see JSON, ideally side by side with the source (FAQ 12b).
 
@@ -110,7 +111,7 @@ Value conventions (Discord):
   (FAQ says "at least 39"; 60 in the repo on 21.11.2026.)
 - 48 of the 60 training transfers print `PL` before an account number, yet all 60 gold files hold bare digits
   (counted 21.11.2026, #58). UZP called the missing `PL` an error in the references and said the hidden set will not
-  repeat it.
+  repeat it. The eval restores the prefix from each transfer PDF with `--correct-training-accounts` (PR #78).
 - Negatives: 12 PDFs in `data/uzp/dane/negatywne/` (plus a `readme.md`) and one extra PDF each in `przyklad_04`, `_10`,
   `_24`, `_37`: 16 in all.
 - `data/uzp/dane/skany/`: 30 labelled scans (10 each in `odwolania`, `pelnomocnictwa`, `potwierdzenia`, one
