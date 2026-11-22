@@ -67,6 +67,7 @@ function showOutput(name, tag, text, actions) {
 
 function select(item) {
   state.selected = item;
+  $("#copy").title = "Kopiuj JSON";
   const name = item.file.name.replace(/\.pdf$/i, "") + ".json";
   if (hasJson(item)) showOutput(name, "", jsonText(item), true);
   else showOutput(name, "Pusty plik", "Dokument spoza trzech rodzajów. Plik JSON zostaje pusty.", false);
@@ -159,15 +160,28 @@ function wire() {
     }),
   );
   ["dragleave", "drop"].forEach((t) => drop.addEventListener(t, () => drop.classList.remove("is-over")));
-  drop.addEventListener("drop", (e) => {
+  // Files dropped anywhere on the page go to the upload; otherwise the browser would open the PDF and leave the app.
+  const carriesFiles = (e) => e.dataTransfer?.types.includes("Files");
+  window.addEventListener("dragover", (e) => {
+    if (carriesFiles(e)) e.preventDefault();
+  });
+  // Cancel every drop, so a link dropped on the zone does not navigate away either.
+  window.addEventListener("drop", (e) => {
     e.preventDefault();
-    if (e.dataTransfer.files.length) handleFiles(e.dataTransfer.files);
+    if (carriesFiles(e) && e.dataTransfer.files.length) handleFiles(e.dataTransfer.files);
   });
   $("#clear").addEventListener("click", () => location.reload());
   $("#copy").addEventListener("click", async () => {
     if (!state.selected) return;
-    await navigator.clipboard.writeText(jsonText(state.selected));
-    $("#copy").title = "Skopiowano";
+    const failed = "Nie udało się skopiować JSON-a. Pobierz plik przyciskiem obok.";
+    try {
+      await navigator.clipboard.writeText(jsonText(state.selected));
+      $("#copy").title = "Skopiowano";
+      if ($("#notice").textContent === failed) notice("");
+    } catch {
+      $("#copy").title = "Kopiuj JSON";
+      notice(failed);
+    }
   });
   $("#download").addEventListener("click", () => {
     if (!state.selected) return;

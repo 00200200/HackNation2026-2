@@ -184,3 +184,5 @@ These runs used local rules with the three endpoint variables unset. The two loc
 - 21.11.2026 · Codex · Round 3 traced 130 field errors on 78 real development PDFs. Recovered identifiers from matching party records, checked damaged company names against declarations and read debit amounts across bank columns. The single-field Ministral whitespace trial lost one correct title in 12 calls and was dropped.
 
 - 22.11.2026 · Codex · Added local jury Compose services and the signed task rules for #60. Compose configuration validated. Docker Desktop did not answer its health probe, so container byte parity is pending.
+
+- 22.11.2026 · Claude · doc2json.pl frontend: route file drops anywhere on the page to the upload, report a refused clipboard copy, white keyboard focus ring on light buttons, null token at #8a8a8a (CodeRabbit threads on #27) · fix/frontend-review-27
