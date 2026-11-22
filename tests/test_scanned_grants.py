@@ -37,7 +37,7 @@ do reprezentowania przed sądem."""
         "data": {
             "imie_nazwisko": "Leon Polny",
             "krs": None,
-            "nazwa": None,
+            "nazwa": "Zegary",
             "nip": "1112223344",
             "typ": "osoba_fizyczna",
         },

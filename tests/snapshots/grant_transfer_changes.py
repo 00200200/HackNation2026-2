@@ -241,6 +241,14 @@ INTENDED_CHANGES = {
             "The electronic signer's name occupies the next row in the named grantor block.",
         )
     ],
+    "invented/grant-natural-person-trader": [
+        (
+            "mocodawca.0.podpisujacy.+0",
+            ABSENT,
+            signer("Tamara Snopna"),
+            "The first-person declaration identifies the proprietor as the undersigned.",
+        )
+    ],
     "invented/grant-unreadable-mark": [
         ("mocodawca.0.podpisujacy.+0", ABSENT, signer(None), "One grantor signature is explicitly illegible.")
     ],
