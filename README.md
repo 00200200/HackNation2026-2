@@ -12,7 +12,8 @@
 
 doc2json is our HackNation 2026 entry for the Odwołania2json challenge of the Public Procurement Office (UZP). Give it
 the PDFs of a KIO appeal case. It decides from the content which file is the appeal, the power of attorney or the
-transfer confirmation, and writes the organizer's JSON for each one. Any other document gets an empty file.
+transfer confirmation, and writes the organizer's JSON for each one. Any other document gets `{}`, as UZP confirmed in
+[issue #57](https://github.com/00200200/HackNation2026-2/issues/57).
 
 <p align="center">
   <a href="https://doc2json.pl"><img src="docs/readme/web.png" alt="doc2json.pl: drop PDFs on the left, read the JSON on the right" width="100%"></a>
@@ -25,7 +26,7 @@ facts in different words: the parties and their identifiers, the procurement, th
 A person reads them easily, but a system can only use those facts once they are structured data.
 <sub>Source: challenge description, UZP, HackNation 2026 (`docs/task/`).</sub>
 
-<p align="center"><img src="docs/readme/classes.png" alt="Three document types: appeal, power of attorney, transfer confirmation; anything else gets an empty file" width="100%"></p>
+<p align="center"><img src="docs/readme/classes.png" alt="Three document types: appeal, power of attorney, transfer confirmation; anything else gets an empty object" width="100%"></p>
 
 ## How it works
 
@@ -45,38 +46,49 @@ A person reads them easily, but a system can only use those facts once they are 
 
 ## Results
 
-<p align="center"><img src="docs/readme/results.png" alt="UZP field micro F1, rules only: 1.0000 on the training cases and the organizer scans, 0.9231 and 0.9244 on two local real-document corpora" width="100%"></p>
+<p align="center"><img src="docs/readme/results.png" alt="UZP field micro F1, rules only: 1.0000 on the training cases and the organizer scans, 0.9212 and 0.9244 on two local real-document corpora" width="100%"></p>
 
 | Dataset | PDFs | UZP micro F1 | Strict micro F1 |
 |---|---:|---:|---:|
 | Organizer training cases (synthetic) | 196 | 1.0000 | 1.0000 |
 | Organizer scans (scanned PDFs) | 30 | 1.0000 | 0.9974 |
-| Local corpus 1 (real) | 39 | 0.9231 | 0.8900 |
+| Local corpus 1 (real) | 39 | 0.9212 | 0.8880 |
 | Local corpus 2, dev (real) | 39 | 0.9244 | 0.8951 |
 
-Each row is one rules-only CLI run (no API key, two PDF workers) of main at commit `6ff2966`, scored at `6b34bc5` and
-recorded in [`evals/results/case-siblings.json`](evals/results/case-siblings.json). Both scores use the same
-predictions. In the same file the branch with the case checks of #74 wrote byte-identical outputs and scored the same
-(`byte_matches_to_main`, `branch_before_repair`). UZP micro F1 follows the scoring rules UZP gave on the hackathon
-Discord, as recorded in [issue #59](https://github.com/00200200/HackNation2026-2/issues/59) and implemented in
-`evals/metrics.py`: a field that is empty in both the reference and the prediction counts as zero, and a wrong value
-counts as one false positive. Five long strings accept an 80% RapidFuzz match, because UZP has not confirmed its
-similarity function. The strict score, a normalised exact match, is the one we used before. On the organizer scans no
-field is missing or wrong under the UZP rules (309 true positives, 0 false positives, 0 false negatives), and 29 of the
-30 outputs equal the reference JSON exactly. An earlier run at extractor `f7f3ee9`
-([`uzp-metric.json`](evals/results/uzp-metric.json)), which predates #65, routed one transfer scan wrongly and scored
-0.9869 UZP and 0.9740 strict on them. We have not established whether #65 explains the difference.
+Each row is one rules-only CLI run (no API key, two PDF workers) recorded in
+[`evals/results/p0-conventions.json`](evals/results/p0-conventions.json). The training and scan rows are product commit
+`97dc53e` (`final_verification`). The corpus rows are the earlier product commit `55dc2a1` (`integration.corpus1all` and
+`integration.corpus2`, where `micro_f1` is the UZP score and `micro_f1_strict` the strict one), because the private
+corpora were not re-run at `97dc53e`, whose code differs. Since `97dc53e`, main has changed the extractor only through
+the first-pass watchdog (#79) and the vendored OCR data (#54), which that file does not cover.
+
+UZP micro F1 follows the scoring rules UZP gave on the hackathon Discord, as recorded in
+[issue #59](https://github.com/00200200/HackNation2026-2/issues/59) and implemented in `evals/metrics.py`: a field that is
+empty in both the reference and the prediction counts as zero, and a wrong value counts as one false positive. Five long
+strings accept an 80% RapidFuzz match, because UZP has not confirmed its similarity function. The strict score, a
+normalised exact match, is the one we used before.
+
+UZP answered that a transfer account keeps the printed country code
+([issue #58](https://github.com/00200200/HackNation2026-2/issues/58)). The original training references omit two printed
+`PL` prefixes in each of 48 transfers, so the training row scores against references with them restored
+(`--correct-training-accounts`). Against the original references the same outputs score 0.9758 UZP and 0.9585 strict, with
+96 field mismatches (`integration.training_raw`). On the organizer scans no field is missing or wrong under the UZP rules
+(309 true positives, 0 false positives, 0 false negatives, `integration.scans.field_counts`). An earlier run at extractor
+`f7f3ee9` ([`uzp-metric.json`](evals/results/uzp-metric.json)), which predates #65, routed one transfer scan wrongly and
+scored 0.9869 UZP and 0.9740 strict on them. We have not established whether #65 explains the difference.
 
 The rules were developed against the training cases, the organizer scans and the two local corpora. The local corpora are
 private sets of real documents that are not in this repository. These are therefore development figures, not estimates
 for unseen cases and not the score on the organizer's hidden test set. The 60 test PDFs of corpus 2 are not part of them.
 
-Timing: 150 PDFs took 402 s with one worker while eight busy loops occupied the 8 logical CPUs of an Apple M1
-([`adaptive-ocr-budget.json`](evals/results/adaptive-ocr-budget.json), `runs[5]`, product `59aa13a`). That run preceded the
-final change to optional page reads, and the test suite ran during part of it (`serial_measurement`). With four workers on
-a host whose one-minute load average was 24 to 38 they took 83 s ([`round3.json`](evals/results/round3.json), `timing`,
-product `34da9ca`; `timing` does not name the machine). The organizer allows 45 minutes
-([`data/uzp/README.md`](data/uzp/README.md)), and the jury's machine will differ from ours.
+Timing: with the 180-second primary watchdog (`watchdog_commit` `21f55e0`), two workers processed all 226 public PDFs in
+160.75 s on a shared Apple M1 ([`first-pass-watchdog.json`](evals/results/first-pass-watchdog.json),
+`public_batch.watchdog.wall_seconds`, 160.753). The one-minute load average of the host was 34.65 at the start and 32.54
+at the end (`public_batch.watchdog.load_average_1min_start` and `load_average_1min_end`). In an earlier stress run, 150
+PDFs took 402 s with one worker while eight busy loops occupied the 8 logical CPUs
+([`adaptive-ocr-budget.json`](evals/results/adaptive-ocr-budget.json), `runs[5]`, product `59aa13a`). That run preceded
+the final change to optional page reads, and the test suite ran during part of it (`serial_measurement`). The organizer
+allows 45 minutes ([`data/uzp/README.md`](data/uzp/README.md)), and the jury's machine will differ from ours.
 
 The definition of the score, the earlier rounds and the OCR comparison are in the technical reference:
 [current figures](docs/readme/reference.md#current-figures-uzp-micro-f1-rules-only),
@@ -106,7 +118,9 @@ python -m kio2json                                    # reads ./input/<case>/*.p
   <img src="docs/gui/transfer.png" alt="Local viewer with a transfer confirmation" width="49%">
 </p>
 
-OCR engines, offline install of the language data, the optional model endpoint and every setting are in the
+`requirements.txt` lists only pinned PyPI packages, so pip downloads only from `pypi.org` and `files.pythonhosted.org`.
+The Polish and English OCR data ship in the repository (`kio2json/tessdata/`), and the rules-only CLI and viewer process
+PDFs offline after the install. OCR engines, the optional model endpoint and every setting are in the
 [technical reference](docs/readme/reference.md#run).
 
 ## Run with Docker Compose
@@ -118,7 +132,8 @@ Install Docker with Compose v2.24 or later. From the repository root, place case
 docker compose run --rm cli
 ```
 
-The first build downloads the Python dependencies and Polish and English OCR data.
+The first build downloads the Python dependencies from PyPI. The Polish and English OCR data ship in the repository
+(`kio2json/tessdata/`), so nothing else is fetched.
 Each input PDF gets a matching file under `output/<case>/`. To upload PDFs in a browser, run:
 
 ```sh
@@ -135,6 +150,16 @@ Both services read the host's `config/classes/` directory. See the
 [class configuration example](docs/readme/reference.md#enable-the-fourth-class)
 and [instructions for adding a class](docs/readme/reference.md#add-a-class). The handover requirements are in
 [§3.5 of the task rules](docs/task/regulamin.pdf).
+
+## Deploy on the evaluation VM
+
+UZP runs the command from `RUN.md` in `/opt/solution` on a Linux VM, without the team present, after it cuts the team's
+access at 11:00 on 22.11.2026 ([`data/uzp/VM.md`](data/uzp/VM.md)). `deploy/vm_setup.sh` installs the pinned requirements
+and smoke-tests a transfer and a scanned appeal, and `deploy/RUN.md` is the command we hand over. The steps, the offline
+rehearsal and the Docker Compose fallback are in
+[Deploy on the evaluation VM](docs/readme/reference.md#deploy-on-the-evaluation-vm). The Ubuntu 24.04 offline run with
+two CPUs is recorded as unverified in [`vm-2vcpu.json`](evals/results/vm-2vcpu.json), because Docker Desktop did not
+respond on the development host.
 
 ## Add a document type
 
@@ -165,6 +190,7 @@ A class like this needs no code change and no rebuild. Field types, lists, norma
 | `evals/` | Field-level F1 harness and recorded results |
 | `compose.yaml`, `api.Dockerfile` | Docker Compose services for the batch CLI and the local upload page |
 | `frontend/`, `docs/deploy.md` | The doc2json.pl page and how it is deployed |
+| `deploy/` | VM setup script, handover `RUN.md`, offline rehearsal and the Compose file for the VM |
 | `data/uzp/` | Organizer data and schemas (copy of their repository) |
 | `docs/task/` | Challenge brief, FAQ and details |
 | `WORKLOG.md` | Current state, open work and the dated log |

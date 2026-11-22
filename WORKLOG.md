@@ -10,7 +10,7 @@ variables unset. Keyed runs can use a second OCR reading and recover a failed do
 
 The opt-in small-model profile uses Mistral’s regional API, compact source spans and bounded PDF workers. [Provider comparison](docs/small-model-providers.md)
 
-The batch CLI defaults to up to four PDF workers, with one thread per Tesseract instance and up to three concurrent page reads per PDF. The first OCR pass supplies layout word boxes, and optional OCR has up to 300 seconds per document. A shared batch cutoff stops rereads after 27 minutes for 150 PDFs.
+The batch CLI defaults to up to four PDF workers, with one thread per Tesseract instance and up to three concurrent page reads per PDF. The first OCR pass supplies layout word boxes, and optional OCR has up to 300 seconds per document. A shared batch cutoff stops rereads after 27 minutes for 150 PDFs. Required OCR has a 180-second page watchdog and can retry a stalled page once at 150 dpi.
 
 The local viewer flags disagreements between an appeal, its mandate and its receipt. The CLI and viewer can use independently printed sibling values to repair a damaged reading within one case folder.
 
@@ -21,7 +21,21 @@ behind the faktczyfejk Caddy; deploy in `docs/deploy.md`. Its upload calls `kio2
 
 The jury can run the batch CLI and upload UI locally with the root Compose file. [Docker instructions](README.md#run-with-docker-compose)
 
+The evaluation VM kit installs the rules CLI under `/opt/solution`. The VM owner still needs to run the Ubuntu offline and reboot checks. [Deployment steps](README.md#deploy-on-the-evaluation-vm)
+
 ## Last eval
+
+The empty-object writer preserved all 180 positive training files byte for byte and wrote `{}\n` for all 16 negatives. Keeping printed country codes then changed two fields in each of 48 transfers. The comparison used local rules and two PDF workers. The integrated run includes the UZP scorer and the fix for a printed underline in a recipient account cell.
+
+| Dataset | Main strict `f7f3ee9` | Candidate strict `41903d1` | Integrated strict | Integrated UZP |
+|---|---:|---:|---:|---:|
+| Training, original references | 1.0000 | 0.9585 | 0.9585 | 0.9758 |
+| Training, corrected references | 0.9585 | 1.0000 | 1.0000 | 1.0000 |
+| Organizer scans (30) | 0.9766 | 0.9974 | 0.9974 | 1.0000 |
+| Corpus 1 all (39) | 0.8889 | 0.8873 | 0.8880 | 0.9212 |
+| Corpus 2 dev (39) | 0.8926 | 0.8926 | 0.8951 | 0.9244 |
+
+The first main scan batch required one isolated OCR timeout retry on the shared host. All 196 training files matched byte for byte before and after integration. The jury CI checker matched all 90 training entries against corrected references. [Field counts and expected changes by case](evals/results/p0-conventions.json)
 
 Main `f7f3ee9` ran with local rules and two PDF workers. Both scores below use the same predictions and original references. The difference is UZP F1 minus historical strict F1.
 
@@ -82,7 +96,7 @@ Two and four grant JSONs matched exactly. The ten organizer grants remained exac
 | Improve receipt routing and recover damaged party names on development inputs | Open |
 | Confirm the long-string similarity function with UZP and record the Stage II weights | Open |
 | Promote HackNation2026 PR #48 to `prod` after the faktczyfejk demo, so the doc2json.pl Caddy block survives a redeploy | Open |
-| Re-measure the README Results rows (UZP and strict micro F1) on the submission commit; they describe main at `6ff2966` | Open |
+| Re-measure the README Results rows (UZP and strict micro F1) on the submission commit; the training and scan rows are product commit `97dc53e`, the corpus rows `55dc2a1`, and main has since gained #79 and #54 | Open |
 
 ## Decisions
 
@@ -95,16 +109,22 @@ Two and four grant JSONs matched exactly. The ten organizer grants remained exac
   an OCR or model change has to beat this baseline in the eval. The baseline's rules have seen cases 51-60; a fresh case split is needed to measure generalization for work that builds on these rules.
 - 21.11.2026: use the date and act stated together in the first charge. When its heading lacks a date, use
   the introductory sentence describing the dated act. In cases 01–39 that sentence supplies the reference reason.
-- 21.11.2026: unrelated documents get an empty file (UNCONFIRMED with UZP; the team checks for a zero-byte output).
+- 21.11.2026 · UZP confirmed that unrelated PDFs produce `{}` and transfer account numbers keep their printed country code with all whitespace removed. The CLI and GUI use the same empty object for a failed PDF and report the failure separately. [Empty output](https://github.com/00200200/HackNation2026-2/issues/57) · [Account numbers](https://github.com/00200200/HackNation2026-2/issues/58)
 - 21.11.2026: file, module and identifier names are English; the jury GUI, organizer's JSON keys and original file stems use Polish.
 - 21.11.2026: delegated work and reviews (pre-commit review, pre-push judge) go to Codex workers through
   `/orchestrator`, not to Claude subagents.
 
 ## Log
 
+- 22.11.2026 · Codex · Raised the required page watchdog from 60 to 180 seconds and added one 150-dpi retry within the remaining OCR budget. Regression tests cover timeout recovery, immediate engine errors, budget exhaustion and word-box coordinates after resizing.
+
 - 22.11.2026 · Codex · Added case warnings and opt-in sibling OCR repair for #61. All 304 keyless outputs matched main byte for byte. UZP F1 stayed at 0.9231 on corpus 1 all, 0.9221 on corpus 1 dev and 0.9244 on corpus 2 dev. Training scored 1.000 with 196 exact outputs. The 30 singleton scans had 29 exact outputs and UZP F1 of 1.000. [Paired case measurements](evals/results/case-siblings.json)
 
 - 22.11.2026 · Codex · Grouped appeal and mandate word boxes by printed role and column. Added regressions for wrapped names, repeated stationery, extra appointees and principal-specific signatures.
+- 22.11.2026 · Claude · #54 review follow-ups: the README names both PyPI hosts (`pypi.org`, `files.pythonhosted.org`) instead of "no other host"; `tests/test_batch_runtime.py` writes its fixture files as UTF-8, because a CP1252 Windows locale cannot encode the Polish literal in the worker fixture. `kio2json/` has no text-mode `open`, `read_text` or `write_text` without an encoding. 59 sites in `tests/` and 7 in `evals/` still use the locale default; they only matter for a Windows run of the tests, not for the Linux evaluation VM. `.gitattributes` marks the vendored `.traineddata` files binary so no checkout can rewrite them, and the stale `packaging/**` path filter is gone from `jury-batch.yml`. Merged `main` again (#74, `pdf_text.py` conflict: kept `OCRWord` and the tessdata constants).
+- 22.11.2026 · Claude · Took over #54: merged `main` (`3eccb41`, with the Compose files from #68; `api.Dockerfile` has no `COPY packaging` line any more), reworded the README install sentence after CodeRabbit, fixed the Docker section's claim that the build downloads OCR data, rechecked at `d14da55` (ruff clean, 1738 tests, eval-quick 1.000). Fresh py3.13 venv: `pip install -r requirements.txt` from another directory rc=0, 80 packages, 520 MiB; its CLI and `uv run` wrote byte-identical JSON for `input/case1` and three organizer scans. Every pin has a manylinux x86_64 wheel; `libsass` has no Linux aarch64 wheel, so `docker compose build` on an arm64 host needs a compiler or `platform: linux/amd64` (#60). No Docker on this machine and GitHub Actions is blocked by billing, so container byte parity is still unchecked.
+- 22.11.2026 · Claude · Handoff fix/install-deps (#44/#45): code done at de49710; fresh py3.13 venv `pip install -r requirements.txt` from another directory rc=0, 80 pkgs, site-packages 642 → 519 MiB (main: raw.githubusercontent.com timeout, 133 pkgs); make check 1704+2 passed; eval-quick 1.000 clean; CLI identical on cases 01/13/27/38/50. Left: judge PASS, stamp, push, PR.
+- 21.11.2026 · Claude · #44/#45: vendored the pinned pol/eng tessdata in `kio2json/tessdata/` (SHA-256 checked at first OCR use), dropped the local `packaging/` wheel so pip needs only PyPI from any directory; `pydantic-ai-slim[openai]` replaces `pydantic-ai`, requirements.txt 134 → 81 packages without anthropic, google-genai, logfire or pydantic-evals.
 
 - 21.11.2026 · Codex · Added native span output for small models, local source validation and a bounded parallel CLI. Verified the native schema on the quantized local model and both regional API releases.
 
@@ -184,6 +204,7 @@ Two and four grant JSONs matched exactly. The ten organizer grants remained exac
 - 22.11.2026 · Claude · PR #36 merged with main: the README, results chart and `docs/readme/reference.md` now quote the rules-only figures from `evals/results/round3.json`, main's README changes are carried into the reference, and the reference gains a section on the bundled class TOML files · feat/docs
 - 22.11.2026 · Claude · PR #36 merged with main again (#71, UZP scoring): the README and the results chart show the UZP micro F1 of `evals/results/uzp-metric.json` (extractor `f7f3ee9`) beside the strict score and state the 29/30 organizer-scan routing; the organizer scans are no longer labelled real; both timings name their product commit; `reference.md` gains a current-figures table, relabels Round 3 as the strict metric and carries the #33 citation edits (result file, key, number and commit for every speed and memory figure); the README names the optional model, its parameter count and endpoint and links the pipeline PDF · feat/docs
 - 22.11.2026 · Claude · PR #36 merged with main again (#67, #74): the README results, the chart and the current-figures table of `docs/readme/reference.md` now come from `evals/results/case-siblings.json` (main at `6ff2966`: organizer scans UZP 1.0000, corpus 1 0.9231, corpus 2 dev 0.9244). #74's viewer and repair paragraphs are in `docs/readme/reference.md`. The judge's wording points are applied (EU and EFTA caveat, 402 s run caveat, known-limits link, normalised exact match, no jury laptop) · feat/docs
+- 22.11.2026 · Claude · PR #36 merged with main again (#77, #78, #79, #54): the README Results table, the chart and the current-figures table of `docs/readme/reference.md` now come from `evals/results/p0-conventions.json` (training and scans at product commit `97dc53e`: UZP 1.0000 and 1.0000, strict 1.0000 and 0.9974; corpus 1 all 0.9212 and corpus 2 dev 0.9244 at `55dc2a1`). The intro and the class diagram show `{}` for unrelated documents, the PyPI-only install and vendored OCR data text is in the Quick start and Docker section, the README has a short VM section with the full text in the reference, and the watchdog paragraph cites its keys in `evals/results/first-pass-watchdog.json` · feat/docs
 
 ## Frontend branch snapshot before API integration
 
@@ -208,7 +229,10 @@ These runs used local rules with the three endpoint variables unset. The two loc
 | Wire the doc2json.pl upload to the extraction (serve the GUI backend behind `/api/` or point the page at it) | Open |
 
 - 21.11.2026 · Codex · Round 3 traced 130 field errors on 78 real development PDFs. Recovered identifiers from matching party records, checked damaged company names against declarations and read debit amounts across bank columns. The single-field Ministral whitespace trial lost one correct title in 12 calls and was dropped.
+- 22.11.2026 · Codex · Implemented UZP’s empty-object and printed-account conventions on `fix/p0-conventions`. The training scorer can restore missing country codes from each transfer PDF with `--correct-training-accounts`.
 
 - 22.11.2026 · Codex · Added a Python 3.13 jury install and 150-PDF CLI comparison for Windows x64, Linux x64 and macOS in `ab3c8fa`. GitHub blocked all three jobs before checkout due to account billing. The run produced no timings. [Run record](evals/results/jury-batch.json)
 - 22.11.2026 · Codex · Implemented the UZP scorer and retained historical strict micro F1 on `feat/uzp-metric` (#59).
 - 22.11.2026 · Codex · Added local jury Compose services and the signed task rules for #60. Compose configuration validated. Docker Desktop did not answer its health probe, so container byte parity is pending.
+
+- 22.11.2026 · Codex · Prepared the VM installation and offline rehearsal for #66 and refreshed the organizer instructions to `eadffbc`. [Rehearsal measurements](evals/results/vm-2vcpu.json)

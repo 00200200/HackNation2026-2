@@ -7,8 +7,8 @@ from itertools import pairwise, product
 from statistics import median
 
 from rapidfuzz.distance import Levenshtein
-from stdnum import iban
 
+from .accounts import ACCOUNT_RE, normalize_account, valid_account
 from .bank_transfer import REFERENCE_RE
 from .common import DATE_RE
 from .ocr_normalize import normalize_ocr
@@ -16,16 +16,19 @@ from .pdf_text import WordBox
 
 
 def validated_account(number: str) -> str | None:
-    if iban.is_valid("PL" + number):
+    if valid_account(number):
         return number
     unknown = [i for i, char in enumerate(number) if char == "?"]
     if len(unknown) > 1:
         return None
     valid = []
-    for i in unknown or range(len(number)):
-        for digit in "0123456789":
+    for i in unknown or [i for i, char in enumerate(number) if char.isdigit()]:
+        choices = "0123456789"
+        if unknown and number[:2].isalpha() and not number.startswith("PL") and i >= 4:
+            choices += "ABCDEFGHIJKLMNOPQRSTUVWXYZ"
+        for digit in choices:
             candidate = number[:i] + digit + number[i + 1 :]
-            if iban.is_valid("PL" + candidate):
+            if valid_account(candidate):
                 valid.append(candidate)
                 if len(valid) > 1:
                     return None
@@ -149,9 +152,7 @@ def has_detached_labels(pages: list[str], *, ocr: bool = False) -> bool:
     if not pages:
         return False
     first = pages[0]
-    if not (
-        DATE_RE.search(first) or MONEY_CELL.search(first) or re.search(r"(?<!\d)\d{2}(?:[ ]?\d{4}){6}(?!\d)", first)
-    ):
+    if not (DATE_RE.search(first) or MONEY_CELL.search(first) or ACCOUNT_RE.search(first)):
         return False
     detached = set()
     for line in first.splitlines():
@@ -195,18 +196,19 @@ def word_rows(boxes: list[WordBox], page: int = 1) -> tuple[list[list[WordBox]],
 def _cell_value(field: str, cell: str, ocr: bool) -> str | None:
     cell = cell.strip(" |:")
     if field.startswith("Rachunek"):
-        compact = re.sub(r"\s+", "", cell.removeprefix("IBAN").lstrip(": ")).removeprefix("PL")
-        if re.fullmatch(r"(?=.*[*Xx])[0-9*Xx]{4,34}", compact):
+        compact = "".join(cell.removeprefix("IBAN").lstrip(": ").split())
+        domestic = compact.removeprefix("PL")
+        if re.fullmatch(r"(?=.*[*Xx])[0-9*Xx]{4,34}", domestic):
             return cell
-        if ocr:
-            compact = normalize_ocr(compact)
-            if len(compact) == 26 and sum(c.isdigit() for c in compact) == 25:
-                compact = re.sub(r"[^0-9]", "?", compact)
-            value = validated_account(compact) if re.fullmatch(r"[0-9?]{26}", compact) else None
-            if value and re.match(r"(?:IBAN[ :]+)?PL", cell):
-                return "PL" + value
-            return value
-        return compact if re.fullmatch(r"[0-9]{26}", compact) else None
+        if not ocr:
+            return normalize_account(compact)
+        compact = normalize_ocr(compact)
+        domestic = compact.removeprefix("PL")
+        if len(domestic) == 26 and sum(c.isdigit() for c in domestic) == 25:
+            compact = compact.removesuffix(domestic) + re.sub(r"[^0-9]", "?", domestic)
+        if "?" in compact or normalize_account(compact):
+            return validated_account(compact)
+        return None
     if field.startswith("Data"):
         if ocr:
             cell = cell.rstrip(" *|")
@@ -293,10 +295,15 @@ def _account_below_party(rows, height):
         # beneath it, even when the first party's account cell is empty.
         right = header[2].x0 - height if len(header) > 2 else float("inf")
         words = " ".join(w.text for w in cells if w.x1 <= right)
-        account = re.match(r"(?i)^nr\.? rachunku[;:]\s+[_ ]*((?:PL\s*)?\d{2}(?: \d{4}){6})(?!\d| \d{4}\b)", words)
+        label = re.match(r"(?i)^nr\.? rachunku[;:]\s+[_ ]*", words)
+        if not label:
+            continue
+        # OCR can attach a printed underline to the first digit. Only remove
+        # it within the labelled account cell beneath its verified party column.
+        account = re.match(rf"{ACCOUNT_RE.pattern}(?! \d{{4}}\b)", words[label.end() :])
         if account:
             number = "".join(account[1].split())
-            if iban.is_valid("PL" + number.removeprefix("PL")):
+            if valid_account(number):
                 yield ("Rachunek nadawcy" if role == "nadawca" else "Rachunek odbiorcy"), number
 
 

@@ -3,9 +3,9 @@
 import re
 from decimal import Decimal
 
-from stdnum import iban
 from stdnum.pl import nip, pesel, regon
 
+from .accounts import valid_account
 from .class_config import DocumentClass, OutputField
 from .output_schema import normalize
 
@@ -14,7 +14,12 @@ NOTICE_FORMATS = {
     "numer_ted": re.compile(r"[0-9]{6}-[0-9]{4}"),
 }
 
-IDENTIFIER_CHECKS = {"nip": nip.is_valid, "pesel": pesel.is_valid, "regon": regon.is_valid}
+IDENTIFIER_CHECKS = {
+    "account_number": valid_account,
+    "nip": nip.is_valid,
+    "pesel": pesel.is_valid,
+    "regon": regon.is_valid,
+}
 
 
 def _validate(field: OutputField, key: str, value, *, appeal: bool):
@@ -31,9 +36,6 @@ def _validate(field: OutputField, key: str, value, *, appeal: bool):
         return value if amount.is_finite() and amount.as_tuple().exponent >= -2 else None
     if field.normalizer:
         if normalize(field.normalizer, value) != value:
-            return None
-        # For a normalized 26-digit NRB, compare the actual IBAN digits. A residue check also accepts 00 for 97.
-        if field.normalizer == "account_number" and value[:2] != iban.calc_check_digits("PL" + value):
             return None
         if (check := IDENTIFIER_CHECKS.get(field.normalizer)) and not check(value):
             return None

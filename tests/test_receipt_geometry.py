@@ -170,3 +170,31 @@ def test_account_beneath_neighboring_party_stays_in_its_column():
         [(20, "Nr rachunku:"), (280, "78 3512 0000 9981 2345 6789 0123")],
     )
     assert "Rachunek nadawcy" not in receipt_cell_fields(words, ocr=True)
+
+
+def test_scanned_receipt_routes_with_an_underlined_account_in_its_party_column():
+    from kio2json.classify import classify
+    from kio2json.ocr_accounts import account_evidence
+    from kio2json.ocr_extract import extract_bank_transfer
+
+    account = "78 3512 0000 9981 2345 6789 0123"
+    page = (
+        "Potwierdzenie przelewu\nNumer rachunku: 56458700991234567801234567\n"
+        f"Odbiorca przelewu:\nNr rachunku: _{account}\nKwota: 48,20 PLN"
+    )
+    words = boxes([(20, "Odbiorca przelewu:")], [(20, "Nr rachunku: _" + account)])
+    assert classify([page], ocr_accounts=account_evidence(page)) is None
+    restored = restore_receipt_rows([page], words, ocr=True)
+    evidence = account_evidence(restored[0])
+    assert classify(restored, ocr_accounts=evidence) == "bank_transfer"
+    assert extract_bank_transfer(restored, {1}, accounts=evidence)["przelew_bankowy"]["na_rachunek"] == (
+        "78351200009981234567890123"
+    )
+
+
+@pytest.mark.parametrize("prefix", ["Kod archiwalny: _", "Nr rachunku: X_", "Nr rachunku: _DE "])
+def test_a_nearby_identifier_cannot_fill_an_underlined_account_cell(prefix):
+    from kio2json.receipt_layout import receipt_cell_fields
+
+    words = boxes([(20, "Odbiorca przelewu:")], [(20, prefix + "78 3512 0000 9981 2345 6789 0123")])
+    assert "Rachunek odbiorcy" not in receipt_cell_fields(words, ocr=True)

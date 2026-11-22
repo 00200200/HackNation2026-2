@@ -6,6 +6,7 @@ from decimal import Decimal, InvalidOperation
 from babel.numbers import NumberFormatError, list_currencies, parse_decimal
 from pydantic import BaseModel, ConfigDict, Field, TypeAdapter, ValidationError, create_model
 
+from .accounts import account_matches, normalize_account
 from .class_config import OutputField
 from .common import DATE, MONTHS, to_iso
 
@@ -19,6 +20,7 @@ MONTH_WORD = re.compile(r"\b(?:" + "|".join(ENGLISH_MONTHS) + r")\b", re.IGNOREC
 MONTH_NAMES = "|".join([*ENGLISH_MONTHS, *MONTHS])
 DATE_FORMAT = re.compile(rf"(?:{DATE}|\d{{1,2}}\s+(?:{MONTH_NAMES})\s+\d{{4}})", re.IGNORECASE)
 SPACE = r"[^\S\r\n]"
+ACCOUNT_JOIN = rf"(?:{SPACE}|[.-])*+"
 GROUP_MARKS = ".,_'’ \t\xa0\u2009\u202f"
 # An amount with cents followed by a full date is a common two-column PDF row.
 COLUMN_BREAK = rf"(?<=[.,]\d{{2}})(?={SPACE}++{DATE_FORMAT.pattern}(?!\w))"
@@ -27,7 +29,7 @@ JOINED_DIGITS = rf"(?!{COLUMN_BREAK})[{re.escape(GROUP_MARKS)}-]++"
 # rediscover a valid-looking suffix inside an overlong or malformed token.
 DATE_TOKEN = re.compile(rf"\d++(?:(?:{JOINED_DIGITS}|\s+(?:{MONTH_NAMES})\s+)\d++)*+", re.IGNORECASE)
 ID_TOKEN = re.compile(r"(?:(?<!\w)(?P<prefix>PL|nr)[^\S\r\n]*)?(?P<digits>[0-9]++(?:[\s-]++[0-9]++)*+)", re.IGNORECASE)
-ID_LENGTHS = {"nip": {10}, "krs": {10}, "regon": {9, 14}, "pesel": {11}, "account_number": {26}}
+ID_LENGTHS = {"nip": {10}, "krs": {10}, "regon": {9, 14}, "pesel": {11}}
 
 CURRENCY_CODES = "|".join(sorted(list_currencies()))
 CURRENCY = rf"(?:{CURRENCY_CODES}|zł|[$¢£¤¥\u20a0-\u20cf])"
@@ -76,11 +78,13 @@ def normalize(name: str, raw):
         if not DATE_FORMAT.fullmatch(token):
             return None
         return to_iso(MONTH_WORD.sub(lambda m: MONTHS[ENGLISH_MONTHS.index(m[0].lower())], token))
+    if name == "account_number":
+        return normalize_account(token)
     match = ID_TOKEN.fullmatch(token)
     if not match:
         return None
     prefix = (match["prefix"] or "").lower()
-    if prefix and prefix != {"account_number": "pl", "nip": "pl", "krs": "nr"}.get(name):
+    if prefix and prefix != {"nip": "pl", "krs": "nr"}.get(name):
         return None
     if not re.fullmatch(r"[0-9]+(?:(?:\s+|-)[0-9]+)*", match["digits"]):
         return None
@@ -118,11 +122,28 @@ def quote_covers(quote: str, text: str, start: int, end: int, visible_end: int |
     return text.find(quote, max(0, end - len(quote)), stop) != -1
 
 
+def cited_account(value: str, quote: str, text: str, visible_end: int | None) -> str | None:
+    spans = list(account_matches(text))
+    for index, span in enumerate(spans):
+        if normalize_account(span[0]) != value or not quote_covers(quote, text, *span.span(), visible_end):
+            continue
+        # A fixed-width account match can sit inside a longer printed number.
+        # Stop at neighboring accounts so two complete numbers can share a row.
+        before = text[spans[index - 1].end() if index else 0 : span.start()]
+        after = text[span.end() : spans[index + 1].start() if index + 1 < len(spans) else len(text)]
+        if re.search(rf"[0-9][A-Za-z]*{ACCOUNT_JOIN}\Z", before) or re.match(rf"{ACCOUNT_JOIN}[A-Za-z]*[0-9]", after):
+            continue
+        return value
+    return None
+
+
 def cited_value(field: OutputField, raw, quote: str, text: str, *, visible_end: int | None = None):
     """Require an entire source token inside one verbatim occurrence of this citation."""
     value = scalar_value(field, raw)
     if value is None or not quote.strip() or quote not in text:
         return None
+    if field.normalizer == "account_number":
+        return cited_account(value, quote, text, visible_end)
     numeric = field.type in ("integer", "number")
     if numeric:
         pattern = NUMBER_TOKEN
