@@ -145,6 +145,11 @@ def extract(
             candidate = ocr_python()
         else:
             candidate = bind_engine(engine, definition, model, alternate=alternate)(source)
+        if engine == "python":
+            # A field added to a Python class's TOML, with a label pattern, is read after the extractor.
+            for key, field in definition.fields.items():
+                if key not in candidate and field.pattern is not None:
+                    candidate[key] = labelled(field, text)
         if engine == "python" and definition.profile.keyed and definition.profile.mode == "RL" and first_page:
             from .llm import OutputSettings
 

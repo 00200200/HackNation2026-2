@@ -32,7 +32,6 @@ from .ocr_accounts import AccountEvidence
 from .validators import Validator, declares_checks
 
 DEFAULT_DIR = Path(__file__).resolve().parents[1] / "config" / "classes"
-ORGANIZER_CLASSES = frozenset({"appeal", "bank_transfer", "power_of_attorney"})
 
 
 class Config(BaseModel):
@@ -216,6 +215,8 @@ class DocumentClass(Config):
     id: str = Field(pattern=r"^[a-z][a-z0-9_]*$")
     name: str | None = Field(default=None, min_length=1, description="Display name in the viewer")
     enabled: bool = True
+    # The KIO_LLM_* profile (mode, routing, second OCR reading) applies to a Python class that sets this.
+    model_profile: bool = False
     priority: int = 100
     routing: Annotated[
         Annotated[ClassifierRouting, Tag("classifier")] | Annotated[Routing, Tag("patterns")],
@@ -366,7 +367,7 @@ def parse_classes(sources: ClassSources | Mapping[Path, bytes]) -> list[Document
             if definition.id in classes:
                 raise ValueError(f"duplicate class id {definition.id} (also in {classes[definition.id].source})")
             if (
-                definition.id in ORGANIZER_CLASSES
+                definition.model_profile
                 and definition.engines == ["python"]
                 and isinstance(definition.routing, ClassifierRouting)
             ):

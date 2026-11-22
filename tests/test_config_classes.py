@@ -515,3 +515,48 @@ def test_the_page_of_a_field_is_a_keyboard_button():
     shown = html.unescape(str(field_table(trace)))
     assert "<button" in shown and 'type="button"' in shown and 'class="page-link"' in shown
     assert "Shiny.setInputValue('field', 0" in shown  # selects the field: its page and its marked words
+
+
+def test_the_model_profile_follows_the_class_file_flag(tmp_path, monkeypatch):
+    import shutil
+
+    from kio2json import class_config
+
+    monkeypatch.setenv("KIO_LLM_BASE_URL", "https://example.invalid/v1")
+    monkeypatch.setenv("KIO_LLM_MODEL", "small")
+    monkeypatch.setenv("KIO_LLM_API_KEY", "test-only")
+    monkeypatch.delenv("KIO_CLASSES_DIR", raising=False)
+    keyed = {c.id: c.profile.keyed for c in parse_classes(class_sources())}
+    assert keyed == {"appeal": True, "power_of_attorney": True, "bank_transfer": True, "participation": False}
+
+    registry = tmp_path / "classes"
+    shutil.copytree(ROOT / "config" / "classes", registry)
+    appeal = registry / "appeal.toml"
+    appeal.write_text(appeal.read_text(encoding="utf-8").replace("model_profile = true\n", ""), encoding="utf-8")
+    monkeypatch.setattr(class_config, "DEFAULT_DIR", registry.resolve())
+    keyed = {c.id: c.profile.keyed for c in parse_classes(class_sources(registry))}
+    assert not keyed["appeal"] and keyed["bank_transfer"]
+
+
+def test_a_labelled_field_added_to_an_organizer_class_follows_its_fields(tmp_path, monkeypatch):
+    import shutil
+
+    pages = ["Okładka", "O D W O Ł A N I E\nOdwołujący\nSygn. akt: KIO 1234/26"]
+    monkeypatch.setattr(pipeline, "read_pages", lambda path, **kwargs: pages)
+    monkeypatch.delenv("KIO_CLASSES_DIR", raising=False)
+    label, plain = pipeline.process_pdf(Path("opaque.pdf"))
+
+    registry = tmp_path / "classes"
+    shutil.copytree(ROOT / "config" / "classes", registry)
+    with (registry / "appeal.toml").open("a", encoding="utf-8") as appeal:
+        appeal.write(
+            '\n[fields.sygnatura]\ntype = "string"\ninstruction = "KIO case reference."\n'
+            + r"pattern = '^Sygn\. akt:[ \t]*(KIO \d+/\d+)'"
+            + "\n"
+        )
+    monkeypatch.setenv("KIO_CLASSES_DIR", str(registry))
+    label_with_field, extended = pipeline.process_pdf(Path("opaque.pdf"))
+    assert label == label_with_field == "appeal"
+    assert list(extended) == [*plain, "sygnatura"]
+    assert extended["sygnatura"] == "KIO 1234/26"
+    assert {key: extended[key] for key in plain} == plain

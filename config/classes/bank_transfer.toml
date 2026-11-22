@@ -1,5 +1,6 @@
 id = "bank_transfer"
 name = "Potwierdzenie przelewu"
+model_profile = true
 span_instructions = "Opisz jedną wykonaną operację. Odróżnij rachunek nadawcy od odbiorcy, datę wykonania od daty wydruku i tytuł przelewu od nazwy dokumentu. Wybierz kwotę operacji wraz ze znakiem. Skopiuj pełny numer każdego rachunku, w tym kod kraju, jeśli go wydrukowano, oraz wszystkie litery i zera."
 priority = 30
 engines = ["python"]

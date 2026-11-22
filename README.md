@@ -268,6 +268,7 @@ python -m kio2json --input examples/input --output /tmp/demo --classes examples/
 | `enabled` | `false` keeps the class off until `--enable <id>` (default `true`) |
 | `priority` | Classes are tried in ascending priority, then ID; the first match wins (default 100; organizer classes use 10 to 30) |
 | `engines` | `["labelled_fields"]` reads values after printed labels. `"llm"` asks the configured model endpoint and needs the `KIO_LLM_*` variables |
+| `model_profile` | `true` lets the `KIO_LLM_*` profile (model mode, routing, second OCR reading) apply to a Python class; the three organizer classes set it |
 | `[routing.cues]` with `threshold` | Phrase = weight. The class applies when the weights of the phrases found reach the threshold. Phrases match whole words, ignoring case and line breaks. A negative weight counts against the class |
 | `routing.required`, `routing.forbidden` | Regular expressions (case-insensitive, `^` and `$` per line). Every `required` one must match; any `forbidden` match rejects the class |
 | `routing.headings`, `routing.pages`, `[routing.evidence]` | A whole-line pattern with spaces removed; how many pages to search (default 1); a capture that must find `minimum` distinct values |
@@ -275,6 +276,14 @@ python -m kio2json --input examples/input --output /tmp/demo --classes examples/
 | `normalizer` | `iso_date`, `money`, `account_number`, `krs`, `nip`, `regon` or `pesel` |
 | `validators` | `"nip"`, `"regon"`, `"pesel"`, `"iban"` (checksums), `{ name = "date_range", min = 2021-01-01, max = 2030-12-31 }` (needs `iso_date`), `{ name = "one_of", values = ["A", "B"] }` |
 | `on_invalid` | `"null"` (default) writes null for a value that fails a check; `"warn"` keeps it and reports it in the trace and viewer |
+
+### Add a field to an existing class
+
+Add a `[fields.<key>]` table with a `pattern` to the class file, for example
+`[fields.sygnatura]` with `pattern = '^Sygn\. akt:[ \t]*(KIO \d+/\d+)'` in a copy of `appeal.toml`
+used through `KIO_CLASSES_DIR`. For a Python class the extractor runs first, and the labelled field is then
+read and added after its keys. `engines` stays as it is, so the model profile still applies. Leave the
+organizer classes unchanged for the jury run, because their schema has exactly the organizer's keys.
 
 The `labelled_fields` engine needs values printed after fixed labels. A layout without labels needs the
 `llm` engine and a model endpoint; the jury configuration runs without one. The three organizer classes
