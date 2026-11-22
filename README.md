@@ -117,8 +117,11 @@ corrected only when its NIP checksum fails. Missing fields stay empty.
    a possible e-mail address with a missing `@`, an English single-word pass rereads that crop. The extractor accepts the separator
    only when the rest of both readings agrees. Call `read_pages(path, word_boxes=boxes)` with
    an empty list to collect raw words and their rectangles alongside the page strings. Coordinates
-   are PDF points from the top left, with one-based page numbers. Polish Tesseract has 60 seconds per
-   primary page. Verification crops get up to 10 seconds each and optional full-page reads get up to
+   are PDF points from the top left, with one-based page numbers. Required Tesseract and RapidOCR
+   pages use a 180-second recognition watchdog at 300 dpi. After a timeout, the reader retries once
+   at 150 dpi if the document and batch still have time. It gives the retry the smaller of 60 seconds
+   and the remaining budget. Tesseract checks its timer during recognition, so setup and cancellation
+   can add wall time. Verification crops get up to 10 seconds each and optional full-page reads get up to
    180 seconds each. All optional OCR shares a deadline of
    300 seconds from the start of a PDF. The CLI and GUI also share one cutoff across the batch,
    10.8 seconds per input PDF with a minimum of 300 seconds for small batches. For the jury’s 150 PDFs
