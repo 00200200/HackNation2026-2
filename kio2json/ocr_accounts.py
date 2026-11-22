@@ -3,6 +3,8 @@
 import re
 from dataclasses import dataclass
 
+from stdnum import iban
+
 from .accounts import (
     ACCOUNT_RE,
     OCR_ACCOUNT_RE,
@@ -11,7 +13,14 @@ from .accounts import (
     complete_account_match,
     valid_account,
 )
-from .bank_transfer import AMOUNT_LABEL, BOUNDARY_RE, completed_value_block, posted_party_debit, printed_accounts
+from .bank_transfer import (
+    ACCOUNT_CURRENCY,
+    AMOUNT_LABEL,
+    BOUNDARY_RE,
+    completed_value_block,
+    posted_party_debit,
+    printed_accounts,
+)
 from .common import DATE, to_iso
 from .ocr_booking import normalize_booking_rows
 from .receipt_layout import validated_account
@@ -23,10 +32,10 @@ SENDER_FIELD = rf"(?:{ACCOUNT_NOUN} (?:{SENDER}|obciąż(?:an|on)[ye])|z rachunk
 RECIPIENT_FIELD = rf"(?:{ACCOUNT_NOUN} (?:{RECIPIENT}|uznawan[ye])|na rachunek)"
 ACCOUNT_LABEL = re.compile(
     rf"(?:(?P<sender>{SENDER_FIELD}|(?:dane )?{SENDER})|"
-    rf"(?P<recipient>{RECIPIENT_FIELD}|(?:dane )?{RECIPIENT})|(?P<generic>{ACCOUNT_NOUN}))\b",
+    rf"(?P<recipient>{RECIPIENT_FIELD}|(?:dane )?{RECIPIENT})|(?P<generic>{ACCOUNT_NOUN}))\b{ACCOUNT_CURRENCY}",
     re.IGNORECASE,
 )
-ACCOUNT_FIELD = re.compile(rf"(?:{SENDER_FIELD}|{RECIPIENT_FIELD})", re.IGNORECASE)
+ACCOUNT_FIELD = re.compile(rf"(?:{SENDER_FIELD}|{RECIPIENT_FIELD}){ACCOUNT_CURRENCY}", re.IGNORECASE)
 ACCOUNT_VALUE = re.compile(rf"(?:{ACCOUNT_RE.pattern}|(?<!\w)(?:\*{{4,}}|[Xx]{{3,}}|[—–-])(?!\w))")
 
 
@@ -162,6 +171,11 @@ def account_evidence(text: str) -> AccountEvidence:
 
 
 # Normalize only complete account tokens and calendar dates read by OCR on a receipt.
+# An inserted stroke can split an otherwise complete printed account. Only remove
+# it in an explicit account cell when the remaining 26 digits verify unchanged.
+SLASH_ACCOUNT = re.compile(
+    rf"(?im)^((?:{ACCOUNT_FIELD.pattern})[ \t]*:[ \t]*(?:\n[ \t]*)?(?:PL[ \t]*)?)(\d+/\d+)[ \t]*$"
+)
 OCR_DATE = re.compile(r"(?<!\d)(\d{2})\.(\d{2})(\d{4})(?!\d)")
 
 
@@ -174,10 +188,15 @@ def normalize_receipt(text: str) -> str:
             return match[0]
         return validated_account(compact) or "?"
 
+    def remove_stroke(match: re.Match) -> str:
+        digits = match[2].replace("/", "")
+        return match[1] + digits if len(digits) == 26 and iban.is_valid("PL" + digits) else match[0]
+
     def date(match: re.Match) -> str:
         candidate = ".".join(match.groups())
         return candidate if to_iso(candidate) else match[0]
 
+    text = SLASH_ACCOUNT.sub(remove_stroke, text)
     # Ignore a section title in front of the three booking columns. The typed row
     # parser still requires a date in both date columns and exactly one debit.
     text = re.sub(
@@ -211,3 +230,64 @@ def normalize_receipt(text: str) -> str:
     text = re.sub(rf"(?im)^data[ :]+({DATE})[ \t]*\nwykonania\b", r"Data wykonania: \1", text)
     text = re.sub(r"(?im)^[+| \t]*numer[ :]+(\d+)[ \t]*\ntransakcji[ |\t]*$", r"Numer transakcji: \1", text)
     return OCR_ACCOUNT_RE.sub(number, OCR_DATE.sub(date, normalize_booking_rows(text)))
+
+
+def disputed_account_cells(record, boxes):
+    from collections import Counter
+
+    from .ocr_choices import Cell, shape
+    from .receipt_layout import _row_headers, word_rows
+
+    fields = record["przelew_bankowy"]
+    roles = {"Rachunek nadawcy": "z_rachunku", "Rachunek odbiorcy": "na_rachunek"}
+    cells = []
+    labels = Counter()
+    rows, height = word_rows(boxes)
+    for row, following in zip(rows, rows[1:] + [[]]):
+        headers = _row_headers(row, following, height, ocr=True)
+        # A declaration still counts when its account is empty or partly
+        # masked, including aliases absent from the table-header vocabulary.
+        line = " ".join(w.text for w in row)
+        mentioned = {m.lastgroup for m in ACCOUNT_LABEL.finditer(line)}
+        recognized = [roles[label] for _, _, label in headers if label in roles]
+        labels.update(recognized)
+        for owner, field in (("sender", "z_rachunku"), ("recipient", "na_rachunek")):
+            if owner in mentioned and field not in recognized:
+                labels[field] += 1
+        if not headers or headers[0][0]:
+            continue
+        for i, (start, stop, label) in enumerate(headers):
+            if label not in roles:
+                continue
+            field = roles[label]
+            end = headers[i + 1][0] if i + 1 < len(headers) else len(row)
+            words = row[stop:end]
+            if words:
+                if words[0].x0 - row[stop - 1].x1 > 3 * height:
+                    continue
+            elif following and min(w.y0 for w in following) - row[start].y1 <= 3 * height:
+                left = row[start].x0 - height
+                right = row[end].x0 - height if end < len(row) else float("inf")
+                words = [w for w in following if left <= w.x0 and w.x1 <= right]
+                if not words or abs(words[0].x0 - row[start].x0) > 2 * height:
+                    continue
+            raw = "".join(w.text for w in words)
+            if shape(field, raw) and fields[field] in (None, raw):
+                cells.append(Cell(fields, field, raw, words))
+    cells = [c for c in cells if labels[c.field] == 1]
+    if not any(fields[c.field] is None for c in cells):
+        return cells
+    # A null can mean conflicting owners or an explicit mask. Require the
+    # primary transcript's own role binding before restoring a discarded value.
+    transcript = "\n".join(" ".join(w.text for w in row) for row in rows)
+    # A redacted page can contain the same digits in a second role or
+    # an unrelated reference. Leave missing fields alone on such a page.
+    if re.search(r"[*Xx•●█]{2,}|[0-9][*•●█…]|[*•●█…][0-9]", transcript):
+        return [c for c in cells if fields[c.field] is not None]
+    primary = account_evidence(transcript)
+    return [
+        c
+        for c in cells
+        if fields[c.field] is not None
+        or getattr(primary, "sender" if c.field == "z_rachunku" else "recipient") == c.original
+    ]
