@@ -338,3 +338,4 @@ These runs used local rules with the three endpoint variables unset. The two loc
 - 22.11.2026 · Claude · Deck slides 6, 9 and 10 without commit hashes and caveats in the visible text; sources stay in `docs/pitch/README.md` and the speaker notes.
 - 22.11.2026 · Unlabelled appeal procurement subjects can be recovered from the first-page paragraph immediately above an unambiguous procedure reference. The fallback uses existing word boxes and excludes litigation costs, owner names and competing procedures.
 - 22.11.2026 · Claude · Deck: slide 5 as a flow, slide 8 shows doc2json.pl, criteria slide removed (11 slides), shorter value slide, closing-slide team list updated, slide 5 notes cite the measured 412 s run · docs/pitch-refresh
+- 22.11.2026 · Claude · Deck: new slide 7 on explainability with real `--explain` output for przyklad_01 (12 slides) · docs/pitch-refresh
