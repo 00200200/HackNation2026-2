@@ -2,14 +2,16 @@
 set -eu
 cd "$(dirname "$0")"
 # The README creates .venv in the repository root. Use it even when it is not activated, for example under sudo.
-# Otherwise take whichever interpreter the shell provides: Ubuntu and macOS install python3 only.
-if [ -x .venv/bin/python ]; then
-    py=.venv/bin/python
-else
-    py=$(command -v python || command -v python3) || { echo "Python 3.13 was not found. See Run in README.md." >&2; exit 1; }
-fi
-# Ubuntu 24.04 ships Python 3.12, which would fail later with a traceback.
-"$py" -c 'import sys; sys.exit(sys.version_info < (3, 13))' || { echo "$py is older than Python 3.13. See Run in README.md." >&2; exit 1; }
+# Otherwise take the first interpreter on PATH that is Python 3.13 or newer. Ubuntu and macOS install python3 only,
+# and Ubuntu 24.04 ships 3.12.
+py=
+for candidate in .venv/bin/python python3 python; do
+    if command -v "$candidate" >/dev/null 2>&1 && "$candidate" -c 'import sys; sys.exit(sys.version_info < (3, 13))' 2>/dev/null; then
+        py=$candidate
+        break
+    fi
+done
+[ -n "$py" ] || { echo "Python 3.13 or newer was not found. See Run in README.md." >&2; exit 1; }
 case "$#:${1:-}" in
     0:) exec "$py" -m kio2json ;;
     1:gui) exec "$py" -m kio2json.gui ;;

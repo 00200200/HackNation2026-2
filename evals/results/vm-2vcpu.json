@@ -40,26 +40,26 @@
     "status": "simulation on the development host, not the evaluation VM",
     "extraction_revision": "d9a3b25982e62ebc0c75902956c2a7771ab665ac",
     "profile": "rules only",
-    "platform": "macOS arm64, Apple M2 Pro, 10 logical CPUs, shared with other sessions (load average 28 to 42 during the runs), no CPU quota",
-    "method": "evals.run --organizer-scans with the CLI at --jobs 2, timed with /usr/bin/time -l. The second run started 12 CPU-bound shell loops two seconds earlier.",
+    "platform": "macOS arm64, Apple M2 Pro, 10 logical CPUs, shared with other sessions, no CPU quota. The 1-minute load average was 41.5 when the first run started and 27.9 when the second started, two seconds after its loops began.",
+    "method": "evals.run --organizer-scans with the CLI at --jobs 2, timed with /usr/bin/time -l, with no KIO_LLM variables set and no .env file. The second run started 12 CPU-bound shell loops two seconds earlier.",
     "documents": 30,
     "shared_host_run": {
       "wall_seconds": 60.37,
       "cpu_seconds": 125.48,
       "average_cores": 2.08,
-      "mean_seconds_per_scan": 1.92,
+      "harness_seconds_per_doc": 1.92,
       "max_resident_set_size_bytes_reported_by_bsd_time_l": 1037991936
     },
     "twelve_busy_loops_run": {
       "wall_seconds": 115.07,
       "cpu_seconds": 125.9,
       "average_cores": 1.09,
-      "mean_seconds_per_scan": 3.79,
+      "harness_seconds_per_doc": 3.79,
       "max_resident_set_size_bytes_reported_by_bsd_time_l": 839729152
     },
     "uzp_micro_f1_both_runs": 1.0,
     "routing_correct_both_runs": 30,
-    "result_files": "Every field except the timing and the timestamp is identical in the two result files.",
-    "note": "The same work took 125 CPU seconds in both runs, and the scores did not change when it received about half the CPU. CPU seconds on the VM will differ with its core speed."
+    "result_files": "Not kept. Apart from the timing and the timestamp, the two result files were identical.",
+    "note": "The same work took 125 CPU seconds in both runs, and the scores did not change when it received about half the CPU. No cutoff was approached: the batch deadline for 30 documents is 324 s and the longer run took 115 s, so identical scores say nothing about behaviour once a cutoff binds. The resident set sizes are for the largest single process, not the total. Strict UZP F1 was 0.9974 in both runs. CPU seconds on the VM will differ with its core speed."
   }
 }
