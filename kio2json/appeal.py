@@ -2,7 +2,7 @@
 
 import re
 
-from .appeal_charges import ACTS, CHARGE, FILING, act_date, first_sentence, prose_action, sentences
+from .appeal_charges import ACTS, CHARGE, FILING, NEXT_ITEM, act_date, first_sentence, prose_action, sentences
 from .common import ATTORNEY_RE, DATE, EMAIL_RE, LOWER, PERSON, UPPER, registry_ids, squash, to_iso
 from .personal_names import nominative, same_nominal_form
 
@@ -39,6 +39,12 @@ REASON_RULES = [
 
 APPELLANT_LABEL = r"Odwo[łl]uj[ąa]cy"
 EXPLICIT_APPELLANT = re.compile(rf"(?im)^[ \t]*{APPELLANT_LABEL}[ \t]*[:(]")
+# A standalone role heading opens the same party card as a colon-labelled field.
+FORM_ROLE = re.compile(
+    r"(?im)^[ \t]*(?:(?P<appellant>odwo[łl]uj[ąa]cy|(?:wykonawca|podmiot) wnosz[ąa]cy odwo[łl]anie)|"
+    r"(?P<authority>zamawiaj[ąa]cy|podmiot zamawiaj[ąa]cy|instytucja zamawiaj[ąa]ca))"
+    r"[ \t]*(?::[ \t]*|$)"
+)
 SECTION_RE = re.compile(rf"^(Zamawiaj[ąa]cy|{APPELLANT_LABEL}|Wykonawca)\s*[:(]", re.IGNORECASE)
 ADDRESS_RE = re.compile(r"^(?:ul\.|al\.|pl\.|os\.|\d{2}\s*[-–—]\s*\d{3}\b)|^[^,]{2,40},\s*(?:ul\.|al\.)", re.IGNORECASE)
 ID_LINE_RE = re.compile(r"\b(?:KRS|NIP|REGON)\b")
@@ -421,6 +427,18 @@ def _challenged_action(text: str) -> tuple[str | None, int | None]:
         ):
             return first
         return None, reason
+    # Form fields describe the same first act only within their own section.
+    action = re.search(r"(?im)^(?:zaskarżona|kwestionowana|skarżona) czynność[ \t]*:[ \t]*(.+)$", text)
+    if (
+        action
+        and not (CHARGE.search(text, 0, action.start()) or NEXT_ITEM.search(text, 0, action.start()))
+        and (reason := _reason(action[1]))
+    ):
+        date_field = rf"(?im)^data (?:zaskarżonej |kwestionowanej |skarżonej )?czynności[ \t]*:[ \t]*({DATE})[ \t]*$"
+        lines = text.splitlines()
+        row = text[: action.start()].count("\n")
+        dates = [m[1] for line in lines[max(0, row - 1) : row + 2] if (m := re.fullmatch(date_field, line))]
+        return to_iso(dates[0]) if len(dates) == 1 else None, reason
     return prose_action(text)
 
 
@@ -456,7 +474,9 @@ def _procurement(text: str) -> dict:
             re.IGNORECASE | re.DOTALL,
         )
     if not title:
-        label = re.search(r"(?im)\b(?:nazwa postępowania|postępowaniu na):[ \t]*", text)
+        label = re.search(
+            r"(?im)\b(?:(?:nazwa|tytuł|przedmiot) (?:postępowania|zamówienia)|postępowaniu na):[ \t]*", text
+        )
         if label:
             rows = text[label.end() :].splitlines()
             if rows and not rows[0].strip():
@@ -514,6 +534,7 @@ def _appellant_registry(text: str, leader: dict) -> None:
 
 
 def extract(text: str, *, ocr_mail_lines: frozenset[int] = frozenset()) -> dict:
+    text = FORM_ROLE.sub(lambda m: "Odwołujący: " if m["appellant"] else "Zamawiający: ", text)
     header = text.split("Działając w imieniu", 1)[0]
     explicit_appellant = bool(EXPLICIT_APPELLANT.search(header))
     parties = _parties(header.splitlines(), ocr_mail_lines, explicit_appellant)

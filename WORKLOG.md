@@ -25,6 +25,14 @@ The evaluation VM kit installs the rules CLI under `/opt/solution`. The VM owner
 
 ## Last eval
 
+The fixed-seed benchmark re-rendered the facts from all 60 synthetic cases and generated 60 look-alike negatives. The keyless extractor was main at `3eccb41`, scored with the issue #59 metric. The initial `f7f3ee9` run had the same dataset digest and field counts.
+
+| Dataset | PDFs | UZP micro F1 | Strict micro F1 | Appeal F1 | Power F1 | Transfer F1 | Empty negatives |
+|---|---:|---:|---:|---:|---:|---:|---:|
+| Generated layouts | 240 | 0.2960 | 0.2860 | 0.0000 | 0.5529 | 0.6617 | 60/60 |
+
+Weakest positive profiles were label synonyms (0.1693), alternative formats (0.2083) and two columns (0.2089). Appeal F1 was zero in all six profiles. The benchmark uses short, newly authored forms built from the training facts. Profile scores also reflect their different case samples. [Ranked layouts and field scores](evals/results/variants.json)
+
 The empty-object writer preserved all 180 positive training files byte for byte and wrote `{}\n` for all 16 negatives. Keeping printed country codes then changed two fields in each of 48 transfers. The comparison used local rules and two PDF workers. The integrated run includes the UZP scorer and the fix for a printed underline in a recipient account cell.
 
 | Dataset | Main strict `f7f3ee9` | Candidate strict `41903d1` | Integrated strict | Integrated UZP |
@@ -91,11 +99,13 @@ Two and four grant JSONs matched exactly. The ten organizer grants remained exac
 
 | Item | Owner |
 |---|---|
-| Reword the `latest.json` sentences of `.claude/skills/hacknation-judging/SKILL.md` and `.claude/skills/odwolania2json-eval/SKILL.md`, or change the practice: README figures now name a committed result file under `evals/results/` with its key, value and product commit, because `latest.json` holds only the synthetic training run, and CodeRabbit applies the stricter skill text as a merge blocker on #36 and #53 | Open |
-| Obtain an EU/EEA-only processing commitment for Mistral or deploy the same weights within the EEA | Deployment |
+| Rehearse the installed solution on the organizer VM before access ends at 11:00 on 22 November. Check the offline run, reboot, and two-vCPU timing using [the VM instructions](data/uzp/VM.md). | VM owner |
+| If the team keeps the Ministral profile (#38): obtain an EU/EEA-only processing commitment for Mistral or deploy the same weights within the EEA. UZP said no private hosting; UNCONFIRMED whether that rules out the second option, since upstream `VM.md` allows models and containers on the evaluation VM | Deployment |
+| Reword the `latest.json` sentences of `.claude/skills/hacknation-judging/SKILL.md` and `.claude/skills/odwolania2json-eval/SKILL.md`, or change the practice: the README results table and the technical reference name a committed result file under `evals/results/` with its key, value and product commit, because `latest.json` holds only the synthetic training run, and CodeRabbit applies the stricter skill text as a merge blocker on #36 and #53 | Open |
 | Score corpus 2 test once after the class rules and small-model profile are integrated | Coordinator |
 | Improve receipt routing and recover damaged party names on development inputs | Open |
-| Confirm the long-string similarity function with UZP and record the Stage II weights | Open |
+| Confirm the unresolved VM, model hosting and scoring details listed in [the task brief](docs/task/BRIEF.md). | Open |
+| Class-config flag, TOML validators, weighted routing and a scaffold for new classes (#62) | 00200200 (`claude/config-classes-case-ab8189`) |
 | Promote HackNation2026 PR #48 to `prod` after the faktczyfejk demo, so the doc2json.pl Caddy block survives a redeploy | Open |
 | Run `docker compose run --rm cli` and `docker compose up gui` once on an amd64 Docker host and compare the CLI output with `python -m kio2json` (no Docker on the dev Macs; hosted Actions are blocked by billing, #67) | Open |
 
@@ -121,6 +131,11 @@ Two and four grant JSONs matched exactly. The ten organizer grants remained exac
 
 ## Log
 
+- 22.11.2026 · Claude · Brought `docs/task/BRIEF.md` up to UZP's Discord answers (#64), the Regulamin (`docs/task/regulamin.pdf`) and the organizer's `VM.md`; refreshed `data/uzp` to `eadffbc` (adds `VM.md` only). In WORKLOG: recorded the `{}` and account-number decisions, put the VM row first, scoped the Ministral row to #38, split the UZP-answer issues into per-issue rows with their owners, flagged the eval's `negatives_empty` check and merged main and dropped the rows it finished (#60, #59, #61) · docs/brief-update
+
+- 22.11.2026 · Codex · Integrated the signed judging criteria, VM instructions and UZP clarifications from #49 and refreshed the README visuals from #36 against recorded results.
+- 21.11.2026 · Claude · presentation-style README with monochrome visuals in `docs/readme/`; previous README moved to `docs/readme/reference.md` · feat/docs
+
 - 22.11.2026 · Codex · Raised the required page watchdog from 60 to 180 seconds and added one 150-dpi retry within the remaining OCR budget. Regression tests cover timeout recovery, immediate engine errors, budget exhaustion and word-box coordinates after resizing.
 
 - 22.11.2026 · Codex · Added case warnings and opt-in sibling OCR repair for #61. All 304 keyless outputs matched main byte for byte. UZP F1 stayed at 0.9231 on corpus 1 all, 0.9221 on corpus 1 dev and 0.9244 on corpus 2 dev. Training scored 1.000 with 196 exact outputs. The 30 singleton scans had 29 exact outputs and UZP F1 of 1.000. [Paired case measurements](evals/results/case-siblings.json)
@@ -133,6 +148,9 @@ Two and four grant JSONs matched exactly. The ten organizer grants remained exac
 - 22.11.2026 · Claude · Handoff fix/install-deps (#44/#45): code done at de49710; fresh py3.13 venv `pip install -r requirements.txt` from another directory rc=0, 80 pkgs, site-packages 642 → 519 MiB (main: raw.githubusercontent.com timeout, 133 pkgs); make check 1704+2 passed; eval-quick 1.000 clean; CLI identical on cases 01/13/27/38/50. Left: judge PASS, stamp, push, PR.
 - 21.11.2026 · Claude · #44/#45: vendored the pinned pol/eng tessdata in `kio2json/tessdata/` (SHA-256 checked at first OCR use), dropped the local `packaging/` wheel so pip needs only PyPI from any directory; `pydantic-ai-slim[openai]` replaces `pydantic-ai`, requirements.txt 134 → 81 packages without anthropic, google-genai, logfire or pydantic-evals.
 
+- 22.11.2026 · Codex · Integrated #55 on `integrate/pr55`. The filter preserves technical titles and native text in mixed PDFs. A lawyer’s name in a firm field needs two weak OCR words and a conflicting crop reading before the field is cleared.
+- 22.11.2026 · Claude · #39: scanned-appeal party names and lawyer fields become null on stray scanner symbols, a low letter ratio or capitals noise after a lawyer's title; a capitals-noise tail after a legal form is cut unless it names another consortium member; titles are checked for stray symbols only. On the organizer template scan the appellant and law firm names are now null and the authority name ends at its legal form (checked by a direct CLI run; the template is not in the eval). Organizer scans 0.9974 → 0.9974, full training 1.000 → 1.000 (holdout 1.000), both against `4d91600`; the private dev corpora are not on this machine and were not measured · b2121b5
+- 22.11.2026 · Claude · #39: judge PASS on `c4b3d94` after two rounds of P2 fixes; pushed `fix/ocr-plausibility` with a PR to main. Left: a real-corpus check by the corpus owner before merge (dev corpora not on this machine).
 - 21.11.2026 · Codex · Added native span output for small models, local source validation and a bounded parallel CLI. Verified the native schema on the quantized local model and both regional API releases.
 
 - 21.11.2026 · Claude · brief, eval harness, judge/eval skills, pre-push hook · f6db304
@@ -202,6 +220,7 @@ Two and four grant JSONs matched exactly. The ten organizer grants remained exac
 - 21.11.2026 · Codex · In the integrated Ministral profile, preserve the required null personal name for a corporate grantor after filling model gaps. The previous profile filled it on three organizer scans and one corpus 1 grant.
 - 21.11.2026 · Codex · Restored issuer declarations above grant titles, printed signers beside email addresses, and scanned sole-trader names. Certificate attribution now checks the signer's role. Eight invented CLI cases compare the affected records with the pre-PR #25 base.
 - 21.11.2026 · Codex · Measured the integrated accuracy and runtime PRs at `ca2975392`. Both profiles matched all 196 training outputs from main byte for byte. On the shared 16 GB Apple M1, the integrated CLI processed 30 organizer scans in 36.12 s with four rules workers and 44.91 s with three Ministral workers. The 150-PDF batch took 57.54 s and 70.38 s respectively. It used two copies of the 30 scans and 90 training PDFs. [Combined measurements](evals/results/round2-integration.json)
+- 21.11.2026 · Claude · Updated `docs/task/BRIEF.md` to organizer README `0b360a9`: evaluation method and hardware UNCONFIRMED, 150 PDFs in 45 min, OCR by API scored like an LLM, API provider privacy policy and EU/EEA, LLM scoring under revision, 30 labelled scans, FAQ 10 vs PDF 30/20, mixed transfer file names. Closes #43.
 - 21.11.2026 · Claude · landing/upload UI in `frontend/`, prod compose on the shared `edge` network, deploy notes · feat/frontend
 - 21.11.2026 · Claude · doc2json.pl live over HTTPS (DNS A records, Caddy block on the server), landing reduced to the dark tool screen · feat/frontend
 - 21.11.2026 · Claude · `kio2json.web_api` (health + extract, index-matched results) behind doc2json.pl, API container, frontend wired · feat/web-extraction
@@ -240,6 +259,9 @@ These runs used local rules with the three endpoint variables unset. The two loc
 
 - 22.11.2026 · Codex · Added a Python 3.13 jury install and 150-PDF CLI comparison for Windows x64, Linux x64 and macOS in `ab3c8fa`. GitHub blocked all three jobs before checkout due to account billing. The run produced no timings. [Run record](evals/results/jury-batch.json)
 - 22.11.2026 · Codex · Implemented the UZP scorer and retained historical strict micro F1 on `feat/uzp-metric` (#59).
+
+- 22.11.2026 · Codex · Added the seeded layout regression gate and measured main at `f7f3ee9` and `3eccb41` on the same 240 generated PDFs for issue #63.
+
 - 22.11.2026 · Codex · Added local jury Compose services and the signed task rules for #60. Compose configuration validated. Docker Desktop did not answer its health probe, so container byte parity is pending.
 - 22.11.2026 · Codex · The keyless LSTM crop experiment retained 13 correctly printed checksum-invalid accounts on the 240 seeded variants, raising UZP F1 from 0.2960 to 0.3053. It changed no digits on either real cohort or the organizer scans. [Paired measurements](evals/results/ocr-alternatives.json)
 
@@ -250,10 +272,12 @@ These runs used local rules with the three endpoint variables unset. The two loc
 - 22.11.2026 · Codex · Synced #72 with main at `4222472`, retaining first-page candidate selection in the keyed profile.
 - 22.11.2026 · Codex · Synced the rule fixes in #75 with main at `b9c2c7f`, preserving the printed account prefix during OCR slash repair.
 - 22.11.2026 · Codex · Integrated the merged #75 rule fixes into #72 at main `257a6af`.
+- 2026-11-22 · Transfer confirmations can bind a split execution heading to a single dated amount and two explicitly owned accounts. Receipt dates also accept Roman months and labelled whole amounts can place the currency first.
 - 22.11.2026 · Claude · PR #53 README: the organizer-scans.json link now says it is the later 29/30 batch, the 0.6312 step is labelled as intermediate, the cold run separates throughput (3.33 s per PDF) from time per scan (9.13 s), and each adaptive OCR timing names its profile and dataset. `origin/main` (#67) merged. The new CodeRabbit thread asking for `latest.json` is answered: every figure is in `adaptive-ocr-budget.json`, which records product `59aa13a`, base `dbda151` and the machine · claude/pr53-docs
 - 22.11.2026 · Claude · PR #53 merged with main again (#77, #78): README and WORKLOG conflicts resolved with both sides kept (main's "historical measurement counted zero-byte outputs" wording plus the organizer-scans note). Judge nits applied: the `steps["merge upstream power-of-attorney rules"]` locator is a valid key path, and the WORKLOG line on the 0.6312 step now names it as intermediate and gives the later 0.8607 and 0.8789 · docs/paths-and-llm-scoring
 - 22.11.2026 · Claude · PR #53 merged with main again (#79, #54): the new watchdog paragraph of the README now names its keys in `first-pass-watchdog.json` (160.753 s, 266.021 s baseline, 83.758 s, `watchdog_commit` `21f55e0`, load averages) and the earlier runtime-only paragraph says it predates both adaptive-budget and watchdog runs. `requirements.txt` is main's own annotated file again, in sync with the lock · docs/paths-and-llm-scoring
 - 22.11.2026 · Claude · PR #53 merged with main again (#75): the README no longer describes the content of `evals/results/organizer-scans.json`, because main refreshed it at `d808ee0` (30 of 30 scans routed, UZP micro F1 1.0000, strict 0.9974, `n_cases` 30) and the old note (29 of 30, 0.9869) no longer matches; the paragraph around it is again main's text · docs/paths-and-llm-scoring
 - 22.11.2026 · Claude · PR #53 merged with main again (#72, #82): the README's VM rehearsal figures (399.77 s, about 4 min 25 s) now name their keys in `vm-2vcpu.json` and the extraction revision `7a1c45b` they come from, and the stale "before the kit merges" sentence is gone because `deploy/vm-kit` is an ancestor of main. The WORKLOG conflict kept both sides · docs/paths-and-llm-scoring
-- 22.11.2026 · Claude · PR #53 merged with main again (#83) and the judge's citation findings fixed: the Round 2 wall-time column, the optional-OCR calibration times and the cold Ministral run now name their file and keys, the Round 2 section is labelled as older strict-metric history with a pointer to the UZP figures in `p0-conventions.json`, the Ministral section is labelled the same way, and the Docker section says no container run has been compared with the CLI yet · docs/paths-and-llm-scoring
+- 22.11.2026 · Claude · PR #53 merged with main again (#83) and the judge's citation findings fixed: the Round 2 wall-time column, the optional-OCR calibration times and the cold Ministral run now name their file and keys, the Round 2 section is labelled as older strict-metric history with a pointer to the UZP figures in `p0-conventions.json`, the Ministral section is labelled older strict-metric history too (without the pointer), and the Docker section says no container run has been compared with the CLI yet · docs/paths-and-llm-scoring
 - 22.11.2026 · Claude · PR #53 judge notes on `7716064` applied: the Round 2 note says the later UZP runs are local rules, no model and development data only (strict 0.9974 on the scans), the DeepSeek Flash plan is marked superseded with the key that still records it, the VM Docker Compose fallback carries the same not-yet-run note as the Docker section, the per-pool read counts show their sums, and a Next row asks the team to align the `latest.json` wording of the two skills with the practice of naming a result file, key, value and commit · docs/paths-and-llm-scoring
+- 22.11.2026 · Claude · PR #53 rebuilt on main after #90 (`f98dc56`) as a small change on top of the README split: the README is main's, and what this PR said in the README now sits in `docs/readme/reference.md` (VM rehearsal, Round 2, optional OCR, watchdog, batch runtime and cold Ministral citations with file, key, number and commit; Round 2 labelled as strict-metric history with a pointer to the README results table and the Ministral section labelled the same way without the pointer; the Compose fallback marked not run end to end; the pipeline PDF called older than the README diagram; the 8B wording follows the organizer's "smaller model scores more"; DeepSeek Flash marked superseded). `HN_REAL_CORPUS` stays empty by default in the Makefile and the skill, because main's Makefile has the personal path again · docs/paths-and-llm-scoring

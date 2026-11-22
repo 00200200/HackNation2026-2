@@ -1,6 +1,6 @@
 # Small-model API candidates
 
-Checked 21 November 2026. The organizer says a smaller model scores more and that the exact LLM scoring is being revised (`data/uzp/README.md`, “Sposób punktacji LLM”: “pracujemy nad nowymi wytycznymi”). Parameter counts below cover the full checkpoint. The organizer allows 45 minutes for 150 PDFs, including local OCR and network requests. The primary supported candidate is Mistral’s 3,849,090,048-parameter Ministral 3 3B Instruct. Its EU regional endpoint requires a separate check of deployment geography.
+Checked 21 November 2026. The organizer says a smaller model scores more and that the exact LLM scoring is being revised (`data/uzp/README.md`: the scoring list says a stronger model counted in billions of parameters earns fewer points, and “Sposób punktacji LLM” says “pracujemy nad nowymi wytycznymi”). Parameter counts below cover the full checkpoint. The organizer allows 45 minutes for 150 PDFs, including local OCR and network requests. The primary supported candidate is Mistral’s 3,849,090,048-parameter Ministral 3 3B Instruct. Its EU regional endpoint requires a separate check of deployment geography.
 
 ## Mistral La Plateforme and Ollama Cloud
 

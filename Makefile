@@ -45,3 +45,7 @@ export HN_REAL_CORPUS HN_REAL_SPLIT
 eval-real: ## F1 eval on the local real corpus (set HN_REAL_CORPUS=<dir>)
 	@test -n "$$HN_REAL_CORPUS" || { echo "HN_REAL_CORPUS is not set: point it at your local real corpus, e.g. make eval-real HN_REAL_CORPUS=/path/to/corpus" >&2; exit 2; }
 	@uv run python -m evals.run --corpus "$$HN_REAL_CORPUS" --split "$$HN_REAL_SPLIT"
+
+.PHONY: eval-variants
+eval-variants: ## Gate rule changes on the fixed 60-case robustness baseline
+	uv run python -m evals.run --variants 60 --variant-baseline evals/results/variants.json --variant-out .cache/variants-current.json
