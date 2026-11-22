@@ -64,8 +64,9 @@ def test_opposing_counsel_is_a_boundary_before_a_bare_attorney_name():
     assert (appellant["nazwa"], appellant["przez-pelnomocnika"], appellant["nip"]) == ("Port Szkła sp. z o.o.", 0, None)
 
 
+@pytest.mark.parametrize("authority", ["Dane zamawiajacego", "Jednostka zamawiajaca", "Zamawiajacy (nazwa i adres)"])
 @pytest.mark.parametrize("punctuation", [":", ""])
-def test_adjacent_native_card_columns_keep_names_and_identifiers(tmp_path, punctuation):
+def test_adjacent_native_card_columns_keep_names_and_identifiers(tmp_path, punctuation, authority):
     from reportlab.pdfgen.canvas import Canvas
 
     from kio2json.pipeline import process_pdf
@@ -75,7 +76,7 @@ def test_adjacent_native_card_columns_keep_names_and_identifiers(tmp_path, punct
     pdf.drawString(35, 770, "Odwolanie do Prezesa KIO")
     for i, (left, right) in enumerate(
         [
-            (f"Dane odwolujacego{punctuation}", f"Dane zamawiajacego{punctuation}"),
+            (f"Dane odwolujacego{punctuation}", f"{authority}{punctuation}"),
             ("Most z Papieru", "Port ze Szklanek"),
             ("NIP: 1234567890", "NIP: 2345678901"),
         ]
@@ -198,3 +199,106 @@ def test_signature_after_closed_quotation_still_belongs_to_the_filing():
 def test_name_and_street_on_the_same_value_row(separator):
     text = f"ODWOŁANIE\nNazwa i adres zamawiającego:{separator}Dom Map sp. z o.o., ul. Skrajna 4\nNIP: 1234567890"
     assert [(p["nazwa"], p["nip"]) for p in extract(text)["Zamawiajacy"]] == [("Dom Map sp. z o.o.", "1234567890")]
+
+
+@pytest.mark.parametrize(
+    "caption",
+    [
+        "Nazwa i adres organizatora postępowania",
+        "Dane jednostki zamawiającej",
+        "Instytucja prowadząca postępowanie o udzielenie zamówienia",
+        "Podmiot udzielający zamówienia",
+        "Zamawiający (nazwa i adres)",
+        "Jednostka zamawiająca",
+        "Dane instytucji organizującej postępowanie",
+    ],
+)
+def test_authority_description_keeps_printed_name_and_registry(caption):
+    result = extract(f"{caption}\nMuzeum Latawców\nREGON: 123456789\nODWOŁANIE")
+    assert [(p["nazwa"], p["regon"], p["prowadzacy_postepowanie"]) for p in result["Zamawiajacy"]] == [
+        ("Muzeum Latawców", "123456789", None)
+    ]
+
+
+def test_joint_caption_does_not_assume_first_member_leads():
+    result = extract(
+        "Dane zamawiających wspólnie:\n1. Gmina Lampionów\nNIP: 1234567890\n"
+        "2. Miasto Wstęg (zamawiający prowadzący postępowanie)\nNIP: 2345678901\nODWOŁANIE"
+    )
+    assert [(p["nazwa"], p["nip"], p["prowadzacy_postepowanie"]) for p in result["Zamawiajacy"]] == [
+        ("Gmina Lampionów", "1234567890", 0),
+        ("Miasto Wstęg", "2345678901", 1),
+    ]
+
+
+@pytest.mark.parametrize("action", ["prowadzący", "przeprowadzający"])
+def test_separate_lead_card_and_member_card_keep_ownership(action):
+    result = extract(
+        "Jednostka zamawiająca:\nMuzeum Latawców\nREGON: 123456789\n"
+        f"Podmiot {action} postępowanie:\nGmina Lampionów\nNIP: 1234567890\nODWOŁANIE"
+    )
+    assert [(p["nazwa"], p["regon"], p["nip"], p["prowadzacy_postepowanie"]) for p in result["Zamawiajacy"]] == [
+        ("Muzeum Latawców", "123456789", None, 0),
+        ("Gmina Lampionów", None, "1234567890", 1),
+    ]
+
+
+@pytest.mark.parametrize("caption", ["Pełnomocnik zamawiającego", "Rachunek zamawiającego", "Odpowiedź zamawiającego"])
+def test_unlabelled_negative_closes_authority_card(caption):
+    result = extract(f"Organizator postępowania:\nGmina Lampionów\n{caption}\nStudio Tuby sp. z o.o.\nNIP: 1234567890")
+    assert [(p["nazwa"], p["nip"]) for p in result["Zamawiajacy"]] == [("Gmina Lampionów", None)]
+
+
+@pytest.mark.parametrize("caption", ["Zamawiający (nazwa i adres)", "Dane instytucji prowadzącej postępowanie"])
+def test_decorated_authority_requires_evidence_and_ignores_charges(caption):
+    assert extract(f"{caption}:\nNie ustalono.\nZarzuty")["Zamawiajacy"] == []
+    assert extract(f"ODWOŁANIE\nZarzuty\n{caption}:\nGmina Lampionów\nREGON: 123456789")["Zamawiajacy"] == []
+
+
+def test_joint_public_bodies_can_supply_their_own_name_evidence():
+    result = extract(
+        "Jednostki wspólnie prowadzące postępowanie:\n1. Województwo Lazurowe\n2. Powiat Szklany\nODWOŁANIE"
+    )
+    assert [(p["nazwa"], p["prowadzacy_postepowanie"]) for p in result["Zamawiajacy"]] == [
+        ("Województwo Lazurowe", 0),
+        ("Powiat Szklany", 0),
+    ]
+
+
+@pytest.mark.parametrize("separator", [": ", " "])
+def test_numbered_authorities_with_inline_registry(separator):
+    result = extract(
+        f"Dane zamawiających:\n1. Gmina Lampionów NIP{separator}1234567890\n"
+        f"2. Powiat Szklany NIP{separator}2345678901\nODWOŁANIE"
+    )
+    assert [(p["nazwa"], p["nip"]) for p in result["Zamawiajacy"]] == [
+        ("Gmina Lampionów", "1234567890"),
+        ("Powiat Szklany", "2345678901"),
+    ]
+
+
+def test_numbered_counsel_is_not_a_joint_authority():
+    result = extract("Dane zamawiających:\n1. Gmina Lampionów\n2. Pełnomocnik zamawiającego\nNIP: 2345678901")
+    assert [(p["nazwa"], p["nip"]) for p in result["Zamawiajacy"]] == [("Gmina Lampionów", None)]
+
+
+def test_authority_response_is_a_body_section():
+    assert (
+        extract("ODWOŁANIE\nOdpowiedź zamawiającego:\nDane instytucji zamawiającej:\nGmina Lampionów")["Zamawiajacy"]
+        == []
+    )
+
+
+def test_numbered_joint_authority_keeps_id_after_inline_street():
+    result = extract(
+        "Dane zamawiających:\n1. Gmina Lampionów, ul. Zielona 4, NIP: 1234567890\n2. Powiat Szklany\nODWOŁANIE"
+    )
+    assert [(p["nazwa"], p["nip"]) for p in result["Zamawiajacy"]] == [
+        ("Gmina Lampionów", "1234567890"),
+        ("Powiat Szklany", None),
+    ]
+
+
+@pytest.mark.parametrize("boundary", ["Odpowiedź zamawiającego:", "Zarzuty", "Cytat z pisma:"])
+def test_plain_role_in_authority_response_has_no_owner(boundary):
+    assert extract(f"ODWOŁANIE\n{boundary}\nZamawiający: Gmina Lampionów\nNIP: 1234567890")["Zamawiajacy"] == []

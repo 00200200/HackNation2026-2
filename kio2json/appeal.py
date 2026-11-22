@@ -71,7 +71,7 @@ PARTY_FIELD = re.compile(
 )
 SECTION_LABEL = re.compile(r"^[^\W\d_][\w ()./-]{0,80}:")
 BODY_HEADING = re.compile(
-    r"^(?:[IVXLCDM]+[.)]\s+)?(?:stan faktyczny|okoliczności sprawy|uzasadnienie|dowody|żądania|zarzuty|zarzut nr \d+|wnioski|załączniki)\b",
+    r"^(?:[IVXLCDM]+[.)]\s+)?(?:odpowiedź zamawiającego|stan faktyczny|okoliczności sprawy|uzasadnienie|dowody|żądania|zarzuty|zarzut nr \d+|wnioski|załączniki)\b",
     re.IGNORECASE,
 )
 
@@ -80,17 +80,41 @@ BODY_HEADING = re.compile(
 # "pełnomocnik" describes someone else's account or counsel.
 CARD_HEAD = r"(?:dane(?: identyfikacyjne| teleadresowe)?|(?:pełna )?nazwa(?: i (?:adres|siedziba))?|oznaczenie)"
 _FILER = r"(?:(?:wykonawca|podmiot) (?:wnosz|składaj)[ąa]cy|strona (?:wnosz|składaj)[ąa]ca) odwo[łl]anie"
-_BUYER = r"(?:podmiot (?:zamawiaj[ąa]cy|prowadz[ąa]cy post[ęe]powanie)|instytucja zamawiaj[ąa]ca)"
+# Inflect the role and its modifier together. A description such as "conducting
+# the proceedings" identifies the buyer only when it modifies the party noun.
+_PROCEEDING = r"post[ęe]powanie(?: o udzielenie zam[óo]wienia(?: publicznego)?)?"
+
+
+def _buyer_modifier(ending: str) -> str:
+    return (
+        rf"(?:zamawiaj[ąa]c{ending}|(?:prowadz|przeprowadzaj|organizuj)[ąa]c{ending} {_PROCEEDING}|"
+        rf"udzielaj[ąa]c{ending} zam[óo]wienia(?: publicznego)?)"
+    )
+
+
+_BUYER_NOM = (
+    rf"(?:podmiot {_buyer_modifier('y')}|(?:instytucja|jednostka|strona) {_buyer_modifier('a')}|"
+    r"organizator post[ęe]powania)"
+)
+_BUYER_GEN = (
+    rf"(?:podmiotu {_buyer_modifier('ego')}|(?:instytucji|jednostki|strony) {_buyer_modifier('ej')}|"
+    r"organizatora post[ęe]powania|zamawiaj[ąa]cego)"
+)
+_JOINT = rf"(?:wsp[óo]lni zamawiaj[ąa]cy|zamawiaj[ąa]cy wsp[óo]lnie|(?:podmioty|jednostki|instytucje) (?:wsp[óo]lnie )?{_buyer_modifier('e')})"
+_JOINT_GEN = rf"(?:zamawiaj[ąa]cych(?: wsp[óo]lnie)?|(?:podmiot[óo]w|jednostek|instytucji) (?:wsp[óo]lnie )?{_buyer_modifier('ych')})"
+_BUYER_LEAD = rf"zamawiaj[ąa]cy (?:prowadz[ąa]cy {_PROCEEDING}|wiod[ąa]cy)|lider zamawiaj[ąa]cych"
+_LEADS_PROCEEDING = re.compile(r"\b(?:(?:prowadz|przeprowadzaj)[ąa]c(?:y|a|ego|ej)|wiod[ąa]cy|lider)\b", re.IGNORECASE)
 _CARD_WORDING = (
     rf"(?:(?P<appellant>{CARD_HEAD} odwo[łl]uj[ąa]cego|{_FILER}|"
     rf"{CARD_HEAD} (?:wykonawcy|podmiotu) (?:wnosz|składaj)[ąa]cego odwo[łl]anie)|"
-    rf"(?P<authority>{CARD_HEAD} zamawiaj[ąa]cego|{_BUYER}))"
+    rf"(?P<authority>{CARD_HEAD} (?:{_BUYER_GEN}|{_JOINT_GEN})|{_BUYER_NOM}|{_JOINT}|{_BUYER_LEAD}|"
+    rf"zamawiaj[ąa]cy[ \t]*\({CARD_HEAD}\)))"
 )
 CARD_ROLE = re.compile(rf"^{_CARD_WORDING}(?:[ \t]*:[ \t]*|[ \t]*$)", re.IGNORECASE)
 # In a flat transcript the caption in the adjacent column can follow immediately.
-PARALLEL_CARD = re.compile(rf"^{_CARD_WORDING}\b", re.IGNORECASE | re.MULTILINE)
+PARALLEL_CARD = re.compile(rf"^{_CARD_WORDING}(?=[: \t]|$)", re.IGNORECASE | re.MULTILINE)
 _OTHER_CARD = re.compile(
-    r"^(?:pełnomocnik zamawiającego|rachunek zamawiającego|wybrany wykonawca|wykonawca wybrany|wykonawca, którego ofertę wybrano|"
+    r"^(?:(?:pełnomocnik|rachunek|odpowiedź) zamawiającego|wybrany wykonawca|wykonawca wybrany|wykonawca, którego ofertę wybrano|"
     r"(?:dane )?(?:przystępując(?:y|ego)|uczestnik(?:a)?(?: postępowania)?))(?:\s*:|$)",
     re.IGNORECASE,
 )
@@ -100,7 +124,7 @@ _QUOTE_INTRO = re.compile(
 )
 _ORGANIZATION = re.compile(
     r"(?i:\b(?:sp\.\s*(?:z|j|k)\b|s\.a\.|spółka (?:akcyjna|jawna|komandytowa|z ograniczoną)|konsorcjum\b))|"
-    rf"^(?i:gmina|miasto|powiat|urząd|ministerstwo|szpital|uniwersytet|muzeum|związek|zarząd)\s+[{UPPER}]"
+    rf"^(?i:gmina|miasto|powiat|województwo|starostwo|sąd|urząd|ministerstwo|szpital|uniwersytet|muzeum|związek|zarząd)\s+[{UPPER}]"
 )
 
 
@@ -122,6 +146,7 @@ CONTACT = re.compile(
 )
 MEMBER = re.compile(r"^(\d+)[.)]\s*(.*)")
 MEMBER_ROLE = re.compile(r"\((?:lider|członek|partner)\b[^)]*\)", re.IGNORECASE)
+AUTHORITY_LEAD_MARK = re.compile(rf"\((?:zamawiaj[ąa]cy )?(?:prowadz[ąa]cy {_PROCEEDING}|wiod[ąa]cy)\)", re.IGNORECASE)
 LEAD_FOR = re.compile(
     r"^(?:prowadząc\w*\s+postępowanie.*(?:na rzecz|w imieniu)|"
     r"działając\w*\s+(?:we?\s+(?:własnym imieniu|imieniu (?:własnym|swoim))\s+(?:i|oraz)\s+)?na rzecz\s*:)",
@@ -130,11 +155,19 @@ LEAD_FOR = re.compile(
 CONSORTIUM = re.compile(r"\b(?:wspólnie|konsorcjum)\b", re.IGNORECASE)
 
 
-def party_evidence(rows: list[str]) -> bool:
+def party_evidence(rows: list[str], *, numbered: bool = False) -> bool:
     """A name and local address/register, or an explicit organization name, support a card."""
     rows = [r.strip() for r in rows if r.strip()]
     if not rows:
         return False
+    if numbered and (member := MEMBER.match(rows[0])):
+        end = next((i for i, row in enumerate(rows[1:], 1) if MEMBER.match(row)), len(rows))
+        rows = [row for row in [member[2], *rows[1:end]] if row]
+        if not rows:
+            return False
+    if (identifier := ID_LINE_RE.search(rows[0])) and identifier.start() and any(registry_ids(rows[0]).values()):
+        # An inline registry field is evidence for the name printed to its left.
+        rows = [rows[0][: identifier.start()].rstrip(" ,;"), rows[0][identifier.start() :], *rows[1:]]
     first = rows[0]
     if (
         CARD_ROLE.match(first)
@@ -144,7 +177,8 @@ def party_evidence(rows: list[str]) -> bool:
     ):
         return False
     if (
-        not (first[0].isupper() or CONSORTIUM.search(first))
+        not first
+        or not (first[0].isupper() or CONSORTIUM.search(first))
         or (ADDRESS_RE.match(first) and not INLINE_STREET.search(first))
         or ID_LINE_RE.match(first)
     ):
@@ -161,20 +195,25 @@ def party_header_end(line: str) -> bool:
     return bool(BODY_HEADING.match(line) or _QUOTE_INTRO.search(line))
 
 
-def _party_header(header: str) -> str:
+def _party_header(header: str) -> tuple[str, set[int]]:
     lines = header.splitlines()
+    leads = set()
     changed = False
     for index, line in enumerate(lines):
         line = line.strip()
         if party_header_end(line):
             if changed:
-                return "\n".join(lines[:index])
+                return "\n".join(lines[:index]), leads
             break
-        if (label := CARD_ROLE.match(line)) and party_evidence([line[label.end() :], *lines[index + 1 : index + 6]]):
+        if (label := CARD_ROLE.match(line)) and party_evidence(
+            [line[label.end() :], *lines[index + 1 : index + 6]], numbered=bool(label["authority"])
+        ):
             name = "Odwołujący" if label["appellant"] else "Zamawiający"
+            if label["authority"] and _LEADS_PROCEEDING.search(label["authority"]):
+                leads.add(index)
             lines[index] = name + ": " + line[label.end() :]
             changed = True
-    return "\n".join(lines) if changed else header
+    return ("\n".join(lines) if changed else header), leads
 
 
 def _unquoted_party_text(text: str) -> str:
@@ -220,7 +259,12 @@ def _regional_name(name: str, lead: str) -> str:
 
 
 def _parties(
-    lines: list[str], ocr_mail_lines: frozenset[int], explicit_appellant: bool, *, inflected: bool = False
+    lines: list[str],
+    ocr_mail_lines: frozenset[int],
+    explicit_appellant: bool,
+    *,
+    inflected: bool = False,
+    lead_rows: set[int] | frozenset[int] = frozenset(),
 ) -> dict[str, list[dict]]:
     """Keep one name per labelled party or numbered member, through intervening contact lines."""
     parties = {"Zamawiający": [], "Odwołujący": []}
@@ -229,6 +273,7 @@ def _parties(
     name_lines = []
     sublabel = ""
     wrapped_label = False
+    in_body = False
 
     def finish_name():
         nonlocal entity
@@ -236,6 +281,9 @@ def _parties(
             return
         name = squash(" ".join(name_lines))
         markers = MEMBER_ROLE.findall(name)
+        if role == "Zamawiający" and AUTHORITY_LEAD_MARK.search(name):
+            markers.append("prowadzący")
+            name = AUTHORITY_LEAD_MARK.sub("", name)
         name = MEMBER_ROLE.sub("", name)
         name = re.split(r",?\s+(?:ul\.|al\.|os\.|pl\.)\s+", name, maxsplit=1, flags=re.IGNORECASE)[0]
         # A registered seat may be inserted before a separately delimited branch designation.
@@ -259,14 +307,22 @@ def _parties(
         name_lines.clear()
 
     for index, line in enumerate(map(str.strip, lines)):
-        if _OTHER_CARD.match(line):
+        if party_header_end(line):
+            in_body = True
+            if role == "Zamawiający":
+                finish_name()
+                role = None
+        if _OTHER_CARD.match(line) or CARD_ROLE.match(line):
             finish_name()
             role = None
             continue
         if label := SECTION_RE.match(line):
             finish_name()
             role = _party_role(label[1], explicit_appellant)
-            sublabel, entity = "", None
+            if in_body and role == "Zamawiający":
+                role = None
+                continue
+            sublabel, entity = "prowadzący" if index in lead_rows else "", None
             wrapped_label = ":" not in line
             line = line.partition(":")[2].strip()
             if not line:
@@ -299,14 +355,22 @@ def _parties(
             finish_name()
             sublabel, entity = member[1], None
             line = member[2]
+            if _OTHER_CARD.match(line):
+                role = None
+                continue
             if line.endswith(":"):
                 sublabel = line
-            elif line:
-                name_lines.append(line)
-            continue
+                continue
+            # Read a member's inline name and register with the ordinary value-row parser.
+            if not ID_LINE_RE.search(line):
+                if line:
+                    name_lines.append(line)
+                continue
         if entity is None and (label or sublabel or (inflected and not name_lines)) and INLINE_STREET.search(line):
             name_lines.append(line)
             finish_name()
+            if entity and ID_LINE_RE.search(line):
+                entity.update({key: value for key, value in registry_ids(line).items() if value})
         elif CONTACT.search(line) or ADDRESS_RE.match(line) or ID_LINE_RE.search(line):
             id_label = ID_LINE_RE.search(line)
             if id_label and entity is None and (name := line[: id_label.start()].strip(" ,;")):
@@ -643,9 +707,15 @@ def _appellant_registry(text: str, leader: dict) -> None:
 def extract(text: str, *, ocr_mail_lines: frozenset[int] = frozenset()) -> dict:
     text = FORM_ROLE.sub(lambda m: "Odwołujący: " if m["appellant"] else "Zamawiający: ", text)
     header = text.split("Działając w imieniu", 1)[0]
-    party_header = _party_header(header)
+    party_header, lead_rows = _party_header(header)
     explicit_appellant = bool(EXPLICIT_APPELLANT.search(party_header))
-    parties = _parties(party_header.splitlines(), ocr_mail_lines, explicit_appellant, inflected=party_header != header)
+    parties = _parties(
+        party_header.splitlines(),
+        ocr_mail_lines,
+        explicit_appellant,
+        inflected=party_header != header,
+        lead_rows=lead_rows,
+    )
     party_text = _unquoted_party_text(text) if party_header != header else text
     _prose_parties(party_text, parties)
     place_date = PLACE_DATE_RE.search(header)
