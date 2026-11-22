@@ -12,10 +12,12 @@ const CLASS_LABEL = {
   participation: "Przystąpienie",
 };
 
+const COPY_FAILED = "Nie udało się skopiować JSON-a. Pobierz plik przyciskiem obok.";
 const $ = (sel) => document.querySelector(sel);
-const state = { items: [], selected: null };
+const state = { items: [], selected: null, copyGeneration: 0 };
 
 function notice(text) {
+  state.copyGeneration++;
   $("#notice").textContent = text;
   $("#notice").hidden = !text;
 }
@@ -63,6 +65,9 @@ function showOutput(name, tag, text, actions) {
 
 function select(item) {
   state.selected = item;
+  if ($("#notice").textContent === COPY_FAILED) notice("");
+  state.copyGeneration++;
+  $("#copy").title = "Kopiuj JSON";
   const name = item.file.name.replace(/\.pdf$/i, "") + ".json";
   showOutput(name, item.error || "", jsonText(item), true);
   renderFiles();
@@ -152,22 +157,38 @@ function wire() {
     if (input.files.length) handleFiles(input.files);
     input.value = "";
   });
+  const carriesFiles = (e) => e.dataTransfer?.types.includes("Files");
+  // The zone accepts every drag so that nothing dropped on it navigates away, but only files light it up.
   ["dragenter", "dragover"].forEach((t) =>
     drop.addEventListener(t, (e) => {
       e.preventDefault();
-      drop.classList.add("is-over");
+      if (carriesFiles(e)) drop.classList.add("is-over");
     }),
   );
   ["dragleave", "drop"].forEach((t) => drop.addEventListener(t, () => drop.classList.remove("is-over")));
-  drop.addEventListener("drop", (e) => {
+  // Files dropped anywhere on the page go to the upload; otherwise the browser would open the PDF and leave the app.
+  window.addEventListener("dragover", (e) => {
+    if (carriesFiles(e)) e.preventDefault();
+  });
+  // Cancel every drop, so a link dropped on the zone does not navigate away either.
+  window.addEventListener("drop", (e) => {
     e.preventDefault();
-    if (e.dataTransfer.files.length) handleFiles(e.dataTransfer.files);
+    if (carriesFiles(e) && e.dataTransfer.files.length) handleFiles(e.dataTransfer.files);
   });
   $("#clear").addEventListener("click", () => location.reload());
   $("#copy").addEventListener("click", async () => {
     if (!state.selected) return;
-    await navigator.clipboard.writeText(jsonText(state.selected));
-    $("#copy").title = "Skopiowano";
+    const generation = ++state.copyGeneration;
+    try {
+      await navigator.clipboard.writeText(jsonText(state.selected));
+      if (generation !== state.copyGeneration) return;
+      $("#copy").title = "Skopiowano";
+      if ($("#notice").textContent === COPY_FAILED) notice("");
+    } catch {
+      if (generation !== state.copyGeneration) return;
+      $("#copy").title = "Kopiuj JSON";
+      notice(COPY_FAILED);
+    }
   });
   $("#download").addEventListener("click", () => {
     if (!state.selected) return;

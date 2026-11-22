@@ -8,11 +8,13 @@ The integration branch combines real-layout appeal, grant and transfer rules wit
 OpenAI-compatible model engine. The default CLI and GUI run locally with the three endpoint
 variables unset. Keyed runs can use a second OCR reading and recover a failed document with local rules.
 
-The opt-in small-model profile uses Mistral’s regional API, compact source spans and bounded PDF workers. [Provider comparison](docs/small-model-providers.md)
+On the jury VM the three regional Mistral settings select Ministral 3B after local routing and rules. One bounded request can fill missing fields using owner-specific source quotes. Populated rule values remain authoritative. Local rules supply the result when the key is absent or inference fails. [Jury runbook](deploy/RUN.md) · [Measured profiles](evals/results/jury-keyed-profile.md)
 
 The batch CLI defaults to up to four PDF workers, with one thread per Tesseract instance and up to three concurrent page reads per PDF. The first OCR pass supplies layout word boxes, and optional OCR has up to 300 seconds per document. A shared batch cutoff stops rereads after 27 minutes for 150 PDFs. Required OCR has a 180-second page watchdog and can retry a stalled page once at 150 dpi.
 
 The local viewer flags disagreements between an appeal, its mandate and its receipt. The CLI and viewer can use independently printed sibling values to repair a damaged reading within one case folder.
+
+The default Tesseract reader accepts a rotated reading when OSD identifies a nonzero turn with confidence of at least 15 and the corrected OCR finds substantially more Polish dictionary words. On searchable scans it can verify a suspect identifier, list marker or displaced line against the printed image.
 
 The grant certificate and board-stamp readers share the copy-attestation check so that a certifier cannot be counted as the issuing officer.
 
@@ -20,6 +22,8 @@ Public landing https://doc2json.pl (`frontend/`, static nginx, monochrome) runs 
 behind the faktczyfejk Caddy; deploy in `docs/deploy.md`. Its upload calls `kio2json.web_api` (`/api/extract`, rules engine, no keys) in the `doc2json-api` container.
 
 The jury can run the batch CLI and upload UI locally with the root Compose file. [Docker instructions](README.md#run-with-docker-compose)
+
+The final deck (12 slides) and a two-minute demo script are in `docs/pitch/`. The form fields and the jury's commands are in `docs/submission.md`. [Number sources](docs/pitch/README.md)
 
 The evaluation VM kit installs the rules CLI under `/opt/solution`. The VM owner still needs to run the Ubuntu offline and reboot checks. [Deployment steps](README.md#deploy-on-the-evaluation-vm)
 
@@ -30,6 +34,8 @@ The viewer lists the loaded classes, the cue that chose each class, failed check
 `--explain DIR` writes the same trace to a folder outside `--output`. Example: `examples/classes/accession.toml`.
 
 ## Last eval
+
+Native two-column appeal field F1 rose from 0.4064 to 0.9717 across ten generated cases. On the five held-out cases, native F1 rose from 0.3387 to 0.9700 and forced-Tesseract F1 rose from 0.8619 to 0.8925. [Per-field, organizer and private aggregate results](evals/results/two-column-appeals.json)
 
 On the 240 seeded PDFs, UZP field micro F1 rose from 0.2960 on #69 to **0.8948** on the robustness checkpoint. The classifier routed 170/180 positives, including all 60 appeals, and returned `{}` on all 60 negatives. The control with #78’s account and JSON conventions scored 0.3179. The ten remaining routing misses were alternative-format transfers.
 
@@ -109,7 +115,7 @@ Two and four grant JSONs matched exactly. The ten organizer grants remained exac
 
 | Item | Owner |
 |---|---|
-| Rehearse the installed solution on the organizer VM before access ends at 11:00 on 22 November. Check the offline run, reboot, and two-vCPU timing using [the VM instructions](data/uzp/VM.md). | VM owner |
+| Rehearse the installed solution on the organizer VM before access ends at 11:00 on 22 November. Check the offline run, reboot, and two-vCPU timing using [the VM instructions](data/uzp/VM.md). | 00200200 (VM request, credentials, final deployment, 2-vCPU timing and F1, rehearsal on the VM, per the #66 thread); Dominik-Galus built the kit (PR #77) |
 | If the team keeps the Ministral profile (#38): obtain an EU/EEA-only processing commitment for Mistral or deploy the same weights within the EEA. UZP said no private hosting; UNCONFIRMED whether that rules out the second option, since upstream `VM.md` allows models and containers on the evaluation VM | Deployment |
 | Score corpus 2 test once after the class rules and small-model profile are integrated | Coordinator |
 | Improve receipt routing and recover damaged party names on development inputs | Open |
@@ -139,6 +145,11 @@ Two and four grant JSONs matched exactly. The ten organizer grants remained exac
 
 ## Log
 
+- 22.11.2026 · Codex · Linked a printed firm name and execution signature to an identified sole trader, including a named proxy signing for the issuer. The frozen panel recovered 5/10 firms and 2/10 signer lists on each rendering. [Results by grant](evals/results/trader-firm-signer.md)
+
+- 22.11.2026 · Codex · Added role-based sole-trader identification in declarations, registry cards and proprietor signatures. The frozen extractor recovered 8/8 reserved proprietor names. [Control and benchmark results](evals/results/sole-trader-grantors.md)
+
+- 22.11.2026 · Codex · Separated sole-trader identities, mandate signatures and challenged acts using the case-linked development split. [Field errors and split results](evals/results/case-mandates-appeals.md)
 - 22.11.2026 · Codex · On `fix/verifier-budget`, OCR identifier verification checks up to four eligible cells in document order. Each recognition gets up to two seconds within the shared document and batch deadline.
 
 - 22.11.2026 · Codex · Added contracting-authority descriptions and inflected captions to the appeal party reader. Joint authority cards preserve the printed names, registry IDs and lead marker. [Caption measurements](evals/results/authority-captions.json)
@@ -248,6 +259,9 @@ Two and four grant JSONs matched exactly. The ten organizer grants remained exac
 
 - 22.11.2026 · Codex · Fixed appeal party boundaries at numbered headings, parenthesized page counters over scans, labelled OCR receipt accounts and explicit grantor signature blocks. The remaining round-three routing and role errors are tracked in #1.
 
+- 22.11.2026 · Restored independent appeal sections from native and OCR word positions, preserved shared headings and bound party cards to their columns. [Measurements](evals/results/two-column-appeals.json)
+- 22.11.2026 · Measured merged main `725765b` keyless with two workers. Printed-prefix training was 196/196 byte-identical (UZP and strict F1 1.0000), and organizer scans were 29/30 exact (UZP 1.0000). UZP F1 was 0.9512 on fixed variants, 0.9729/0.7923 on linked development/reserved cases and 0.9286/0.9244 on corpus 1/2 development. The 150-PDF mixed batch took 343.53 seconds. [Measurements](evals/results/merged-main-725765b.json)
+
 - 22.11.2026 · Added corroborating Polish filing and payment cues, scoped fields and native two-column reading for issue #63. Re-ran the 240-PDF benchmark and organizer and private gates against the confirmed JSON and account conventions. [Final field counts](evals/results/variants.json)
 
 - 22.11.2026 · Claude · `start.sh` now finds `.venv/bin/python` or `python3`, the CLI writes progress lines as UTF-8 when a Windows redirect uses an ANSI code page, `deploy/RUN.md` says unrelated documents produce `{}`, and the rehearsal speeds in `docs/readme/reference.md` name their revision and profile · fix/jury-run-hardening
@@ -255,6 +269,8 @@ Two and four grant JSONs matched exactly. The ten organizer grants remained exac
 - 22.11.2026 · Claude · `start.sh` takes the first of `.venv/bin/python`, `python3` and `python` that is Python 3.13 or newer, `*.sh` files keep LF endings and the encoding test pins its working directory. A two-worker run on the 30 organizer scans at `d9a3b25`, with 12 busy loops on an Apple M2 Pro (about 1.1 cores), kept UZP F1 at 1.000 and routing at 30 of 30. It is recorded as a simulation, not VM timing. [Measurements](evals/results/vm-2vcpu.json) · fix/jury-run-hardening
 
 - 22.11.2026 · Claude · The rehearsal sentence in `docs/readme/reference.md` now says the output was compared with the reference run, names the 226 files as 196 synthetic training PDFs plus 30 organizer scans, and cites the committed record `evals/results/vm-2vcpu.json` for the 399.77 s figure and the revision `7a1c45b` · fix/jury-run-hardening
+
+- 22.11.2026 · Claude · Updated the final deck (12 slides) with the UZP-formula F1, the #76 accession class, a components and licences slide, the Regulamin Stage II split, an architecture slide, UZP value and a two-minute demo script; added the submission checklist with the VM evaluation from the organizer's VM.md. Posted the pre-access history audit and the title recommendation on #48 · docs/pitch
 
 ## Frontend branch snapshot before API integration
 
@@ -276,7 +292,6 @@ These runs used local rules with the three endpoint variables unset. The two loc
 |---|---|
 | Evaluate the planned Mistral API model (at most 8B parameters) on dev | Open |
 | Score corpus 2 test once after selecting and freezing the merged profile | Open |
-| Wire the doc2json.pl upload to the extraction (serve the GUI backend behind `/api/` or point the page at it) | Open |
 
 - 21.11.2026 · Codex · Round 3 traced 130 field errors on 78 real development PDFs. Recovered identifiers from matching party records, checked damaged company names against declarations and read debit amounts across bank columns. The single-field Ministral whitespace trial lost one correct title in 12 calls and was dropped.
 - 22.11.2026 · Codex · Implemented UZP’s empty-object and printed-account conventions on `fix/p0-conventions`. The training scorer can restore missing country codes from each transfer PDF with `--correct-training-accounts`.
@@ -289,12 +304,26 @@ These runs used local rules with the three endpoint variables unset. The two loc
 - 22.11.2026 · Codex · Added local jury Compose services and the signed task rules for #60. Compose configuration validated. Docker Desktop did not answer its health probe, so container byte parity is pending.
 - 22.11.2026 · Codex · The keyless LSTM crop experiment retained 13 correctly printed checksum-invalid accounts on the 240 seeded variants, raising UZP F1 from 0.2960 to 0.3053. It changed no digits on either real cohort or the organizer scans. [Paired measurements](evals/results/ocr-alternatives.json)
 
+- 22.11.2026 · Claude · doc2json.pl frontend: route file drops anywhere on the page to the upload, report a refused clipboard copy, white keyboard focus ring on light buttons, null token at #8a8a8a (CodeRabbit threads on #27) · fix/frontend-review-27
 - 2026-11-22 · Grounded candidate selection for disputed, populated first-page transfer fields, singleton appeal party names and procurement titles in the rules-first schema profile (`feat/doubtful-values`).
 - 22.11.2026 · Codex · Scored candidate selection after merging #71 at `c13dc3e7f`. Across 91 development PDFs, UZP micro-F1 was 0.9572 keyless and 0.9617 keyed with two workers. All 196 keyless training outputs matched main byte for byte. [Development counts](evals/results/doubtful-values.json)
 - 22.11.2026 · Codex · Prepared the VM installation and offline rehearsal for #66 and refreshed the organizer instructions to `eadffbc`. [Rehearsal measurements](evals/results/vm-2vcpu.json)
 
+- 22.11.2026 · Claude · Follow-up to #49 after #90 integrated an earlier snapshot of it: restored the `docs/task/BRIEF.md` text that snapshot dropped (per-profile failure behaviour, the PR #77 install kit and its unverified checks, the UNCONFIRMED tag on the synthetic-set relay, the `--correct-training-accounts` note) and recorded that the organizer README (`data/uzp/README.md:143`) still asks for an empty file while UZP replied four times on Discord, three times explicitly specifying `{}` (#57). Removed the stale "wire the upload" row from the frontend snapshot, since the page calls `/api/extract`, and named the owners of the VM row from the #66 thread · docs/brief-followup
 - 22.11.2026 · Codex · Synced #72 with main at `4222472`, retaining first-page candidate selection in the keyed profile.
 - 22.11.2026 · Codex · Synced the rule fixes in #75 with main at `b9c2c7f`, preserving the printed account prefix during OCR slash repair.
 - 22.11.2026 · Codex · Integrated the merged #75 rule fixes into #72 at main `257a6af`.
 - 2026-11-22 · Transfer confirmations can bind a split execution heading to a single dated amount and two explicitly owned accounts. Receipt dates also accept Roman months and labelled whole amounts can place the currency first.
+- 22.11.2026 · Codex · Added bank-attestation, single-entry history and settled-detail rules. The development bank letters routed 4/4 with 0.9767 UZP F1. The reserved history, operation-detail and order-detail layouts remained at 0/4 each. [Measurements](evals/results/case-transfers.json)
+- 22.11.2026 · Codex · Integrated the bank-letter update with main `cf67694`. The merged extractor `95c87f3` scored 0.9729 development and 0.7923 reserved UZP F1, matched all 196 training outputs and scored 29/30 exact on serial organizer scans. [Results](evals/results/case-transfers.json)
+- 22.11.2026 · Codex · Router `b5cdc5b` recovered two of four reserved receipts in each of the history, operation-detail and order-detail families. Reserved UZP F1 rose from 0.7923 to 0.8159 on the second blind evaluation. Development counts and all 52 negative outputs held. [Results](evals/results/case-transfer-routing.json)
 - 22.11.2026 · Codex · Added the seeded case-linked benchmark on `feat/case-benchmark`, pairing each native appeal, mandate, transfer and near-negative with a scan and grouping the results by case and layout. Main `fa9937e` scored 0.7191 UZP and 0.6617 strict on 208 PDFs. [Measurements](evals/results/case-benchmark.json)
+- 22.11.2026 · Codex · Integrated the additional document families and matched native controls from #88 as `make eval-document-variants`. The fixed #69/#93 benchmark still runs with `make eval-variants`. · integrate/pr88
+- 22.11.2026 · Codex · Added grammatical agreement for descriptive appellant and buyer captions and linked printed joint-procurement lead references to numbered member identities on appeal cards.
+- 22.11.2026 · Codex · Added cardinal orientation checks and targeted image verification for searchable scans. The reproducible 39-PDF organizer-derived panel runs with `make eval-rotation-textlayer`.
+
+- 2026-11-22 — Jury profile: use regional Ministral 3B for evidence-checked field completion after local extraction, with shared time and concurrency limits across PDF workers.
+- 22.11.2026 · Refreshed the [jury pipeline diagram](docs/pipeline/pipeline.pdf) and [README results](README.md#results) with the merged-main scorecard at `725765b` and the later receipt-routing results.
+- 22.11.2026 · Codex · The default router rejects all five development transmission forms that main misclassified as grants, in native and scan views. The independent panel matched main on every output. [Delivery-proof measurements](evals/results/delivery-proofs.md)
+- 22.11.2026 · Codex · Rotation and searchable-layer release gates on main `b2fd9c6` preserved 196 training outputs, 30 organizer scans and nine upright development controls byte-for-byte. Five of 39 stress documents improved. The earlier independent acceptance panel missed its thresholds. [Measurements](evals/results/rotation-textlayer.json)
+- 22.11.2026 · Codex · Added bounded date, amount and purpose pairing on routed transfers using first-page word boxes. Repeated captions, competing typed values and unassigned title continuations cause the reader to abstain.

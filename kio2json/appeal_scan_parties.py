@@ -41,17 +41,32 @@ def _fold(line: str) -> str:
 
 def _cover(page: str) -> list[str]:
     lines = []
+    seen_roles = set()
+    between_cards = False
     for row in page.splitlines():
         line = row.lstrip(_TRIM).strip()
         if re.match(r"^u[ił]\.\s+\S.+\d", line, re.IGNORECASE):
             line = "ul." + line[3:]
         line = re.sub(r"^KRS\s+nr\.?\s*:\s*(\d{1,9})\s*$", lambda m: "KRS " + m[1].zfill(10), line, flags=re.IGNORECASE)
         folded = _fold(line)
-        if _STOP.match(folded):
-            if folded.replace(" ", "") == "odwolanie" and not any(appeal.SECTION_RE.match(row) for row in lines):
+        label = _LABEL.match(folded)
+        if between_cards:
+            if appeal.FILING.search(line) or appeal.party_header_end(line) or appeal.CHARGE.search(line):
+                break
+            if not label or _LABELS[label[1]] not in {"Odwołujący", "Zamawiający"} - seen_roles:
+                continue
+            between_cards = False
+        elif _STOP.match(folded):
+            if folded.replace(" ", "") == "odwolanie" and not seen_roles:
+                continue
+            if folded.startswith("dotyczy") or folded.replace(" ", "") == "odwolanie":
+                # A subject or title can separate two differently owned cover cards.
+                between_cards = True
+                lines.append(line)
                 continue
             break
-        if label := _LABEL.match(folded):
+        if label:
+            seen_roles.add(_LABELS[label[1]])
             line = _LABELS[label[1]] + re.sub(r"^:\s*[_.]+\s+", ": ", line[label.end() :])
         if line:
             if (
@@ -70,7 +85,7 @@ def _layout_cover(page: str, boxes: list[WordBox]) -> str:
     """Read label and value columns together only when both printed roles support that layout."""
     if not boxes or not re.search(r"(?im)^\s*(?:zamawiaj[ąa]cy|odwo[łl]uj[ąa]cy|dotyczy)\s*:\s*$", page):
         return page
-    rows, height = word_rows(boxes)
+    rows, height = word_rows([word.layout_box for word in boxes])
     anchors = []
     for i, row in enumerate(rows):
         # A left column can consist of just the role word and a separate colon.
@@ -197,7 +212,7 @@ def _signature_name(appointed: str, pages: list[str]) -> str:
 
 def _mail(lines: list[str], name: str, scan_pages: list[str]) -> str | None:
     first, last = _fold(name).split()
-    local = rf"((?:{re.escape(first[0])}|{re.escape(first)})\s*\.\s*{re.escape(last)}|biuro|kancelaria)"
+    local = rf"((?:{re.escape(first[0])}|{re.escape(first)})\s*\.\s*{re.escape(last)}|(?:biuro|kancelaria)\d*)"
     domain = r"([\w-]+(?:\.[\w-]+)+)"
     for line in lines:
         label = _MAIL_LABEL.search(line)
@@ -206,7 +221,7 @@ def _mail(lines: list[str], name: str, scan_pages: list[str]) -> str | None:
             return address[0]
         # A labelled address must begin with this lawyer's name or a conventional
         # office mailbox before interpreting a damaged separator.
-        separator = r"\s*(?:[Q(©®]+(?:a(?=\s))?|[O0])\s*"
+        separator = r"\s*(?:(?-i:[Q(©®]+)(?:a(?=\s))?|(?<!\d)[O0])\s*"
         if label and (damaged := re.match(local + separator + domain, value.translate(_FOLD), re.IGNORECASE)):
             host = value[damaged.start(2) : damaged.end(2)]
             # A repeated letterhead website can corroborate an accent error in the host.
