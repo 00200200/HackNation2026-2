@@ -128,6 +128,8 @@ Two and four grant JSONs matched exactly. The ten organizer grants remained exac
 
 ## Log
 
+- 22.11.2026 · Codex · Recovered role-labelled appeal cards with inflected captions and nearby party evidence. The paired PDF controls cover names, registry IDs and counsel attached to each appellant. [Development measurements](evals/results/appeal-party-headings.json)
+
 - 22.11.2026 · Codex · Raised the required page watchdog from 60 to 180 seconds and added one 150-dpi retry within the remaining OCR budget. Regression tests cover timeout recovery, immediate engine errors, budget exhaustion and word-box coordinates after resizing.
 
 - 22.11.2026 · Codex · Added case warnings and opt-in sibling OCR repair for #61. All 304 keyless outputs matched main byte for byte. UZP F1 stayed at 0.9231 on corpus 1 all, 0.9221 on corpus 1 dev and 0.9244 on corpus 2 dev. Training scored 1.000 with 196 exact outputs. The 30 singleton scans had 29 exact outputs and UZP F1 of 1.000. [Paired case measurements](evals/results/case-siblings.json)
