@@ -18,6 +18,7 @@ NOTE_NAMES = {
     "derived code or flag, not a printed value": "kod lub znacznik wyliczony z treści",
     "value not found verbatim in the text read": "wartości nie ma dosłownie w odczytanym tekście",
     "producing engine not recorded": "nie wiadomo, która metoda podała wartość",
+    "corrected from another document in the case folder": "poprawione według innego dokumentu sprawy",
 }
 
 
@@ -87,15 +88,20 @@ def field_table(trace: dict | None) -> ui.Tag:
         page = field["page"]
         notes = field.get("note", "").split("; ") if field.get("note") else []
         source = field["snippet"] or "; ".join(NOTE_NAMES.get(note, note) for note in notes)
-        # A row with a page number opens that page in the preview.
-        click = {"class_": "trace-row", "onclick": f"Shiny.setInputValue('trace_page', {page}, {{priority: 'event'}})"}
+        # A native button opens the page, so a keyboard user can reach it with Tab, Enter and Space.
+        show = ui.tags.button(
+            str(page),
+            type="button",
+            class_="page-link",
+            title=f"Pokaż stronę {page}",
+            onclick=f"Shiny.setInputValue('trace_page', {page}, {{priority: 'event'}})",
+        )
         rows.append(
             ui.tags.tr(
                 ui.tags.td(field["field"]),
-                ui.tags.td(str(page) if page else "–"),
+                ui.tags.td(show if page else "–"),
                 ui.tags.td(ENGINE_NAMES.get(field["engine"], field["engine"] or "–")),
                 ui.tags.td(source),
-                **(click if page else {}),
             )
         )
     header = ui.tags.tr(*(ui.tags.th(name) for name in ("Pole", "Str.", "Źródło", "Fragment")))

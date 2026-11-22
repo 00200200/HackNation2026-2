@@ -49,6 +49,17 @@ def note(key: str, value) -> None:
         events[key] = value
 
 
+def repaired(trace: dict, record: dict) -> dict:
+    """Show a value changed after extraction, such as a case repair, with its new value and a note."""
+    fields = []
+    for entry, (path, value) in zip(trace["fields"], leaves(record), strict=False):
+        if entry["field"] == path and entry["value"] != value:
+            note = "corrected from another document in the case folder"
+            entry = entry | {"value": value, "note": f"{entry['note']}; {note}" if entry.get("note") else note}
+        fields.append(entry)
+    return trace | {"fields": fields}
+
+
 def note_route(class_id: str, router: str, rule: str | None = None, match: dict | None = None) -> None:
     """Record why a class applied; a configured class also records the cues it found."""
     events = _events.get()
@@ -193,7 +204,10 @@ def value_pattern(value) -> re.Pattern:
     if isinstance(value, float | int):
         whole, _, cents = f"{value:.2f}".partition(".")
         digits = r"[ . ]?".join(re.escape(d) for d in whole)
-        return re.compile(rf"(?<!\d){digits}(?:[.,]{cents})?(?!\d)")
+        if cents != "00":
+            return re.compile(rf"(?<!\d){digits}[.,]{cents}(?!\d)")
+        # A whole amount may print ",00", but must not be the integer part of a different amount.
+        return re.compile(rf"(?<!\d){digits}(?:[.,]00)?(?![.,]?\d)")
     text = str(value)
     date = re.fullmatch(r"(\d{4})-(0[1-9]|1[0-2])-(\d{2})", text)
     if date:

@@ -416,3 +416,75 @@ def test_explain_into_a_file_stops_before_any_pdf(tmp_path, monkeypatch, in_proc
             "--explain",
             str(blocker),
         )
+
+
+def test_a_tiny_threshold_still_needs_its_cue(tmp_path):
+    definition = load(
+        tmp_path,
+        CUES.replace("threshold = 3", "threshold = 1e-10").replace(
+            '"Karta zgłoszenia" = 2', '"Karta zgłoszenia" = 1e-10'
+        ),
+    )
+    assert definition.routing.explain(["Inny dokument\nNumer: 7"]) is not None  # "Numer:" weighs 1
+    sparse = load(
+        tmp_path,
+        CUES.replace("threshold = 3", "threshold = 1e-10")
+        .replace('"Numer:" = 1', '"Numer:" = 1e-10')
+        .replace('"Karta zgłoszenia" = 2', '"Karta zgłoszenia" = 1e-10'),
+        "sparse.toml",
+    )
+    assert sparse.routing.explain(["Faktura"]) is None
+
+
+def test_explain_folder_may_not_contain_the_output(tmp_path, monkeypatch, in_process_cli):
+    (tmp_path / "input").mkdir()
+    run = tmp_path / "run"
+    with pytest.raises(SystemExit):
+        run_cli(monkeypatch, "--input", str(tmp_path / "input"), "--output", str(run / "output"), "--explain", str(run))
+
+
+def test_force_replaces_a_generated_file_that_no_longer_parses(tmp_path, monkeypatch):
+    monkeypatch.delenv("KIO_CLASSES_DIR", raising=False)
+    out = tmp_path / "classes"
+    out.mkdir()
+    (out / "accession.toml").write_text("id = \n", encoding="utf-8")
+    monkeypatch.setattr(
+        sys, "argv", ["classes", "new", "accession", "--from-pdf", str(SAMPLE), "--out", str(out), "--force"]
+    )
+    assert tool.main() == 0
+    assert next(c for c in parse_classes(class_sources(extra=[out])) if c.id == "accession")
+
+
+@pytest.mark.parametrize(
+    ("value", "found", "missed"),
+    [
+        (15.75, "Kwota: 15,75", "Saldo: 15,00"),
+        (15.0, "Kwota: 15,00 zł", "Saldo: 15,75"),
+        (15.0, "razem 15 zł.", "kod 155"),
+    ],
+)
+def test_an_amount_does_not_match_another_amounts_integer_part(value, found, missed):
+    from kio2json.trace import value_pattern
+
+    assert value_pattern(value).search(found)
+    assert not value_pattern(value).search(missed)
+
+
+def test_a_case_repair_shows_in_the_trace():
+    from kio2json.trace import repaired
+
+    trace = {"fields": [{"field": "a.nip", "value": "1234567884", "page": 1, "snippet": "NIP: 1234567884"}]}
+    fixed = repaired(trace, {"a": {"nip": "1234567883"}})["fields"][0]
+    assert fixed["value"] == "1234567883" and fixed["note"] == "corrected from another document in the case folder"
+    assert trace["fields"][0]["value"] == "1234567884"
+
+
+def test_the_page_of_a_field_is_a_keyboard_button():
+    from kio2json.gui_explain import field_table
+
+    trace = {"class": "x", "fields": [{"field": "a", "value": 1, "page": 2, "engine": "rule", "snippet": "a: 1"}]}
+    import html
+
+    shown = html.unescape(str(field_table(trace)))
+    assert "<button" in shown and 'type="button"' in shown and 'class="page-link"' in shown
+    assert "Shiny.setInputValue('trace_page', 2" in shown

@@ -15,7 +15,15 @@ import unicodedata
 from pathlib import Path
 
 from . import trace
-from .class_config import DEFAULT_DIR, ClassifierRouting, DocumentClass, add_class_options, class_sources, parse_classes
+from .class_config import (
+    DEFAULT_DIR,
+    ClassifierRouting,
+    ClassSources,
+    DocumentClass,
+    add_class_options,
+    class_sources,
+    parse_classes,
+)
 from .engines import extract
 from .output_schema import NUMBER_TOKEN, normalize
 from .pdf_text import NoReadableTextError, OCRRecognitionError, join_pages, read_pages
@@ -131,12 +139,15 @@ def new_class(args: argparse.Namespace) -> int:
         print(f"{out} exists. Pass --force to replace it.", file=sys.stderr)
         return 1
     try:
-        # The default set and the output folder must not already hold this ID, except in the file being replaced.
-        loaded = parse_classes(class_sources(extra=[args.out] if args.out.is_dir() else []))
+        # The default set and the output folder must not already hold this ID. The file being replaced is
+        # left out, so --force can also replace a generated file that no longer parses.
+        sources = class_sources(extra=[args.out] if args.out.is_dir() else [])
+        others = {path: data for path, data in sources.files.items() if path.resolve() != out.resolve()}
+        loaded = parse_classes(ClassSources(others)) if others else []
     except (OSError, ValueError) as error:
         print(f"Class configuration: {error}", file=sys.stderr)
         return 1
-    if any(d.id == args.id and (d.source is None or d.source.resolve() != out.resolve()) for d in loaded):
+    if any(definition.id == args.id for definition in loaded):
         print(f"Class ID {args.id} is already in use. Choose another ID.", file=sys.stderr)
         return 1
     # A file in the jury's default directory stays off until --enable selects it.

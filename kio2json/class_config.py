@@ -86,8 +86,9 @@ def phrase_pattern(phrase: str) -> re.Pattern:
     return re.compile(start + body + end, re.IGNORECASE)
 
 
-# Cue weights are floats, so 0.7 + 0.1 must still reach a threshold of 0.8.
-WEIGHT_TOLERANCE = 1e-9
+def reaches(score: float, threshold: float) -> bool:
+    """Compare float cue weights with a relative tolerance: 0.7 + 0.1 reaches 0.8, and 0 never reaches a threshold."""
+    return score >= threshold * (1 - 1e-9)
 
 
 class Routing(Config):
@@ -110,7 +111,7 @@ class Routing(Config):
         if any(weight == 0 for weight in self.cues.values()):
             raise ValueError("a routing cue weight must not be 0")
         reachable = sum(weight for weight in self.cues.values() if weight > 0)
-        if self.cues and reachable + WEIGHT_TOLERANCE < self.threshold:
+        if self.cues and not reaches(reachable, self.threshold):
             raise ValueError(f"threshold {self.threshold:g} exceeds the positive cue weights ({reachable:g})")
         self._phrases = {phrase: phrase_pattern(phrase) for phrase in self.cues}
         return self
@@ -143,7 +144,7 @@ class Routing(Config):
                     cues.append({"cue": phrase, "weight": weight, "page": number, "text": " ".join(match[0].split())})
                     break
         score = sum(cue["weight"] for cue in cues)
-        if self.threshold is not None and score + WEIGHT_TOLERANCE < self.threshold:
+        if self.threshold is not None and not reaches(score, self.threshold):
             return None
         return {"headings": headings, "required": required, "cues": cues, "score": score, "threshold": self.threshold}
 

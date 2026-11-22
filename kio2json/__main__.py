@@ -43,8 +43,9 @@ def main() -> int:
     if not args.input_dir.is_dir():
         parser.error(f"input folder not found: {args.input_dir}")
     if args.explain:
-        if args.explain.resolve().is_relative_to(args.output_dir.resolve()):
-            parser.error("--explain needs a folder outside --output, because every JSON there is scored")
+        explain, output = args.explain.resolve(), args.output_dir.resolve()
+        if explain.is_relative_to(output) or output.is_relative_to(explain):
+            parser.error("--explain needs a folder apart from --output, because every JSON there is scored")
         try:
             args.explain.mkdir(parents=True, exist_ok=True)
         except OSError as error:
