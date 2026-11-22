@@ -563,3 +563,20 @@ negative inputs that produce `{}` against the committed baseline. It writes the 
 the historical strict score, per-field counts and F1, class F1, positive layout profiles ranked
 by F1, and negative outcomes by family. Profiles use different synthetic cases in each cycle,
 so the ranking also reflects differences in case difficulty. Hidden-set performance is unknown.
+
+
+### Case-linked benchmark
+
+Run `make eval-cases` to score 26 invented cases with the local jury CLI. Each case supplies a short or long appeal, a mandate with identified grantors and signers, a bank receipt, and a related out-of-scope document. Each set of four appears in a separate case folder in native and image-only form. The two folders share case facts, independently of their opaque filenames. Only the PDFs enter the extractor.
+
+```sh
+make eval-cases CASE_ARGS="--split development"
+make eval-cases CASE_ARGS="--split reserved"
+make eval-cases CASE_ARGS="--seed 104 --cases 13 --generate-to .cache/case-inspection"
+```
+
+The default report is `.cache/case-benchmark.json`. Generation alone requires a new directory and writes `input/`, `gold/` and `manifest.json`. The manifest gives the reference path, paired PDF paths, case, split, family, scan settings, section bounds and printed field boxes. Page indices start at zero. Boxes are in native PDF points from the top left. To locate them on a scan, rotate their corners about the page center by the recorded counterclockwise angle and scale by DPI/72.
+
+The development split uses the early modular appeal, six early mandates and seven early receipt layouts. The reserved split uses independently phrased long appeals, company/consortium/sole-trader mandates, the late bank table and the five organizer scan receipt layouts. CCITT Group 4 is reserved for that split. Both splits also contain JPEG scans. A 13-case cycle covers every family. Larger prefixes repeat layouts with new parties, dates and payment facts.
+
+The report gives UZP and strict F1, literal JSON matches, routing and negative rejection by family, class and rendering, plus field counts within each family. Its 95% intervals resample complete cases 1,000 times and are omitted for single-case slices. Family frequencies in the jury set are unknown. The synthetic scores describe these authored layouts.

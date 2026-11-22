@@ -256,3 +256,5 @@ These runs used local rules with the three endpoint variables unset. The two loc
 - 22.11.2026 · Codex · Integrated the merged #75 rule fixes into #72 at main `257a6af`.
 
 - 22.11.2026 · Codex · Added the seeded layout regression gate and measured main at `f7f3ee9` and `3eccb41` on the same 240 generated PDFs for issue #63.
+
+- 22.11.2026 · Codex · Added the seeded case-linked benchmark on `feat/case-benchmark`, pairing each native appeal, mandate, transfer and near-negative with a scan and grouping the results by case and layout.
