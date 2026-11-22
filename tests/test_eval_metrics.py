@@ -3,7 +3,17 @@ from pathlib import Path
 
 import pytest
 
-from evals.metrics import NEGATIVE, compare, doc_class, flatten, load_prediction, normalise, score_doc, summarise
+from evals.metrics import (
+    NEGATIVE,
+    compare,
+    compare_strict,
+    doc_class,
+    flatten,
+    load_prediction,
+    normalise,
+    score_doc,
+    summarise,
+)
 from evals.run import DATA, GOLD_FOR, load_cases
 
 GOLD = {
@@ -41,12 +51,12 @@ def test_types_and_formats_are_not_normalised_away():
     assert compare(pred, GOLD).f1 < 1.0
 
 
-def test_wrong_and_hallucinated_values_cost_precision_and_recall():
+def test_strict_wrong_and_hallucinated_values_cost_precision_and_recall():
     pred = json.loads(json.dumps(GOLD))
     pred["przelew_bankowy"]["numer_transakcji"] = "INVENTED"
-    counts = compare(pred, GOLD)
+    counts = compare_strict(pred, GOLD)
     assert (counts.tp, counts.fp, counts.fn) == (5, 1, 1)
-    non_null = compare(pred, GOLD, skip_gold_nulls=True)
+    non_null = compare_strict(pred, GOLD, skip_gold_nulls=True)
     assert (non_null.tp, non_null.fp, non_null.fn) == (5, 0, 0)
 
 
@@ -67,12 +77,12 @@ def test_negative_document_must_be_empty(tmp_path: Path):
     wrong = tmp_path / "wrong.json"
     wrong.write_text(json.dumps(GOLD))
     bad = score_doc("negatywne", "x.pdf", wrong, {})
-    assert bad.counts.fp == 6 and bad.pred_class == "przelew"
+    assert bad.counts.fp == 5 and bad.counts_strict.fp == 6 and bad.pred_class == "przelew"
 
 
 def test_missing_output_counts_as_all_missed(tmp_path: Path):
     result = score_doc("c", "x.pdf", tmp_path / "missing.json", GOLD)
-    assert result.errors and result.counts.fn == 6
+    assert result.errors and result.counts.fn == 5 and result.counts_strict.fn == 6
     summary = summarise([result])
     assert summary["outputs_complete"] == 0.0 and summary["micro_f1"] == 0.0
 
@@ -111,7 +121,8 @@ def test_macro_f1_units_and_document_boundaries(tmp_path):
         docs.append(score_doc("invented", f"{i}.pdf", path, gold))
 
     scores = summarise(docs)
-    assert scores["micro_f1"] == pytest.approx(8 / 12)
+    assert scores["micro_f1"] == pytest.approx(8 / 11)
+    assert scores["micro_f1_strict"] == pytest.approx(8 / 12)
     assert scores["macro_f1_documents"] == pytest.approx(2 / 5)
     assert scores["macro_f1_classes"] == pytest.approx((6 / 7 + 1) / 3)
     assert scores["macro_f1_fields"] == pytest.approx((6 / 7 + 1) / 4)
@@ -143,14 +154,14 @@ def test_invalid_utf8_prediction_is_incomplete_and_misses_reference(tmp_path):
     doc = score_doc("invented", "one.pdf", output, {"mocodawca": {"a": 1, "b": 2}})
     summary = summarise([doc])
     assert summary["outputs_complete"] == 0
-    assert summary["counts"] == {"tp": 0, "fp": 0, "fn": 2}
+    assert summary["counts"] == {"tp": 0, "fp": 0, "fn": 2, "tn": 0}
 
 
 def test_large_integer_prediction_scores_a_mismatch(tmp_path):
     prediction = tmp_path / "number.json"
     prediction.write_text(json.dumps({"amount": 10**399 + 1}))
     result = score_doc("invented", "doc.pdf", prediction, {"amount": 10**399})
-    assert (result.counts.tp, result.counts.fp, result.counts.fn) == (0, 1, 1)
+    assert (result.counts.tp, result.counts.fp, result.counts.fn) == (0, 1, 0)
 
 
 @pytest.mark.parametrize(
@@ -177,8 +188,9 @@ def test_negative_output_contract(tmp_path, contents, complete, correct):
     assert detail["negatives_empty"] == correct
 
 
-def test_account_comparison_removes_only_whitespace():
-    key = "na_rachunek"
+@pytest.mark.parametrize("key", ["na_rachunek", "z_rachunku"])
+def test_account_comparison_removes_only_whitespace(key):
+    assert compare({key: 12345}, {key: "12345"}).fp == 1
     assert normalise("DE89 0123\n4567", key) == normalise("DE8901234567", key)
     for altered in ("8901234567", "de8901234567", "DE89-01234567", 8901234567):
         assert normalise(altered, key) != normalise("DE8901234567", key)
@@ -202,3 +214,80 @@ def test_training_account_overlay_uses_the_exact_printed_reference(monkeypatch):
         "przelew_bankowy": {**fields, "z_rachunku": "de" + sender}
     }
     assert fields["z_rachunku"] == sender
+
+
+def test_uzp_nulls_wrong_values_and_literal_null_text():
+    counts = compare(
+        {"both": None, "new": "new", "wrong": 12, "hit": "null", "empty": None},
+        {"both": None, "miss": "old", "wrong": 3, "hit": "null"},
+    )
+    assert (counts.tp, counts.fp, counts.fn, counts.tn) == (1, 2, 1, 2)
+    assert counts.f1 == 2 / 5
+    for malformed in ([], {}, ["wrong"]):
+        counts = compare({"kwota": malformed}, {"kwota": 12})
+        assert (counts.fp, counts.fn) == (1, 0)
+    assert compare({"x": "null"}, {"x": None}).fp == 1
+    assert compare({"x": None}, {"x": "null"}).fn == 1
+    assert compare({"x": "num:3"}, {"x": 3}).fp == 1
+    assert compare({"x": 7.004}, {"x": 7.001}).fp == 1
+
+
+@pytest.mark.parametrize(
+    "root,key",
+    [
+        ("Odwolujacy", "nazwa"),
+        ("Odwolujacy", "pelnomocnik"),
+        ("Zamawiajacy", "nazwa"),
+        ("ZamowieniePubliczne", "tytul"),
+        ("przelew_bankowy", "tytul"),
+    ],
+)
+def test_uzp_80_percent_inclusive_on_five_fields(root, key):
+    def doc(value):
+        item = {key: {"nazwa": value} if key == "pelnomocnik" else value}
+        return {root: [item] if root in {"Odwolujacy", "Zamawiajacy"} else item}
+
+    assert compare(doc("abcde"), doc("abcdx")).tp == 1
+    assert compare(doc("abcde"), doc("abcxx")).fp == 1
+    assert compare({"other": {"tytul": "abcde"}}, {"other": {"tytul": "abcdx"}}).fp == 1
+
+
+def test_uzp_identifier_preserves_print_except_whitespace():
+    assert compare({"na_rachunek": "PL 01\t23"}, {"na_rachunek": "PL0123"}).tp == 1
+    for printed in ("0123", "pl0123", "PL01-23"):
+        assert compare({"na_rachunek": printed}, {"na_rachunek": "PL0123"}).fp == 1
+    assert compare({"pesel": 123}, {"pesel": "1 23"}).tp == 1
+    assert compare({"pesel": 123.0}, {"pesel": 123}).fp == 1
+
+
+def test_uzp_list_matching_handles_fuzzy_collisions_and_duplicate_values():
+    def parties(names):
+        return {"Zamawiajacy": [{"nazwa": n} for n in names]}
+
+    # First candidate matches either reference. Second candidate matches only the first.
+    gold = parties(["abcde", "abcdx"])
+    for names in (["abcde", "abzde", "abzde"], ["abzde", "abzde", "abcde"]):
+        counts = compare(parties(names), gold)
+        assert (counts.tp, counts.fp, counts.fn) == (2, 1, 0)
+
+
+def test_uzp_list_matching_keeps_fields_with_their_record():
+    gold = {"party": [{"id": "A", "signer": "S"}, {"id": "B", "signer": "T"}]}
+    pred = {"party": [{"id": "B", "signer": "S"}, {"id": "A", "signer": "T"}]}
+    counts = compare(pred, gold)
+    assert (counts.tp, counts.fp, counts.fn) == (2, 2, 0)
+
+
+def test_quick_target_uses_uzp_and_reports_strict(tmp_path):
+    from evals.run import F1_TARGET, build_results
+
+    gold = {"przelew_bankowy": {"tytul": "abcde"}}
+    path = tmp_path / "pay.json"
+    path.write_text(json.dumps({"przelew_bankowy": {"tytul": "abcdf"}}))
+    negative = tmp_path / "empty.json"
+    negative.write_text("{}")
+    docs = [score_doc("x", "pay.pdf", path, gold), score_doc("x", "empty.pdf", negative, {})]
+    result = build_results(docs, "quick", 0.01, {"x": {}})
+    assert result["metrics"]["micro_f1"] == {"value": 1.0, "target": F1_TARGET, "pass": True}
+    assert result["metrics"]["micro_f1_strict"] == {"value": 0.0, "target": None, "pass": None}
+    assert result["overall_pass"]

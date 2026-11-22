@@ -21,7 +21,7 @@ organizer README `data/uzp/README.md` (https://github.com/Urzad-Zamowien-Publicz
 | 50% (README) / 30% (PDF) | Flexibility and extensibility | README: 1–20 pts LLM size (smaller model scores **more**), 1–20 pts new document types and data classes without rebuilding (config only), 1–10 pts other features such as GUI |
 | — (README) / 20% (PDF) | Architecture and technical quality | clarity, modularity, maintainability, documentation |
 
-Which split applies is UNCONFIRMED; build for both. F1 formula: UNCONFIRMED (see `odwolania2json-eval`).
+Which split applies is UNCONFIRMED; build for both. UZP published its F1 counts and 80% threshold in #59. The eval uses normalized Levenshtein as the similarity proxy.
 
 ## Basic requirements (miss one and the run scores nothing)
 
