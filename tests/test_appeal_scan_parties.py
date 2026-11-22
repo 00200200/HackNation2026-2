@@ -139,3 +139,16 @@ def test_attachment_after_the_filing_parties_cannot_add_an_authority():
         "Zamawiający: Muzeum Latawców\nNIP: 2345678901"
     )
     assert extract([page], {1})["Zamawiajacy"] == []
+
+
+def test_marginal_lead_marker_between_numbered_authorities_keeps_both_records():
+    page = (
+        "Zamawiający: Zamawiający wspólnie udzielający zamówienia:\n"
+        "1. Muzeum Latawców\nNIP: 1234567890\nZamawiający prowadzący postępowanie\n"
+        "2. Gmina Lampionów\nREGON: 123456789\nODWOŁANIE"
+    )
+    for result in (appeal.extract(page), extract([page], {1})):
+        assert [(p["nazwa"], p["nip"], p["regon"], p["prowadzacy_postepowanie"]) for p in result["Zamawiajacy"]] == [
+            ("Muzeum Latawców", "1234567890", None, 1),
+            ("Gmina Lampionów", None, "123456789", 0),
+        ]

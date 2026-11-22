@@ -314,6 +314,23 @@ def _parties(
             if role == "Zamawiający":
                 finish_name()
                 role = None
+        # A marginal lead marker between consecutive members belongs to the preceding card.
+        if (
+            role == "Zamawiający"
+            and sublabel.isdigit()
+            and (
+                (index in lead_rows and FORM_ROLE.fullmatch(line))
+                or (CARD_ROLE.fullmatch(line) and _LEADS_PROCEEDING.search(line))
+            )
+            and index + 1 < len(lines)
+            and (following := MEMBER.match(lines[index + 1].strip()))
+            and len(sublabel) <= 6
+            and following[1] == str(int(sublabel) + 1)
+        ):
+            finish_name()
+            if entity:
+                entity["sublabel"] += " prowadzący"
+            continue
         if _OTHER_CARD.match(line) or CARD_ROLE.match(line):
             finish_name()
             role = None

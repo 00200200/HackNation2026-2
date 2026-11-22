@@ -302,3 +302,16 @@ def test_numbered_joint_authority_keeps_id_after_inline_street():
 @pytest.mark.parametrize("boundary", ["Odpowiedź zamawiającego:", "Zarzuty", "Cytat z pisma:"])
 def test_plain_role_in_authority_response_has_no_owner(boundary):
     assert extract(f"ODWOŁANIE\n{boundary}\nZamawiający: Gmina Lampionów\nNIP: 1234567890")["Zamawiajacy"] == []
+
+
+def test_inline_lead_value_opens_its_own_card_next_to_numbered_members():
+    result = extract(
+        "Dane zamawiających:\n1. Gmina Lampionów\nNIP: 1234567890\n"
+        "Podmiot prowadzący postępowanie: Muzeum Latawców\n"
+        "2. Powiat Szklany\nREGON: 123456789"
+    )
+    assert [(p["nazwa"], p["prowadzacy_postepowanie"]) for p in result["Zamawiajacy"]] == [
+        ("Gmina Lampionów", 0),
+        ("Muzeum Latawców", 1),
+        ("Powiat Szklany", 0),
+    ]
