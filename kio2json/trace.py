@@ -163,6 +163,14 @@ def lookup(record, path: str, missing=None):
     return record
 
 
+def assign(record, path: str, value) -> None:
+    """Set the value at a trace path such as "osoby[1].nip"."""
+    keys = [int(index) if index else key for key, index in PATH_PARTS.findall(path)]
+    for key in keys[:-1]:
+        record = record[key]
+    record[keys[-1]] = value
+
+
 def declared_pattern(fields: dict, path: str) -> re.Pattern | None:
     """The label pattern a class declares for this field, through nested objects but not list rows.
 

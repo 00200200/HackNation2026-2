@@ -32,6 +32,10 @@ from .ocr_accounts import AccountEvidence
 from .validators import Validator, declares_checks
 
 DEFAULT_DIR = Path(__file__).resolve().parents[1] / "config" / "classes"
+# The model profile (KIO_LLM_*) supports these extractors; a class file opts in with model_profile = true.
+PROFILE_EXTRACTORS = frozenset(
+    {"kio2json.appeal.extract", "kio2json.bank_transfer.extract", "kio2json.power_of_attorney.extract"}
+)
 
 
 class Config(BaseModel):
@@ -363,9 +367,16 @@ def parse_classes(sources: ClassSources | Mapping[Path, bytes]) -> list[Document
             raise ValueError("Invalid OCR engine configuration")
     for path, source in sources.files.items():
         try:
-            definition = DocumentClass.model_validate(tomllib.loads(source.decode("utf-8")))
+            raw = tomllib.loads(source.decode("utf-8"))
+            definition = DocumentClass.model_validate(raw)
             if definition.id in classes:
                 raise ValueError(f"duplicate class id {definition.id} (also in {classes[definition.id].source})")
+            if definition.model_profile and raw.get("extractor") not in PROFILE_EXTRACTORS:
+                # The model profile's routing and gap checks know only the organizer's Python extractors.
+                raise ValueError("model_profile applies only to the organizer's Python extractors")
+            # Enable before the profile copies the class for rule recovery, so the copy is enabled too.
+            if definition.id in sources.enable:
+                definition.enabled = True
             if (
                 definition.model_profile
                 and definition.engines == ["python"]
@@ -384,8 +395,6 @@ def parse_classes(sources: ClassSources | Mapping[Path, bytes]) -> list[Document
     unknown = sorted(sources.enable - classes.keys())
     if unknown:
         raise ValueError(f"cannot enable {', '.join(unknown)}: no such class (loaded: {', '.join(sorted(classes))})")
-    for class_id in sources.enable:
-        classes[class_id].enabled = True
     return sorted(classes.values(), key=lambda c: (c.priority, c.id))
 
 

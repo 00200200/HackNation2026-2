@@ -560,3 +560,47 @@ def test_a_labelled_field_added_to_an_organizer_class_follows_its_fields(tmp_pat
     assert list(extended) == [*plain, "sygnatura"]
     assert extended["sygnatura"] == "KIO 1234/26"
     assert {key: extended[key] for key in plain} == plain
+
+
+def test_model_profile_is_refused_for_another_extractor(tmp_path):
+    custom = """id = "custom"
+model_profile = true
+engines = ["python"]
+extractor = "kio2json.common.squash"
+[routing]
+classifier = "kio2json.classify.classify"
+[fields.a]
+type = "string"
+instruction = "A."
+"""
+    with pytest.raises(ValueError, match=r"(?s)custom\.toml.*organizer's Python extractors"):
+        load(tmp_path, custom, "custom.toml")
+
+
+def test_enable_reaches_the_rule_recovery_copy(tmp_path, monkeypatch):
+    import shutil
+
+    from kio2json import class_config
+
+    monkeypatch.setenv("KIO_LLM_BASE_URL", "https://example.invalid/v1")
+    monkeypatch.setenv("KIO_LLM_MODEL", "small")
+    monkeypatch.setenv("KIO_LLM_API_KEY", "test-only")
+    registry = tmp_path / "classes"
+    shutil.copytree(ROOT / "config" / "classes", registry)
+    appeal = registry / "appeal.toml"
+    appeal.write_text(
+        appeal.read_text(encoding="utf-8").replace('name = "Odwołanie"\n', 'name = "Odwołanie"\nenabled = false\n')
+    )
+    monkeypatch.setattr(class_config, "DEFAULT_DIR", registry.resolve())
+    definition = next(c for c in parse_classes(class_sources(registry, enable=["appeal"])) if c.id == "appeal")
+    assert definition.enabled and definition.profile.keyed and definition.rules_only.enabled
+
+
+def test_a_later_engine_replaces_a_value_kept_with_a_warning():
+    page = ACCESSION_PAGE.replace("11.03.2026", "11.03.2032")
+    record, events = traced_extract(accession_with_second_engine(), page, {"data_wezwania": "2026-11-22"})
+    assert record["data_wezwania"] == "2026-11-22"
+    assert events["warnings"] == []
+    record, events = traced_extract(accession_with_second_engine(), page, {"nip": "1234567883"})
+    assert record["data_wezwania"] == "2032-03-11"
+    assert [w["field"] for w in events["warnings"]] == ["data_wezwania"]

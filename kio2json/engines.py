@@ -118,6 +118,7 @@ def extract(
 ) -> dict:
     values = None
     failed = []
+    held = {}
     trace.note("declared_fields", definition.fields)
     fill_empty = definition.profile.mode in ("RL", "LR")
     for engine in definition.engines:
@@ -159,8 +160,14 @@ def extract(
                 reassess(definition.id, candidate, first_page, model=model)
         trace.note_candidate(engine, candidate)
         if definition.checked:
-            # A failed check empties the value unless the field keeps it, so a later engine can fill it.
-            failed += check_record(definition.fields, candidate)
+            # A failed check empties the value, so a later engine can fill it. A value the field keeps
+            # ("warn") is held aside too, and returns only if no later engine supplies a valid one.
+            found = check_record(definition.fields, candidate)
+            failed += found
+            for warning in found:
+                if warning["action"] == "warn":
+                    held.setdefault(warning["field"], warning["value"])
+                    trace.assign(candidate, warning["field"], None)
         if values is None:
             values = candidate
         else:
@@ -173,6 +180,9 @@ def extract(
             if owner["typ"] == "osoba_prawna":
                 # A person's name belongs to an individual grantor or signer.
                 owner["imie_nazwisko"] = None
+    for path, value in held.items():
+        if trace.lookup(values, path, missing=MISSING) is None:
+            trace.assign(values, path, value)
     if failed:
         # Report a failed check while the final record still holds that reading, or keeps the emptied place.
         kept = []
