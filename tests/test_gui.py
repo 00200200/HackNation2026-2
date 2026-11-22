@@ -70,11 +70,14 @@ def test_unknown_user_folder():
 
 
 def test_upload_collision_and_empty_folder(tmp_path):
-    paths = [{"name": name, "datapath": "unused"} for name in ["one.PDF", "ONE.pdf"]]
+    (tmp_path / "uploads").mkdir()
+    (saved := tmp_path / "uploads" / "saved.pdf").write_bytes(b"%PDF-1.4")
+    paths = [{"name": name, "datapath": str(saved)} for name in ["one.PDF", "ONE.pdf"]]
     with pytest.raises(ValueError, match="nazw"):
         analyze(upload_sources("sprawa", paths), tmp_path)
+    (empty := tmp_path / "empty").mkdir()
     with pytest.raises(ValueError, match="PDF"):
-        folder_sources(str(tmp_path))
+        folder_sources(str(empty))
 
 
 def test_session_reports_failed_document_and_invalid_new_run(tmp_path):

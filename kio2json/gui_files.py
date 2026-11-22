@@ -5,6 +5,7 @@ import hashlib
 import ntpath
 import os
 import shutil
+import stat
 import zlib
 from collections import OrderedDict, defaultdict
 from collections.abc import Callable
@@ -77,6 +78,8 @@ def zip_sources(
             if entry.is_dir() or not parts or parts[0] == "__MACOSX" or parts[-1].startswith("."):
                 continue
             if name.lower().endswith(".pdf"):
+                if stat.S_ISLNK(entry.external_attr >> 16):
+                    raise ValueError(f"Archiwum zawiera dowiązanie zamiast pliku: {name}. Spakuj same pliki PDF.")
                 pdfs.append((index, entry, name, parts))
         # zipfile reads no more than an entry's declared size, so checking those sizes first bounds the unpacking.
         if len(pdfs) > budget[0] or sum(entry.file_size for _, entry, _, _ in pdfs) > budget[1]:
@@ -84,6 +87,7 @@ def zip_sources(
                 f"Przekroczono limit przesyłania: najwyżej {ZIP_MAX_FILES} plików PDF i 1 GB po rozpakowaniu."
             )
         for index, entry, name, parts in pdfs:
+            # The entry's name is only checked and used for its JSON's name; the unpacked file gets a fixed one.
             for part in parts:
                 validate_name(part)
             target = directory / f"{prefix}-{index}.pdf"
@@ -118,7 +122,9 @@ def upload_sources(case: str, files: list[FileInfo], directory: Path | None = No
             unpacked += sum(path.stat().st_size for _, path in found)
             sources += found
         elif suffix == ".pdf":
-            sources.append((Path(case, name), Path(file["datapath"])))
+            path = Path(file["datapath"])
+            unpacked += path.stat().st_size
+            sources.append((Path(case, name), path))
         else:
             raise ValueError(f"Plik {name} musi być plikiem PDF albo archiwum ZIP.")
         if len(sources) > ZIP_MAX_FILES or unpacked > ZIP_MAX_BYTES:
@@ -130,10 +136,23 @@ def upload_sources(case: str, files: list[FileInfo], directory: Path | None = No
     return sources
 
 
+def inside(path: Path, allowed: Path, *, missing_ok: bool = False) -> bool:
+    """Whether a path's real target lies in the allowed folder.
+
+    A strict resolve fails on a link chain too long to follow, where a lenient one stops expanding and looks inside.
+    """
+    try:
+        return path.resolve(strict=True).is_relative_to(allowed.resolve(strict=True))
+    except (FileNotFoundError, NotADirectoryError):
+        return missing_ok and path.resolve().is_relative_to(allowed.resolve())
+    except OSError:
+        return False
+
+
 def folder_sources(folder: str, allowed: Path | None = None) -> list[Source]:
     """PDFs under a folder; with `allowed`, the folder is read relative to it and must stay inside it."""
     root = Path(os.path.expanduser(folder)) if allowed is None else allowed / folder.strip()
-    if allowed is not None and not root.resolve().is_relative_to(allowed.resolve()):
+    if allowed is not None and not inside(root, allowed, missing_ok=True):
         raise ValueError(f"Można otwierać tylko foldery w {allowed}.")
     # With a root, an empty field opens the root itself.
     if (allowed is None and not folder.strip()) or not root.is_dir():
@@ -142,6 +161,11 @@ def folder_sources(folder: str, allowed: Path | None = None) -> list[Source]:
     for path in sorted(root.rglob("*")):
         if path.suffix.lower() == ".pdf" and path.is_file():
             relative = path.relative_to(root)
+            if allowed is not None:
+                # A link inside the allowed folder must not open a file outside it, so the real file is read.
+                if not inside(path, allowed):
+                    raise ValueError(f"Plik {relative.as_posix()} prowadzi poza folder {allowed}.")
+                path = path.resolve(strict=True)
             if len(relative.parts) == 1:  # User selected the case folder itself.
                 relative = Path(root.resolve().name, relative)
             sources.append((relative, path))
