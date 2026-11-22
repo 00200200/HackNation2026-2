@@ -25,6 +25,8 @@ The evaluation VM kit installs the rules CLI under `/opt/solution`. The VM owner
 
 ## Last eval
 
+Robustness variants (issue #63): `uv run python -m evals.variants --n 1 --seed 2026` on `34f4a74` (main `fe2b2fd` plus this generator) re-rendered the 60 training cases into 390 invented PDFs: 180 positives with other wording, formats and layouts (54 of the 210 drifted documents rasterised), 30 invented negatives and 180 text-only control positives (same facts, default wording). The 210 drifted documents scored UZP micro F1 0.823 (strict 0.765): appeal 0.768, power 0.935, transfer 0.837, text 0.840, scans 0.775. All 30 negatives stayed empty, and 12 of 180 positives were routed as negatives (10 transfers and 2 powers; the report lists them with their tags). The control scored 0.997 (strict 0.996): appeal 1.000, power 0.985, transfer 1.000; its four misses are two powers whose grantor has a company name in „…” quotes (2 of 2 such powers) and two that name two attorneys with spelled-out titles (2 of 17). Generated documents, not real ones: read the gap as a list of weak spots, not as a test-set estimate. [Report with per-field and per-slice F1](evals/results/variants.json)
+
 The empty-object writer preserved all 180 positive training files byte for byte and wrote `{}\n` for all 16 negatives. Keeping printed country codes then changed two fields in each of 48 transfers. The comparison used local rules and two PDF workers. The integrated run includes the UZP scorer and the fix for a printed underline in a recipient account cell.
 
 | Dataset | Main strict `f7f3ee9` | Candidate strict `41903d1` | Integrated strict | Integrated UZP |
@@ -94,6 +96,7 @@ Two and four grant JSONs matched exactly. The ten organizer grants remained exac
 | Obtain an EU/EEA-only processing commitment for Mistral or deploy the same weights within the EEA | Deployment |
 | Score corpus 2 test once after the class rules and small-model profile are integrated | Coordinator |
 | Improve receipt routing and recover damaged party names on development inputs | Open |
+| Close the robustness gaps listed on issue #63 (appeal act date and reason outside the "Zamawiający w dniu <date> …" sentence, representative and appellant labels, procurement title and case number labels, slash dates, ledger and some scanned transfer layouts routed as negatives, table-layout powers, quoted company names), then re-run `evals.variants` | Open |
 | Confirm the long-string similarity function with UZP and record the Stage II weights | Open |
 | Promote HackNation2026 PR #48 to `prod` after the faktczyfejk demo, so the doc2json.pl Caddy block survives a redeploy | Open |
 | Run `docker compose run --rm cli` and `docker compose up gui` once on an amd64 Docker host and compare the CLI output with `python -m kio2json` (no Docker on the dev Macs; hosted Actions are blocked by billing, #67) | Open |
@@ -119,6 +122,8 @@ Two and four grant JSONs matched exactly. The ten organizer grants remained exac
   `/orchestrator`, not to Claude subagents.
 
 ## Log
+
+- 22.11.2026 · Claude · `evals/variants` (#63): invented re-renders of the training cases, a text-only control set, invented negatives and stand-in scans copying the organizer's scan encodings, scored as a black box with the organizer metric. Baseline on `34f4a74` (main `fe2b2fd`): drifted 0.823 (strict 0.765), control 0.997; weak spots are on the issue; no extractor changed.
 
 - 22.11.2026 · Codex · Raised the required page watchdog from 60 to 180 seconds and added one 150-dpi retry within the remaining OCR budget. Regression tests cover timeout recovery, immediate engine errors, budget exhaustion and word-box coordinates after resizing.
 

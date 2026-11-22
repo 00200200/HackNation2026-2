@@ -36,7 +36,7 @@ uv run pytest -q tests/test_eval_metrics.py              # metric code only
 uv run python -m evals.variants --n 1 --seed 2026        # robustness: re-rendered variants + invented negatives
 ```
 
-`evals.variants` (about one minute, `make eval-variants N=1 SEED=2026`) re-renders the facts of the training cases with
+`evals.variants` (about two minutes, `make eval-variants N=1 SEED=2026`) re-renders the facts of the training cases with
 other wording, field order, date, amount and account formats, layouts and stand-in scans, plus invented negatives
 (invoices, rulings, notices, payment requests). It writes `evals/results/variants.json`: F1 per class, per field and per
 tag slice, and the worst documents with expected and predicted values. A control set (the same facts, text only, every
