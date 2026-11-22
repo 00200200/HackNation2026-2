@@ -302,3 +302,35 @@ def test_signature_caption_identifies_the_principal(caption, rule):
 def test_signature_captions_identifying_other_people_do_not_bind_the_grantor(caption):
     text = f"{GRANT}\n{caption}\n......................\nIga Biała"
     assert scanned_power(text)["mocodawca"][0]["podpisujacy"] == []
+
+
+@pytest.mark.parametrize(
+    ("label", "token"),
+    [
+        ("Numer rachunku nadawcy:", "7/1932700000000000000000027"),
+        ("Numer rachunku nadawcy (PLN):", "71932700000000000000000027"),
+    ],
+)
+def test_account_cell_reaches_routing_and_extraction(label, token):
+    from kio2json.ocr_accounts import normalize_receipt
+
+    text = normalize_receipt(
+        f"Potwierdzenie przelewu\n{label} {token}\nNumer rachunku odbiorcy: {ACCOUNT}\n"
+        "Kwota przelewu: 21,12 PLN\nData operacji: 12.03.2030"
+    )
+    assert classify([text], ocr_accounts=account_evidence(text)) == "bank_transfer"
+    assert scanned_accounts(text) == ("71932700000000000000000027", ACCOUNT)
+
+
+@pytest.mark.parametrize(
+    "row",
+    [
+        "Numer rachunku nadawcy: 7/1932700000000000000000028",
+        "Numer archiwalny: 7/1932700000000000000000027",
+        "Numer rachunku nadawcy: 7/1932700000000000000000027/2",
+    ],
+)
+def test_slash_repair_requires_a_complete_checksum_valid_account_field(row):
+    from kio2json.ocr_accounts import normalize_receipt
+
+    assert normalize_receipt(row) == row

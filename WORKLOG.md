@@ -204,6 +204,8 @@ Two and four grant JSONs matched exactly. The ten organizer grants remained exac
 
 - 21.11.2026 · Integrated #27 and #34 with streamed upload limits and a disposable OCR process per document. The request deadline includes upload and queue time.
 
+- 22.11.2026 · Codex · Fixed appeal party boundaries at numbered headings, parenthesized page counters over scans, labelled OCR receipt accounts and explicit grantor signature blocks. The remaining round-three routing and role errors are tracked in #1.
+
 ## Frontend branch snapshot before API integration
 
 Public landing https://doc2json.pl (`frontend/`, static nginx, monochrome) runs on the team VPS as `doc2json-web`
@@ -238,3 +240,5 @@ These runs used local rules with the three endpoint variables unset. The two loc
 - 22.11.2026 · Codex · Prepared the VM installation and offline rehearsal for #66 and refreshed the organizer instructions to `eadffbc`. [Rehearsal measurements](evals/results/vm-2vcpu.json)
 
 - 22.11.2026 · Codex · Synced #72 with main at `4222472`, retaining first-page candidate selection in the keyed profile.
+- 22.11.2026 · Codex · Synced the rule fixes in #75 with main at `b9c2c7f`, preserving the printed account prefix during OCR slash repair.
+- 22.11.2026 · Codex · Integrated the merged #75 rule fixes into #72 at main `257a6af`.
