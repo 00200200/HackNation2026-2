@@ -2,7 +2,8 @@
 
 import re
 
-POLISH_FOLD = str.maketrans("ąćęłńóśźż", "acelnoszz")
+from .common import POLISH_FOLD
+
 FORM_TITLE = re.compile(
     r"(?m)^[ \t]*(?:(?:epuap|e[- ]?doreczenia)\s*[-–—:|]?\s*)?"
     r"(?:(?:urzedowe\s+)?(?:poswiadczenie|potwierdzenie|dowod)\s+"
