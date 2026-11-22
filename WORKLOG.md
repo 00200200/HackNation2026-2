@@ -99,10 +99,12 @@ Two and four grant JSONs matched exactly. The ten organizer grants remained exac
 
 | Item | Owner |
 |---|---|
-| Obtain an EU/EEA-only processing commitment for Mistral or deploy the same weights within the EEA | Deployment |
+| Rehearse the installed solution on the organizer VM before access ends at 11:00 on 22 November. Check the offline run, reboot, and two-vCPU timing using [the VM instructions](data/uzp/VM.md). | VM owner |
+| If the team keeps the Ministral profile (#38): obtain an EU/EEA-only processing commitment for Mistral or deploy the same weights within the EEA. UZP said no private hosting; UNCONFIRMED whether that rules out the second option, since upstream `VM.md` allows models and containers on the evaluation VM | Deployment |
 | Score corpus 2 test once after the class rules and small-model profile are integrated | Coordinator |
 | Improve receipt routing and recover damaged party names on development inputs | Open |
-| Confirm the long-string similarity function with UZP and record the Stage II weights | Open |
+| Confirm the unresolved VM, model hosting and scoring details listed in [the task brief](docs/task/BRIEF.md). | Open |
+| Class-config flag, TOML validators, weighted routing and a scaffold for new classes (#62) | 00200200 (`claude/config-classes-case-ab8189`) |
 | Promote HackNation2026 PR #48 to `prod` after the faktczyfejk demo, so the doc2json.pl Caddy block survives a redeploy | Open |
 | Run `docker compose run --rm cli` and `docker compose up gui` once on an amd64 Docker host and compare the CLI output with `python -m kio2json` (no Docker on the dev Macs; hosted Actions are blocked by billing, #67) | Open |
 
@@ -127,6 +129,13 @@ Two and four grant JSONs matched exactly. The ten organizer grants remained exac
   `/orchestrator`, not to Claude subagents.
 
 ## Log
+
+- 22.11.2026 · Codex · Recovered role-labelled appeal cards with inflected captions and nearby party evidence. The paired PDF controls cover names, registry IDs and counsel attached to each appellant. [Development measurements](evals/results/appeal-party-headings.json)
+
+- 22.11.2026 · Claude · Brought `docs/task/BRIEF.md` up to UZP's Discord answers (#64), the Regulamin (`docs/task/regulamin.pdf`) and the organizer's `VM.md`; refreshed `data/uzp` to `eadffbc` (adds `VM.md` only). In WORKLOG: recorded the `{}` and account-number decisions, put the VM row first, scoped the Ministral row to #38, split the UZP-answer issues into per-issue rows with their owners, flagged the eval's `negatives_empty` check and merged main and dropped the rows it finished (#60, #59, #61) · docs/brief-update
+
+- 22.11.2026 · Codex · Integrated the signed judging criteria, VM instructions and UZP clarifications from #49 and refreshed the README visuals from #36 against recorded results.
+- 21.11.2026 · Claude · presentation-style README with monochrome visuals in `docs/readme/`; previous README moved to `docs/readme/reference.md` · feat/docs
 
 - 22.11.2026 · Codex · Raised the required page watchdog from 60 to 180 seconds and added one 150-dpi retry within the remaining OCR budget. Regression tests cover timeout recovery, immediate engine errors, budget exhaustion and word-box coordinates after resizing.
 
@@ -212,6 +221,7 @@ Two and four grant JSONs matched exactly. The ten organizer grants remained exac
 - 21.11.2026 · Codex · In the integrated Ministral profile, preserve the required null personal name for a corporate grantor after filling model gaps. The previous profile filled it on three organizer scans and one corpus 1 grant.
 - 21.11.2026 · Codex · Restored issuer declarations above grant titles, printed signers beside email addresses, and scanned sole-trader names. Certificate attribution now checks the signer's role. Eight invented CLI cases compare the affected records with the pre-PR #25 base.
 - 21.11.2026 · Codex · Measured the integrated accuracy and runtime PRs at `ca2975392`. Both profiles matched all 196 training outputs from main byte for byte. On the shared 16 GB Apple M1, the integrated CLI processed 30 organizer scans in 36.12 s with four rules workers and 44.91 s with three Ministral workers. The 150-PDF batch took 57.54 s and 70.38 s respectively. It used two copies of the 30 scans and 90 training PDFs. [Combined measurements](evals/results/round2-integration.json)
+- 21.11.2026 · Claude · Updated `docs/task/BRIEF.md` to organizer README `0b360a9`: evaluation method and hardware UNCONFIRMED, 150 PDFs in 45 min, OCR by API scored like an LLM, API provider privacy policy and EU/EEA, LLM scoring under revision, 30 labelled scans, FAQ 10 vs PDF 30/20, mixed transfer file names. Closes #43.
 - 21.11.2026 · Claude · landing/upload UI in `frontend/`, prod compose on the shared `edge` network, deploy notes · feat/frontend
 - 21.11.2026 · Claude · doc2json.pl live over HTTPS (DNS A records, Caddy block on the server), landing reduced to the dark tool screen · feat/frontend
 - 21.11.2026 · Claude · `kio2json.web_api` (health + extract, index-matched results) behind doc2json.pl, API container, frontend wired · feat/web-extraction
@@ -261,4 +271,4 @@ These runs used local rules with the three endpoint variables unset. The two loc
 - 22.11.2026 · Codex · Synced the rule fixes in #75 with main at `b9c2c7f`, preserving the printed account prefix during OCR slash repair.
 - 22.11.2026 · Codex · Integrated the merged #75 rule fixes into #72 at main `257a6af`.
 - 2026-11-22 · Transfer confirmations can bind a split execution heading to a single dated amount and two explicitly owned accounts. Receipt dates also accept Roman months and labelled whole amounts can place the currency first.
-- 22.11.2026 · Codex · Added the seeded case-linked benchmark on `feat/case-benchmark`, pairing each native appeal, mandate, transfer and near-negative with a scan and grouping the results by case and layout.
+- 22.11.2026 · Codex · Added the seeded case-linked benchmark on `feat/case-benchmark`, pairing each native appeal, mandate, transfer and near-negative with a scan and grouping the results by case and layout. Main `35b1d01` scored 0.6735 UZP and 0.6290 strict on 208 PDFs. [Measurements](evals/results/case-benchmark.json)
