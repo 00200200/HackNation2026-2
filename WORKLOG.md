@@ -245,6 +245,12 @@ Two and four grant JSONs matched exactly. The ten organizer grants remained exac
 
 - 22.11.2026 · Added corroborating Polish filing and payment cues, scoped fields and native two-column reading for issue #63. Re-ran the 240-PDF benchmark and organizer and private gates against the confirmed JSON and account conventions. [Final field counts](evals/results/variants.json)
 
+- 22.11.2026 · Claude · `start.sh` now finds `.venv/bin/python` or `python3`, the CLI writes progress lines as UTF-8 when a Windows redirect uses an ANSI code page, `deploy/RUN.md` says unrelated documents produce `{}`, and the rehearsal speeds in `docs/readme/reference.md` name their revision and profile · fix/jury-run-hardening
+
+- 22.11.2026 · Claude · `start.sh` takes the first of `.venv/bin/python`, `python3` and `python` that is Python 3.13 or newer, `*.sh` files keep LF endings and the encoding test pins its working directory. A two-worker run on the 30 organizer scans at `d9a3b25`, with 12 busy loops on an Apple M2 Pro (about 1.1 cores), kept UZP F1 at 1.000 and routing at 30 of 30. It is recorded as a simulation, not VM timing. [Measurements](evals/results/vm-2vcpu.json) · fix/jury-run-hardening
+
+- 22.11.2026 · Claude · The rehearsal sentence in `docs/readme/reference.md` now says the output was compared with the reference run, names the 226 files as 196 synthetic training PDFs plus 30 organizer scans, and cites the committed record `evals/results/vm-2vcpu.json` for the 399.77 s figure and the revision `7a1c45b` · fix/jury-run-hardening
+
 ## Frontend branch snapshot before API integration
 
 Public landing https://doc2json.pl (`frontend/`, static nginx, monochrome) runs on the team VPS as `doc2json-web`
@@ -278,6 +284,7 @@ These runs used local rules with the three endpoint variables unset. The two loc
 - 22.11.2026 · Codex · Added local jury Compose services and the signed task rules for #60. Compose configuration validated. Docker Desktop did not answer its health probe, so container byte parity is pending.
 - 22.11.2026 · Codex · The keyless LSTM crop experiment retained 13 correctly printed checksum-invalid accounts on the 240 seeded variants, raising UZP F1 from 0.2960 to 0.3053. It changed no digits on either real cohort or the organizer scans. [Paired measurements](evals/results/ocr-alternatives.json)
 
+- 22.11.2026 · Claude · PR #36 rebuilt on main after #90 (`f98dc56`), then merged with #91, #93, #95 and #96 (`ace38bb`) without conflicts, as a small change on top of the README split: the README keeps main's layout and adds a module map, a limits paragraph (all four rows are development sets, no held-out score, corpus 2 test unscored, scan stress evaluation open in #81), the two timings with their result file, key and commit, short REST API, data handling and licence sections, and the VM and Docker notes; `docs/pipeline/pipeline.tex` now writes `{}` for unrelated PDFs (the PDF needs a LaTeX rebuild) · feat/docs
 - 2026-11-22 · Grounded candidate selection for disputed, populated first-page transfer fields, singleton appeal party names and procurement titles in the rules-first schema profile (`feat/doubtful-values`).
 - 22.11.2026 · Codex · Scored candidate selection after merging #71 at `c13dc3e7f`. Across 91 development PDFs, UZP micro-F1 was 0.9572 keyless and 0.9617 keyed with two workers. All 196 keyless training outputs matched main byte for byte. [Development counts](evals/results/doubtful-values.json)
 - 22.11.2026 · Codex · Prepared the VM installation and offline rehearsal for #66 and refreshed the organizer instructions to `eadffbc`. [Rehearsal measurements](evals/results/vm-2vcpu.json)
@@ -286,4 +293,3 @@ These runs used local rules with the three endpoint variables unset. The two loc
 - 22.11.2026 · Codex · Synced the rule fixes in #75 with main at `b9c2c7f`, preserving the printed account prefix during OCR slash repair.
 - 22.11.2026 · Codex · Integrated the merged #75 rule fixes into #72 at main `257a6af`.
 - 2026-11-22 · Transfer confirmations can bind a split execution heading to a single dated amount and two explicitly owned accounts. Receipt dates also accept Roman months and labelled whole amounts can place the currency first.
-- 22.11.2026 · Claude · PR #36 rebuilt on main after #90 (`f98dc56`), then merged with #91, #93 and #95 (`a7dce92`) without conflicts, as a small change on top of the README split: the README keeps main's layout and adds a module map, a limits paragraph (all four rows are development sets, no held-out score, corpus 2 test unscored, scan stress evaluation open in #81), the two timings with their result file, key and commit, short REST API, data handling and licence sections, and the VM and Docker notes; `docs/pipeline/pipeline.tex` now writes `{}` for unrelated PDFs (the PDF needs a LaTeX rebuild) · feat/docs
