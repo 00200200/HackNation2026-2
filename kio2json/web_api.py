@@ -48,6 +48,7 @@ class DocumentResult(BaseModel):
     class_id: str | None = Field(None, alias="class")
     data: dict[str, Any] = Field(default_factory=dict)
     error: str | None = None
+    sources: list[dict[str, Any]] = Field(default_factory=list)
 
 
 class ExtractResponse(BaseModel):
@@ -168,7 +169,17 @@ async def _extract_one(index: int, upload: UploadFile, deadline: float) -> Docum
         else:
             item.class_id, item.error = result.label, result.error
             item.data = json.loads(result.text)
+            item.sources = _sources(result.trace)
     return item
+
+
+SOURCE_KEYS = ("field", "value", "engine", "page", "snippet", "note")
+
+
+def _sources(trace: dict | None) -> list[dict[str, Any]]:
+    """Where each extracted value came from: the engine, the page and the printed fragment."""
+    fields = (trace or {}).get("fields", [])
+    return [{key: entry.get(key) for key in SOURCE_KEYS} for entry in fields if entry.get("value") is not None]
 
 
 @app.get("/api/health")

@@ -167,3 +167,11 @@ button.file:hover { background: rgba(255, 255, 255, 0.05); }
   html { scroll-behavior: auto; }
   *, *::before, *::after { transition: none !important; animation: none !important; }
 }
+
+.sources { margin: 0 14px 14px; padding: 10px 12px; border-radius: 9px; background: rgba(255, 255, 255, 0.05); font-size: 13px; color: #d4d4d4; }
+.sources summary { cursor: pointer; font-weight: 600; }
+.sources ul { list-style: none; margin: 8px 0 0; padding: 0; max-height: 320px; overflow: auto; }
+.sources li { padding: 6px 0; border-top: 1px solid rgba(255, 255, 255, 0.08); }
+.sources code { font: 500 12px var(--mono); }
+.sources .src-meta, .sources .src-note { opacity: 0.7; }
+.sources blockquote { margin: 4px 0 0; padding-left: 8px; border-left: 2px solid rgba(255, 255, 255, 0.25); font: 400 12px/1.5 var(--mono); white-space: pre-wrap; }

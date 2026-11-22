@@ -55,6 +55,51 @@ function renderFiles() {
   $("#app-note").hidden = any;
 }
 
+const ENGINE_LABEL = {
+  rule: "reguły, tekst PDF",
+  ocr: "reguły, OCR",
+  "rule or ocr": "reguły",
+  model: "model (Ministral 3B)",
+  "case repair": "inne pismo w sprawie",
+};
+
+function renderSources(sources) {
+  const box = $("#sources");
+  box.replaceChildren();
+  box.hidden = !sources || !sources.length;
+  if (box.hidden) return;
+  const head = document.createElement("summary");
+  head.textContent = `Skąd pochodzą wartości (${sources.length})`;
+  const list = document.createElement("ul");
+  for (const s of sources) {
+    const li = document.createElement("li");
+    const field = document.createElement("code");
+    field.textContent = s.field;
+    const value = document.createElement("span");
+    value.className = "src-value";
+    value.textContent = ` = ${JSON.stringify(s.value)}`;
+    const meta = document.createElement("span");
+    meta.className = "src-meta";
+    const where = [ENGINE_LABEL[s.engine] || s.engine, s.page ? `str. ${s.page}` : null].filter(Boolean).join(", ");
+    meta.textContent = where ? ` · ${where}` : "";
+    li.append(field, value, meta);
+    if (s.snippet) {
+      const quote = document.createElement("blockquote");
+      quote.textContent = s.snippet;
+      li.append(quote);
+    } else if (s.note) {
+      const note = document.createElement("div");
+      note.className = "src-note";
+      note.textContent = s.note === "derived code or flag, not a printed value"
+        ? "Wartość wyliczona z treści (kod lub znacznik), nie przepisana z dokumentu."
+        : "Nie znaleziono dosłownego fragmentu w odczytanym tekście.";
+      li.append(note);
+    }
+    list.append(li);
+  }
+  box.append(head, list);
+}
+
 function showOutput(name, tag, text, actions) {
   $("#out-name").textContent = name;
   $("#out-tag").textContent = tag;
@@ -70,6 +115,7 @@ function select(item) {
   $("#copy").title = "Kopiuj JSON";
   const name = item.file.name.replace(/\.pdf$/i, "") + ".json";
   showOutput(name, item.error || "", jsonText(item), true);
+  renderSources(item.sources);
   renderFiles();
 }
 
@@ -110,6 +156,7 @@ async function handleFiles(fileList) {
   state.items.push(...fresh);
   renderFiles();
   showOutput("wynik.json", "", "", false);
+  renderSources([]);
   notice(skipNote);
 
   if (!(await apiAvailable())) {
@@ -132,6 +179,7 @@ async function handleFiles(fileList) {
         error: hit.error,
         cls: hit.class,
         data: hit.data,
+        sources: hit.sources || [],
       });
     });
     const failed = fresh.filter((item) => item.error);
