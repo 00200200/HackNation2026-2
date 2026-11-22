@@ -32,6 +32,7 @@ from .pdf_text import (
 )
 from .receipt_account_crop import recover_account_crops
 from .receipt_layout import append_receipt_fields, has_detached_labels, receipt_cell_fields
+from .receipt_pairing import apply_receipt_cards
 from .receipt_title import reread_title
 
 
@@ -129,18 +130,23 @@ def _grant_signers(pdf_path, record, pages, ocr_pages, engine):
         recover_board_stamp(pdf_path, record, pages[0])
 
 
-def _document_rules(definition, pdf_path, pages, ocr_pages, boxes, engine, selected, accounts, blocks):
+def _document_rules(definition, pdf_path, pages, ocr_pages, all_boxes, engine, selected, accounts, blocks):
     """Build the local candidate, including PDF evidence, before optional model gap filling."""
     rules_first = definition.profile.rules_first
-    if definition.extractor is bank_transfer.extract and ocr_pages:
-        record = ocr_extract.extract_bank_transfer(pages, ocr_pages, accounts=accounts)
-        if boxes and 1 in ocr_pages and (definition.engines == ["python"] or definition.profile.mode == "RL"):
-            fields = record["przelew_bankowy"]
-            title = reread_title(pdf_path, boxes, fields["tytul"])
-            if title is not None:
-                fields["tytul"] = title
-        if rules_first and boxes:
-            verify_cells(pdf_path, disputed_account_cells, record, boxes)
+    boxes = [box for box in all_boxes if box.page in ocr_pages]
+    if definition.extractor is bank_transfer.extract:
+        if ocr_pages:
+            record = ocr_extract.extract_bank_transfer(pages, ocr_pages, accounts=accounts)
+            if boxes and 1 in ocr_pages and (definition.engines == ["python"] or definition.profile.mode == "RL"):
+                fields = record["przelew_bankowy"]
+                title = reread_title(pdf_path, boxes, fields["tytul"])
+                if title is not None:
+                    fields["tytul"] = title
+            if rules_first and boxes:
+                verify_cells(pdf_path, disputed_account_cells, record, boxes)
+        else:
+            record = definition.extractor(join_pages(pages))
+        apply_receipt_cards(record["przelew_bankowy"], all_boxes)
         return record
     if definition.extractor is appeal.extract:
         if ocr_pages and rules_first:
@@ -336,9 +342,8 @@ def _process(
             pages = read_role_columns(pages, blocks)
             if definition.id == "appeal":
                 pages = restore_party_columns(pages, boxes)
-            scan_boxes = [box for box in boxes if box.page in ocr_pages]
             python_rules = partial(
-                _document_rules, definition, pdf_path, pages, ocr_pages, scan_boxes, engine, selected, accounts, blocks
+                _document_rules, definition, pdf_path, pages, ocr_pages, boxes, engine, selected, accounts, blocks
             )
             record = extract(
                 definition,
