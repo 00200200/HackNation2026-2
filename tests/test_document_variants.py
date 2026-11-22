@@ -314,7 +314,7 @@ def test_missing_negative_output_is_reported_without_a_field_penalty(tmp_path):
     docs = [score_doc("case", name, tmp_path / name, {}) for name in ("absent.json", "present.json")]
     tags = {(d.case, d.file): {"medium": "text", "neg_kind": "ruling"} for d in docs}
     preds = {("case", "absent.json"): None, ("case", "present.json"): {}}
-    report = build_report(docs, tags, dict.fromkeys(tags, {}), preds, min_docs=1)
+    report = build_report(docs, tags, {key: {} for key in tags}, preds, min_docs=1)
     row = report["slices"][0]
     assert (row["perfect_docs"], row["fp"], row["fn"]) == (1, 0, 0)
     assert [(d["file"], d["errors"]) for d in report["worst_docs"]] == [("absent.json", 1)]
