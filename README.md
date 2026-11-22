@@ -91,6 +91,16 @@ downloads one JSON per PDF under its case folder. Failed documents show the reas
 empty file. The viewer keeps temporary copies for the current session. The default configuration
 works offline. Page provenance is used internally and the output follows the organizer’s JSON schema.
 
+When a case contains an appeal and a mandate or receipt, the viewer flags differences in party
+identifiers, attorney names and procedure numbers. It also flags unusual appeal fees when the
+procurement title identifies the category. Select a document to see which files to compare.
+
+Set `KIO_CASE_REPAIR=1` to enable sibling OCR repair in the CLI or viewer. The CLI finishes its
+parallel PDF reads before comparing documents in each `input/<case>/` folder. A replacement needs
+a damaged printed value and one compatible, independently read spelling in a different document
+class. Registry numbers also need a matching party identifier or name. A native text value can be
+corrected only when its NIP checksum fails. Missing fields stay empty.
+
 | Start from the repository | Windows | Linux or macOS |
 |---|---|---|
 | Run the CLI on `input/` and write to `output/` | `.\start.bat` | `./start.sh` |
@@ -258,8 +268,7 @@ For a case-level split, put `{"dev": [...], "test": [...]}` in `SPLIT.json` at t
 contains case folder names. The default `--split all` scores the whole corpus, including corpora without a split.
 Inspect field errors on dev. Use aggregate scores to evaluate test. The organizer scan mode validates the committed PDF/reference pairs in `data/uzp/dane/skany` and writes `evals/results/organizer-scans.json`. The synthetic training and scan scores have separate result files.
 
-`evals.run` reports pooled micro F1 and macro F1 by document, class and field path.
-The working definitions are in `evals/metrics.py`. The organizer's formula is UNCONFIRMED.
+`evals.run` reports UZP micro F1 and macro F1 by document, class and field path. Empty reference and prediction values contribute zero to F1. A wrong value contributes one FP. Five long strings accept an 80% match, measured here with RapidFuzz normalized Levenshtein. UZP has yet to specify the similarity function. The historical score appears as `micro_f1_strict`. [UZP scoring rules](https://github.com/00200200/HackNation2026-2/issues/59)
 
 ## Results on the training data (synthetic)
 

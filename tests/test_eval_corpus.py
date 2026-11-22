@@ -80,7 +80,7 @@ def test_corpus_staging_aggregation_and_private_detail(corpus, repo, monkeypatch
     aggregate = json.loads(public)
     assert "docs" not in aggregate
     assert aggregate["n_cases"] == aggregate["n_docs"] == 2
-    assert aggregate["detail"]["counts"] == {"tp": 0, "fp": 1, "fn": 1}
+    assert aggregate["detail"]["counts"] == {"tp": 0, "fp": 1, "fn": 1, "tn": 0}
     assert aggregate["detail"]["routing_by_class"]["pelnomocnictwo"] == {"correct": 0, "total": 1}
     assert aggregate["detail"]["routing_by_class"]["negatywny"] == {"correct": 0, "total": 1}
     assert len(json.loads(detail.read_text())["docs"]) == 2
@@ -94,7 +94,7 @@ def test_missing_prediction_in_corpus(corpus, repo, monkeypatch, tmp_path):
     assert run.main() == 1
     report = json.loads((repo / "evals/results/corpus-latest.json").read_text())
     assert report["n_cases"] == 1
-    assert report["detail"]["counts"] == {"tp": 0, "fp": 0, "fn": 1}
+    assert report["detail"]["counts"] == {"tp": 0, "fp": 0, "fn": 1, "tn": 0}
     assert report["detail"]["macro_f1_documents"] == report["detail"]["macro_f1_fields"] == 0
     assert report["detail"]["macro_f1_classes"] == 0
     assert report["detail"]["macro_f1_class_count"] == 1
@@ -489,7 +489,7 @@ def test_prediction_faults_still_score(corpus, repo, monkeypatch, payload, valid
     monkeypatch.setattr(sys, "argv", ["eval", "--corpus", str(corpus), "--pred", str(corpus / "pred")])
     assert run.main() == 1
     detail = json.loads((repo / "evals/results/corpus-latest.json").read_text())["detail"]
-    assert detail["counts"] == {"tp": 0, "fp": 0, "fn": 1}
+    assert detail["counts"] == {"tp": 0, "fp": 0, "fn": 1, "tn": 0}
     assert detail["outputs_complete"] == int(valid)
 
 
@@ -539,6 +539,6 @@ def test_organizer_scan_predictions_preserve_nested_paths_and_training_gate(repo
     monkeypatch.setattr(sys, "argv", ["eval", "--organizer-scans", "--data", str(data), "--pred", str(data)])
     assert run.main() == 0
     report = json.loads((repo / "evals/results/organizer-scans.json").read_text())
-    assert report["n_docs"] == 2 and report["detail"]["micro_f1"] == 1
+    assert report["n_docs"] == report["n_cases"] == 2 and report["detail"]["micro_f1"] == 1
     assert report["detail"]["routing_by_class"]["przelew"]["correct"] == 1
     assert "docs" not in report and (repo / ".git/eval-latest.json").read_text() == "gate"
