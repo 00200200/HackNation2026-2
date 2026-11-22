@@ -1,5 +1,6 @@
 """Page text: the PDF text layer, with selectable local OCR for pages that have none."""
 
+import hashlib
 import os
 import re
 from collections.abc import Iterator
@@ -7,7 +8,6 @@ from concurrent.futures import Future, ThreadPoolExecutor
 from contextlib import ExitStack
 from contextvars import copy_context
 from functools import cache, partial
-from importlib.metadata import files
 from math import ceil
 from pathlib import Path
 from time import monotonic
@@ -170,12 +170,28 @@ class OCRWord(WordBox):
         return word
 
 
+# Tesseract fast models (Apache-2.0, see tessdata/LICENSE), vendored so pip needs no second host.
+TESSDATA_DIR = Path(__file__).with_name("tessdata")
+TESSDATA_UPSTREAM = (
+    "https://raw.githubusercontent.com/tesseract-ocr/tessdata_fast/87416418657359cb625c412a48b6e1d6d41c29bd"
+)
+TESSDATA_SHA256 = {
+    "pol.traineddata": "c4476cdbc0e33d898d32345122b7be1cbf85ace15f920f06c7714756e1ef79b2",
+    "eng.traineddata": "7d4322bd2a7749724879683fc3912cb542f19906c83bcc1a52132556427170b2",
+}
+
+
 @cache
 def _language_dir() -> str:
-    for entry in files("kio-polish-ocr-data") or ():
-        if entry.name == "pol.traineddata" and entry.locate().is_file():
-            return str(entry.locate().parent)
-    raise FileNotFoundError("Polish OCR data missing from the kio-polish-ocr-data installation")
+    for name, expected in TESSDATA_SHA256.items():
+        path = TESSDATA_DIR / name
+        try:
+            digest = hashlib.sha256(path.read_bytes()).hexdigest()
+        except OSError as error:
+            raise FileNotFoundError(f"OCR language data missing: {path} ({TESSDATA_UPSTREAM}/{name})") from error
+        if digest != expected:
+            raise RuntimeError(f"{path} has SHA-256 {digest}, expected {expected} ({TESSDATA_UPSTREAM}/{name})")
+    return str(TESSDATA_DIR)
 
 
 @cache
