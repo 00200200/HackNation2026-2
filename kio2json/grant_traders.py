@@ -7,7 +7,7 @@ from .personal_names import nominative
 
 UNDERSIGNED = r"(?:ja,?\s+(?:niżej\s+)?|niżej\s+)podpisan[ay](?:/[ay])?"
 ISSUER = re.compile(
-    r"\b(?:(?P<genitive>działając\s+w\s+imieniu)|mocodawc[ąa](?:\s+jest)?|wykonawca"
+    r'(?<![„"«])\b(?:(?P<genitive>działając\s+w\s+imieniu)|mocodawc[ąa](?:\s+jest)?|wykonawca'
     rf"|{UNDERSIGNED}|ja)\b"
     r"[ \t,:–—-]*",
     re.IGNORECASE,
@@ -20,15 +20,36 @@ TRADING = re.compile(
 PERSON_FIELD = re.compile(
     rf"(?im:^\s*(?:imię i nazwisko(?: przedsiębiorcy)?|właściciel(?:ka)?)\s*:\s*)({PERSON})(?=[,;\n]|$)"
 )
-FIRM = re.compile(r"\bpod\s+(?:firmą|nazwą)\s*:?\s*|^[ \t]*(?:firma|nazwa firmy)\s*:\s*", re.IGNORECASE | re.MULTILINE)
-END_NAME = re.compile(
-    r"[,;\n]|\s+[–—]\s+|\s+\b(?:NIP|REGON|CEIDG|zamieszkał\w*|z\s+siedzibą|wpisan\w*)\b", re.IGNORECASE
+FIRM = re.compile(
+    r"(?P<narrative>\bpod\s+(?:firmą|nazwą))\s*:?\s*|^[ \t]*(?:firma|nazwa firmy)\s*:\s*", re.IGNORECASE | re.MULTILINE
 )
+NAME_DELIMITER = r"[,;]|\s+[–—]\s+|\s+\b(?:NIP|REGON|CEIDG|zamieszkał\w*|z\s+siedzibą|wpisan\w*)\b"
+END_NAME = re.compile(rf"\n|{NAME_DELIMITER}", re.IGNORECASE)
+# In a sentence the business name can wrap. A new form field or paragraph still ends it.
+NEXT_FIELD = re.compile(r"\n(?=[ \t]*(?:\n|(?:imię|adres|właściciel)\b|[^\W\d_][\w ./()-]{0,60}:))", re.IGNORECASE)
+QUOTES = {"„": "”", "“": "”", "«": "»", '"': '"'}
 OTHER_PARTY = re.compile(
     r"\b(?:zamawiając\w*|pełnomocni(?:k|cy|ka)|odbiorc\w*|uczestnik\w*|świadek|świadkowie)\s*:"
     r"|^[ \t]*(?:pełnomocni(?:k|cy)|zamawiający|świadek|świadkowie)\b",
     re.IGNORECASE | re.MULTILINE,
 )
+
+
+def _business_name(raw: str, *, narrative: bool) -> str:
+    value = squash(NEXT_FIELD.split(raw, maxsplit=1)[0] if narrative else raw.partition("\n")[0])
+    outer_quote = value[:1] in QUOTES
+    closings = []
+    for i, char in enumerate(value):
+        if closings and char == closings[-1]:
+            closings.pop()
+            if outer_quote and not closings:
+                return value[1:i].strip()
+        elif char in QUOTES:
+            closings.append(QUOTES[char])
+        elif not closings and END_NAME.match(value, i):
+            return value[:i].strip()
+    # A missing closing quote does not claim later registry or address fields.
+    return END_NAME.split(value, maxsplit=1)[0].strip() if closings else value
 
 
 def sole_trader(declaration: str, company_pattern: re.Pattern) -> dict | None:
@@ -74,8 +95,7 @@ def sole_trader(declaration: str, company_pattern: re.Pattern) -> dict | None:
             name = people.pop()
             business = identity
         if firm:
-            raw = END_NAME.split(clause[firm.end() :], maxsplit=1)[0]
-            business = squash(raw).strip(' „”"«»') or business
+            business = _business_name(clause[firm.end() :], narrative=bool(firm["narrative"])) or business
         return {
             "imie_nazwisko": name,
             "krs": None,

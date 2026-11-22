@@ -198,3 +198,40 @@ def test_inverted_issuer_keeps_only_its_own_registry_numbers(recipient, own):
     (row,) = extract(page)["mocodawca"]
     assert row["data"]["nazwa"] == "Wąska Ścieżka S.A."
     assert row["data"]["nip"] == ("5260250274" if own else None)
+
+
+@pytest.mark.parametrize(
+    "firm", ["Zielona Introligatornia\nBolesław Lipowy", "Zielona Introligatornia Bolesław Lipowy"]
+)
+def test_proprietors_defined_role_and_wrapped_business_name(firm):
+    page = f"""Pełnomocnictwo
+Ja, niżej podpisany Bolesław Lipowy, prowadzący działalność gospodarczą pod firmą
+{firm}, NIP 5413125874, zwany dalej „Mocodawcą”, ustanawiam pełnomocnikiem adw. Teresę Witkowską."""
+    (row,) = extract(page)["mocodawca"]
+    assert row["data"] == {
+        "typ": "osoba_fizyczna",
+        "imie_nazwisko": "Bolesław Lipowy",
+        "nazwa": "Zielona Introligatornia Bolesław Lipowy",
+        "nip": "5413125874",
+        "krs": None,
+    }
+    assert row["podpisujacy"] == [{"imie_nazwisko": "Bolesław Lipowy"}]
+
+
+@pytest.mark.parametrize(
+    ("firm_and_contact", "name"),
+    [
+        ("„Pudełka i Pióra”\nTelefon do biura: 650 000 123", "Pudełka i Pióra"),
+        ("Pudełka i Pióra\nE-mail: biuro@example.invalid", "Pudełka i Pióra"),
+        ("«Pudełka,\nPióra i Papier» z punktem usługowym w mieście", "Pudełka, Pióra i Papier"),
+        ("Atelier\n„Bocian”\nDane kontaktowe: biuro@example.invalid", "Atelier „Bocian”"),
+        ('Studio "Atlas, Horyzont"\nSkrzynka kontaktowa: B12', 'Studio "Atlas, Horyzont"'),
+        ("„Atelier „Bocian” i Syn” z punktem usługowym w mieście", "Atelier „Bocian” i Syn"),
+    ],
+)
+def test_business_name_finishes_at_its_closing_quote_or_next_label(firm_and_contact, name):
+    page = f"""Ja, Irena Miętowa, prowadząca działalność gospodarczą pod nazwą {firm_and_contact}
+NIP 7654321089, udzielam umocowania."""
+    (row,) = extract(page)["mocodawca"]
+    assert row["data"]["nazwa"] == name
+    assert row["data"]["nip"] == "7654321089"
