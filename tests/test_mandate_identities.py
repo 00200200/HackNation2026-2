@@ -272,3 +272,92 @@ Firma: Łucja Wasik Ceramika
 NIP 6489072176. Udzielam umocowania."""
     (row,) = extract_power_of_attorney([declaration, f"Firma: {printed}"], {1})["mocodawca"]
     assert row["data"]["nazwa"] == expected
+
+
+@pytest.mark.parametrize("header", ["Dane mocodawcy:", "Mocodawca:", "Osoba udzielająca pełnomocnictwa:"])
+def test_named_proprietor_with_registry_card_and_no_trade_narrative(header):
+    record = extract(f"""PEŁNOMOCNICTWO
+{header}
+Magdalena Jaworska
+NIP: 7654321089
+Nazwa firmy: Sigillum
+Udzielam pełnomocnictwa adwokatowi.
+Świadek: Klara Prosta, NIP 0000000000.""")
+    (row,) = record["mocodawca"]
+    assert row["data"] == {
+        "typ": "osoba_fizyczna",
+        "imie_nazwisko": "Magdalena Jaworska",
+        "nazwa": "Sigillum",
+        "nip": "7654321089",
+        "krs": None,
+    }
+
+
+def test_registered_firm_field_can_print_the_only_personal_name():
+    text = (
+        "PEŁNOMOCNICTWO\nMocodawca (osoba fizyczna wpisana do CEIDG)\n"
+        "Firma przedsiębiorcy: Pracownia Szkła Maria Jaworska\n"
+        "NIP: 0000000071\nUdzielam umocowania do wglądu w akta."
+    )
+    data = extract(text)["mocodawca"][0]["data"]
+    assert (data["imie_nazwisko"], data["nazwa"], data["nip"]) == (
+        "Maria Jaworska",
+        "Pracownia Szkła Maria Jaworska",
+        "0000000071",
+    )
+
+
+def test_registered_firm_with_two_personal_names_is_ambiguous():
+    text = (
+        "PEŁNOMOCNICTWO\nMocodawca (dane z CEIDG)\n"
+        "Firma przedsiębiorcy: Ewa Wolska i Jan Kowalski\nUdzielam umocowania do odbioru pisma."
+    )
+    assert not extract(text)["mocodawca"]
+
+
+def test_genitive_owner_repeated_in_business_name_still_needs_nominative():
+    text = (
+        "PEŁNOMOCNICTWO\nDziałając w imieniu Jana Kowalskiego, prowadzącego działalność gospodarczą "
+        "pod firmą „Warsztat Jana Kowalskiego”, udzielam pełnomocnictwa do odbioru pisma."
+    )
+    data = extract(text)["mocodawca"][0]["data"]
+    assert data["imie_nazwisko"] == "Jan Kowalski"
+    assert data["nazwa"] == "Warsztat Jana Kowalskiego"
+
+
+def test_first_person_sentence_inside_recipient_block_keeps_its_role():
+    text = (
+        "PEŁNOMOCNICTWO\nMocodawca: zakład „Lampa”\nPełnomocnik: Ja, Jan Kowalski, "
+        "prowadzący działalność gospodarczą pod firmą „Beta”.\nUdzielam pełnomocnictwa do odbioru pisma."
+    )
+    assert not extract(text)["mocodawca"]
+
+
+@pytest.mark.parametrize("prefix", ["Przedsiębiorca:", "Mocodawca: przedsiębiorca"])
+def test_entrepreneur_title_does_not_turn_a_brand_into_a_person(prefix):
+    text = f"PEŁNOMOCNICTWO\n{prefix} Czerwony Rower (NIP 0000000111) udziela pełnomocnictwa do odbioru pism."
+    assert not extract(text)["mocodawca"]
+
+
+def test_bare_grantor_does_not_take_attorneys_business():
+    text = (
+        "PEŁNOMOCNICTWO\nJan Kowalski prowadzący działalność gospodarczą,\n"
+        "Pełnomocnik: Anna Nowak, właścicielka firmy „Podmiot Obcy”.\n"
+        "Udzielam pełnomocnictwa do odebrania pisma."
+    )
+    data = extract(text)["mocodawca"][0]["data"]
+    assert (data["imie_nazwisko"], data["nazwa"]) == ("Jan Kowalski", None)
+
+
+@pytest.mark.parametrize(
+    "body",
+    [
+        "Udzielam pełnomocnictwa do odebrania pisma.\nPełnomocniczka:\nPodpis przedsiębiorcy: Anna Nowak",
+        (
+            "Dane osoby upoważnionej:\nImię i nazwisko: Anna Nowak\nNIP 0000000111\n"
+            "Udzielam pełnomocnictwa do odebrania pisma."
+        ),
+    ],
+)
+def test_appointed_woman_cannot_supply_the_proprietor_identity(body):
+    assert not extract("PEŁNOMOCNICTWO\nMocodawca: firma „Lampa”\n" + body)["mocodawca"]
