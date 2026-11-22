@@ -246,3 +246,26 @@ pattern = '^Numer:[ \\t]*([A-Z]\\d+)?.*$'
     form = next(c for c in parse_classes(class_sources(extra=[toml])) if c.id == "form")
     trace = read_document(pdf, [form], explain=True).trace
     assert "trace_error" not in trace and trace["class"] == "form"
+
+
+def test_worker_processes_read_a_case_and_report_each_file(tmp_path, monkeypatch):
+    from kio2json.class_config import class_sources
+
+    monkeypatch.delenv("KIO_CLASSES_DIR", raising=False)
+    monkeypatch.setattr(gui_files, "_results", gui_files.OrderedDict())
+    files = class_sources(extra=[ROOT / "examples" / "classes"])
+    classes = parse_classes(files)
+    sources = [(Path("sprawa/a.pdf"), SAMPLE), (Path("sprawa/b.pdf"), SAMPLE)]
+    seen = []
+    documents = analyze(
+        sources,
+        tmp_path,
+        classes,
+        "key",
+        class_files=files,
+        workers=2,
+        on_progress=lambda n, name: seen.append((n, name)),
+    )
+    assert [d.result.label for d in documents] == ["accession", "accession"]
+    assert all(d.result.trace["fields"] for d in documents)
+    assert seen == [(1, Path("sprawa/a.pdf")), (2, Path("sprawa/b.pdf"))]

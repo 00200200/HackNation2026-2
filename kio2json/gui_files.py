@@ -7,6 +7,7 @@ import os
 import shutil
 import zlib
 from collections import OrderedDict, defaultdict
+from collections.abc import Callable
 from contextlib import closing
 from dataclasses import dataclass, replace
 from io import BytesIO
@@ -18,9 +19,9 @@ import pypdfium2 as pdfium
 from PIL import Image, ImageDraw
 from shiny.types import FileInfo
 
-from .batch import Result, configure_logging, read_document, reconcile_cases
+from .batch import Result, configure_logging, read_batch, read_document, reconcile_cases
 from .case_checks import CaseWarning, case_warnings
-from .class_config import DocumentClass, load_classes
+from .class_config import ClassSources, DocumentClass, load_classes
 from .ocr_budget import batch_deadline
 
 type Source = tuple[Path, Path]  # relative name for the jury and path to read
@@ -141,8 +142,19 @@ CACHED_RESULTS = 512
 
 
 def analyze(
-    sources: list[Source], directory: Path, classes: list[DocumentClass] | None = None, class_key: str = ""
+    sources: list[Source],
+    directory: Path,
+    classes: list[DocumentClass] | None = None,
+    class_key: str = "",
+    *,
+    class_files: ClassSources | None = None,
+    workers: int = 1,
+    on_progress: Callable[[int, Path], None] | None = None,
 ) -> list[Document]:
+    """Read every source once, in parallel worker processes when given class files and several workers.
+
+    `on_progress(done, name)` is called after each document, including cached ones.
+    """
     deadline = batch_deadline(len(sources))
     targets = set()
     for name, _ in sources:
@@ -155,24 +167,43 @@ def analyze(
 
     classes = load_classes() if classes is None else classes
     configure_logging(classes)
-    documents = []
-    for index, (name, path) in enumerate(sources):
+    snapshots, results, pending = [], {}, []
+    for index, (_, path) in enumerate(sources):
         snapshot = directory / f"{index}.pdf"
+        snapshots.append(snapshot)
         try:
             shutil.copyfile(path, snapshot)
         except OSError as error:
-            result = Result(None, error=str(error))
+            results[index] = Result(None, error=str(error))
+            continue
+        key = (hashlib.sha256(snapshot.read_bytes()).hexdigest(), class_key)
+        cached = _results.get(key) if class_key else None
+        if cached is None:
+            pending.append((index, key))
         else:
-            key = (hashlib.sha256(snapshot.read_bytes()).hexdigest(), class_key)
-            result = _results.get(key) if class_key else None
-            if result is None:
-                result = read_document(snapshot, classes, batch_deadline=deadline, explain=True)
-                # Keep only complete readings: no error, no rule fallback, and optional OCR still had time.
-                if class_key and not (result.error or result.used_recovery) and monotonic() < deadline:
-                    _results[key] = result
-                    while len(_results) > CACHED_RESULTS:
-                        _results.popitem(last=False)
-        documents.append(Document(name, snapshot, result))
+            results[index] = cached
+    done = 0
+    for index in sorted(results):
+        done += 1
+        if on_progress:
+            on_progress(done, sources[index][0])
+    paths = [snapshots[index] for index, _ in pending]
+    if class_files is not None and workers > 1 and len(paths) > 1:
+        # Worker processes each run their own PDFium, so the viewer's preview thread never shares one.
+        stream = read_batch(paths, class_files, min(workers, len(paths)), explain=True)
+    else:
+        stream = (read_document(path, classes, batch_deadline=deadline, explain=True) for path in paths)
+    for (index, key), result in zip(pending, stream, strict=True):
+        results[index] = result
+        # Keep only complete readings: no error, no rule fallback, and optional OCR still had time.
+        if class_key and not (result.error or result.used_recovery) and monotonic() < deadline:
+            _results[key] = result
+            while len(_results) > CACHED_RESULTS:
+                _results.popitem(last=False)
+        done += 1
+        if on_progress:
+            on_progress(done, sources[index][0])
+    documents = [Document(name, snapshots[index], results[index]) for index, (name, _) in enumerate(sources)]
     names = [document.name for document in documents]
     results = reconcile_cases(names, [document.result for document in documents])
     warnings = defaultdict(list)

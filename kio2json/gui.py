@@ -5,13 +5,14 @@ import asyncio
 import hashlib
 import os
 from concurrent.futures import ThreadPoolExecutor
+from functools import partial
 from pathlib import Path
 from tempfile import TemporaryDirectory
 
 from shiny import App, Inputs, Outputs, Session, reactive, render, req, run_app, ui
 
 from kio2json.case_repair import case_repair_enabled
-from kio2json.class_config import DocumentClass, add_class_options, class_sources, parse_classes
+from kio2json.class_config import ClassSources, DocumentClass, add_class_options, class_sources, parse_classes
 from kio2json.gui_explain import (
     case_badges,
     display_name,
@@ -32,8 +33,8 @@ options = argparse.Namespace(classes=[], enable=[], host="127.0.0.1", folder_roo
 LOOPBACK = {"127.0.0.1", "localhost", "::1"}
 
 
-def load_classes() -> tuple[list[DocumentClass], str | None, str]:
-    """The class set for one run, an error message, and a cache key.
+def load_classes() -> tuple[list[DocumentClass], str | None, str, ClassSources | None]:
+    """The class set for one run, an error message, a cache key, and the class files for workers.
 
     The key changes with any class file, the model profile and endpoint, the OCR engine and case repair,
     so a cached result never outlives the settings it was read with. It never contains the API key.
@@ -42,7 +43,7 @@ def load_classes() -> tuple[list[DocumentClass], str | None, str]:
         sources = class_sources(extra=options.classes, enable=options.enable)
         classes = parse_classes(sources)
     except (OSError, ValueError) as error:
-        return [], str(error), ""
+        return [], str(error), "", None
     settings = ProfileSettings()
     state = (
         sorted(sources.files.items()),
@@ -53,11 +54,13 @@ def load_classes() -> tuple[list[DocumentClass], str | None, str]:
         os.getenv("KIO_OCR_ENGINE", ""),
         case_repair_enabled(),
     )
-    return classes, None, hashlib.sha256(repr(state).encode()).hexdigest()
+    return classes, None, hashlib.sha256(repr(state).encode()).hexdigest(), sources
 
 
 # PDFium must never be called simultaneously from multiple threads or sessions.
 pdf_worker = ThreadPoolExecutor(max_workers=1)
+# Documents are read in worker processes, as in the CLI, so a large folder is not read one by one.
+WORKERS = min(4, os.process_cpu_count() or 1)
 
 app_ui = ui.page_fluid(
     ui.include_css(Path(__file__).with_name("gui.css")),
@@ -152,7 +155,7 @@ def server(input: Inputs, output: Outputs, session: Session):
         documents.set([])
         scratch.cleanup()
         scratch = TemporaryDirectory(prefix="odwolania-")
-        loaded, error, class_key = load_classes()
+        loaded, error, class_key, class_files = load_classes()
         classes.set((loaded, error))
         if error:
             message.set("Popraw plik klasy i spróbuj ponownie.")
@@ -160,7 +163,7 @@ def server(input: Inputs, output: Outputs, session: Session):
         loop = asyncio.get_running_loop()
         try:
             with ui.Progress() as progress:
-                progress.set(message="Trwa analiza dokumentów…")
+                progress.set(message="Przygotowanie dokumentów…")
                 # Listing a folder or unpacking a ZIP can take a while, so it runs off the event loop too.
                 if input.mode() == "folder":
                     if options.folder_root is None and options.host not in LOOPBACK:
@@ -173,8 +176,18 @@ def server(input: Inputs, output: Outputs, session: Session):
                     sources = await loop.run_in_executor(
                         pdf_worker, upload_sources, input.case().strip(), files, Path(scratch.name)
                     )
+                total = len(sources)
+                progress.max = total
+                progress.set(0, message="Trwa analiza dokumentów…", detail=f"0 z {total}")
+
+                def report(done: int, name: Path) -> None:
+                    # Called from the analysis thread; Shiny sends progress from its event loop.
+                    detail = f"{done} z {total}: {name.as_posix()}"
+                    loop.call_soon_threadsafe(progress.set, done, "Trwa analiza dokumentów…", detail)
+
+                analysis = partial(analyze, class_files=class_files, workers=WORKERS, on_progress=report)
                 results = await loop.run_in_executor(
-                    pdf_worker, analyze, sources, Path(scratch.name), loaded, class_key
+                    pdf_worker, analysis, sources, Path(scratch.name), loaded, class_key
                 )
         except (ValueError, OSError) as error:
             message.set(str(error))

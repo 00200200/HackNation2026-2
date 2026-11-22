@@ -165,6 +165,7 @@ Click a value in the JSON to mark its words on the page image. The line below na
 line, and whether the rules read the value from the text layer or from OCR. Failed checks appear as badges.
 A document that cannot be read, or whose type is not recognised, gets a plain Polish explanation and `{}` in the ZIP.
 **Pobierz wyniki (.zip)** downloads the same bytes the CLI writes, one JSON per PDF under its case folder.
+Documents are read on up to four worker processes, as in the CLI, and the progress panel names each finished file.
 Running the same files again reuses their results instead of repeating OCR. The default configuration
 works offline, and the evidence stays in memory: the JSON follows the organizer’s schema.
 
