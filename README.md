@@ -82,6 +82,8 @@ sed 's|^sudo env PYTHONPATH=.*|sudo docker compose -f repo/deploy/compose.vm.yam
 ```
 
 Run the command in the installed `RUN.md` for the same handover check.
+We have not run this Compose fallback end to end, and the Ubuntu rehearsal that needed Docker is recorded as
+unverified (`ubuntu_24_04_amd64_2vcpu_16g.status` in [`vm-2vcpu.json`](evals/results/vm-2vcpu.json)).
 The CLI mounts the evaluator directories, uses the local image and exits after
 the batch. For the optional upload UI on port 8080, run
 `docker compose -f repo/deploy/compose.vm.yaml up -d gui`. Docker restarts the
@@ -380,7 +382,7 @@ current rules, select `KIO_OCR_ENGINE=tesseract-dpi` and run
 
 Revision `ca2975392` was evaluated with local rules and with the documented live Ministral 3B profile. The two local datasets contain real documents and use whole-case splits. Corpus 1 contributes all 39 development PDFs, including its previously evaluated split. Corpus 2 contributes 39 development PDFs from 14 cases. Its 60 test PDFs are reserved for the merged system. The organizer supplied a separate set of 30 labelled scans, ten per target class. The scan command stages the committed PDF/reference pairs as one batch with neutral filenames. [Organizer scan set at the measured revision](https://github.com/Urzad-Zamowien-Publicznych/hacknation-2026/tree/0b360a9da4b482a6a280696df6714404e0953505/dane/skany)
 
-This round is history. It uses the earlier strict metric (`method.f1` in [`round2-integration.json`](evals/results/round2-integration.json): pooled normalized leaf F1 with nulls) at product commit `ca29753` (`product_commit`), so its figures are not comparable with UZP micro F1. The later UZP runs are in [`p0-conventions.json`](evals/results/p0-conventions.json): 0.9212 on corpus 1 all and 0.9244 on corpus 2 dev (`integration.corpus1all.micro_f1` and `integration.corpus2.micro_f1`, product commit `55dc2a1`), and 1.0000 on the 30 organizer scans (`final_verification.organizer_scans_uzp`, product commit `97dc53e`).
+This round is history. It uses the earlier strict metric (`method.f1` in [`round2-integration.json`](evals/results/round2-integration.json): pooled normalized leaf F1 with nulls) at product commit `ca29753` (`product_commit`), so its figures are not comparable with UZP micro F1. The later UZP runs are in [`p0-conventions.json`](evals/results/p0-conventions.json). They use the local rules, no model, and development data only: 0.9212 on corpus 1 all and 0.9244 on corpus 2 dev (`integration.corpus1all.micro_f1` and `integration.corpus2.micro_f1`, product commit `55dc2a1`), and 1.0000 on the 30 organizer scans with strict 0.9974 (`final_verification.organizer_scans_uzp` and `organizer_scans_strict`, product commit `97dc53e`).
 
 | Dataset | Profile | Micro F1 | Macro F1 | Appeal F1 | Power F1 | Transfer F1 | Exact A/P/T | Empty negatives | Wall s/PDF |
 |---|---|---:|---:|---:|---:|---:|---|---:|---:|
@@ -433,8 +435,8 @@ pool took 48.59 seconds for optional OCR and 51.85 seconds for the whole documen
 would take 207.4 seconds (4 × 51.851), within the 300-second document allowance (`watchdogs_seconds.document`, 300).
 A separate run advanced the deadline clock four times as fast and divided optional engine timeouts by four
 (`method.simulation`, which ran before the change to handling expired optional page reads). All 135 optional Tesseract reads and three RapidOCR reads finished across the 108 PDFs, with
-no cutoff (the sums of `profile.<pool>.simulated_4x_optional_tesseract_reads`: 71, 38 and 26, and of
-`profile.<pool>.simulated_4x_optional_rapidocr_reads`: 0, 2 and 1; `simulated_4x_cutoffs` is 0 in all three pools).
+no cutoff (`profile.<pool>.simulated_4x_optional_tesseract_reads` is 71, 38 and 26 across the three pools, sum 135, and
+`profile.<pool>.simulated_4x_optional_rapidocr_reads` is 0, 2 and 1, sum 3; `simulated_4x_cutoffs` is 0 in all three pools).
 
 With these limits, eight busy loops and `--jobs 1`, the CLI processed the 150-PDF mix in **401.87 seconds**
 (`runs[5].seconds`, profile `loaded-serial`, dataset `mix`; 6 min 42 s of the jury’s 45 min). All 150 outputs matched the corresponding four-worker readings.
@@ -494,7 +496,7 @@ python -m kio2json --input input --output output --jobs 1
 
 All five runs used the same frozen extraction rules and 20 real development PDFs. Native text was
 used where available. Tesseract's explicit-DPI mode gained **0.0301** dev micro-F1 over automatic DPI.
-In that rules-only experiment, the hybrid improved on explicit DPI by **0.0133**. Keyless extraction keeps the `tesseract-dpi` setting. The earlier DeepSeek Flash run, a development experiment and not the submitted profile, combined Tesseract and RapidOCR on scans. The regional Ministral recipe above uses Tesseract alone. [OCR measurements](evals/results/ocr-engines.json) · [Flash configuration](evals/results/llm-real-docs.json)
+In that rules-only experiment, the hybrid improved on explicit DPI by **0.0133**. Keyless extraction keeps the `tesseract-dpi` setting. The earlier DeepSeek Flash run combined Tesseract and RapidOCR on scans. That plan is superseded: `selected.submission_profile` in `llm-real-docs.json` still records it, but Flash is a development experiment and not the submitted profile. The regional Ministral recipe above uses Tesseract alone. [OCR measurements](evals/results/ocr-engines.json) · [Flash configuration](evals/results/llm-real-docs.json)
 
 | Variant | Field micro-F1 | Macro-F1 | Routed correctly, appeal / power / transfer / other | Wall s / OCR page | CPU s / OCR page | Peak RSS, MiB | Installed MB |
 |---|---:|---:|---|---:|---:|---:|---:|
