@@ -21,7 +21,7 @@ behind the faktczyfejk Caddy; deploy in `docs/deploy.md`. Its upload calls `kio2
 
 The jury can run the batch CLI and upload UI locally with the root Compose file. [Docker instructions](README.md#run-with-docker-compose)
 
-The final deck (11 slides) and a two-minute demo script are in `docs/pitch/`. The form fields and the jury's commands are in `docs/submission.md`. [Number sources](docs/pitch/README.md)
+The final deck (12 slides) and a two-minute demo script are in `docs/pitch/`. The form fields and the jury's commands are in `docs/submission.md`. [Number sources](docs/pitch/README.md)
 
 The evaluation VM kit installs the rules CLI under `/opt/solution`. The VM owner still needs to run the Ubuntu offline and reboot checks. [Deployment steps](README.md#deploy-on-the-evaluation-vm)
 
@@ -93,6 +93,7 @@ Two and four grant JSONs matched exactly. The ten organizer grants remained exac
 
 | Item | Owner |
 |---|---|
+| Merge #76 before the final: deck slides 7 to 10 and the demo step 3 rely on `--classes`, `--explain` and the accession example | Team |
 | Obtain an EU/EEA-only processing commitment for Mistral or deploy the same weights within the EEA | Deployment |
 | Score corpus 2 test once after the class rules and small-model profile are integrated | Coordinator |
 | Improve receipt routing and recover damaged party names on development inputs | Open |
@@ -231,5 +232,5 @@ These runs used local rules with the three endpoint variables unset. The two loc
 - 22.11.2026 · Codex · Implemented the UZP scorer and retained historical strict micro F1 on `feat/uzp-metric` (#59).
 - 22.11.2026 · Codex · Added local jury Compose services and the signed task rules for #60. Compose configuration validated. Docker Desktop did not answer its health probe, so container byte parity is pending.
 
-- 22.11.2026 · Claude · Updated the final deck with the UZP-formula F1 and round 3 numbers, the Regulamin Stage II split, an architecture slide, UZP value and a verified two-minute demo script; added the submission checklist with the VM evaluation from the organizer's VM.md. Posted the pre-access history audit and the title recommendation on #48 · docs/pitch
+- 22.11.2026 · Claude · Updated the final deck (12 slides) with the UZP-formula F1, the #76 accession class, a components and licences slide, the Regulamin Stage II split, an architecture slide, UZP value and a two-minute demo script; added the submission checklist with the VM evaluation from the organizer's VM.md. Posted the pre-access history audit and the title recommendation on #48 · docs/pitch
 - 22.11.2026 · Codex · Prepared the VM installation and offline rehearsal for #66 and refreshed the organizer instructions to `eadffbc`. [Rehearsal measurements](evals/results/vm-2vcpu.json)
