@@ -2,6 +2,7 @@
 
 import re
 
+from .appeal_captions import CARD_HEAD, descriptive_role
 from .appeal_charges import ACTS, CHARGE, FILING, NEXT_ITEM, act_date, first_sentence, prose_action, sentences
 from .common import ATTORNEY_RE, DATE, EMAIL_RE, LOWER, PERSON, UPPER, registry_ids, squash, to_iso
 from .personal_names import nominative, same_nominal_form
@@ -97,7 +98,6 @@ BODY_HEADING = re.compile(
 
 # Only the grammatical head can name the owner. A genitive after "rachunek" or
 # "pełnomocnik" describes someone else's account or counsel.
-CARD_HEAD = r"(?:dane(?: identyfikacyjne| teleadresowe)?|(?:pełna )?nazwa(?: i (?:adres|siedziba))?|oznaczenie)"
 _FILER = r"(?:(?:wykonawca|podmiot) (?:wnosz|składaj)[ąa]cy|strona (?:wnosz|składaj)[ąa]ca) odwo[łl]anie"
 # Inflect the role and its modifier together. A description such as "conducting
 # the proceedings" identifies the buyer only when it modifies the party noun.
@@ -133,7 +133,9 @@ CARD_ROLE = re.compile(rf"^{_CARD_WORDING}(?:[ \t]*:[ \t]*|[ \t]*$)", re.IGNOREC
 # In a flat transcript the caption in the adjacent column can follow immediately.
 PARALLEL_CARD = re.compile(rf"^{_CARD_WORDING}(?=[: \t]|$)", re.IGNORECASE | re.MULTILINE)
 _OTHER_CARD = re.compile(
-    r"^(?:(?:pełnomocnik|rachunek|odpowiedź) zamawiającego|wybrany wykonawca|wykonawca wybrany|wykonawca, którego ofertę wybrano|"
+    rf"^(?:(?:{CARD_HEAD} )?(?:pełnomocnik(?:a)?|reprezentant(?:a)?|przedstawiciel(?:a)?|rachun(?:ek|ku)(?: bankow(?:y|ego))?|odpowiedź)"
+    r" (?:wspólnych )?zamawiając(?:ego|ych)|strona przystępująca(?: \(wykonawca\))?|"
+    r"wybrany wykonawca|wykonawca wybrany|wykonawca, którego ofertę wybrano|"
     r"(?:dane )?(?:przystępując(?:y|ego)|uczestnik(?:a)?(?: postępowania)?))(?:\s*:|$)",
     re.IGNORECASE,
 )
@@ -153,6 +155,7 @@ def _ends_party(line: str) -> bool:
     return bool(
         CARD_ROLE.fullmatch(line)
         or SECTION_LABEL.match(line)
+        or descriptive_role(line)
         or _OTHER_CARD.match(line)
         or BODY_HEADING.match(line)
         or squash(line).replace(" ", "").upper() == "ODWOŁANIE"
@@ -165,10 +168,18 @@ CONTACT = re.compile(
 )
 MEMBER = re.compile(r"^(\d+)[.)]\s*(.*)")
 MEMBER_ROLE = re.compile(r"\((?:lider|członek|partner)\b[^)]*\)", re.IGNORECASE)
-AUTHORITY_LEAD_MARK = re.compile(rf"\((?:zamawiaj[ąa]cy )?(?:prowadz[ąa]cy {_PROCEEDING}|wiod[ąa]cy)\)", re.IGNORECASE)
+AUTHORITY_LEAD_MARK = re.compile(
+    rf"\((?:(?:zamawiaj[ąa]c[ya] )?(?:(?:prze)?prowadz[ąa]c[ya] {_PROCEEDING}|wiod[ąa]c[ya])|"
+    r"pełnomocnik zamawiających do (?:prze)?prowadzenia postępowania)\)",
+    re.IGNORECASE,
+)
 LEAD_FOR = re.compile(
     r"^(?:prowadząc\w*\s+postępowanie.*(?:na rzecz|w imieniu)|"
     r"działając\w*\s+(?:we?\s+(?:własnym imieniu|imieniu (?:własnym|swoim))\s+(?:i|oraz)\s+)?na rzecz\s*:)",
+    re.IGNORECASE,
+)
+_NAMED_LEAD = re.compile(
+    r"^(?:lider (?:postępowania|zamawiających)|(?:zamawiający )?prowadzący postępowanie|postępowanie prowadzi)\s*:\s*(.*)$",
     re.IGNORECASE,
 )
 CONSORTIUM = re.compile(r"\b(?:wspólnie|konsorcjum)\b", re.IGNORECASE)
@@ -224,13 +235,18 @@ def _party_header(header: str) -> tuple[str, set[int]]:
             if changed:
                 return "\n".join(lines[:index]), leads
             break
-        if (label := CARD_ROLE.match(line)) and party_evidence(
-            [line[label.end() :], *lines[index + 1 : index + 6]], numbered=bool(label["authority"])
-        ):
+        label = CARD_ROLE.match(line)
+        if label:
             name = "Odwołujący" if label["appellant"] else "Zamawiający"
-            if label["authority"] and _LEADS_PROCEEDING.search(label["authority"]):
+            value = line[label.end() :]
+        elif name := descriptive_role(line):
+            value = line.partition(":")[2].strip()
+        else:
+            continue
+        if party_evidence([value, *lines[index + 1 : index + 6]], numbered=name == "Zamawiający"):
+            if label and label["authority"] and _LEADS_PROCEEDING.search(label["authority"]):
                 leads.add(index)
-            lines[index] = name + ": " + line[label.end() :]
+            lines[index] = name + ": " + value
             changed = True
     return ("\n".join(lines) if changed else header), leads
 
@@ -293,6 +309,8 @@ def _parties(
     sublabel = ""
     wrapped_label = False
     in_body = False
+    group_start = 0
+    consumed_row = -1
 
     def finish_name():
         nonlocal entity
@@ -326,6 +344,8 @@ def _parties(
         name_lines.clear()
 
     for index, line in enumerate(map(str.strip, lines)):
+        if index == consumed_row:
+            continue
         # Electronic cover sheets can list attachments before their explicit party cards.
         boundary = BODY_HEADING.match(line)
         if _QUOTE_INTRO.search(line) or (boundary and (not boundary["attachments"] or role or any(parties.values()))):
@@ -350,7 +370,29 @@ def _parties(
             if entity:
                 entity["sublabel"] += " prowadzący"
             continue
-        if _OTHER_CARD.match(line) or CARD_ROLE.match(line):
+        if role == "Zamawiający" and sublabel.isdigit():
+            if AUTHORITY_LEAD_MARK.fullmatch(line):
+                finish_name()
+                if entity:
+                    entity["sublabel"] += " prowadzący"
+                continue
+            link = _NAMED_LEAD.fullmatch(line)
+            if link or index in lead_rows:
+                finish_name()
+                named = line.partition(":")[2].strip()
+                value_row = index if named else index + 1
+                if not named and value_row < len(lines):
+                    named = lines[value_row].strip()
+                members = [p for p in parties[role][group_start:] if p["nazwa"].casefold() == named.casefold()]
+                if len(members) == 1:
+                    members[0]["sublabel"] += " prowadzący"
+                if link or members:
+                    # A detached reference consumes its name, then the numbered list may resume.
+                    consumed_row = value_row if members else -1
+                    if value_row + 1 >= len(lines) or not MEMBER.match(lines[value_row + 1].strip()):
+                        role = None
+                    continue
+        if _OTHER_CARD.match(line) or CARD_ROLE.match(line) or descriptive_role(line):
             finish_name()
             role = None
             continue
@@ -360,6 +402,8 @@ def _parties(
             if in_body and role == "Zamawiający":
                 role = None
                 continue
+            if role == "Zamawiający":
+                group_start = len(parties[role])
             sublabel, entity = "prowadzący" if index in lead_rows else "", None
             wrapped_label = ":" not in line
             line = line.partition(":")[2].strip()
