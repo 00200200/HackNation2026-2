@@ -699,5 +699,15 @@
       }
     }
   },
-  "tests_passed": 2128
+  "tests_passed": 2128,
+  "launcher_validation": {
+    "main_merge": "ace38bb",
+    "commit": "bb200c6741446147ae6808f754b810a23e6d28f6",
+    "changes": "Main updated the launcher and progress stream encoding. The extraction modules and caption grammar match the feature gates.",
+    "tests_passed": 2129,
+    "training_exact": 196,
+    "byte_identical_to_feature_gate": 196,
+    "uzp": 1.0,
+    "strict": 1.0
+  }
 }
