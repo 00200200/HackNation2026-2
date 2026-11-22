@@ -185,3 +185,56 @@ def test_cover_letter_evidence_stays_on_its_own_page():
     cover = "Pismo przewodnie\nDo Prezesa KIO\nWnoszę odwołanie.\nZarzuty"
     assert classify([cover, "Sprawozdanie"]) is None
     assert classify([cover, "ODWOŁANIE\nOdwołujący: Studio Wagi"]) == "appeal"
+
+
+@pytest.mark.parametrize(
+    "title", ["Bankowy dowód dokonanej płatności", "Zaksięgowana transakcja wychodząca", "Wydruk operacji"]
+)
+def test_completed_payment_card_with_independent_evidence(title):
+    fields = (
+        "\nIBAN płatnika: "
+        + "98" * 13
+        + "\nIBAN beneficjenta: "
+        + "54" * 13
+        + "\nKwota transakcji: 14,50 PLN\nDzień obciążenia: 08.03.2031\nReferencja banku: DG-123"
+    )
+    assert classify([title + fields]) == "bank_transfer"
+    assert classify(["Dyspozycja wykonania przelewu" + fields]) is None
+    assert classify(["Pro forma" + fields]) is None
+    assert classify(["Wydruk operacji" + fields + "\nStatus: do realizacji"]) is None
+
+
+def test_bank_ledger_entry_without_a_receipt_title():
+    page = (
+        "Bank Spółdzielczy\nRekord rozliczeniowy\nRachunek nadawcy: "
+        + "74" * 13
+        + "\nRachunek beneficjenta: "
+        + "29" * 13
+        + "\nDzień zaksięgowania: 05/02/2033\n"
+        "Wartość operacji: 90,35 PLN\nNumer operacji: LT-552"
+    )
+    assert classify([page]) == "bank_transfer"
+    assert classify([page.replace("Dzień zaksięgowania", "Planowana data realizacji")]) is None
+
+
+@pytest.mark.parametrize(
+    ("heading", "payee", "date"),
+    [
+        ("Potwierdzenie zlecenia przelewu", "Rachunek odbiorcy", "Data zlecenia: 08.03.2031"),
+        ("Wydruk operacji", "Rachunek odbiorcy", "Data operacji: 08.03.2031\nData księgowania: brak"),
+        ("Bankowy dowód dokonanej płatności", "Rachunek nadawcy", "Data obciążenia: 08.03.2031"),
+    ],
+)
+def test_incomplete_or_contradictory_ledger(heading, payee, date):
+    text = (
+        heading
+        + "\nRachunek nadawcy: "
+        + "98" * 13
+        + "\n"
+        + payee
+        + ": "
+        + "54" * 13
+        + "\nKwota transakcji: 14,50 PLN\nNumer transakcji: DG-123\n"
+        + date
+    )
+    assert classify([text]) is None

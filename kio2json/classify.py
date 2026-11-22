@@ -88,6 +88,66 @@ PAYMENT_TITLE = re.compile(
 )
 
 
+# Bank exports can name the document, the action and its state in separate fields.
+BANK_DOCUMENT = re.compile(
+    r"^(?:(?:bankow[eya]|elektroniczn[eya]) )?(?:potwierdzenie|dowod|poswiadczenie|zaswiadczenie|"
+    r"wydruk|szczegoly|dokument|informacja|raport|zestawienie)\b"
+)
+PAYMENT_SUBJECT = re.compile(r"\b(?:przelew|platnos|operacj|transakcj|obciazeni|dyspozycj)\w*")
+ATTESTS_PAYMENT = re.compile(r"\b(?:potwierdzeni|dowod|poswiadczeni|zaswiadczeni|zaksiegowan|zrealizowan|wykonan)\w*")
+ORDER_OR_COPY = re.compile(
+    r"\b(?:kopi|archiw|wniosk|pros[bz]|przyjeci|zlozeni|anulowan|odrzucon|zaplanowan|"
+    r"niezrealizowan|niewykonan|dyspozycji do realizacji|do akceptacji)\w*"
+)
+
+CURRENCY_VALUE = re.compile(
+    rf"(?im)^(?:(?:kwota|wartosc|suma)\b[^:\n]{{0,35}}:[ \t]*)?"
+    rf"(?:pln[ \t]*{bank_transfer.MONEY}|{bank_transfer.MONEY}[ \t]*(?:pln|zl|eur))[ \t]*$"
+)
+
+
+def _payment_card(first: str, folded: str, amount: float | None, day: str | None) -> bool:
+    """Require account, value and settlement evidence even when no exact receipt title matches."""
+    lines = folded.splitlines()
+    titles = []
+    bank_header = False
+    for line in lines[:10]:
+        if re.search(r"\b(?:zalacznik|w zalaczeniu|przedkladam|przesylam)\w*", line):
+            return False
+        if ORDER_OR_COPY.search(line) or re.match(r"^(?:dyspozycja|polecenie|zlecenie)\b", line):
+            return False
+        bank_header |= bool(re.match(r"^(?:[a-z-]+ ){0,2}bank\b", line))
+        if (BANK_DOCUMENT.match(line) or PAYMENT_SUBJECT.match(line)) and PAYMENT_SUBJECT.search(line):
+            if re.search(r"\b(?:zlecenia|zlecenie|przyjet\w*|rejestracji|autoryzacji|do realizacji)\b", line):
+                return False
+            titles.append(line)
+    if not (titles or bank_header) or not (amount is not None or CURRENCY_VALUE.search(folded)):
+        return False
+    accounts = bank_transfer.ANCILLARY_ACCOUNT.sub("", bank_transfer.normalize_account_spacing(first))
+    numbers = {"".join(m[1].split()) for m in bank_transfer.ACCOUNT_RE.finditer(accounts)}
+    if len(numbers) != 2:
+        return False
+    if None in bank_transfer.printed_accounts(accounts).values():
+        return False
+    booked = any(
+        m[1].casefold().endswith(("księgowania", "wykonania", "obciążenia")) and to_iso(m[2])
+        for m in bank_transfer.OPERATION_DATE_RE.finditer(first)
+    )
+    attestation = any(ATTESTS_PAYMENT.search(title) for title in titles)
+    sender, recipient = bank_transfer._accounts(accounts)
+    reference = bool(bank_transfer.REFERENCE_RE.search(first))
+    if not titles:
+        return bool(bank_header and booked and reference and sender and recipient and sender != recipient)
+    corroboration = sum(
+        (
+            day is not None,
+            reference,
+            bool(sender and recipient and sender != recipient),
+        )
+    )
+    return (attestation or booked) and corroboration >= 1
+
+
 def _cue_score(text: str, cues: tuple[str, ...]) -> int:
     return sum(bool(re.search(cue, text, re.MULTILINE)) for cue in cues)
 
@@ -316,13 +376,15 @@ def classify(pages: list[str], *, ocr_accounts: AccountEvidence | None = None) -
     debit = ocr_accounts is not None and _debit_printout(first)
     dated_order = ocr_accounts is not None and _executed_order_printout(first)
     attested = any(_confirms_execution(line) for line in lines)
-    if not (
+    conventional = (
         transfer_heading or debit or letter or dated_order or attested or any(EXECUTED.match(line) for line in lines)
-    ):
+    )
+    folded_first = first.casefold().translate(POLISH_FOLD)
+    if not conventional and not PAYMENT_SUBJECT.search(folded_first) and "bank" not in folded_first:
         return None
     amount, day = bank_transfer.transaction_values(first)
-    if amount is None and day is None:
-        return None
+    if not conventional or (amount is None and day is None):
+        return "bank_transfer" if _payment_card(first, folded_first, amount, day) else None
 
     # A receipt can print NRB/IBAN in groups other than the domestic 2+6x4.
     first = bank_transfer.normalize_account_spacing(first)
