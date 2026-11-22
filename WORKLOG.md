@@ -14,6 +14,8 @@ The batch CLI defaults to up to four PDF workers, with one thread per Tesseract 
 
 The local viewer flags disagreements between an appeal, its mandate and its receipt. The CLI and viewer can use independently printed sibling values to repair a damaged reading within one case folder.
 
+The default Tesseract reader checks the orientation of each scanned page. For searchable scans it can verify a suspect identifier, list marker or displaced line against the printed image.
+
 The grant certificate and board-stamp readers share the copy-attestation check so that a certifier cannot be counted as the issuing officer.
 
 Public landing https://doc2json.pl (`frontend/`, static nginx, monochrome) runs on the team VPS as `doc2json-web`
@@ -311,3 +313,4 @@ These runs used local rules with the three endpoint variables unset. The two loc
 - 22.11.2026 · Codex · Added the seeded case-linked benchmark on `feat/case-benchmark`, pairing each native appeal, mandate, transfer and near-negative with a scan and grouping the results by case and layout. Main `fa9937e` scored 0.7191 UZP and 0.6617 strict on 208 PDFs. [Measurements](evals/results/case-benchmark.json)
 - 22.11.2026 · Codex · Integrated the additional document families and matched native controls from #88 as `make eval-document-variants`. The fixed #69/#93 benchmark still runs with `make eval-variants`. · integrate/pr88
 - 22.11.2026 · Codex · Added grammatical agreement for descriptive appellant and buyer captions and linked printed joint-procurement lead references to numbered member identities on appeal cards.
+- 22.11.2026 · Codex · Added cardinal orientation checks and targeted image verification for searchable scans. The reproducible 39-PDF organizer-derived panel runs with `make eval-rotation-textlayer`.

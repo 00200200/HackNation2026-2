@@ -4,6 +4,7 @@ from unittest.mock import Mock
 
 import pytest
 import tesserocr
+from PIL import Image
 
 from kio2json import appeal_scan_crops, ocr_budget, ocr_signatures, pdf_text, rapid_worker, receipt_account_crop
 from kio2json.pdf_text import WordBox
@@ -62,10 +63,10 @@ def test_full_page_tesseract_only_clips_optional_rereads(monkeypatch, clock):
     monkeypatch.setattr(pdf_text, "_language_dir", lambda: "")
     with ocr_budget.document_budget():
         clock[0] += 26.75
-        pdf_text._tesseract(Mock(), None, explicit_dpi=True, reread=True)
+        pdf_text._tesseract(SimpleNamespace(original=Image.new("L", (20, 40))), None, explicit_dpi=True, reread=True)
         reader.Recognize.assert_called_once_with(timeout=250)
         clock[0] += 1
-        pdf_text._tesseract(Mock(), None, explicit_dpi=True)
+        pdf_text._tesseract(SimpleNamespace(original=Image.new("L", (20, 40))), None, explicit_dpi=True)
         reader.Recognize.assert_called_with(timeout=1000 * pdf_text.OCR_TIMEOUT_SECONDS)
 
 
@@ -141,4 +142,4 @@ def test_optional_tesseract_page_watchdog_preserves_primary_before_document_expi
 
     reader.Recognize.side_effect = expire
     with ocr_budget.document_budget(), pytest.raises(ocr_budget.RereadExpired):
-        pdf_text._tesseract(Mock(), None, explicit_dpi=True, reread=True)
+        pdf_text._tesseract(SimpleNamespace(original=Image.new("L", (20, 40))), None, explicit_dpi=True, reread=True)

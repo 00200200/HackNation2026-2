@@ -19,6 +19,7 @@ from PIL import Image
 
 from .ocr_budget import CROP_TIMEOUT_MS, REREAD_PAGE_TIMEOUT_SECONDS, RereadExpired, remaining_ms, require_remaining_ms
 from .ocr_normalize import MAIL_TOKEN_RE, confirmed_email, normalize_ocr
+from .ocr_orientation import correction_angle, source_box
 
 # The organizer README says the key information sits on the first three pages.
 MAX_PAGES = 3
@@ -161,6 +162,11 @@ class WordBox(NamedTuple):
     x1: float
     y1: float
 
+    @property
+    def layout_box(self) -> "WordBox":
+        """Upright reading coordinates for rows and columns; tuple coordinates locate PDF ink."""
+        return getattr(self, "_upright", self)
+
 
 class OCRWord(WordBox):
     """A Tesseract reading with the same six positional fields used by the layout readers."""
@@ -276,19 +282,28 @@ def _render(page) -> _Raster:
 
 
 def _tesseract(image: _Raster, words: list[WordBox] | None, *, explicit_dpi: bool, reread: bool = False) -> str:
-    try:
-        return _recognize_raster(image, words, explicit_dpi=explicit_dpi, dpi=OCR_DPI, reread=reread)
-    except _PrimaryPageTimeout:
-        if not _primary_retry_ms():
-            raise
-        # Resize the existing raster: parallel workers must never render PDFium pages.
-        with image.original.reduce(2) as reduced:
-            retry = image._replace(original=reduced, scale=image.scale / 2)
-            return _recognize_raster(retry, words, explicit_dpi=explicit_dpi, dpi=RETRY_DPI, reread=False)
+    if reread:
+        require_remaining_ms()
+    angle = correction_angle(image.original, _language_dir(), reread=reread)
+    with ExitStack() as stack:
+        if angle:
+            upright = stack.enter_context(image.original.rotate(angle, expand=True))
+            image = image._replace(original=upright)
+        try:
+            return _recognize_raster(image, words, explicit_dpi=explicit_dpi, dpi=OCR_DPI, reread=reread, angle=angle)
+        except _PrimaryPageTimeout:
+            if not _primary_retry_ms():
+                raise
+            # Resize the existing raster: parallel workers must never render PDFium pages.
+            with image.original.reduce(2) as reduced:
+                retry = image._replace(original=reduced, scale=image.scale / 2)
+                return _recognize_raster(
+                    retry, words, explicit_dpi=explicit_dpi, dpi=RETRY_DPI, reread=False, angle=angle
+                )
 
 
 def _recognize_raster(
-    image: _Raster, words: list[WordBox] | None, *, explicit_dpi: bool, dpi: int, reread: bool
+    image: _Raster, words: list[WordBox] | None, *, explicit_dpi: bool, dpi: int, reread: bool, angle: int
 ) -> str:
     """Recognize the page and verify suspect e-mail separators against their image crops."""
     from tesserocr import PSM, RIL, PyTessBaseAPI, iterate_level
@@ -317,7 +332,10 @@ def _recognize_raster(
         english = None
         cursor = 0
         if iterator is not None:
-            left, top = image.bbox[:2]
+            left, top, right, bottom = image.bbox
+            layout_size = (right - left, bottom - top)
+            if angle in (90, 270):
+                layout_size = layout_size[::-1]
             for item in iterate_level(iterator, RIL.WORD):
                 box = item.BoundingBox(RIL.WORD)
                 if not box:
@@ -325,15 +343,28 @@ def _recognize_raster(
                 token = item.GetUTF8Text(RIL.WORD)
                 x0, y0, x1, y1 = box
                 if words is not None:
+                    px0, py0, px1, py1 = source_box(box, image.original.size, angle)
                     word = OCRWord(
                         image.page_number,
                         token,
-                        left + x0 / image.scale,
-                        top + y0 / image.scale,
-                        left + x1 / image.scale,
-                        top + y1 / image.scale,
+                        min(right, left + px0 / image.scale),
+                        min(bottom, top + py0 / image.scale),
+                        min(right, left + px1 / image.scale),
+                        min(bottom, top + py1 / image.scale),
                         confidence=item.Confidence(RIL.WORD),
                     )
+                    if angle:
+                        # Layout readers also need the word in the corrected, page-local frame.
+                        width, height = layout_size
+                        word._upright = WordBox(
+                            image.page_number,
+                            token,
+                            min(width, x0 / image.scale),
+                            min(height, y0 / image.scale),
+                            min(width, x1 / image.scale),
+                            min(height, y1 / image.scale),
+                        )
+                        word.upright_page_size = layout_size
                     words.append(word)
                 start = text.find(token, cursor)
                 if start < 0:
@@ -488,7 +519,16 @@ def read_pages(
                 text = normalize_ocr(text)
             elif include:
                 text, spacing = _native_spacing(page, text)
-                if word_boxes is not None:
+                verified = None
+                if selected in TESSERACT_ENGINES and not reread and any(page.images) and _page_sized_image(page):
+                    from .text_layer_repair import repair_layer
+
+                    verified = repair_layer(page, text, spacing, recognize)
+                if verified is not None:
+                    text, verified_boxes = verified
+                    if word_boxes is not None:
+                        words.extend(verified_boxes)
+                elif word_boxes is not None:
                     words.extend(
                         WordBox(page.page_number, w["text"], w["x0"], w["top"], w["x1"], w["bottom"])
                         for w in page.extract_words(**spacing)
