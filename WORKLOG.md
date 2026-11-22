@@ -36,6 +36,8 @@ The viewer also accepts a ZIP of case folders, reuses results for files it has r
 
 ## Last eval
 
+Native two-column appeal field F1 rose from 0.4064 to 0.9717 across ten generated cases. On the five held-out cases, native F1 rose from 0.3387 to 0.9700 and forced-Tesseract F1 rose from 0.8619 to 0.8925. [Per-field, organizer and private aggregate results](evals/results/two-column-appeals.json)
+
 On the 240 seeded PDFs, UZP field micro F1 rose from 0.2960 on #69 to **0.8948** on the robustness checkpoint. The classifier routed 170/180 positives, including all 60 appeals, and returned `{}` on all 60 negatives. The control with #78’s account and JSON conventions scored 0.3179. The ten remaining routing misses were alternative-format transfers.
 
 Main incorporated this classifier and the separate transfer-format fix in #89. The integrated rerun scored **0.9125** and routed **180/180** positives. Two-column appeals scored 0.4064 field F1 despite all ten routing correctly. All 196 organizer training outputs matched the control byte for byte and 29/30 organizer scans matched their references exactly. Private UZP F1 was 0.9247 on corpus 1 all and 0.9244 on corpus 2 dev. [Profile and gate comparisons](evals/results/variant-robustness.json)
@@ -253,6 +255,8 @@ Two and four grant JSONs matched exactly. The ten organizer grants remained exac
 
 - 22.11.2026 · Codex · Fixed appeal party boundaries at numbered headings, parenthesized page counters over scans, labelled OCR receipt accounts and explicit grantor signature blocks. The remaining round-three routing and role errors are tracked in #1.
 
+- 22.11.2026 · Restored independent appeal sections from native and OCR word positions, preserved shared headings and bound party cards to their columns. [Measurements](evals/results/two-column-appeals.json)
+
 - 22.11.2026 · Added corroborating Polish filing and payment cues, scoped fields and native two-column reading for issue #63. Re-ran the 240-PDF benchmark and organizer and private gates against the confirmed JSON and account conventions. [Final field counts](evals/results/variants.json)
 
 - 22.11.2026 · Claude · `start.sh` now finds `.venv/bin/python` or `python3`, the CLI writes progress lines as UTF-8 when a Windows redirect uses an ANSI code page, `deploy/RUN.md` says unrelated documents produce `{}`, and the rehearsal speeds in `docs/readme/reference.md` name their revision and profile · fix/jury-run-hardening
@@ -312,4 +316,7 @@ These runs used local rules with the three endpoint variables unset. The two loc
 - 22.11.2026 · Claude · #106 second CodeRabbit round: folder mode without `--folder-root` needs the launcher's opt-in on a loopback address, so an app imported by another server keeps uploads only; under `--folder-root` each PDF is copied from the file that was opened and checked, so a link changed after the check cannot redirect the read. An uploaded file is read only from the session's Shiny upload folder, because a browser can send any path for the file input · branch `claude/gui-evidence-40`
 - 22.11.2026 · Claude · #106 third CodeRabbit round: uploaded ZIPs accept only stored and DEFLATE entries, because some Python builds let the BZIP2 and LZMA decoders allocate past the declared size; ZIPs are capped at 10,000 entries and a 100:1 ratio per PDF, and the 1 GB limit is also counted while unpacking; under `--folder-root` a system that cannot name an open file refuses folder mode; a ZIP variant zipfile cannot open gets a Polish message; a Windows path separator is no longer taken for a Unicode name; snapshots are hashed in chunks and only for the cache · branch `claude/gui-evidence-40`
 - 2026-11-22 · Transfer confirmations can bind a split execution heading to a single dated amount and two explicitly owned accounts. Receipt dates also accept Roman months and labelled whole amounts can place the currency first.
+- 22.11.2026 · Codex · Added bank-attestation, single-entry history and settled-detail rules. The development bank letters routed 4/4 with 0.9767 UZP F1. The reserved history, operation-detail and order-detail layouts remained at 0/4 each. [Measurements](evals/results/case-transfers.json)
+- 22.11.2026 · Codex · Integrated the bank-letter update with main `cf67694`. The merged extractor `95c87f3` scored 0.9729 development and 0.7923 reserved UZP F1, matched all 196 training outputs and scored 29/30 exact on serial organizer scans. [Results](evals/results/case-transfers.json)
 - 22.11.2026 · Codex · Added the seeded case-linked benchmark on `feat/case-benchmark`, pairing each native appeal, mandate, transfer and near-negative with a scan and grouping the results by case and layout. Main `fa9937e` scored 0.7191 UZP and 0.6617 strict on 208 PDFs. [Measurements](evals/results/case-benchmark.json)
+- 22.11.2026 · Codex · Integrated the additional document families and matched native controls from #88 as `make eval-document-variants`. The fixed #69/#93 benchmark still runs with `make eval-variants`. · integrate/pr88

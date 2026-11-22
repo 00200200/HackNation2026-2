@@ -9,6 +9,7 @@ import pdfplumber
 
 from . import appeal
 from .common import ATTORNEY_RE, EMAIL_RE, PARTY_LABELS, PERSON
+from .ocr_normalize import normalize_ocr
 from .pdf_text import WordBox
 from .personal_names import compatible_names, nominative
 from .power_of_attorney import GRANT, MANDATE_TITLE, NAMED_SIGNATURE
@@ -147,7 +148,7 @@ def _gutter(row, following, gap):
 
 
 def party_inventory(
-    boxes: list[WordBox], sizes: dict[int, tuple[float, float]], *, appeal_cards: bool = False
+    boxes: list[WordBox], sizes: dict[int, tuple[float, float]], *, appeal_cards: bool = False, page_gutters=None
 ) -> list[PartyBlock]:
     """Enumerate labelled owners before reading any field. Repeated marginal rows delimit cards."""
     pages = {}
@@ -170,8 +171,10 @@ def party_inventory(
         owners = {}
         grant_columns = set()
         bottom = {}
+        body_columns = set()
+        confirmed = (page_gutters or {}).get(page, {})
         for n, row in enumerate(rows):
-            if appeal_cards and appeal.party_header_end(_line(row)):
+            if appeal_cards and n not in confirmed and (body_columns or appeal.party_header_end(_line(row))):
                 break
             y = min(w.y0 for w in row)
             key = _line(row).casefold(), round(row[0].y0 / length * 20)
@@ -184,7 +187,11 @@ def party_inventory(
                 split = None
                 owners.clear()
                 current.clear()
-            gutter = _gutter(row, rows[n + 1 : n + 4], max(height, width * 0.012))
+            if n - 1 in confirmed and n not in confirmed:
+                split = None
+                owners.clear()
+                current.clear()
+            gutter = confirmed.get(n) or _gutter(row, rows[n + 1 : n + 4], max(height, width * 0.012))
             if (gutter is not None and (split is None or abs(split - gutter) > height)) or (
                 split is not None and any(w.x0 < split < w.x1 for w in row)
             ):
@@ -199,6 +206,12 @@ def party_inventory(
                 if not cell:
                     continue
                 text = _line(cell)
+                if appeal_cards and appeal.party_header_end(text):
+                    body_columns.add(col)
+                if col in body_columns:
+                    current.pop(col, None)
+                    owners.pop(col, None)
+                    continue
                 if y - bottom.get(col, y) > 3 * height:
                     current.pop(col, None)
                     owners.pop(col, None)
@@ -254,6 +267,28 @@ def party_inventory(
     return blocks
 
 
+def _replace_column_span(source: list[str], lines: list[str], *, labelled_start: bool = False) -> bool:
+    """Only replace a unique contiguous run containing exactly the printed tokens."""
+    target = Counter(" ".join(lines).split())
+    spans = []
+    for start, line in enumerate(source):
+        if not line.strip() or (labelled_start and not _HEADING.match(line.strip())):
+            continue
+        seen = Counter()
+        for end in range(start, len(source)):
+            seen.update(source[end].split())
+            if seen == target:
+                spans.append((start, end + 1))
+                break
+            if not seen <= target:
+                break
+    if len(spans) != 1:
+        return False
+    start, end = spans[0]
+    source[start:end] = lines
+    return True
+
+
 def read_role_columns(pages: list[str], blocks: list[PartyBlock]) -> list[str]:
     """Replace a unique contiguous transcript span only when every printed token is accounted for."""
     groups = defaultdict(list)
@@ -266,23 +301,8 @@ def read_role_columns(pages: list[str], blocks: list[PartyBlock]) -> list[str]:
         if not all(b.lines for b in cards) or len({b.order[2] for b in cards}) < 2:
             continue
         lines = [line for card in ordered for line in [card.heading, *card.lines] if line]
-        target = Counter(" ".join(lines).split())
         source = result[page - 1].splitlines()
-        spans = []
-        for start, line in enumerate(source):
-            if not _HEADING.match(line.strip()):
-                continue
-            seen = Counter()
-            for end in range(start, len(source)):
-                seen.update(source[end].split())
-                if seen == target:
-                    spans.append((start, end + 1))
-                    break
-                if not seen <= target:
-                    break
-        if len(spans) == 1:
-            start, end = spans[0]
-            source[start:end] = lines
+        if _replace_column_span(source, lines, labelled_start=True):
             result[page - 1] = "\n".join(source)
     return result if result != pages else pages
 
@@ -329,6 +349,12 @@ def apply_appeal_blocks(record: dict, blocks: list[PartyBlock]) -> None:
         rep["mail"] = mails.pop()
 
 
+_FORM_TITLE = re.compile(
+    r"pe[łl]nomocnictwo(?: procesowe)?|odwo[łl]anie(?: do (?:prezesa )?(?:KIO|Krajowej Izby Odwo[łl]awczej))?",
+    re.IGNORECASE,
+)
+
+
 def _spans_gutter(row, gutter, height):
     if any(w.x0 < gutter < w.x1 for w in row):
         return True
@@ -346,11 +372,7 @@ def form_columns(page: str, boxes: list[WordBox], width: float) -> str:
     # A document title may sit entirely to one side of the table beneath it.
     # Keep it above the form and out of the evidence for either column.
     first_line = _line(rows[0])
-    heading = re.fullmatch(
-        r"pe[łl]nomocnictwo(?: procesowe)?|odwo[łl]anie(?: do (?:prezesa )?(?:KIO|Krajowej Izby Odwo[łl]awczej))?",
-        first_line,
-        re.IGNORECASE,
-    )
+    heading = _FORM_TITLE.fullmatch(first_line)
     if heading:
         rows = rows[1:]
     # The start of the right column recurs at the same position on several rows.
@@ -402,3 +424,116 @@ def form_columns(page: str, boxes: list[WordBox], width: float) -> str:
         if changed and Counter(restored.split()) == Counter(page.split()):
             return restored
     return page
+
+
+# Either side of a gutter must introduce content of its own. Repeated horizontal
+# gaps alone occur in ordinary label/value tables and justified prose.
+_APPEAL_SECTION = re.compile(
+    r"^(?:do (?:prezesa )?(?:krajowej izby odwo[łl]awczej|KIO)\b|"
+    r"(?:nr\.?|numer|znak|przedmiot|nazwa) (?:sprawy|postępowania|zamówienia)[ \t]*:[ \t]*\S)",
+    re.IGNORECASE,
+)
+
+
+def _appeal_section(lines):
+    for i, line in enumerate(lines):
+        role = appeal.FORM_ROLE.match(line) or appeal.CARD_ROLE.match(line)
+        if role and appeal.party_evidence([line[role.end() :], *lines[i + 1 : i + 5]]):
+            return True
+        if i + 1 < len(lines) and (appeal.BODY_HEADING.fullmatch(line.rstrip(":")) or _APPEAL_SECTION.match(line)):
+            return True
+    return False
+
+
+def _flow_lines(lines):
+    """Reconnect a wrapped field only inside its proven column."""
+    result = []
+    for line in lines:
+        if result and (
+            (re.search(r"\b(?:REGON|NIP|KRS)\s*:?$", result[-1], re.IGNORECASE) and re.match(r"^\d{9,14}\b", line))
+            or (
+                (appeal.SECTION_LABEL.match(result[-1]) or re.match(r"(?i)^kancelaria\b", result[-1]))
+                and line[:1].islower()
+                and not _HEADING.match(line)
+                and not appeal.CONTACT.search(line)
+                and not appeal.SECTION_LABEL.match(line)
+                and not appeal.PARTY_FIELD.match(line)
+                and not appeal.BODY_HEADING.match(line)
+                and not result[-1].endswith((".", ":", ";"))
+            )
+        ):
+            result[-1] += " " + line
+        else:
+            result.append(line)
+    return result
+
+
+def _appeal_band(rows, gutter, height):
+    columns = [[], []]
+    positions = [[], []]
+    for row in rows:
+        for side in (0, 1):
+            cell = [word for word in row if (word.x0 >= gutter) == side]
+            if cell:
+                columns[side].append(_line(cell))
+                positions[side].append(cell[0].y0)
+    if min(map(len, columns)) < 3:
+        return None
+    top = max(ys[0] for ys in positions) - height
+    bottom = min(ys[-1] for ys in positions) + height
+    if any(sum(top <= y <= bottom for y in ys) < 3 for ys in positions):
+        return None
+    if all(_appeal_section(lines) for lines in columns):
+        return _flow_lines(columns[0]) + _flow_lines(columns[1])
+    return None
+
+
+def read_appeal_columns(pages, boxes, sizes, scanned):
+    """Read overlapping legal sections column-wise, even when their baselines are staggered."""
+    result = pages.copy()
+    page_gutters = {}
+    for page, text in enumerate(pages, 1):
+        if page not in sizes:
+            continue
+        rows, height = word_rows(boxes, page)
+        if not rows:
+            continue
+        width = sizes[page][0]
+        starts = Counter(
+            round(word.x0 / height)
+            for row in rows
+            for i, word in enumerate(row)
+            if width * 0.25 < word.x0 < width * 0.78 and (not i or word.x0 - row[i - 1].x1 > 2 * height)
+        )
+        for start, count in starts.most_common():
+            if count < 3:
+                break
+            gutter = (start - 0.65) * height
+            source, confirmed = text.splitlines(), {}
+            begin = 0
+            for n in range(len(rows) + 1):
+                spanning = n < len(rows) and (
+                    _spans_gutter(rows[n], gutter, height) or (n == 0 and _FORM_TITLE.fullmatch(_line(rows[n])))
+                )
+                gap = 0 < n < len(rows) and rows[n][0].y0 - rows[n - 1][0].y1 > 3 * height
+                if n < len(rows) and not (spanning or gap):
+                    continue
+                end = n
+                if spanning:
+                    # A short left-aligned heading may introduce the following full-width prose.
+                    for i in range(n - 1, begin - 1, -1):
+                        if any(word.x0 >= gutter for word in rows[i]):
+                            break
+                        if appeal.BODY_HEADING.fullmatch(_line(rows[i]).rstrip(":")):
+                            end = i
+                ordered = _appeal_band(rows[begin:end], gutter, height)
+                if ordered and page in scanned:
+                    ordered = normalize_ocr("\n".join(ordered)).splitlines()
+                if ordered and _replace_column_span(source, ordered):
+                    confirmed.update(dict.fromkeys(range(begin, end), gutter))
+                begin = n + int(bool(spanning))
+            if confirmed:
+                result[page - 1] = "\n".join(source)
+                page_gutters[page] = confirmed
+                break
+    return (result if result != pages else pages), page_gutters
