@@ -8,6 +8,32 @@ Without endpoint credentials the jury configuration runs three rule-based extrac
 that selects its routing rules, output fields and extraction engines. New classes can use
 label patterns or an optional language model.
 
+## Run with Docker Compose
+
+Install Docker with Compose v2.24 or later. From the repository root, place case PDFs in
+`input/<case>/` or use the bundled `input/case1/`, then run:
+
+```sh
+docker compose run --rm cli
+```
+
+The first build downloads the Python dependencies and Polish and English OCR data.
+Each input PDF gets a matching file under `output/<case>/`. To upload PDFs in a browser, run:
+
+```sh
+docker compose up gui
+```
+
+Open <http://127.0.0.1:8000> for the upload page or <http://127.0.0.1:8000/api/docs> for
+the API. Press Ctrl+C to stop the server. Both services use local extraction by default.
+To enable a model, copy `.env.example` to `.env`, fill in the three endpoint settings,
+and rerun the service. Keep the key in the ignored `.env` file.
+
+Both services read the host's `config/classes/` directory. See the
+[pipeline architecture](#how-it-works), [class configuration example](#enable-the-fourth-class)
+and [instructions for adding a class](#add-a-class). The handover requirements are in
+[§3.5 of the task rules](docs/task/regulamin.pdf).
+
 ## Run
 
 From the repository root, create a virtual environment with 64-bit CPython 3.13.
