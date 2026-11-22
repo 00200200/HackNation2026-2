@@ -6,13 +6,27 @@ from kio2json import appeal
 
 
 @pytest.mark.parametrize(
-    "section", ["Uzasadnienie:", "Uczestnik: Dom Prób", "Interwenient: Inny Zakład", "Dowody:", "UZASADNIENIE"]
+    "section",
+    [
+        "Uzasadnienie:",
+        "Uczestnik: Dom Prób",
+        "Interwenient: Inny Zakład",
+        "Dowody:",
+        "UZASADNIENIE",
+        "IV. Zarzuty dotyczące oceny ofert",
+    ],
 )
 def test_next_section_closes_party_and_attorney(section):
     text = f"ODWOŁANIE\nOdwołujący: Wrzosik\n{section}\nWnoszę jak na wstępie.\nreprezentowany przez: adw. Olga Letnia\nNIP: 8912345689"
     (party,) = appeal.extract(text)["Odwolujacy"]
     assert (party["nazwa"], party["nip"], party["przez-pelnomocnika"]) == ("Wrzosik", None, 0)
     assert all(v is None for v in party["pelnomocnik"].values())
+
+
+def test_roman_numeral_in_a_party_name_is_preserved():
+    text = "ODWOŁANIE\nZamawiający:\nII. LICEUM TECHNICZNE\nul. Leśna 7"
+    (party,) = appeal.extract(text)["Zamawiajacy"]
+    assert party["nazwa"] == "II. LICEUM TECHNICZNE"
 
 
 @pytest.mark.parametrize(

@@ -384,7 +384,7 @@ SIGNER_ROLE_RE = re.compile(
 
 
 SIGNATURE_HEADING = re.compile(
-    r"(?:Mocodawca|Podpis(?: mocodawcy)?)(?::?\s+Pełnomocnictwo przyjmuję)?:?", re.IGNORECASE
+    r"(?:Mocodawca|Podpis(?: (?:przedstawiciela )?mocodawcy)?)(?::?\s+Pełnomocnictwo przyjmuję)?:?", re.IGNORECASE
 )
 NAMED_SIGNATURE = re.compile(r"^(?:W imieniu|Za)\s+", re.IGNORECASE)
 
@@ -471,7 +471,16 @@ def _add_stamp_signers(text: str, principals: list[str], attorneys: set[str], si
             owner, headed = None, False
         if owner is None or not (marker or (headed and SIGNER_ROLE_RE.fullmatch(line))):
             continue
-        if not marker and i and re.fullmatch(PERSON, lines[i - 1].strip()):
+        if not marker and i and re.fullmatch(PERSON, name := lines[i - 1].strip()):
+            # A printed caption, name and position form one explicit signature block.
+            caption = lines[i - 2].strip() if i >= 2 else ""
+            if (
+                re.fullmatch(r"podpis (?:przedstawiciela )?mocodawcy:?", caption, re.IGNORECASE)
+                and not SIGNER_ROLE_RE.fullmatch(name)
+                and name not in attorneys
+                and name not in signers[owner]
+            ):
+                signers[owner].append(name)
             continue
         following = ([line[marker.end() :]] if marker else []) + lines[i + 1 : i + 4]
         for candidate in following:
