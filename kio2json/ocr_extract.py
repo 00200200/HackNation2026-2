@@ -118,7 +118,7 @@ def extract_power_of_attorney(pages: list[str], ocr_pages: Collection[int]) -> d
     # Drawn signature lines on scans terminate the appointment section just like dots.
     appointment = "\n".join(re.sub(r"_{5,}|[─━—]{4,}", "." * 10, line) if ocr else line for ocr, line in lines)
     attorneys = power_of_attorney._attorneys(appointment)
-    principal_names = [p["nazwa"] for p in principals]
+    principal_names = [power_of_attorney.principal_name(p) for p in principals]
     attorney_names = {attorney["imie_nazwisko"] for attorney in attorneys}
     signers = [[] for _ in principals]
     prefix = []
