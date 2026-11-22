@@ -146,6 +146,8 @@ Two and four grant JSONs matched exactly. The ten organizer grants remained exac
 
 ## Log
 
+- 22.11.2026 · Codex · Added role-based sole-trader identification in declarations, registry cards and proprietor signatures. The frozen extractor recovered 8/8 reserved proprietor names. [Control and benchmark results](evals/results/sole-trader-grantors.md)
+
 - 22.11.2026 · Claude · Added `evals/scan_stress.py` and `make scan-stress` for #81: 16 fixed-seed variants of the 30 organizer scans (the delivered files and 15 re-renders), run as the jury runs the app and scored with the loss split into routing and field errors. Baseline on main `a84258d`, no product change: delivered 1.000, re-renders 0.791 to 0.965, and 54 of the 60 misrouted documents are transfers returned as `{}`. [Report](evals/results/scan-stress.json) · feat/scan-stress
 
 - 22.11.2026 · Codex · Separated sole-trader identities, mandate signatures and challenged acts using the case-linked development split. [Field errors and split results](evals/results/case-mandates-appeals.md)
@@ -315,3 +317,4 @@ These runs used local rules with the three endpoint variables unset. The two loc
 - 22.11.2026 · Codex · Integrated the bank-letter update with main `cf67694`. The merged extractor `95c87f3` scored 0.9729 development and 0.7923 reserved UZP F1, matched all 196 training outputs and scored 29/30 exact on serial organizer scans. [Results](evals/results/case-transfers.json)
 - 22.11.2026 · Codex · Added the seeded case-linked benchmark on `feat/case-benchmark`, pairing each native appeal, mandate, transfer and near-negative with a scan and grouping the results by case and layout. Main `fa9937e` scored 0.7191 UZP and 0.6617 strict on 208 PDFs. [Measurements](evals/results/case-benchmark.json)
 - 22.11.2026 · Codex · Integrated the additional document families and matched native controls from #88 as `make eval-document-variants`. The fixed #69/#93 benchmark still runs with `make eval-variants`. · integrate/pr88
+- 22.11.2026 · Codex · Added grammatical agreement for descriptive appellant and buyer captions and linked printed joint-procurement lead references to numbered member identities on appeal cards.
