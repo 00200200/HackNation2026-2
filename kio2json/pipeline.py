@@ -7,7 +7,7 @@ from dataclasses import replace
 from functools import cache, partial
 from pathlib import Path
 
-from . import appeal, bank_transfer, ocr_extract, power_of_attorney
+from . import appeal, bank_transfer, ocr_extract, power_of_attorney, trace
 from .appeal_layout import apply_appeal_blocks, party_inventory, read_role_columns, restore_party_columns
 from .case_repair import Reading, printed_readings
 from .class_config import DocumentClass, load_classes, route
@@ -224,6 +224,7 @@ def _process_with_recovery(
             message = "Used rules after document processing failed."
         except Exception:  # noqa: BLE001 - a failed per-document rule retry must yield an empty output
             message = "Document processing and rule recovery failed. Returning empty output."
+    trace.note("recovery", message)
     print(f"{str(pdf_path)!r}: {message}", file=sys.stderr)
     if on_recovery:
         on_recovery(message)
@@ -349,6 +350,8 @@ def _process(
                 _grant_signers(pdf_path, record, pages, ocr_pages, engine)
             if case_readings is not None and uses_case_schema(definition):
                 case_readings.extend(printed_readings(definition.id, record, primary, ocr_pages, boxes))
+            trace.note("pages", pages)
+            trace.note("ocr_pages", ocr_pages)
             return definition.id, record
         if not ocr_pages:
             break

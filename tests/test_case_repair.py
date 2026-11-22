@@ -115,7 +115,7 @@ def test_cli_reconciles_each_explicit_folder_after_all_worker_results(tmp_path, 
         path = source / name
         path.parent.mkdir(exist_ok=True, parents=True)
         path.touch()
-    monkeypatch.setattr(cli, "read_batch", lambda paths, *_: (readings[p.stem] for p in paths))
+    monkeypatch.setattr(cli, "read_batch", lambda paths, *_, **__: (readings[p.stem] for p in paths))
     monkeypatch.setattr(sys, "argv", ["kio2json", "--input", str(source), "--output", str(output), "--jobs", "2"])
     monkeypatch.setenv("KIO_CASE_REPAIR", "1")
     assert cli.main() == 0

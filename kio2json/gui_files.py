@@ -16,7 +16,7 @@ from shiny.types import FileInfo
 
 from .batch import Result, configure_logging, read_document, reconcile_cases
 from .case_checks import CaseWarning, case_warnings
-from .class_config import load_classes
+from .class_config import DocumentClass, load_classes
 from .ocr_budget import batch_deadline
 
 type Source = tuple[Path, Path]  # relative name for the jury and path to read
@@ -65,7 +65,7 @@ class Document:
     warnings: tuple[CaseWarning, ...] = ()
 
 
-def analyze(sources: list[Source], directory: Path) -> list[Document]:
+def analyze(sources: list[Source], directory: Path, classes: list[DocumentClass] | None = None) -> list[Document]:
     deadline = batch_deadline(len(sources))
     targets = set()
     for name, _ in sources:
@@ -76,7 +76,7 @@ def analyze(sources: list[Source], directory: Path) -> list[Document]:
             raise ValueError(f"Dwa dokumenty mają tę samą nazwę wyniku: {key}. Zmień nazwę jednego z nich.")
         targets.add(key)
 
-    classes = load_classes()
+    classes = load_classes() if classes is None else classes
     configure_logging(classes)
     documents = []
     for index, (name, path) in enumerate(sources):
@@ -86,7 +86,7 @@ def analyze(sources: list[Source], directory: Path) -> list[Document]:
         except OSError as error:
             result = Result(None, "", str(error))
         else:
-            result = read_document(snapshot, classes, batch_deadline=deadline)
+            result = read_document(snapshot, classes, batch_deadline=deadline, explain=True)
         documents.append(Document(name, snapshot, result))
     names = [document.name for document in documents]
     results = reconcile_cases(names, [document.result for document in documents])

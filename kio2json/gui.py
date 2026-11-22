@@ -1,5 +1,6 @@
-"""Local document viewer. Start with python -m kio2json.gui."""
+"""Local document viewer. Start with python -m kio2json.gui [--classes PATH] [--enable ID]."""
 
+import argparse
 import asyncio
 from concurrent.futures import ThreadPoolExecutor
 from pathlib import Path
@@ -7,14 +8,22 @@ from tempfile import TemporaryDirectory
 
 from shiny import App, Inputs, Outputs, Session, reactive, render, req, run_app, ui
 
+from kio2json.class_config import DocumentClass, add_class_options, class_sources, parse_classes
+from kio2json.gui_explain import class_list as class_panel
+from kio2json.gui_explain import display_name, field_table, routing_reason, warning_list
 from kio2json.gui_files import Document, analyze, archive, folder_sources, page_count, page_image, upload_sources
 
-CLASS_NAMES = {
-    "appeal": "Odwołanie",
-    "power_of_attorney": "Pełnomocnictwo",
-    "bank_transfer": "Potwierdzenie przelewu",
-    "participation": "Karta uczestnika",
-}
+# Class files are read again for every analysis, so a class file added to a --classes directory
+# applies on the next click.
+class_options = argparse.Namespace(classes=[], enable=[])
+
+
+def load_classes() -> tuple[list[DocumentClass], str | None]:
+    try:
+        return parse_classes(class_sources(extra=class_options.classes, enable=class_options.enable)), None
+    except (OSError, ValueError) as error:
+        return [], str(error)
+
 
 # PDFium must never be called simultaneously from multiple threads or sessions.
 pdf_worker = ThreadPoolExecutor(max_workers=1)
@@ -48,6 +57,7 @@ app_ui = ui.page_fluid(
             ),
             ui.input_action_button("run", "Analizuj dokumenty", class_="btn-primary"),
             ui.div(ui.output_text("notice"), role="status", class_="notice"),
+            ui.output_ui("class_list"),
             ui.panel_conditional(
                 "output.count > 0",
                 ui.tags.hr(),
@@ -66,6 +76,7 @@ app_ui = ui.page_fluid(
             ui.panel_conditional(
                 "output.count > 0",
                 ui.output_text("classification", container=ui.h2),
+                ui.output_text("routing", container=ui.p),
                 ui.output_ui("consistency_warnings"),
                 ui.div(
                     ui.tags.section(
@@ -76,6 +87,9 @@ app_ui = ui.page_fluid(
                     ui.tags.section(
                         ui.div(ui.h3("Wynik JSON"), ui.output_text("target"), class_="panel-head"),
                         ui.output_code("result_text"),
+                        ui.output_ui("checks"),
+                        ui.h3("Źródła pól", class_="trace-head"),
+                        ui.output_ui("trace_table"),
                         class_="viewer",
                     ),
                     class_="comparison",
@@ -93,6 +107,7 @@ app_ui = ui.page_fluid(
 def server(input: Inputs, output: Outputs, session: Session):
     documents = reactive.value(list[Document]())
     message = reactive.value("")
+    classes = reactive.value(load_classes())
     scratch = TemporaryDirectory(prefix="odwolania-")
     session.on_ended(lambda: scratch.cleanup())
 
@@ -103,6 +118,11 @@ def server(input: Inputs, output: Outputs, session: Session):
         documents.set([])
         scratch.cleanup()
         scratch = TemporaryDirectory(prefix="odwolania-")
+        loaded, error = load_classes()
+        classes.set((loaded, error))
+        if error:
+            message.set("Popraw plik klasy i spróbuj ponownie.")
+            return
         try:
             if input.mode() == "folder":
                 sources = folder_sources(input.folder())
@@ -111,7 +131,7 @@ def server(input: Inputs, output: Outputs, session: Session):
             with ui.Progress() as progress:
                 progress.set(message="Trwa analiza dokumentów…")
                 results = await asyncio.get_running_loop().run_in_executor(
-                    pdf_worker, analyze, sources, Path(scratch.name)
+                    pdf_worker, analyze, sources, Path(scratch.name), loaded
                 )
         except (ValueError, OSError) as error:
             message.set(str(error))
@@ -133,6 +153,10 @@ def server(input: Inputs, output: Outputs, session: Session):
     def notice():
         return message()
 
+    @render.ui
+    def class_list():
+        return class_panel(*classes())
+
     @output(suspend_when_hidden=False)
     @render.text
     def count():
@@ -148,15 +172,33 @@ def server(input: Inputs, output: Outputs, session: Session):
     @render.text
     def classification():
         result = selected().result
+        names = {definition.id: display_name(definition) for definition in classes()[0]}
         if result.error:
             return "Nie udało się odczytać dokumentu"
         if result.used_recovery:
             if result.label is None:
                 return "Brak wyniku po awaryjnej próbie odczytu regułami"
-            return f"{CLASS_NAMES.get(result.label, result.label)} (reguły awaryjne)"
+            return f"{names.get(result.label, result.label)} (reguły awaryjne)"
         if result.label is None:
             return "Dokument poza obsługiwanymi klasami"
-        return CLASS_NAMES.get(result.label, result.label.replace("_", " "))
+        return names.get(result.label, result.label.replace("_", " "))
+
+    @render.text
+    def routing():
+        return routing_reason(selected().result.trace)
+
+    @render.ui
+    def checks():
+        return warning_list(selected().result.trace)
+
+    @render.ui
+    def trace_table():
+        return field_table(selected().result.trace)
+
+    @reactive.effect
+    @reactive.event(input.trace_page)
+    def show_trace_page():
+        ui.update_select("page", selected=str(input.trace_page()))
 
     @render.text
     def target():
@@ -218,4 +260,7 @@ def server(input: Inputs, output: Outputs, session: Session):
 app = App(app_ui, server)
 
 if __name__ == "__main__":
+    parser = argparse.ArgumentParser(prog="python -m kio2json.gui", description="Local document viewer")
+    add_class_options(parser)
+    parser.parse_args(namespace=class_options)
     run_app(app, host="127.0.0.1", launch_browser=True, dev_mode=False)

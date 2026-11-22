@@ -8,18 +8,19 @@ from collections import defaultdict
 from collections.abc import Iterator
 from concurrent.futures import FIRST_COMPLETED, ProcessPoolExecutor, wait
 from concurrent.futures.process import BrokenProcessPool
-from contextlib import ExitStack, redirect_stderr
+from contextlib import ExitStack, nullcontext, redirect_stderr
 from dataclasses import dataclass, replace
 from io import StringIO
 from multiprocessing import get_context
 from pathlib import Path
 
 from .case_repair import Reading, case_repair_enabled, repairs
-from .class_config import DocumentClass, parse_classes
+from .class_config import ClassSources, DocumentClass, parse_classes
 from .endpoint_error import EndpointError
 from .ocr_budget import batch_deadline
 from .pdf_text import NoReadableTextError
 from .pipeline import process_pdf, uses_case_schema
+from .trace import build, recording
 
 
 def configure_logging(classes: list[DocumentClass]) -> None:
@@ -39,18 +40,33 @@ class Result:
     used_recovery: bool = False
     readings: tuple[Reading, ...] = ()
     custom_schema: bool = False
+    trace: dict | None = None
 
 
-def read_document(path: Path, classes: list[DocumentClass], *, batch_deadline: float | None = None) -> Result:
+def read_document(
+    path: Path, classes: list[DocumentClass], *, batch_deadline: float | None = None, explain: bool = False
+) -> Result:
     recoveries = []
     readings = [] if case_repair_enabled() else None
     try:
-        label, data = process_pdf(
-            path, classes=classes, on_recovery=recoveries.append, batch_deadline=batch_deadline, case_readings=readings
-        )
+        with recording() if explain else nullcontext() as events:
+            label, data = process_pdf(
+                path,
+                classes=classes,
+                on_recovery=recoveries.append,
+                batch_deadline=batch_deadline,
+                case_readings=readings,
+            )
         text = json.dumps(data, ensure_ascii=False, indent=2) + "\n" if data else ""
         custom = any(c.id == label and not uses_case_schema(c) for c in classes)
-        return Result(label, text, used_recovery=bool(recoveries), readings=tuple(readings or ()), custom_schema=custom)
+        return Result(
+            label,
+            text,
+            used_recovery=bool(recoveries),
+            readings=tuple(readings or ()),
+            custom_schema=custom,
+            trace=explained(label, data, events) if explain else None,
+        )
     except (EndpointError, NoReadableTextError) as error:
         return Result(None, "", str(error))
     except Exception as error:  # noqa: BLE001 - PDF and OCR backends raise unrelated types.
@@ -90,25 +106,34 @@ def reconcile_cases(names: list[Path], results: list[Result]) -> list[Result]:
     return output
 
 
+def explained(label: str | None, data: dict, events: dict) -> dict:
+    """Build the evidence trace. A failure here must not cost the document its JSON."""
+    try:
+        return build(label, data, events)
+    except Exception as error:  # noqa: BLE001 - the trace only reads values the extraction already produced
+        empty = {"class": label, "routing": None, "pages": None, "fields": [], "warnings": events["warnings"]}
+        return empty | {"trace_error": f"{type(error).__name__}: {error}"}
+
+
 _worker_classes: list[DocumentClass]
 
 
-def _init_worker(sources: dict[Path, bytes]) -> None:
+def _init_worker(sources: ClassSources) -> None:
     global _worker_classes
     _worker_classes = parse_classes(sources)
     configure_logging(_worker_classes)
 
 
-def _read_in_worker(path: Path, deadline: float) -> tuple[Result, str]:
+def _read_in_worker(path: Path, deadline: float, explain: bool = False) -> tuple[Result, str]:
     with redirect_stderr(StringIO()) as diagnostics:
         try:
-            result = read_document(path, _worker_classes, batch_deadline=deadline)
+            result = read_document(path, _worker_classes, batch_deadline=deadline, explain=explain)
         except SystemExit as error:
             result = Result(None, "", f"PDF worker requested exit ({error.code})")
     return result, diagnostics.getvalue()
 
 
-def read_batch(pdfs: list[Path], sources: dict[Path, bytes], workers: int) -> Iterator[Result]:
+def read_batch(pdfs: list[Path], sources: ClassSources, workers: int, *, explain: bool = False) -> Iterator[Result]:
     """Yield in input order so the parent owns all writes, including colliding stems."""
     os.environ["OMP_THREAD_LIMIT"] = "1"
     deadline = batch_deadline(len(pdfs))
@@ -130,7 +155,7 @@ def read_batch(pdfs: list[Path], sources: dict[Path, bytes], workers: int) -> It
                         1, mp_context=get_context("spawn"), initializer=_init_worker, initargs=(sources,)
                     )
                 )
-            pending[pool.submit(_read_in_worker, path, deadline)] = (pool, index)
+            pending[pool.submit(_read_in_worker, path, deadline, explain)] = (pool, index)
 
         for _ in range(min(workers, len(pdfs))):
             submit_next()

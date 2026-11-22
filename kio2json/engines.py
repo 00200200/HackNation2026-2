@@ -4,9 +4,13 @@ from collections import Counter
 from collections.abc import Callable
 from functools import partial
 
+from . import trace
 from .class_config import DocumentClass, OutputField
 from .model_pages import AlternateOCR
 from .output_schema import scalar_value
+from .validators import check_record
+
+MISSING = object()
 
 
 def labelled(field: OutputField, text: str, *, item: bool = False):
@@ -112,6 +116,8 @@ def extract(
     check_core_fields: bool = False,
 ) -> dict:
     values = None
+    failed = []
+    trace.note("declared_fields", definition.fields)
     fill_empty = definition.profile.mode in ("RL", "LR")
     for engine in definition.engines:
         if values is not None and not any(
@@ -138,6 +144,10 @@ def extract(
             candidate = ocr_python()
         else:
             candidate = bind_engine(engine, definition, model, alternate=alternate)(source)
+        trace.note_candidate(engine, candidate)
+        if definition.checked:
+            # A failed check empties the value unless the field keeps it, so a later engine can fill it.
+            failed += check_record(definition.fields, candidate)
         if values is None:
             values = candidate
         else:
@@ -150,6 +160,15 @@ def extract(
             if owner["typ"] == "osoba_prawna":
                 # A person's name belongs to an individual grantor or signer.
                 owner["imie_nazwisko"] = None
+    if failed:
+        # Report a failed check while the final record still holds that reading, or keeps the emptied place.
+        kept = []
+        for warning in failed:
+            final = trace.lookup(values, warning["field"], missing=MISSING)
+            emptied = warning["action"] == "null" and final is None
+            if (emptied or final == warning["value"]) and warning not in kept:
+                kept.append(warning)
+        trace.note_warnings(kept)
     if definition.engines == ["python"]:
         # Python extractors own their normalization and serialization order.
         return values

@@ -21,6 +21,12 @@ behind the faktczyfejk Caddy; deploy in `docs/deploy.md`. Its upload calls `kio2
 
 The jury can run the batch CLI and upload UI locally with the root Compose file. [Docker instructions](README.md#run-with-docker-compose)
 
+A new document class needs one TOML file. `--classes PATH` and `--enable ID` add classes to the three organizer
+classes in the CLI and viewer. A class file can declare weighted routing cues with a threshold and named checks
+(`nip`, `regon`, `pesel`, `iban`, `date_range`, `one_of`). `python -m kio2json.classes new` writes a class file from a sample PDF.
+The viewer lists the loaded classes, the cue that chose each class, failed checks and each field's source;
+`--explain DIR` writes the same trace to a folder outside `--output`. Example: `examples/classes/accession.toml`.
+
 ## Last eval
 
 Main `f7f3ee9` ran with local rules and two PDF workers. Both scores below use the same predictions and original references. The difference is UZP F1 minus historical strict F1.
@@ -82,6 +88,7 @@ Two and four grant JSONs matched exactly. The ten organizer grants remained exac
 | Improve receipt routing and recover damaged party names on development inputs | Open |
 | Confirm the long-string similarity function with UZP and record the Stage II weights | Open |
 | Promote HackNation2026 PR #48 to `prod` after the faktczyfejk demo, so the doc2json.pl Caddy block survives a redeploy | Open |
+| #61: case-folder checks in the viewer and trace; opt-in OCR repair from sibling documents, measured on both corpus dev splits | Claude (config-classes-case) |
 
 ## Decisions
 
@@ -207,3 +214,4 @@ These runs used local rules with the three endpoint variables unset. The two loc
 - 22.11.2026 · Codex · Added a Python 3.13 jury install and 150-PDF CLI comparison for Windows x64, Linux x64 and macOS in `ab3c8fa`. GitHub blocked all three jobs before checkout due to account billing. The run produced no timings. [Run record](evals/results/jury-batch.json)
 - 22.11.2026 · Codex · Implemented the UZP scorer and retained historical strict micro F1 on `feat/uzp-metric` (#59).
 - 22.11.2026 · Codex · Added local jury Compose services and the signed task rules for #60. Compose configuration validated. Docker Desktop did not answer its health probe, so container byte parity is pending.
+- 22.11.2026 · Claude · #62 classes from one TOML file (`--classes`, `--enable`, weighted cues, named checks, `python -m kio2json.classes new`), and the #40 trace from `feat/explain` (`--explain DIR`, viewer class list, routing cue, field sources). 1791 tests pass. The CLI wrote the same bytes as main `11008c5` for all 226 organizer PDFs (196 training, 30 scans), and the full training eval at `f6cc108` scored 1.000 micro F1 with every target met · branch `claude/config-classes-case-ab8189`

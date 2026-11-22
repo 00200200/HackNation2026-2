@@ -3,18 +3,14 @@
 import re
 from decimal import Decimal
 
-from stdnum import iban
-from stdnum.pl import nip, pesel, regon
-
 from .class_config import DocumentClass, OutputField
 from .output_schema import normalize
+from .validators import CHECKSUMS, iban_valid
 
 NOTICE_FORMATS = {
     "numer_bzp": re.compile(r"[0-9]{4}/BZP[0-9]{8}(?:/[0-9]{2})?"),
     "numer_ted": re.compile(r"[0-9]{6}-[0-9]{4}"),
 }
-
-IDENTIFIER_CHECKS = {"nip": nip.is_valid, "pesel": pesel.is_valid, "regon": regon.is_valid}
 
 
 def _validate(field: OutputField, key: str, value, *, appeal: bool):
@@ -32,10 +28,9 @@ def _validate(field: OutputField, key: str, value, *, appeal: bool):
     if field.normalizer:
         if normalize(field.normalizer, value) != value:
             return None
-        # For a normalized 26-digit NRB, compare the actual IBAN digits. A residue check also accepts 00 for 97.
-        if field.normalizer == "account_number" and value[:2] != iban.calc_check_digits("PL" + value):
+        if field.normalizer == "account_number" and not iban_valid(value):
             return None
-        if (check := IDENTIFIER_CHECKS.get(field.normalizer)) and not check(value):
+        if (check := CHECKSUMS.get(field.normalizer)) and not check(value):
             return None
     if appeal and key in NOTICE_FORMATS and not NOTICE_FORMATS[key].fullmatch(value):
         return None
