@@ -32,20 +32,25 @@ The CLI reads and routes each document locally, then runs the rules for that cla
 
 ## Results
 
-<p align="center"><img src="docs/readme/results.png" alt="Keyless UZP micro-F1 results, with exact values and source files in the table below" width="100%"></p>
+These field scores come from the keyless CLI on merged main at `725765b`, with two workers. Both private corpora contain real documents and are not distributed. [Merged-main measurements](evals/results/merged-main-725765b.json)
 
-| Dataset | PDFs | UZP micro F1 | Strict micro F1 | Source |
-|---|---:|---:|---:|---|
-| Organizer training (synthetic) | 196 | 1.0000 | 1.0000 | [Result](https://github.com/00200200/HackNation2026-2/blob/35b1d0159b580268d10aaebbbd6ce7c01aeb2911/evals/results/latest.json) |
-| Organizer scans | 30 | 1.0000 | 0.9974 | [Result](https://github.com/00200200/HackNation2026-2/blob/35b1d0159b580268d10aaebbbd6ce7c01aeb2911/evals/results/organizer-scans.json) |
-| Local corpus 1, all | 39 | 0.9231 | 0.8900 | [Result](https://github.com/00200200/HackNation2026-2/blob/35b1d0159b580268d10aaebbbd6ce7c01aeb2911/evals/results/ocr-alternatives.json) |
-| Local corpus 2, dev | 39 | 0.9244 | 0.8951 | [Result](https://github.com/00200200/HackNation2026-2/blob/35b1d0159b580268d10aaebbbd6ce7c01aeb2911/evals/results/ocr-alternatives.json) |
+| Dataset | PDFs | UZP micro F1 | Strict micro F1 |
+|---|---:|---:|---:|
+| Organizer synthetic training, printed account prefixes | 196 | 1.0000 | 1.0000 |
+| Organizer scans | 30 | 1.0000 | 0.9974 |
+| Fixed synthetic layout variants | 240 | 0.9512 | 0.9264 |
+| Case-linked synthetic documents, development | 112 | 0.9729 | 0.9667 |
+| Case-linked synthetic documents, reserved | 96 | 0.7923 | 0.7705 |
+| Private corpus 1, development | 22 | 0.9286 | 0.8821 |
+| Private corpus 2, development | 39 | 0.9244 | 0.8951 |
 
-The public training score uses the account prefixes printed in the PDFs. The local rows report the `fast` Tesseract arm of the OCR-alternatives experiment. All four rows used local rules without a model endpoint. UZP accepts approximate matches for five long fields. Our scorer uses normalized Levenshtein similarity for those fields. The strict column uses the project's earlier scoring method. [Scoring rules](https://github.com/00200200/HackNation2026-2/issues/59) · [Evaluation method](docs/readme/reference.md#measure)
+On organizer scans, 29 of 30 outputs matched the reference JSON exactly, including after a serial retry of the remaining scan. A separate mixed batch of 90 native PDFs and two copies of the 30 scans took 343.53 seconds, with 148 of 150 outputs exact. UZP allows approximate matches on five long fields. The UZP column uses normalized Levenshtein similarity for those fields. The strict column uses the project's earlier scoring method. [Batch results](evals/results/merged-main-725765b.json) · [Scoring rules](https://github.com/00200200/HackNation2026-2/issues/59)
 
-Run `make eval-cases` for the paired native/scan benchmark. The rules recovered all four development bank letters. The three reserved history and detail layouts still missed all 12 PDFs. [Case families and scores](docs/readme/reference.md#case-linked-benchmark)
+Each case-linked document has a native and a scanned rendering. The receipt router at `b5cdc5b` recognized all four development bank letters. On a second blind evaluation of the reserved split, correct routes rose from 82 to 88 of 96 and UZP F1 rose from 0.7923 to 0.8159. The six newly routed PDFs comprised two transaction histories, two operation details and two order details. Each still had field errors. Exact outputs stayed at 41 of 96. [Case scores](evals/results/case-transfer-routing.json)
 
-On five held-out cases in a ten-appeal two-column benchmark, field F1 was 0.9700 with native text and 0.8925 with forced OCR. Unlabelled procurement titles remained missing. [Field results and limits](evals/results/two-column-appeals.json)
+On eight reserved synthetic sole-trader mandates, the grantor reader recovered all eight personal names and tax IDs. It missed the business and signer names on all eight. [Grantor field results](evals/results/sole-trader-grantors.md)
+
+On five held-out cases in a separate ten-appeal, two-column benchmark, field F1 was 0.9700 with native text and 0.8925 with forced OCR. Unlabelled procurement titles remained missing. [Two-column results](evals/results/two-column-appeals.json) · [Pipeline diagram (PDF)](docs/pipeline/pipeline.pdf)
 
 ## Quick start
 

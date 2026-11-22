@@ -42,6 +42,9 @@ def date_pattern(separator: str) -> str:
     )
 
 
+# Compare Polish routing cues without changing the text used for field extraction.
+POLISH_FOLD = str.maketrans("ąćęłńóśźż", "acelnoszz")
+
 DATE = date_pattern(r"[-/.]")
 DATE_RE = re.compile(DATE)
 
