@@ -9,16 +9,17 @@ from pathlib import Path
 
 from . import appeal, bank_transfer, ocr_extract, power_of_attorney
 from .accounts import normalize_account
-from .appeal_layout import apply_appeal_blocks, party_inventory, read_role_columns, restore_party_columns
+from .appeal_layout import apply_appeal_blocks, form_columns, party_inventory, read_role_columns, restore_party_columns
 from .case_repair import Reading, printed_readings
 from .class_config import DocumentClass, load_classes, route
 from .classify import incomplete_booking_scan, resembles_appeal_heading
 from .engines import extract
 from .grant_certificates import add_certificate_signers
 from .model_pages import AlternateOCR
-from .ocr_accounts import AccountEvidence, account_evidence, normalize_receipt
+from .ocr_accounts import AccountEvidence, account_evidence, disputed_account_cells, normalize_receipt
 from .ocr_budget import RereadExpired, document_budget, remaining_ms
-from .ocr_grant_register import verified_pages
+from .ocr_choices import verify_cells
+from .ocr_grant_register import disputed_register_cells, verified_pages
 from .ocr_signatures import recover_board_stamp
 from .pdf_text import (
     DEFAULT_OCR_ENGINE,
@@ -138,6 +139,8 @@ def _document_rules(definition, pdf_path, pages, ocr_pages, boxes, engine, selec
             title = reread_title(pdf_path, boxes, fields["tytul"])
             if title is not None:
                 fields["tytul"] = title
+        if rules_first and boxes:
+            verify_cells(pdf_path, disputed_account_cells, record, boxes)
         return record
     if definition.extractor is appeal.extract:
         if ocr_pages and rules_first:
@@ -148,6 +151,8 @@ def _document_rules(definition, pdf_path, pages, ocr_pages, boxes, engine, selec
         else:
             record = appeal.extract(join_pages(pages))
         apply_appeal_blocks(record, blocks)
+        if rules_first and boxes:
+            verify_cells(pdf_path, disputed_register_cells, record, boxes)
         return record
     if definition.extractor is power_of_attorney.extract:
         if ocr_pages:
@@ -156,6 +161,8 @@ def _document_rules(definition, pdf_path, pages, ocr_pages, boxes, engine, selec
         else:
             record = power_of_attorney.extract(join_pages(pages))
         power_of_attorney.apply_grant_blocks(record, blocks, join_pages(pages))
+        if rules_first and boxes:
+            verify_cells(pdf_path, disputed_register_cells, record, boxes)
         if definition.profile.mode == "RL":
             _grant_signers(pdf_path, record, pages, ocr_pages, engine)
         return record
@@ -238,6 +245,10 @@ def _process(
             if engine != engines[0] and not remaining_ms(1):
                 raise RereadExpired
             primary, ocr_pages, boxes = read(engine)
+            if primary and 1 not in ocr_pages and page_sizes.get(1):
+                first = form_columns(primary[0], boxes, page_sizes[1][0])
+                if first != primary[0]:
+                    primary = [first, *primary[1:]]
             pages, definition, accounts = _read_receipt(
                 primary,
                 pdf_path,
@@ -317,7 +328,7 @@ def _process(
                 and definition.profile.gap_scope == "incomplete"
             )
             blocks = (
-                party_inventory(boxes, page_sizes)
+                party_inventory(boxes, page_sizes, appeal_cards=definition.extractor is appeal.extract)
                 if definition.extractor in (appeal.extract, power_of_attorney.extract)
                 and definition.profile.rules_first
                 else []
@@ -335,6 +346,7 @@ def _process(
                 ocr_python=python_rules,
                 alternate=alternate if definition.profile.dual_ocr else None,
                 model_text=join_pages(primary) if pages is not primary else None,
+                first_page=primary[0] if primary else None,
                 check_core_fields=check_core_fields,
             )
             if definition.extractor is power_of_attorney.extract and not definition.profile.keyed:

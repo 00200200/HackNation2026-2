@@ -75,3 +75,54 @@ def verified_pages(pdf: Path, pages: list[str], boxes: list[WordBox]) -> list[st
         # Rendering or recognizing an optional crop must preserve the primary reading.
         return pages
     return result
+
+
+def disputed_register_cells(record, boxes):
+    from .ocr_choices import LENGTHS, Cell, shape
+    from .receipt_layout import word_rows
+
+    # Bind the printed number to one extracted owner. A duplicated value or a
+    # second printed occurrence cannot transfer a correction between parties.
+    owners = defaultdict(list)
+
+    def collect(value):
+        if isinstance(value, list):
+            for child in value:
+                collect(child)
+        elif isinstance(value, dict):
+            for key, item in value.items():
+                if key in LENGTHS and item is not None:
+                    owners[key, str(item)].append(value)
+                elif isinstance(item, (dict, list)):
+                    collect(item)
+
+    collect(record)
+    cells = []
+    for page in sorted({w.page for w in boxes}):
+        rows, height = word_rows(boxes, page)
+        for previous, row in zip([[]] + rows, rows):
+            for i, (label, box) in enumerate(itertools.pairwise(row)):
+                field = label.text.rstrip(":").lower()
+                if field not in LENGTHS or not 0 <= box.x0 - label.x1 <= 2 * height:
+                    continue
+                raw = box.text.rstrip(",.;:")
+                if re.fullmatch(r"[0-9]+(?:-[0-9]+)+", raw):
+                    raw = raw.replace("-", "")
+                if not shape(field, raw) or len(owners[field, raw]) != 1:
+                    continue
+                if i + 2 < len(row) and row[i + 2].text[:1] in "*Xx" and row[i + 2].x0 - box.x1 < height:
+                    continue
+                party = owners[field, raw][0]
+                names = {str(party[k]).casefold().strip(" :,;") for k in ("nazwa", "imie_nazwisko") if party.get(k)}
+                names.discard("")
+                left = " ".join(w.text for w in row[:i]).casefold().strip(" :,;")
+                above = " ".join(w.text for w in previous).casefold().strip(" :,;")
+                adjacent = i > 0 and all(0 <= b.x0 - a.x1 <= 2 * height for a, b in itertools.pairwise(row[: i + 1]))
+                if (left in names and adjacent) or (
+                    above in names
+                    and i == 0
+                    and abs(previous[0].x0 - label.x0) <= height
+                    and row[0].y0 - previous[0].y1 <= 2 * height
+                ):
+                    cells.append(Cell(party, field, raw, [box]))
+    return cells

@@ -8,7 +8,7 @@ from datetime import date
 
 from .appeal import PLACE_DATE_RE, REASONS
 from .appeal_charges import ACTS
-from .common import DATE, MONTHS, squash, to_iso
+from .common import MONTHS, date_pattern, squash, to_iso
 
 # One character maps to one character, so matches retain the source-page offsets.
 _ACCENTS = str.maketrans("ąćęłńóśźżĄĆĘŁŃÓŚŹŻ", "acelnoszzACELNOSZZ")
@@ -36,7 +36,7 @@ _OMISSION = r"(?:zaniecha\w*|brak\w*)\s*:?\s*(?:\([1Il]\)\s*)?"
 for omission, positive in ((7, 1), (8, 3), (10, 9)):
     _CUES[omission] = rf"(?:{_OMISSION}(?:{_CUES[positive]})|{_CUES[omission]})"
 _ACT = re.compile("|".join(rf"(?P<r{key}>\b(?:{expr}))" for key, expr in _CUES.items()), re.IGNORECASE)
-_DAY = DATE.translate(_ACCENTS).replace(r"[.\-]", r"[./\-]\s*")
+_DAY = date_pattern(r"[-/.][ \t]*").translate(_ACCENTS)
 _WHEN = re.compile(
     rf"\b(?:w\s+dniu|dnia|pismem\s+z|zawiadomieni\w*\s+z|opublikowan\w*)\s+(?P<day>{_DAY})",
     re.IGNORECASE,
