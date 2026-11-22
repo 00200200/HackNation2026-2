@@ -3,8 +3,18 @@
 import re
 
 from .appeal_captions import CARD_HEAD, descriptive_role
-from .appeal_charges import ACTS, CHARGE, FILING, NEXT_ITEM, act_date, first_sentence, prose_action, sentences
-from .common import ATTORNEY_RE, DATE, EMAIL_RE, LOWER, PERSON, UPPER, registry_ids, squash, to_iso
+from .appeal_charges import (
+    ACTS,
+    CHARGE,
+    FILING,
+    NEXT_ITEM,
+    act_date,
+    first_sentence,
+    prose_action,
+    raw_sentences,
+    sentences,
+)
+from .common import ATTORNEY_RE, DATE, DATE_RE, EMAIL_RE, LOWER, PERSON, UPPER, registry_ids, squash, to_iso
 from .personal_names import nominative, same_nominal_form
 
 # Canonical descriptions from data/uzp/oczekiwane-json/czynnosc_powod_id_dict.md.
@@ -59,6 +69,17 @@ PARTIES_END_RE = re.compile(
 # The sentence must open with these words: the same phrase inside a subordinate clause
 # ("mimo że Zamawiający w dniu ...") describes some other act.
 ACTION_RE = re.compile(rf"(?:^|(?<=[.;:] ))Zamawiający\s+w\s+dniu\s+({DATE})")
+# Other openings of the same sentence. They are tried only when the one above finds no act, so a document
+# that reads correctly with the printed wording keeps its act.
+_BUYER_THEN_DATE = r"Zamawiający(?:,\s+w\s+dniu|,?\s+dnia)\s+"
+_DATE_THEN_BUYER = rf"(?:W\s+dniu|Dnia)\s+(?=(?:{DATE})(?:\s+(?:r\.|roku))?,?\s+Zamawiający\b)"
+REWORDED_ACTION_RE = re.compile(rf"(?:^|(?<=[.;:] ))(?:{_BUYER_THEN_DATE}|{_DATE_THEN_BUYER})({DATE})")
+# "r." abbreviates "roku", yet a capital letter after it reads as a new sentence. When a sentence opens with
+# the date, the buyer or the appellant after it is still the subject of that sentence ("Pismem z dnia
+# 5 maja 2034 r. Zamawiający odrzucił ..."). A date that ends a sentence keeps its break.
+YEAR_ABBREVIATION_RE = re.compile(
+    rf"(?:^|(?<=[.;:!?] ))((?:W\s+dniu|Dnia|\w+\s+z\s+dnia)\s+{DATE})\s+r\.(?=\s+(?:Zamawiając|Odwołując)\w*)"
+)
 FIRST_CHARGE_HEADING = re.compile(
     r"(?im)^[ \t]*(?:zarzut (?:pierwszy|(?:nr )?1|I)|pierwszy zarzut)[ \t]*[:.)–—-]?[ \t]*$"
 )
@@ -82,6 +103,36 @@ ALLEGATIONS_START_RE = re.compile(r"Zaskarżonym\s+czynnościom|Zarzut\s+nr\s+1\
 FIRST_ITEM_RE = re.compile(r"polegających\s+na:\s*1\)\s*(.+?);")
 FIRST_ALLEGATION_RE = re.compile(r"Zarzut\s+nr\s+1\b(.+?)(?=Zarzut\s+nr\s+2|$)")
 STATUTE_DATE_RE = re.compile(rf"\b(?:ustaw\w*|rozporządzeni\w*|dyrektyw\w*)\s+z\s+dnia\s+{DATE}", re.IGNORECASE)
+# The first charge, as a heading or inline ("Zarzut 1: ...", "Zarzut nr. 1", "ZARZUT NR 1", "Zarzut I"). The
+# numeral keeps its case: "zarzut i wniosek" is not a heading.
+FIRST_CHARGE_MENTION = re.compile(
+    r"\b(?i:zarzut)\s+(?:(?i:nr)\.?\s*)?(?:1|I|(?i:pierwszy))\b|\b(?i:pierwszy\s+zarzut)\b"
+)
+# The introduction ends where the first charge, the petition or the argument begins: the account of the
+# challenged act stands above it.
+INTRODUCTION_END = (
+    ALLEGATIONS_START_RE,
+    FIRST_CHARGE_MENTION,
+    CHARGE,
+    re.compile(r"Wobec\s+powyższego|\buzasadnienie\b", re.IGNORECASE),
+)
+# An act sentence that no anchored pattern recognises sits between the filing sentence and the second
+# list item or the charges. It names the buyer or the appellant, or it is the first item of the listed acts.
+# A date there still belongs to a statute, a ruling, a deadline, a submission, a notice in the BZP, a
+# payment or the filing itself when one of these words leads up to it. The publication of the SWZ, the OPZ
+# or the draft contract is an act, so "opublikowanej w dniu" does not skip a date, and the provisions of
+# a contract or of the SWZ ("postanowienia umowy") are not a ruling.
+ACT_SEGMENT_START_RE = re.compile(rf"{FILING.pattern}|wnoszę\s+o\s*:", re.IGNORECASE)
+ACT_SEGMENT_LIMIT = 1500
+NOT_ACT_DATE_RE = re.compile(
+    r"(?:(?:ustaw|rozporządzeni|dyrektyw|wyrok|uchwa[łl]|termin|upływ|wniesion|wniesieni|złożon|wszczęt"
+    r"|faktur|płatnoś|Biuletyn|Dziennik)\w*|\bBZP\b|\bTED\b|Dz\.\s*U\.)[^.;]{0,40}$"
+    r"|postanowieni\w*\s+(?:(?:KIO|Izby|Krajowej|Prezesa|Sądu)\b[^.;]{0,40}?)?z\s+dnia\s+$",
+    re.IGNORECASE,
+)
+PARTY_RE = re.compile(r"Zamawiając|Odwołując")
+FIRST_ITEM_MARKER_RE = re.compile(r"(?:^|\s)1[.)]\s")
+CONTRAST_RE = re.compile(r",\s*(?:a|ale|lecz|natomiast|po czym|mimo że|czy)\b", re.IGNORECASE)
 
 
 # Nested fields belong to the current party. Any other labelled line starts
@@ -686,6 +737,52 @@ def _opening_account(text: str) -> tuple[str | None, int | None] | None:
     return None
 
 
+def _main_clause(sentence: str) -> str:
+    """What follows a contrast or a question ("..., a ...", "..., mimo że ...", "..., czy ...") is another event."""
+    return CONTRAST_RE.split(sentence, maxsplit=1)[0]
+
+
+def _act_sentence(sentence: str, day: str | None, opening: str) -> tuple[str | None, int] | None:
+    """Date and act of a sentence that states the challenged act, or None when it names no act.
+
+    The date stays empty when the first charge (`opening`) explicitly names another act.
+    """
+    reason = _reason(_main_clause(sentence))
+    if reason is None:
+        return None
+    explicit = opening.lstrip(" :–—-")
+    for charge_reason, pattern in ACTS.items():
+        if charge_reason != reason and re.match(pattern, explicit, re.IGNORECASE):
+            return None, charge_reason
+    return day, reason
+
+
+def _first_end(text: str, patterns, start: int = 0, stop: int | None = None) -> int:
+    """Offset of the earliest match of any pattern in text[start:stop], or `stop` when none matches."""
+    stop = len(text) if stop is None else stop
+    return min((m.start() for pattern in patterns if (m := pattern.search(text, start, stop))), default=stop)
+
+
+def _anchored_act(text: str, opening: str) -> tuple[str | None, int] | None:
+    """The act of the last sentence that opens with the buyer and a date and names an act.
+
+    The printed wording is read first, anywhere in the introduction: a document that reads correctly with it
+    keeps its act. The other openings are read only above the first charge, where the account of the act stands.
+    """
+    scopes = (
+        (ACTION_RE, ALLEGATIONS_START_RE.split(squash(text), maxsplit=1)[0]),
+        (REWORDED_ACTION_RE, squash(text[: _first_end(text, INTRODUCTION_END)])),
+    )
+    for pattern, scope in scopes:
+        for action in reversed(list(pattern.finditer(scope))):
+            sentence = scope[action.start() :]
+            if year := YEAR_ABBREVIATION_RE.match(sentence):
+                sentence = f"{year[1]} roku{sentence[year.end() :]}"
+            if found := _act_sentence(first_sentence(sentence), to_iso(action.group(1)), opening):
+                return found
+    return None
+
+
 def _challenged_action(text: str) -> tuple[str | None, int | None]:
     """Use a dated first charge, otherwise its introductory account of the challenged act."""
     flat = squash(text)
@@ -700,17 +797,8 @@ def _challenged_action(text: str) -> tuple[str | None, int | None]:
         return account
 
     introduction = ALLEGATIONS_START_RE.split(flat, maxsplit=1)[0]
-    for action in reversed(list(ACTION_RE.finditer(introduction))):
-        sentence = first_sentence(introduction[action.start() :])
-        action_reason = _reason(
-            re.split(r",\s*(?:a|ale|lecz|natomiast|po czym|mimo że)\b", sentence, maxsplit=1, flags=re.IGNORECASE)[0]
-        )
-        if action_reason:
-            explicit = opening.lstrip(" :–—-")
-            for charge_reason, pattern in ACTS.items():
-                if charge_reason != action_reason and re.match(pattern, explicit, re.IGNORECASE):
-                    return None, charge_reason
-            return to_iso(action.group(1)), action_reason
+    if found := _anchored_act(text, opening):
+        return found
     item = FIRST_ITEM_RE.search(introduction)
     if item:
         item_opening = first_sentence(item.group(1))
@@ -732,6 +820,55 @@ def _challenged_action(text: str) -> tuple[str | None, int | None]:
             return first
         return None, reason
     return _form_action(text) or prose_action(text)
+
+
+def _clause_at(text: str, offset: int) -> tuple[int, str]:
+    """Where the sentence that holds the offset starts, and its main clause (empty when the offset is not in it)."""
+    start = 0
+    for piece in raw_sentences(text):
+        if offset < start + len(piece) + 1:
+            break
+        start += len(piece) + 1
+    main = _main_clause(piece)
+    return start, squash(main) if offset - start < len(main) else ""
+
+
+def fill_action_date(record: dict, text: str) -> None:
+    """Date the first challenged act from the opening when no sentence anchored on the buyer and a date names it.
+
+    Runs on an `extract` result whose date is empty. An act that `_challenged_action` read from an anchored
+    sentence or from the account above the first charge stays as it judged it: an empty date there is
+    deliberate, for example when the first charge names another act.
+    The sentence that names the act sets the reason too, as an anchored sentence does: in the organizer's scan
+    wording the first list item is right where the charge text points at another act.
+    """
+    action = record["OdwolanieKIO"]
+    start = ACT_SEGMENT_START_RE.search(text)
+    if action["czynnosc_dzien"] or not start or start.start() > _first_end(text, INTRODUCTION_END):
+        return
+    flat = squash(text)
+    charge = FIRST_ALLEGATION_RE.search(flat)
+    opening = first_sentence(charge.group(1)) if charge else ""
+    if _opening_account(text) is not None or _anchored_act(text, opening):
+        return
+    stop = _first_end(text, (*INTRODUCTION_END, NEXT_ITEM), start.end(), start.end() + ACT_SEGMENT_LIMIT)
+    segment = YEAR_ABBREVIATION_RE.sub(r"\1 roku", squash(text[start.end() : stop]))
+    for match in DATE_RE.finditer(segment):
+        day = to_iso(match[0])
+        if not day or (action["data"] and day >= action["data"]):
+            continue
+        if NOT_ACT_DATE_RE.search(segment[max(0, match.start() - 60) : match.start()]):
+            continue
+        # Only the main clause of the date's own sentence can tie it to an act of the buyer.
+        clause_start, clause = _clause_at(segment, match.start())
+        # The act is named by the buyer or the appellant, or it is the first of the listed acts.
+        named = PARTY_RE.search(clause) or FIRST_ITEM_MARKER_RE.search(segment, max(0, clause_start - 4), match.start())
+        found = _act_sentence(clause, day, opening) if named else None
+        if found:
+            found_day, reason = found
+            if found_day:
+                action.update(czynnosc_dzien=found_day, czynnosc_powod_id=reason, czynnosc_opis=REASONS[reason])
+            return
 
 
 def _procurement(text: str) -> dict:

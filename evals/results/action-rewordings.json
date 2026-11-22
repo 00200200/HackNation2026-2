@@ -1,0 +1,339 @@
+{
+ "appeals": 60,
+ "wordings": {
+  "printed": {
+   "date": {
+    "right": 60
+   },
+   "reason": {
+    "right": 60
+   },
+   "misses": []
+  },
+  "W dniu D Zamawiający": {
+   "date": {
+    "right": 60
+   },
+   "reason": {
+    "right": 60
+   },
+   "misses": []
+  },
+  "Dnia D Zamawiający": {
+   "date": {
+    "right": 60
+   },
+   "reason": {
+    "right": 60
+   },
+   "misses": []
+  },
+  "Zamawiający dnia D": {
+   "date": {
+    "right": 60
+   },
+   "reason": {
+    "right": 60
+   },
+   "misses": []
+  },
+  "Zamawiający, w dniu D,": {
+   "date": {
+    "right": 60
+   },
+   "reason": {
+    "right": 60
+   },
+   "misses": []
+  }
+ },
+ "fallback_only": {
+  "printed": {
+   "date": {
+    "right": 60
+   },
+   "reason": {
+    "right": 60
+   },
+   "misses": []
+  },
+  "W dniu D Zamawiający": {
+   "date": {
+    "right": 58,
+    "empty": 2
+   },
+   "reason": {
+    "right": 58,
+    "wrong": 2
+   },
+   "misses": [
+    {
+     "case": "przyklad_42",
+     "date": "2026-06-23",
+     "gold_date": "2026-06-23",
+     "reason": 12,
+     "gold_reason": 4,
+     "before": {
+      "date": null,
+      "reason": 12
+     }
+    },
+    {
+     "case": "przyklad_46",
+     "date": null,
+     "gold_date": "2026-06-12",
+     "reason": 5,
+     "gold_reason": 5,
+     "before": {
+      "date": null,
+      "reason": 5
+     }
+    },
+    {
+     "case": "przyklad_54",
+     "date": "2026-05-06",
+     "gold_date": "2026-05-06",
+     "reason": 12,
+     "gold_reason": 4,
+     "before": {
+      "date": "2026-05-06",
+      "reason": 12
+     }
+    },
+    {
+     "case": "przyklad_60",
+     "date": null,
+     "gold_date": "2026-08-28",
+     "reason": 5,
+     "gold_reason": 5,
+     "before": {
+      "date": null,
+      "reason": 5
+     }
+    }
+   ]
+  },
+  "Dnia D Zamawiający": {
+   "date": {
+    "right": 58,
+    "empty": 2
+   },
+   "reason": {
+    "right": 58,
+    "wrong": 2
+   },
+   "misses": [
+    {
+     "case": "przyklad_42",
+     "date": "2026-06-23",
+     "gold_date": "2026-06-23",
+     "reason": 12,
+     "gold_reason": 4,
+     "before": {
+      "date": null,
+      "reason": 12
+     }
+    },
+    {
+     "case": "przyklad_46",
+     "date": null,
+     "gold_date": "2026-06-12",
+     "reason": 5,
+     "gold_reason": 5,
+     "before": {
+      "date": null,
+      "reason": 5
+     }
+    },
+    {
+     "case": "przyklad_54",
+     "date": "2026-05-06",
+     "gold_date": "2026-05-06",
+     "reason": 12,
+     "gold_reason": 4,
+     "before": {
+      "date": "2026-05-06",
+      "reason": 12
+     }
+    },
+    {
+     "case": "przyklad_60",
+     "date": null,
+     "gold_date": "2026-08-28",
+     "reason": 5,
+     "gold_reason": 5,
+     "before": {
+      "date": null,
+      "reason": 5
+     }
+    }
+   ]
+  },
+  "Zamawiający dnia D": {
+   "date": {
+    "right": 58,
+    "empty": 2
+   },
+   "reason": {
+    "right": 58,
+    "wrong": 2
+   },
+   "misses": [
+    {
+     "case": "przyklad_42",
+     "date": "2026-06-23",
+     "gold_date": "2026-06-23",
+     "reason": 12,
+     "gold_reason": 4,
+     "before": {
+      "date": null,
+      "reason": 12
+     }
+    },
+    {
+     "case": "przyklad_46",
+     "date": null,
+     "gold_date": "2026-06-12",
+     "reason": 5,
+     "gold_reason": 5,
+     "before": {
+      "date": null,
+      "reason": 5
+     }
+    },
+    {
+     "case": "przyklad_54",
+     "date": "2026-05-06",
+     "gold_date": "2026-05-06",
+     "reason": 12,
+     "gold_reason": 4,
+     "before": {
+      "date": "2026-05-06",
+      "reason": 12
+     }
+    },
+    {
+     "case": "przyklad_60",
+     "date": null,
+     "gold_date": "2026-08-28",
+     "reason": 5,
+     "gold_reason": 5,
+     "before": {
+      "date": null,
+      "reason": 5
+     }
+    }
+   ]
+  },
+  "Zamawiający, w dniu D,": {
+   "date": {
+    "right": 58,
+    "empty": 2
+   },
+   "reason": {
+    "right": 58,
+    "wrong": 2
+   },
+   "misses": [
+    {
+     "case": "przyklad_42",
+     "date": "2026-06-23",
+     "gold_date": "2026-06-23",
+     "reason": 12,
+     "gold_reason": 4,
+     "before": {
+      "date": null,
+      "reason": 12
+     }
+    },
+    {
+     "case": "przyklad_46",
+     "date": null,
+     "gold_date": "2026-06-12",
+     "reason": 5,
+     "gold_reason": 5,
+     "before": {
+      "date": null,
+      "reason": 5
+     }
+    },
+    {
+     "case": "przyklad_54",
+     "date": "2026-05-06",
+     "gold_date": "2026-05-06",
+     "reason": 12,
+     "gold_reason": 4,
+     "before": {
+      "date": "2026-05-06",
+      "reason": 12
+     }
+    },
+    {
+     "case": "przyklad_60",
+     "date": null,
+     "gold_date": "2026-08-28",
+     "reason": 5,
+     "gold_reason": 5,
+     "before": {
+      "date": null,
+      "reason": 5
+     }
+    }
+   ]
+  }
+ },
+ "baseline": {
+  "printed": {
+   "date": {
+    "right": 60
+   },
+   "reason": {
+    "right": 60
+   }
+  },
+  "W dniu D Zamawiający": {
+   "date": {
+    "empty": 57,
+    "right": 3
+   },
+   "reason": {
+    "empty": 30,
+    "wrong": 10,
+    "right": 20
+   }
+  },
+  "Dnia D Zamawiający": {
+   "date": {
+    "empty": 57,
+    "right": 3
+   },
+   "reason": {
+    "empty": 30,
+    "wrong": 10,
+    "right": 20
+   }
+  },
+  "Zamawiający dnia D": {
+   "date": {
+    "empty": 57,
+    "right": 3
+   },
+   "reason": {
+    "empty": 30,
+    "wrong": 10,
+    "right": 20
+   }
+  },
+  "Zamawiający, w dniu D,": {
+   "date": {
+    "empty": 57,
+    "right": 3
+   },
+   "reason": {
+    "empty": 30,
+    "wrong": 10,
+    "right": 20
+   }
+  }
+ }
+}

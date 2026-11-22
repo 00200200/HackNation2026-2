@@ -164,7 +164,9 @@ def _document_rules(definition, pdf_path, pages, ocr_pages, boxes, engine, selec
         elif ocr_pages:
             record = ocr_extract.extract_appeal(pages, ocr_pages)
         else:
-            record = appeal.extract(join_pages(pages))
+            text = join_pages(pages)
+            record = appeal.extract(text)
+            appeal.fill_action_date(record, text)
         apply_appeal_blocks(record, blocks)
         if rules_first and boxes:
             verify_cells(pdf_path, disputed_register_cells, record, boxes)
