@@ -299,17 +299,49 @@ def test_an_expired_ocr_budget_is_recorded_and_not_cached(tmp_path, monkeypatch)
     assert len(calls) == 2
 
 
-def test_a_damaged_lzma_entry_is_explained(tmp_path):
+@pytest.mark.parametrize(("codec", "method"), [("lzma", "ZIP_LZMA"), ("bz2", "ZIP_BZIP2")])
+def test_an_lzma_or_bzip2_entry_is_refused_before_decoding(tmp_path, codec, method):
     import zipfile
 
-    buffer = BytesIO()
-    with ZipFile(buffer, "w", compression=zipfile.ZIP_LZMA) as bundle:
+    pytest.importorskip(codec)
+    with ZipFile(tmp_path / "u.zip", "w", compression=getattr(zipfile, method)) as bundle:
         bundle.writestr("s/a.pdf", b"%PDF-1.4 " * 100)
-    raw = bytearray(buffer.getvalue())
-    raw[30 + len("s/a.pdf") + 4] = 0xFF  # damage the first LZMA property byte
-    (tmp_path / "u.zip").write_bytes(raw)
-    with pytest.raises(ValueError, match="rozpakować"):
+    with pytest.raises(ValueError, match="metodą, której nie obsługujemy"):
         upload_sources("sprawa", [{"name": "u.zip", "datapath": str(tmp_path / "u.zip")}], tmp_path)
+
+
+def test_a_zip_variant_zipfile_cannot_open_is_explained(tmp_path, monkeypatch):
+    def newer(*_):
+        raise NotImplementedError("zip file version 9.9")
+
+    monkeypatch.setattr(gui_files, "ZipFile", newer)
+    with pytest.raises(ValueError, match="wariantu ZIP"):
+        upload_sources("sprawa", [{"name": "u.zip", "datapath": str(tmp_path / "u.zip")}], tmp_path)
+
+
+def test_a_windows_separator_is_not_taken_for_a_unicode_name():
+    from zipfile import ZipInfo
+
+    raw = "s\\Pełnomocnictwo.pdf".encode("cp852").decode("cp437")
+    entry = ZipInfo(raw.replace("\\", "/"))  # What zipfile builds on Windows.
+    entry.orig_filename = raw
+    assert gui_files.entry_name(entry) == "s\\Pełnomocnictwo.pdf"
+    assert gui_files.entry_name(ZipInfo(raw)) == "s\\Pełnomocnictwo.pdf"  # On macOS and Linux the name stays.
+
+
+def test_snapshots_are_hashed_only_for_the_cache(tmp_path, monkeypatch):
+    import hashlib
+
+    source = tmp_path / "a.pdf"
+    source.write_bytes(b"%PDF one")
+    hashed = []
+    monkeypatch.setattr(gui_files, "_results", type(gui_files._results)())
+    monkeypatch.setattr(hashlib, "file_digest", lambda file, name: hashed.append(name) or hashlib.sha256(file.read()))
+    monkeypatch.setattr(gui_files, "read_document", lambda *_, **__: Result(None))
+    analyze([(Path("sprawa/a.pdf"), source)], tmp_path, [], "")
+    assert hashed == []
+    analyze([(Path("sprawa/b.pdf"), source)], tmp_path, [], "key")
+    assert hashed == ["sha256"]
 
 
 def test_the_upload_limit_stops_a_second_zip_before_unpacking(tmp_path, monkeypatch):
@@ -326,6 +358,7 @@ def test_the_cache_key_covers_every_kio_setting(monkeypatch):
     from kio2json import gui
 
     monkeypatch.delenv("KIO_CLASSES_DIR", raising=False)
+    monkeypatch.delenv("KIO_LLM_OUTPUT", raising=False)
     before = gui.load_classes()[2]
     monkeypatch.setenv("KIO_LLM_OUTPUT", "spans")
     assert gui.load_classes()[2] != before
@@ -392,14 +425,13 @@ pattern = '^NIP:[ \t]*(\d+)$'
 
 def test_a_damaged_entry_gets_a_polish_message_and_a_disk_error_keeps_its_own(tmp_path, monkeypatch):
     import errno
-    import shutil
 
     upload = zip_upload(tmp_path, {"s1/a.pdf": b"%PDF-1.4"})
-    monkeypatch.setattr(shutil, "copyfileobj", lambda *_: (_ for _ in ()).throw(OSError("bad data")))
+    monkeypatch.setattr(gui_files, "bounded_copy", lambda *_: (_ for _ in ()).throw(OSError("bad data")))
     with pytest.raises(ValueError, match="Nie udało się rozpakować s1/a.pdf"):
         upload_sources("sprawa", [upload], tmp_path)
     full = OSError(errno.ENOSPC, "No space left on device")
-    monkeypatch.setattr(shutil, "copyfileobj", lambda *_: (_ for _ in ()).throw(full))
+    monkeypatch.setattr(gui_files, "bounded_copy", lambda *_: (_ for _ in ()).throw(full))
     with pytest.raises(OSError, match="No space left"):
         upload_sources("sprawa", [upload], tmp_path)
 
@@ -517,7 +549,8 @@ def test_a_link_changed_after_the_check_cannot_redirect_the_copy(tmp_path, monke
     monkeypatch.setattr(gui_files, "opened_path", swap_after_check)
     (copies := tmp_path / "copies").mkdir()
     read = {name.name: path.read_bytes() for name, path in folder_sources("sprawa", root, copies)}
-    assert set(read.values()) == {b"%PDF-inside"}
+    assert read == {"pismo.pdf": b"%PDF-inside", "skrot.pdf": b"%PDF-inside"}
+    assert link.resolve() == (outside / "obcy.pdf").resolve()  # The swap happened after the check.
 
 
 def test_a_forged_upload_path_outside_the_session_upload_folder_is_refused(tmp_path):
@@ -593,3 +626,59 @@ def test_a_real_shiny_upload_passes_the_upload_folder_check_and_the_folder_itsel
             upload_sources("sprawa", folder, tmp_path, uploads)
     finally:
         manager.rm_upload_dir()
+
+
+def test_a_zip_bomb_is_refused_before_it_is_unpacked(tmp_path):
+    import zipfile
+
+    with ZipFile(tmp_path / "u.zip", "w", compression=zipfile.ZIP_DEFLATED) as bundle:
+        bundle.writestr("s/bomb.pdf", b"%PDF-1.4" + b"\0" * (4 << 20))  # 4 MB of zeros pack into a few KB.
+    with pytest.raises(ValueError, match="razy większy niż w archiwum"):
+        upload_sources("sprawa", [{"name": "u.zip", "datapath": str(tmp_path / "u.zip")}], tmp_path)
+    assert not list(tmp_path.glob("zip0-*.pdf"))
+
+
+def test_a_zip_with_too_many_entries_is_refused(tmp_path, monkeypatch):
+    monkeypatch.setattr(gui_files, "ZIP_MAX_ENTRIES", 2)
+    upload = zip_upload(tmp_path, {"s/a.pdf": b"%PDF", "s/b.pdf": b"%PDF", "s/c.txt": b"x"})
+    with pytest.raises(ValueError, match="pozycji"):
+        upload_sources("sprawa", [upload], tmp_path)
+
+
+def test_a_stream_longer_than_its_limit_is_refused_while_copying():
+    copy = BytesIO()
+    assert gui_files.bounded_copy(BytesIO(b"12345"), copy, 5) == 5
+    with pytest.raises(ValueError, match="Przekroczono limit"):
+        gui_files.bounded_copy(BytesIO(b"123456"), BytesIO(), 5)
+
+
+@SYMLINKS
+def test_a_folder_root_is_refused_where_the_system_cannot_name_an_open_file(tmp_path, monkeypatch):
+    from kio2json.gui_files import folder_sources
+
+    (tmp_path / "root" / "sprawa").mkdir(parents=True)
+    (tmp_path / "root" / "sprawa" / "a.pdf").write_bytes(b"%PDF-1.4")
+    monkeypatch.setattr(gui_files, "opened_path", lambda descriptor: None)
+    with pytest.raises(ValueError, match="bezpiecznie"):
+        folder_sources("sprawa", tmp_path / "root", tmp_path)
+
+
+def test_a_snapshot_that_cannot_be_read_back_fails_alone(tmp_path, monkeypatch):
+    import hashlib
+
+    first, second = tmp_path / "a.pdf", tmp_path / "b.pdf"
+    first.write_bytes(b"%PDF one")
+    second.write_bytes(b"%PDF two")
+    calls = []
+
+    def flaky(file, name):
+        calls.append(name)
+        if len(calls) == 1:
+            raise OSError("readback failed")
+        return hashlib.sha256(file.read())
+
+    monkeypatch.setattr(gui_files, "_results", type(gui_files._results)())
+    monkeypatch.setattr(hashlib, "file_digest", flaky)
+    monkeypatch.setattr(gui_files, "read_document", lambda *_, **__: Result("appeal"))
+    documents = analyze([(Path("s/a.pdf"), first), (Path("s/b.pdf"), second)], tmp_path, [], "key")
+    assert [document.result.error for document in documents] == ["readback failed", None]

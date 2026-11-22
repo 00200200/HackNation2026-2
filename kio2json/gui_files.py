@@ -15,7 +15,7 @@ from dataclasses import dataclass, replace
 from io import BytesIO
 from pathlib import Path, PurePosixPath
 from time import monotonic
-from zipfile import ZIP_DEFLATED, BadZipFile, ZipFile, ZipInfo
+from zipfile import ZIP_DEFLATED, ZIP_STORED, BadZipFile, ZipFile, ZipInfo
 
 import pypdfium2 as pdfium
 from PIL import Image, ImageDraw
@@ -36,17 +36,17 @@ def validate_name(name: str) -> None:
 
 ZIP_MAX_FILES = 500
 ZIP_MAX_BYTES = 1 << 30
-try:
-    from lzma import LZMAError
-except ImportError:  # Python built without lzma: zipfile reports LZMA entries as unsupported instead.
-    LZMAError = RuntimeError
-# Reading an entry can fail on encryption, an unsupported method or damaged data in any of its codecs.
-UNREADABLE_ENTRY = (RuntimeError, NotImplementedError, BadZipFile, zlib.error, LZMAError, EOFError)
+ZIP_MAX_ENTRIES = 20 * ZIP_MAX_FILES
+# A PDF's streams are compressed already; a much higher ratio marks a ZIP bomb, not a document.
+ZIP_MAX_RATIO = 100
+# Reading an entry can fail on encryption or on damaged data.
+UNREADABLE_ENTRY = (RuntimeError, NotImplementedError, BadZipFile, zlib.error, EOFError)
 
 
 def entry_name(entry: ZipInfo) -> str:
     """Decode a name the way archivers write it: UTF-8 flag or Unicode path field, else UTF-8 or code page 852."""
-    if entry.flag_bits & 0x800 or entry.filename != entry.orig_filename:
+    # On Windows zipfile turns "\\" into "/" in the name; that is not a Unicode path field.
+    if entry.flag_bits & 0x800 or entry.filename.replace("\\", "/") != entry.orig_filename.replace("\\", "/"):
         return entry.filename
     raw = entry.orig_filename.encode("cp437")
     try:
@@ -68,10 +68,14 @@ def zip_sources(
     """
     try:
         bundle = ZipFile(archive_path)
+    except NotImplementedError:
+        raise ValueError("Tego wariantu ZIP nie da się otworzyć. Spakuj pliki ponownie zwykłym archiwum ZIP.") from None
     except (BadZipFile, UnicodeDecodeError, OSError):
         raise ValueError("Nie udało się otworzyć archiwum ZIP. Plik może być uszkodzony.") from None
     sources = []
     with bundle:
+        if len(bundle.infolist()) > ZIP_MAX_ENTRIES:
+            raise ValueError(f"Archiwum ma ponad {ZIP_MAX_ENTRIES} pozycji. Spakuj same foldery spraw z plikami PDF.")
         pdfs = []
         for index, entry in enumerate(bundle.infolist()):
             name = entry_name(entry)
@@ -81,12 +85,23 @@ def zip_sources(
             if name.lower().endswith(".pdf"):
                 if stat.S_ISLNK(entry.external_attr >> 16):
                     raise ValueError(f"Archiwum zawiera dowiązanie zamiast pliku: {name}. Spakuj same pliki PDF.")
+                # Some Python builds let the BZIP2 and LZMA decoders allocate past an entry's declared size.
+                if entry.compress_type not in (ZIP_STORED, ZIP_DEFLATED):
+                    raise ValueError(
+                        f"Plik {name} jest skompresowany metodą, której nie obsługujemy. Spakuj pliki zwykłym ZIP-em."
+                    )
+                if entry.file_size > max(1 << 20, ZIP_MAX_RATIO * entry.compress_size):
+                    raise ValueError(
+                        f"Plik {name} po rozpakowaniu byłby ponad {ZIP_MAX_RATIO} razy większy niż w archiwum. "
+                        "Tak nie zachowuje się żaden dokument PDF, więc archiwum odrzucono."
+                    )
                 pdfs.append((index, entry, name, parts))
         # zipfile reads no more than an entry's declared size, so checking those sizes first bounds the unpacking.
         if len(pdfs) > budget[0] or sum(entry.file_size for _, entry, _, _ in pdfs) > budget[1]:
             raise ValueError(
                 f"Przekroczono limit przesyłania: najwyżej {ZIP_MAX_FILES} plików PDF i 1 GB po rozpakowaniu."
             )
+        room = budget[1]
         for index, entry, name, parts in pdfs:
             # The entry's name is only checked and used for its JSON's name; the unpacked file gets a fixed one.
             for part in parts:
@@ -94,7 +109,7 @@ def zip_sources(
             target = directory / f"{prefix}-{index}.pdf"
             try:
                 with bundle.open(entry) as source, target.open("wb") as copy:
-                    shutil.copyfileobj(source, copy)
+                    room -= bounded_copy(source, copy, min(entry.file_size, room))
             except (*UNREADABLE_ENTRY, OSError) as error:
                 # A codec's data error has no errno; a full disk or a permission error keeps its own message.
                 if isinstance(error, OSError) and error.errno is not None:
@@ -104,6 +119,19 @@ def zip_sources(
                 ) from None
             sources.append((Path(*parts) if len(parts) > 1 else Path(case, *parts), target))
     return sources
+
+
+def bounded_copy(source, copy, limit: int) -> int:
+    """Copy at most `limit` bytes and return how many; a longer stream is refused while it is read."""
+    copied = 0
+    while chunk := source.read(1 << 20):
+        copied += len(chunk)
+        if copied > limit:
+            raise ValueError(
+                f"Przekroczono limit przesyłania: najwyżej {ZIP_MAX_FILES} plików PDF i 1 GB po rozpakowaniu."
+            )
+        copy.write(chunk)
+    return copied
 
 
 def upload_sources(
@@ -186,7 +214,12 @@ def checked_copy(path: Path, base: Path, target: Path) -> bool:
     The check and the copy use one open file, so a link changed in between cannot redirect the read.
     """
     with path.open("rb") as source:
-        real = opened_path(source.fileno()) or path.resolve(strict=True)
+        real = opened_path(source.fileno())
+        if real is None:
+            # Without a call that names the open file, the check could race the read, so the folder is refused.
+            raise ValueError(
+                "Ten system nie pozwala bezpiecznie czytać folderu --folder-root. Wgraj pliki PDF albo ZIP."
+            )
         if not real.is_relative_to(base):
             return False
         with target.open("wb") as copy:
@@ -274,11 +307,14 @@ def analyze(
         snapshots.append(snapshot)
         try:
             shutil.copyfile(path, snapshot)
-        except OSError as error:
+            key = None
+            if class_key:  # Hashed in chunks, so a large PDF is not held in memory a second time.
+                with snapshot.open("rb") as file:
+                    key = (hashlib.file_digest(file, "sha256").hexdigest(), class_key)
+        except OSError as error:  # A file that cannot be read fails alone; the other documents still run.
             results[index] = Result(None, error=str(error))
             continue
-        key = (hashlib.sha256(snapshot.read_bytes()).hexdigest(), class_key)
-        cached = _results.get(key) if class_key else None
+        cached = _results.get(key) if key else None
         if cached is None:
             pending.append((index, key))
         else:
