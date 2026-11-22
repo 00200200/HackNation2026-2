@@ -115,6 +115,8 @@ Two and four grant JSONs matched exactly. The ten organizer grants remained exac
 
 ## Log
 
+- 22.11.2026 · Claude · A model quote for an account may now leave out the printed country code; the value must still carry it (`cited_account` grounds from the digits on, as NIP and KRS do for their prefix). Span-only output is unchanged. CLI outputs of the rules profile for all 226 PDFs of `data/uzp/dane` (196 training, 30 scans) matched main `257a6af` byte for byte. Branch `claude/model-quote-printed-pl`.
+
 - 22.11.2026 · Codex · Raised the required page watchdog from 60 to 180 seconds and added one 150-dpi retry within the remaining OCR budget. Regression tests cover timeout recovery, immediate engine errors, budget exhaustion and word-box coordinates after resizing.
 
 - 22.11.2026 · Codex · Added case warnings and opt-in sibling OCR repair for #61. All 304 keyless outputs matched main byte for byte. UZP F1 stayed at 0.9231 on corpus 1 all, 0.9221 on corpus 1 dev and 0.9244 on corpus 2 dev. Training scored 1.000 with 196 exact outputs. The 30 singleton scans had 29 exact outputs and UZP F1 of 1.000. [Paired case measurements](evals/results/case-siblings.json)
