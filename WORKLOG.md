@@ -80,6 +80,7 @@ Two and four grant JSONs matched exactly. The ten organizer grants remained exac
 | Obtain an EU/EEA-only processing commitment for Mistral or deploy the same weights within the EEA | Deployment |
 | Score corpus 2 test once after the class rules and small-model profile are integrated | Coordinator |
 | Improve receipt routing and recover damaged party names on development inputs | Open |
+| Run PR #55's `trim_appeal` over the stored corpus 1 and corpus 2 predictions (the `pr55_method` recipe in `evals/results/uzp-metric.json`), then merge or close the PR | Corpus owner |
 | Confirm the long-string similarity function with UZP and record the Stage II weights | Open |
 | Promote HackNation2026 PR #48 to `prod` after the faktczyfejk demo, so the doc2json.pl Caddy block survives a redeploy | Open |
 
@@ -99,17 +100,19 @@ Two and four grant JSONs matched exactly. The ten organizer grants remained exac
 - 21.11.2026: delegated work and reviews (pre-commit review, pre-push judge) go to Codex workers through
   `/orchestrator`, not to Claude subagents.
 - 22.11.2026: scanned-appeal party names, law-firm and lawyer names and the procurement title lose OCR noise at their end
-  (a tail after a corporate legal form, trailing stray symbols) and are never replaced with null; only a value made of stray
-  symbols alone becomes null. Under the organizer's F1 (#59) a wrong value costs one FP, a missing one one FN, and a long
-  string matches from 80 % similarity, so null never beats a damaged value that is still close. This replaces the null gate of
-  the two #39 log lines of this date. Evidence: `evals/results/ocr-plausibility.json`.
+  (a tail after a corporate legal form, trailing stray symbols), so a value that is still close keeps its 80 % match under
+  the organizer's F1 (#59). A name becomes null only when it is scanner noise throughout (stray symbols and no letters;
+  mixed-case text with two or more stray-symbol tokens among mostly noise tokens; a law-firm name ending in a misread
+  lawyer surname): such a value cannot match, so null costs nothing when the reference holds a value (FP → FN) and gains
+  when it holds none (FP → TN). Titles are trim-only. This narrows the null gate of the two #39 log lines of this date,
+  which nulled any value with a stray symbol. Evidence: `evals/results/ocr-plausibility.json`.
 
 ## Log
 
 - 22.11.2026 · Codex · Added case warnings and opt-in sibling OCR repair for #61. All 304 keyless outputs matched main byte for byte. UZP F1 stayed at 0.9231 on corpus 1 all, 0.9221 on corpus 1 dev and 0.9244 on corpus 2 dev. Training scored 1.000 with 196 exact outputs. The 30 singleton scans had 29 exact outputs and UZP F1 of 1.000. [Paired case measurements](evals/results/case-siblings.json)
 - 22.11.2026 · Claude · #39: scanned-appeal party names and lawyer fields become null on stray scanner symbols, a low letter ratio or capitals noise after a lawyer's title; a capitals-noise tail after a legal form is cut unless it names another consortium member; titles are checked for stray symbols only. On the organizer template scan the appellant and law firm names are now null and the authority name ends at its legal form (checked by a direct CLI run; the template is not in the eval). Organizer scans 0.9974 → 0.9974, full training 1.000 → 1.000 (holdout 1.000), both against `4d91600`; the private dev corpora are not on this machine and were not measured · b2121b5
 - 22.11.2026 · Claude · #39: judge PASS on `c4b3d94` after two rounds of P2 fixes; pushed `fix/ocr-plausibility` with a PR to main. Left: a real-corpus check by the corpus owner before merge (dev corpora not on this machine).
-- 22.11.2026 · Claude · #39, PR #55: replaced the null gate with a trim (decision of this date; supersedes the two #39 lines above). All 30 organizer scan outputs are byte-identical to main (strict 0.9974, organizer rule 1.0000). On the template scan, three long strings under the organizer rule: main 0.500, null gate 0.800, trim 0.800. Injected damage, a stray `|` inside a value: main 1.000, null gate 0.000, trim 1.000. Full training 1.000 → 1.000 (holdout 1.000) and organizer scans 0.9974 → 0.9974 against `6ff2966`; the private dev corpora are not on this machine and were not measured · 959fa1f
+- 22.11.2026 · Claude · #39, PR #55: narrowed the null gate to trim first and null only names that are scanner noise throughout (decision of this date; supersedes the two #39 lines above). All 30 organizer scan outputs are byte-identical to main `328f705` (strict 0.9974, UZP 1.0000). On the template scan, three long strings under the UZP counting: main 0.500, null gate 0.800, this branch 0.800. Injected damage, a stray `|` inside a value: main 1.000, null gate 0.000, this branch 1.000. Full training UZP 1.000 (holdout 1.000, 196 documents) and organizer scans UZP 1.000, strict 0.997; the private dev corpora are not on this machine and were not measured, so the corpus owner's check is in Next · 621d2ba
 - 22.11.2026 · Codex · Grouped appeal and mandate word boxes by printed role and column. Added regressions for wrapped names, repeated stationery, extra appointees and principal-specific signatures.
 
 - 21.11.2026 · Codex · Added native span output for small models, local source validation and a bounded parallel CLI. Verified the native schema on the quantized local model and both regional API releases.
