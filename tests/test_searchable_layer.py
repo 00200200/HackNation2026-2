@@ -120,12 +120,7 @@ def test_displaced_digits_only_row_returns_to_its_printed_role(tmp_path):
     assert pdf_text.read_pages(path)[0].splitlines() == [row for _, row in rows]
 
 
-def test_truncated_account_can_recover_a_legible_invalid_printed_number(tmp_path, monkeypatch):
-    from kio2json import ocr_choices
-
-    # Verify the image evidence independently of time spent loading Tesseract on a busy host.
-    monkeypatch.setattr(ocr_choices, "monotonic", lambda: 0.0)
-
+def test_truncated_account_can_recover_a_legible_invalid_printed_number(tmp_path):
     # Synthetic bank documents can print a structurally complete, checksum-invalid number.
     printed = "PL" + ACCOUNT[:-1] + "8"
     rows = [(290, "Rachunek nadawcy"), (250, printed)]
