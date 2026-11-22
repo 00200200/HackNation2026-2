@@ -4,8 +4,9 @@ import base64
 import ntpath
 import os
 import shutil
+from collections import defaultdict
 from contextlib import closing
-from dataclasses import dataclass
+from dataclasses import dataclass, replace
 from io import BytesIO
 from pathlib import Path
 from zipfile import ZIP_DEFLATED, ZipFile
@@ -13,7 +14,8 @@ from zipfile import ZIP_DEFLATED, ZipFile
 import pypdfium2 as pdfium
 from shiny.types import FileInfo
 
-from .batch import Result, configure_logging, read_document
+from .batch import Result, configure_logging, read_document, reconcile_cases
+from .case_checks import CaseWarning, case_warnings
 from .class_config import load_classes
 from .ocr_budget import batch_deadline
 
@@ -60,6 +62,7 @@ class Document:
     name: Path
     snapshot: Path
     result: Result
+    warnings: tuple[CaseWarning, ...] = ()
 
 
 def analyze(sources: list[Source], directory: Path) -> list[Document]:
@@ -81,11 +84,20 @@ def analyze(sources: list[Source], directory: Path) -> list[Document]:
         try:
             shutil.copyfile(path, snapshot)
         except OSError as error:
-            result = Result(None, "", str(error))
+            result = Result(None, error=str(error))
         else:
             result = read_document(snapshot, classes, batch_deadline=deadline)
         documents.append(Document(name, snapshot, result))
-    return documents
+    names = [document.name for document in documents]
+    results = reconcile_cases(names, [document.result for document in documents])
+    warnings = defaultdict(list)
+    for warning in case_warnings(names, results):
+        for name in warning.documents:
+            warnings[name].append(warning)
+    return [
+        replace(document, result=result, warnings=tuple(warnings[document.name]))
+        for document, result in zip(documents, results, strict=True)
+    ]
 
 
 def archive(documents: list[Document]) -> bytes:

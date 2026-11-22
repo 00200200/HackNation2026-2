@@ -1,6 +1,5 @@
 """Bounded, pixel-supported corrections for an already localized identifier."""
 
-import re
 from collections import Counter
 from contextlib import ExitStack
 from dataclasses import dataclass
@@ -11,9 +10,9 @@ from time import monotonic
 import pdfplumber
 import pypdfium2 as pdfium
 from pdfplumber.utils.exceptions import PdfminerException
-from stdnum import iban
 from stdnum.pl import nip, pesel, regon
 
+from .accounts import normalize_account, valid_account
 from .ocr_budget import remaining_ms
 from .pdf_text import OCR_DPI, WordBox, _language_dir
 
@@ -32,14 +31,7 @@ class Cell:
 
 def shape(field: str, value: str) -> bool:
     if field in ACCOUNT_KEYS:
-        if re.fullmatch(r"[0-9]{26}", value):
-            return True
-        if not re.fullmatch(r"[A-Z]{2}[0-9]{2}[A-Z0-9]{11,30}", value) or "XX" in value[4:]:
-            return False
-        # Validate structure separately so a truncated or masked IBAN can never
-        # qualify for retention merely because both readings agree on its text.
-        probe = value[:2] + iban.calc_check_digits(value) + value[4:]
-        return iban.is_valid(probe, check_country=False)
+        return "XX" not in value[4:].upper() and normalize_account(value) == value
     return value.isascii() and value.isdigit() and len(value) in LENGTHS[field]
 
 
@@ -47,8 +39,7 @@ def valid(field: str, value: str) -> bool:
     if not shape(field, value):
         return False
     if field in ACCOUNT_KEYS:
-        account = value if value[:2].isalpha() else "PL" + value
-        return iban.is_valid(account, check_country=False) and account[2:4] == iban.calc_check_digits(account)
+        return valid_account(value)
     # KRS has no checksum. The existing register agreement pass owns this field.
     return field == "krs" or CHECKS[field](value)
 

@@ -1,0 +1,129 @@
+{
+  "baseline_commit": "6ff2966fb8e5a77b5ad4df6f7f2e7872a002afca",
+  "metric_commit": "6b34bc53d0f56dbabf7c752136f87c25ca5bf758",
+  "method": "Keyless CLI, two PDF workers. Both revisions read the same whole cases under neutral filenames. Each public scan had its own case folder. The branch ran with KIO_CASE_REPAIR=1. Unreconciled predictions were captured from the same worker results before the branch pass. Byte comparisons include empty negatives.",
+  "metric": "UZP rules from #59, using normalized Levenshtein at 80% for the five long strings. Strict F1 is the historical normalized leaf score.",
+  "datasets": {
+    "organizer_training": {
+      "pdfs": 196,
+      "uzp_micro_f1": {
+        "main": 1.0,
+        "branch_before_repair": 1.0,
+        "branch": 1.0
+      },
+      "strict_micro_f1": {
+        "main": 1.0,
+        "branch": 1.0
+      },
+      "exact_json": {
+        "main": 196,
+        "branch": 196
+      },
+      "branch_uzp_counts": {
+        "tp": 2032,
+        "fp": 0,
+        "fn": 0,
+        "tn": 284
+      },
+      "byte_matches_to_main": 196,
+      "outputs_changed_by_repair": 0
+    },
+    "organizer_scans": {
+      "pdfs": 30,
+      "uzp_micro_f1": {
+        "main": 1.0,
+        "branch_before_repair": 1.0,
+        "branch": 1.0
+      },
+      "strict_micro_f1": {
+        "main": 0.9974226804123711,
+        "branch": 0.9974226804123711
+      },
+      "exact_json": {
+        "main": 29,
+        "branch": 29
+      },
+      "branch_uzp_counts": {
+        "tp": 309,
+        "fp": 0,
+        "fn": 0,
+        "tn": 79
+      },
+      "byte_matches_to_main": 30,
+      "outputs_changed_by_repair": 0
+    },
+    "corpus_1_all": {
+      "pdfs": 39,
+      "uzp_micro_f1": {
+        "main": 0.9230769230769231,
+        "branch_before_repair": 0.9230769230769231,
+        "branch": 0.9230769230769231
+      },
+      "strict_micro_f1": {
+        "main": 0.8900308324768756,
+        "branch": 0.8900308324768756
+      },
+      "exact_json": {
+        "main": 18,
+        "branch": 18
+      },
+      "branch_uzp_counts": {
+        "tp": 270,
+        "fp": 19,
+        "fn": 26,
+        "tn": 173
+      },
+      "byte_matches_to_main": 39,
+      "outputs_changed_by_repair": 0
+    },
+    "corpus_1_dev": {
+      "pdfs": 22,
+      "uzp_micro_f1": {
+        "main": 0.922077922077922,
+        "branch_before_repair": 0.922077922077922,
+        "branch": 0.922077922077922
+      },
+      "strict_micro_f1": {
+        "main": 0.8739837398373984,
+        "branch": 0.8739837398373984
+      },
+      "exact_json": {
+        "main": 10,
+        "branch": 10
+      },
+      "branch_uzp_counts": {
+        "tp": 142,
+        "fp": 13,
+        "fn": 11,
+        "tn": 81
+      },
+      "byte_matches_to_main": 22,
+      "outputs_changed_by_repair": 0
+    },
+    "corpus_2_dev": {
+      "pdfs": 39,
+      "uzp_micro_f1": {
+        "main": 0.9243697478991597,
+        "branch_before_repair": 0.9243697478991597,
+        "branch": 0.9243697478991597
+      },
+      "strict_micro_f1": {
+        "main": 0.8951406649616368,
+        "branch": 0.8951406649616368
+      },
+      "exact_json": {
+        "main": 22,
+        "branch": 22
+      },
+      "branch_uzp_counts": {
+        "tp": 220,
+        "fp": 12,
+        "fn": 24,
+        "tn": 138
+      },
+      "byte_matches_to_main": 39,
+      "outputs_changed_by_repair": 0
+    }
+  },
+  "default": "Opt-in with KIO_CASE_REPAIR=1. Neither development split gained a field match."
+}

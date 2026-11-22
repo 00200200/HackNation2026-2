@@ -1,8 +1,8 @@
 """Batch CLI: python -m kio2json [--input DIR] [--output DIR]   (defaults: ./input, ./output)
 
 Writes one JSON per PDF at the same relative path and file stem. A document outside the three
-known classes gets an empty file. The keyed organizer profile retries failed documents with rules
-and continues with empty output if recovery fails. Other document errors give exit status 1.
+known classes gets {}. The keyed organizer profile retries failed documents with rules and writes {}
+if recovery fails. Other document errors write {} and give exit status 1.
 """
 
 import argparse
@@ -10,7 +10,8 @@ import os
 import sys
 from pathlib import Path
 
-from .batch import configure_logging, read_batch
+from .batch import configure_logging, read_batch, reconcile_cases
+from .case_repair import case_repair_enabled
 from .class_config import class_sources, parse_classes
 
 DEFAULT_WORKER_CAP = 4
@@ -42,7 +43,10 @@ def main() -> int:
     pdfs = sorted(p for p in args.input_dir.rglob("*") if p.suffix.lower() == ".pdf")
     failed = 0
     workers = args.workers or min(DEFAULT_WORKER_CAP, os.process_cpu_count() or 1)
-    for pdf, result in zip(pdfs, read_batch(pdfs, sources, workers), strict=True):
+    results = read_batch(pdfs, sources, workers)
+    if case_repair_enabled():
+        results = reconcile_cases([pdf.relative_to(args.input_dir) for pdf in pdfs], list(results))
+    for pdf, result in zip(pdfs, results, strict=True):
         if result.error:
             print(f"{pdf}: not processed ({result.error})", file=sys.stderr)
             failed += 1

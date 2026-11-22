@@ -8,671 +8,6 @@
   "method": "One frozen two-worker CLI baseline. Replayed the extra branch point on its outputs and OCR boxes. Matching branch points reused baseline bytes. Fresh CLI validated the changed PDFs in each arm. Compared identifiers with exact values and owner, including printed country prefixes. Owner records are complete transfer objects and individual complete appeal or mandate party records. The bootstrap samples complete cases 1,200 times with seed 87.",
   "families": "Disjoint source cases in the seeded schedule. Calibration families were single-column, reordered and two-column. No fitted model or corpus-based threshold tuning. Synonyms, alternative-formats and scan are held-out families; all are from the same generator. The printed-value retention path was assessed after the strict decoder ablation, so this is development evidence.",
   "printed_value_policy": "The alternative-only arm made zero changes in every cohort. The fast and best arms also retain a fully legible original that the earlier checksum normalizer discarded when the complete raw field has an independent owner binding and every crop symbol strongly agrees. No checksum-invalid alternative can correct any digit.",
-  "groups": {
-    "organizer-scans": {
-      "main": {
-        "docs": 30,
-        "uzp": 0.9885433715220949,
-        "strict": 0.9844155844155844,
-        "class_macro": 0.9807239455288613,
-        "exact_documents": 27,
-        "exact_owner_records": {
-          "tp": 55,
-          "extra": 3,
-          "missing": 4
-        },
-        "exact_identifier_hits": {
-          "nip": 29,
-          "krs": 17,
-          "pesel": 4,
-          "regon": 9,
-          "na_rachunek": 9,
-          "z_rachunku": 9
-        }
-      },
-      "fast": {
-        "uzp": 0.9885433715220949,
-        "strict": 0.9844155844155844,
-        "class_macro": 0.9807239455288613,
-        "exact_documents": 27,
-        "identical_bytes": 30,
-        "case_bootstrap_delta_95": [
-          0.0,
-          0.0
-        ],
-        "exact_owner_records": {
-          "tp": 55,
-          "extra": 3,
-          "missing": 4
-        },
-        "exact_identifier_hits": {
-          "nip": 29,
-          "krs": 17,
-          "pesel": 4,
-          "regon": 9,
-          "na_rachunek": 9,
-          "z_rachunku": 9
-        },
-        "eligible_pdfs": 0,
-        "eligible_by_field": {},
-        "crop_calls": {},
-        "expired_pdfs": 0,
-        "triggered_seconds": 0,
-        "mean_seconds_triggered": null,
-        "max_seconds_triggered": null,
-        "all_seconds": 0.18681899999999999,
-        "mean_recognition_ms_per_field": {},
-        "beam": {},
-        "retained": {},
-        "negative_rejected": 0,
-        "negative_literal_empty_objects": 0,
-        "negative_zero_bytes": 0
-      },
-      "best": {
-        "uzp": 0.9885433715220949,
-        "strict": 0.9844155844155844,
-        "class_macro": 0.9807239455288613,
-        "exact_documents": 27,
-        "identical_bytes": 30,
-        "case_bootstrap_delta_95": [
-          0.0,
-          0.0
-        ],
-        "exact_owner_records": {
-          "tp": 55,
-          "extra": 3,
-          "missing": 4
-        },
-        "exact_identifier_hits": {
-          "nip": 29,
-          "krs": 17,
-          "pesel": 4,
-          "regon": 9,
-          "na_rachunek": 9,
-          "z_rachunku": 9
-        },
-        "eligible_pdfs": 0,
-        "eligible_by_field": {},
-        "crop_calls": {},
-        "expired_pdfs": 0,
-        "triggered_seconds": 0,
-        "mean_seconds_triggered": null,
-        "max_seconds_triggered": null,
-        "all_seconds": 0.206324,
-        "mean_recognition_ms_per_field": {},
-        "beam": {},
-        "retained": {},
-        "negative_rejected": 0,
-        "negative_literal_empty_objects": 0,
-        "negative_zero_bytes": 0
-      }
-    },
-    "organizer-scans-recheck": {
-      "main": {
-        "docs": 30,
-        "uzp": 1.0,
-        "strict": 0.9974226804123711,
-        "class_macro": 1.0,
-        "exact_documents": 29,
-        "exact_owner_records": {
-          "tp": 58,
-          "extra": 1,
-          "missing": 1
-        },
-        "exact_identifier_hits": {
-          "nip": 29,
-          "krs": 18,
-          "pesel": 4,
-          "regon": 9,
-          "na_rachunek": 10,
-          "z_rachunku": 10
-        }
-      },
-      "fast": {
-        "uzp": 1.0,
-        "strict": 0.9974226804123711,
-        "class_macro": 1.0,
-        "exact_documents": 29,
-        "identical_bytes": 30,
-        "case_bootstrap_delta_95": [
-          0.0,
-          0.0
-        ],
-        "exact_owner_records": {
-          "tp": 58,
-          "extra": 1,
-          "missing": 1
-        },
-        "exact_identifier_hits": {
-          "nip": 29,
-          "krs": 18,
-          "pesel": 4,
-          "regon": 9,
-          "na_rachunek": 10,
-          "z_rachunku": 10
-        },
-        "eligible_pdfs": 0,
-        "eligible_by_field": {},
-        "crop_calls": {},
-        "expired_pdfs": 0,
-        "triggered_seconds": 0,
-        "mean_seconds_triggered": null,
-        "max_seconds_triggered": null,
-        "all_seconds": 0.08426,
-        "mean_recognition_ms_per_field": {},
-        "beam": {},
-        "retained": {},
-        "negative_rejected": 0,
-        "negative_literal_empty_objects": 0,
-        "negative_zero_bytes": 0
-      },
-      "best": {
-        "uzp": 1.0,
-        "strict": 0.9974226804123711,
-        "class_macro": 1.0,
-        "exact_documents": 29,
-        "identical_bytes": 30,
-        "case_bootstrap_delta_95": [
-          0.0,
-          0.0
-        ],
-        "exact_owner_records": {
-          "tp": 58,
-          "extra": 1,
-          "missing": 1
-        },
-        "exact_identifier_hits": {
-          "nip": 29,
-          "krs": 18,
-          "pesel": 4,
-          "regon": 9,
-          "na_rachunek": 10,
-          "z_rachunku": 10
-        },
-        "eligible_pdfs": 0,
-        "eligible_by_field": {},
-        "crop_calls": {},
-        "expired_pdfs": 0,
-        "triggered_seconds": 0,
-        "mean_seconds_triggered": null,
-        "max_seconds_triggered": null,
-        "all_seconds": 0.060293,
-        "mean_recognition_ms_per_field": {},
-        "beam": {},
-        "retained": {},
-        "negative_rejected": 0,
-        "negative_literal_empty_objects": 0,
-        "negative_zero_bytes": 0
-      }
-    },
-    "corpus1": {
-      "main": {
-        "docs": 39,
-        "uzp": 0.9230769230769231,
-        "strict": 0.8900308324768756,
-        "class_macro": 0.9180424522903822,
-        "exact_documents": 18,
-        "exact_owner_records": {
-          "tp": 41,
-          "extra": 25,
-          "missing": 25
-        },
-        "exact_identifier_hits": {
-          "na_rachunek": 7,
-          "z_rachunku": 7,
-          "nip": 14,
-          "krs": 14,
-          "pesel": 1,
-          "regon": 4
-        }
-      },
-      "fast": {
-        "uzp": 0.9230769230769231,
-        "strict": 0.8900308324768756,
-        "class_macro": 0.9180424522903822,
-        "exact_documents": 18,
-        "identical_bytes": 39,
-        "case_bootstrap_delta_95": [
-          0.0,
-          0.0
-        ],
-        "exact_owner_records": {
-          "tp": 41,
-          "extra": 25,
-          "missing": 25
-        },
-        "exact_identifier_hits": {
-          "na_rachunek": 7,
-          "z_rachunku": 7,
-          "nip": 14,
-          "krs": 14,
-          "pesel": 1,
-          "regon": 4
-        },
-        "eligible_pdfs": 0,
-        "eligible_by_field": {},
-        "crop_calls": {},
-        "expired_pdfs": 0,
-        "triggered_seconds": 0,
-        "mean_seconds_triggered": null,
-        "max_seconds_triggered": null,
-        "all_seconds": 0.065711,
-        "mean_recognition_ms_per_field": {},
-        "beam": {},
-        "retained": {},
-        "negative_rejected": 11,
-        "negative_literal_empty_objects": 0,
-        "negative_zero_bytes": 11
-      },
-      "best": {
-        "uzp": 0.9230769230769231,
-        "strict": 0.8900308324768756,
-        "class_macro": 0.9180424522903822,
-        "exact_documents": 18,
-        "identical_bytes": 39,
-        "case_bootstrap_delta_95": [
-          0.0,
-          0.0
-        ],
-        "exact_owner_records": {
-          "tp": 41,
-          "extra": 25,
-          "missing": 25
-        },
-        "exact_identifier_hits": {
-          "na_rachunek": 7,
-          "z_rachunku": 7,
-          "nip": 14,
-          "krs": 14,
-          "pesel": 1,
-          "regon": 4
-        },
-        "eligible_pdfs": 0,
-        "eligible_by_field": {},
-        "crop_calls": {},
-        "expired_pdfs": 0,
-        "triggered_seconds": 0,
-        "mean_seconds_triggered": null,
-        "max_seconds_triggered": null,
-        "all_seconds": 0.042095,
-        "mean_recognition_ms_per_field": {},
-        "beam": {},
-        "retained": {},
-        "negative_rejected": 11,
-        "negative_literal_empty_objects": 0,
-        "negative_zero_bytes": 11
-      }
-    },
-    "corpus2-dev": {
-      "main": {
-        "docs": 39,
-        "uzp": 0.9243697478991597,
-        "strict": 0.8951406649616368,
-        "class_macro": 0.948527346879887,
-        "exact_documents": 22,
-        "exact_owner_records": {
-          "tp": 32,
-          "extra": 15,
-          "missing": 16
-        },
-        "exact_identifier_hits": {
-          "nip": 4,
-          "krs": 7,
-          "pesel": 0,
-          "na_rachunek": 9,
-          "z_rachunku": 9,
-          "regon": 1
-        }
-      },
-      "fast": {
-        "uzp": 0.9243697478991597,
-        "strict": 0.8951406649616368,
-        "class_macro": 0.948527346879887,
-        "exact_documents": 22,
-        "identical_bytes": 39,
-        "case_bootstrap_delta_95": [
-          0.0,
-          0.0
-        ],
-        "exact_owner_records": {
-          "tp": 32,
-          "extra": 15,
-          "missing": 16
-        },
-        "exact_identifier_hits": {
-          "nip": 4,
-          "krs": 7,
-          "pesel": 0,
-          "na_rachunek": 9,
-          "z_rachunku": 9,
-          "regon": 1
-        },
-        "eligible_pdfs": 0,
-        "eligible_by_field": {},
-        "crop_calls": {},
-        "expired_pdfs": 0,
-        "triggered_seconds": 0,
-        "mean_seconds_triggered": null,
-        "max_seconds_triggered": null,
-        "all_seconds": 0.036975,
-        "mean_recognition_ms_per_field": {},
-        "beam": {},
-        "retained": {},
-        "negative_rejected": 11,
-        "negative_literal_empty_objects": 0,
-        "negative_zero_bytes": 11
-      },
-      "best": {
-        "uzp": 0.9243697478991597,
-        "strict": 0.8951406649616368,
-        "class_macro": 0.948527346879887,
-        "exact_documents": 22,
-        "identical_bytes": 39,
-        "case_bootstrap_delta_95": [
-          0.0,
-          0.0
-        ],
-        "exact_owner_records": {
-          "tp": 32,
-          "extra": 15,
-          "missing": 16
-        },
-        "exact_identifier_hits": {
-          "nip": 4,
-          "krs": 7,
-          "pesel": 0,
-          "na_rachunek": 9,
-          "z_rachunku": 9,
-          "regon": 1
-        },
-        "eligible_pdfs": 0,
-        "eligible_by_field": {},
-        "crop_calls": {},
-        "expired_pdfs": 0,
-        "triggered_seconds": 0,
-        "mean_seconds_triggered": null,
-        "max_seconds_triggered": null,
-        "all_seconds": 0.045421,
-        "mean_recognition_ms_per_field": {},
-        "beam": {},
-        "retained": {},
-        "negative_rejected": 11,
-        "negative_literal_empty_objects": 0,
-        "negative_zero_bytes": 11
-      }
-    },
-    "training": {
-      "main": {
-        "docs": 196,
-        "uzp": 1.0,
-        "strict": 1.0,
-        "class_macro": 1.0,
-        "exact_documents": 196,
-        "exact_owner_records": {
-          "tp": 347,
-          "extra": 0,
-          "missing": 0
-        },
-        "exact_identifier_hits": {
-          "nip": 189,
-          "regon": 123,
-          "krs": 176,
-          "pesel": 1,
-          "na_rachunek": 60,
-          "z_rachunku": 60
-        }
-      },
-      "fast": {
-        "uzp": 1.0,
-        "strict": 1.0,
-        "class_macro": 1.0,
-        "exact_documents": 196,
-        "identical_bytes": 196,
-        "case_bootstrap_delta_95": [
-          0.0,
-          0.0
-        ],
-        "exact_owner_records": {
-          "tp": 347,
-          "extra": 0,
-          "missing": 0
-        },
-        "exact_identifier_hits": {
-          "nip": 189,
-          "regon": 123,
-          "krs": 176,
-          "pesel": 1,
-          "na_rachunek": 60,
-          "z_rachunku": 60
-        },
-        "eligible_pdfs": 0,
-        "eligible_by_field": {},
-        "crop_calls": {},
-        "expired_pdfs": 0,
-        "triggered_seconds": 0,
-        "mean_seconds_triggered": null,
-        "max_seconds_triggered": null,
-        "all_seconds": 0,
-        "mean_recognition_ms_per_field": {},
-        "beam": {},
-        "retained": {},
-        "negative_rejected": 16,
-        "negative_literal_empty_objects": 0,
-        "negative_zero_bytes": 16
-      },
-      "best": {
-        "uzp": 1.0,
-        "strict": 1.0,
-        "class_macro": 1.0,
-        "exact_documents": 196,
-        "identical_bytes": 196,
-        "case_bootstrap_delta_95": [
-          0.0,
-          0.0
-        ],
-        "exact_owner_records": {
-          "tp": 347,
-          "extra": 0,
-          "missing": 0
-        },
-        "exact_identifier_hits": {
-          "nip": 189,
-          "regon": 123,
-          "krs": 176,
-          "pesel": 1,
-          "na_rachunek": 60,
-          "z_rachunku": 60
-        },
-        "eligible_pdfs": 0,
-        "eligible_by_field": {},
-        "crop_calls": {},
-        "expired_pdfs": 0,
-        "triggered_seconds": 0,
-        "mean_seconds_triggered": null,
-        "max_seconds_triggered": null,
-        "all_seconds": 0,
-        "mean_recognition_ms_per_field": {},
-        "beam": {},
-        "retained": {},
-        "negative_rejected": 16,
-        "negative_literal_empty_objects": 0,
-        "negative_zero_bytes": 16
-      }
-    },
-    "variants": {
-      "main": {
-        "docs": 240,
-        "uzp": 0.2960167714884696,
-        "strict": 0.28602305475504325,
-        "class_macro": 0.40487754267066806,
-        "exact_documents": 67,
-        "exact_owner_records": {
-          "tp": 7,
-          "extra": 77,
-          "missing": 340
-        },
-        "exact_identifier_hits": {
-          "nip": 44,
-          "krs": 44,
-          "pesel": 0,
-          "regon": 0,
-          "na_rachunek": 18,
-          "z_rachunku": 14
-        }
-      },
-      "fast": {
-        "uzp": 0.30525437864887406,
-        "strict": 0.2953890489913545,
-        "class_macro": 0.4154025091054705,
-        "exact_documents": 73,
-        "identical_bytes": 232,
-        "case_bootstrap_delta_95": [
-          0.0035921301699702313,
-          0.01579440112238134
-        ],
-        "exact_owner_records": {
-          "tp": 13,
-          "extra": 71,
-          "missing": 334
-        },
-        "exact_identifier_hits": {
-          "nip": 44,
-          "krs": 44,
-          "pesel": 0,
-          "regon": 0,
-          "na_rachunek": 24,
-          "z_rachunku": 21
-        },
-        "eligible_pdfs": 8,
-        "eligible_by_field": {
-          "z_rachunku": 7,
-          "na_rachunek": 6
-        },
-        "crop_calls": {
-          "z_rachunku": 7,
-          "na_rachunek": 6
-        },
-        "expired_pdfs": 0,
-        "triggered_seconds": 1.093447,
-        "mean_seconds_triggered": 0.136680875,
-        "max_seconds_triggered": 0.255385,
-        "all_seconds": 1.0969499999999999,
-        "mean_recognition_ms_per_field": {
-          "z_rachunku": 27.357142857142858,
-          "na_rachunek": 23.3
-        },
-        "beam": {
-          "z_rachunku/beam_hit": 7,
-          "z_rachunku/new": 0,
-          "z_rachunku/old": 7,
-          "z_rachunku/one": 7,
-          "na_rachunek/beam_hit": 6,
-          "na_rachunek/new": 0,
-          "na_rachunek/old": 6,
-          "na_rachunek/one": 6
-        },
-        "retained": {
-          "z_rachunku/retained/right": 7,
-          "na_rachunek/retained/right": 6
-        },
-        "negative_rejected": 60,
-        "negative_literal_empty_objects": 0,
-        "negative_zero_bytes": 60,
-        "profiles": {
-          "single-column": 0.41904761904761906,
-          "two-column": 0.20887728459530025,
-          "scan": 0.4449648711943794,
-          "synonyms": 0.1693121693121693,
-          "alternative-formats": 0.20833333333333334,
-          "reordered": 0.3497536945812808
-        }
-      },
-      "held_out_profiles": [
-        "synonyms",
-        "alternative-formats",
-        "scan"
-      ],
-      "held_out_docs": 120,
-      "held_out_main": 0.2619047619047619,
-      "held_out_fast": {
-        "uzp": 0.2809083263246426,
-        "strict": 0.28550512445095166,
-        "class_macro": 0.3726848440186686
-      },
-      "best": {
-        "uzp": 0.3045473508552357,
-        "strict": 0.2946685878962536,
-        "class_macro": 0.4146105605821246,
-        "exact_documents": 72,
-        "identical_bytes": 232,
-        "case_bootstrap_delta_95": [
-          0.003531797690256633,
-          0.014956932378275056
-        ],
-        "exact_owner_records": {
-          "tp": 12,
-          "extra": 72,
-          "missing": 335
-        },
-        "exact_identifier_hits": {
-          "nip": 44,
-          "krs": 44,
-          "pesel": 0,
-          "regon": 0,
-          "na_rachunek": 24,
-          "z_rachunku": 20
-        },
-        "eligible_pdfs": 8,
-        "eligible_by_field": {
-          "z_rachunku": 7,
-          "na_rachunek": 6
-        },
-        "crop_calls": {
-          "z_rachunku": 7,
-          "na_rachunek": 6
-        },
-        "expired_pdfs": 0,
-        "triggered_seconds": 1.468621,
-        "mean_seconds_triggered": 0.183577625,
-        "max_seconds_triggered": 0.238664,
-        "all_seconds": 1.472019,
-        "mean_recognition_ms_per_field": {
-          "z_rachunku": 51.971428571428575,
-          "na_rachunek": 48.15
-        },
-        "beam": {
-          "z_rachunku/beam_hit": 7,
-          "z_rachunku/new": 0,
-          "z_rachunku/old": 7,
-          "z_rachunku/one": 7,
-          "na_rachunek/beam_hit": 6,
-          "na_rachunek/new": 0,
-          "na_rachunek/old": 6,
-          "na_rachunek/one": 6
-        },
-        "retained": {
-          "z_rachunku/retained/right": 6,
-          "na_rachunek/retained/right": 6
-        },
-        "negative_rejected": 60,
-        "negative_literal_empty_objects": 0,
-        "negative_zero_bytes": 60,
-        "profiles": {
-          "single-column": 0.41904761904761906,
-          "two-column": 0.20887728459530025,
-          "scan": 0.4413145539906103,
-          "synonyms": 0.1693121693121693,
-          "alternative-formats": 0.20833333333333334,
-          "reordered": 0.3497536945812808
-        }
-      },
-      "held_out_best": {
-        "uzp": 0.27946127946127947,
-        "strict": 0.2840409956076135,
-        "class_macro": 0.3705211224175146
-      }
-    }
-  },
   "audit": {
     "single-column": {
       "docs": 8,
@@ -785,5 +120,429 @@
       60,
       60
     ]
+  },
+  "measurements": {
+    "organizer-scans": {
+      "documents": 30,
+      "arms": [
+        "main",
+        "fast",
+        "best"
+      ],
+      "uzp": [
+        0.9885433715220949,
+        0.9885433715220949,
+        0.9885433715220949
+      ],
+      "strict": [
+        0.9844155844155844,
+        0.9844155844155844,
+        0.9844155844155844
+      ],
+      "class_macro": [
+        0.9807239455288613,
+        0.9807239455288613,
+        0.9807239455288613
+      ],
+      "exact_documents": [
+        27,
+        27,
+        27
+      ],
+      "byte_parity": [
+        30,
+        30
+      ],
+      "main_owner_records": {
+        "tp": 55,
+        "extra": 3,
+        "missing": 4
+      },
+      "main_identifier_hits": {
+        "nip": 29,
+        "krs": 17,
+        "pesel": 4,
+        "regon": 9,
+        "na_rachunek": 9,
+        "z_rachunku": 9
+      },
+      "negatives_rejected": 0,
+      "literal_empty_objects": 0,
+      "zero_byte_outputs": 0,
+      "eligible_pdfs": 0,
+      "bootstrap_fast_delta_95": [
+        0.0,
+        0.0
+      ],
+      "extra_seconds_all_pdfs_fast": 0.1868
+    },
+    "organizer-scans-recheck": {
+      "documents": 30,
+      "arms": [
+        "main",
+        "fast",
+        "best"
+      ],
+      "uzp": [
+        1.0,
+        1.0,
+        1.0
+      ],
+      "strict": [
+        0.9974226804123711,
+        0.9974226804123711,
+        0.9974226804123711
+      ],
+      "class_macro": [
+        1.0,
+        1.0,
+        1.0
+      ],
+      "exact_documents": [
+        29,
+        29,
+        29
+      ],
+      "byte_parity": [
+        30,
+        30
+      ],
+      "main_owner_records": {
+        "tp": 58,
+        "extra": 1,
+        "missing": 1
+      },
+      "main_identifier_hits": {
+        "nip": 29,
+        "krs": 18,
+        "pesel": 4,
+        "regon": 9,
+        "na_rachunek": 10,
+        "z_rachunku": 10
+      },
+      "negatives_rejected": 0,
+      "literal_empty_objects": 0,
+      "zero_byte_outputs": 0,
+      "eligible_pdfs": 0,
+      "bootstrap_fast_delta_95": [
+        0.0,
+        0.0
+      ],
+      "extra_seconds_all_pdfs_fast": 0.0843
+    },
+    "corpus1": {
+      "documents": 39,
+      "arms": [
+        "main",
+        "fast",
+        "best"
+      ],
+      "uzp": [
+        0.9230769230769231,
+        0.9230769230769231,
+        0.9230769230769231
+      ],
+      "strict": [
+        0.8900308324768756,
+        0.8900308324768756,
+        0.8900308324768756
+      ],
+      "class_macro": [
+        0.9180424522903822,
+        0.9180424522903822,
+        0.9180424522903822
+      ],
+      "exact_documents": [
+        18,
+        18,
+        18
+      ],
+      "byte_parity": [
+        39,
+        39
+      ],
+      "main_owner_records": {
+        "tp": 41,
+        "extra": 25,
+        "missing": 25
+      },
+      "main_identifier_hits": {
+        "na_rachunek": 7,
+        "z_rachunku": 7,
+        "nip": 14,
+        "krs": 14,
+        "pesel": 1,
+        "regon": 4
+      },
+      "negatives_rejected": 11,
+      "literal_empty_objects": 0,
+      "zero_byte_outputs": 11,
+      "eligible_pdfs": 0,
+      "bootstrap_fast_delta_95": [
+        0.0,
+        0.0
+      ],
+      "extra_seconds_all_pdfs_fast": 0.0657
+    },
+    "corpus2-dev": {
+      "documents": 39,
+      "arms": [
+        "main",
+        "fast",
+        "best"
+      ],
+      "uzp": [
+        0.9243697478991597,
+        0.9243697478991597,
+        0.9243697478991597
+      ],
+      "strict": [
+        0.8951406649616368,
+        0.8951406649616368,
+        0.8951406649616368
+      ],
+      "class_macro": [
+        0.948527346879887,
+        0.948527346879887,
+        0.948527346879887
+      ],
+      "exact_documents": [
+        22,
+        22,
+        22
+      ],
+      "byte_parity": [
+        39,
+        39
+      ],
+      "main_owner_records": {
+        "tp": 32,
+        "extra": 15,
+        "missing": 16
+      },
+      "main_identifier_hits": {
+        "nip": 4,
+        "krs": 7,
+        "pesel": 0,
+        "na_rachunek": 9,
+        "z_rachunku": 9,
+        "regon": 1
+      },
+      "negatives_rejected": 11,
+      "literal_empty_objects": 0,
+      "zero_byte_outputs": 11,
+      "eligible_pdfs": 0,
+      "bootstrap_fast_delta_95": [
+        0.0,
+        0.0
+      ],
+      "extra_seconds_all_pdfs_fast": 0.037
+    },
+    "training": {
+      "documents": 196,
+      "arms": [
+        "main",
+        "fast",
+        "best"
+      ],
+      "uzp": [
+        1.0,
+        1.0,
+        1.0
+      ],
+      "strict": [
+        1.0,
+        1.0,
+        1.0
+      ],
+      "class_macro": [
+        1.0,
+        1.0,
+        1.0
+      ],
+      "exact_documents": [
+        196,
+        196,
+        196
+      ],
+      "byte_parity": [
+        196,
+        196
+      ],
+      "main_owner_records": {
+        "tp": 347,
+        "extra": 0,
+        "missing": 0
+      },
+      "main_identifier_hits": {
+        "nip": 189,
+        "regon": 123,
+        "krs": 176,
+        "pesel": 1,
+        "na_rachunek": 60,
+        "z_rachunku": 60
+      },
+      "negatives_rejected": 16,
+      "literal_empty_objects": 0,
+      "zero_byte_outputs": 16,
+      "eligible_pdfs": 0,
+      "bootstrap_fast_delta_95": [
+        0.0,
+        0.0
+      ],
+      "extra_seconds_all_pdfs_fast": 0
+    },
+    "variants": {
+      "documents": 240,
+      "arms": [
+        "main",
+        "fast",
+        "best"
+      ],
+      "uzp": [
+        0.2960167714884696,
+        0.30525437864887406,
+        0.3045473508552357
+      ],
+      "strict": [
+        0.28602305475504325,
+        0.2953890489913545,
+        0.2946685878962536
+      ],
+      "class_macro": [
+        0.40487754267066806,
+        0.4154025091054705,
+        0.4146105605821246
+      ],
+      "exact_documents": [
+        67,
+        73,
+        72
+      ],
+      "byte_parity": [
+        232,
+        232
+      ],
+      "main_owner_records": {
+        "tp": 7,
+        "extra": 77,
+        "missing": 340
+      },
+      "main_identifier_hits": {
+        "nip": 44,
+        "krs": 44,
+        "pesel": 0,
+        "regon": 0,
+        "na_rachunek": 18,
+        "z_rachunku": 14
+      },
+      "negatives_rejected": 60,
+      "literal_empty_objects": 0,
+      "zero_byte_outputs": 60,
+      "eligible_pdfs": 8,
+      "bootstrap_fast_delta_95": [
+        0.0035921301699702313,
+        0.01579440112238134
+      ],
+      "extra_seconds_all_pdfs_fast": 1.0969,
+      "held_out_profiles": [
+        "synonyms",
+        "alternative-formats",
+        "scan"
+      ],
+      "held_out_docs": 120,
+      "held_out_uzp": [
+        0.2619047619047619,
+        0.2809083263246426,
+        0.27946127946127947
+      ],
+      "held_out_fast_strict": 0.28550512445095166,
+      "held_out_fast_class_macro": 0.3726848440186686,
+      "fast_uzp_by_positive_profile": {
+        "single-column": 0.41904761904761906,
+        "two-column": 0.20887728459530025,
+        "scan": 0.4449648711943794,
+        "synonyms": 0.1693121693121693,
+        "alternative-formats": 0.20833333333333334,
+        "reordered": 0.3497536945812808
+      },
+      "fast_owner_records": {
+        "tp": 13,
+        "extra": 71,
+        "missing": 334
+      },
+      "fast_identifier_hits": {
+        "nip": 44,
+        "krs": 44,
+        "pesel": 0,
+        "regon": 0,
+        "na_rachunek": 24,
+        "z_rachunku": 21
+      },
+      "crop_experiment": {
+        "fast": {
+          "eligible_by_field": {
+            "z_rachunku": 7,
+            "na_rachunek": 6
+          },
+          "crop_calls": {
+            "z_rachunku": 7,
+            "na_rachunek": 6
+          },
+          "expired_pdfs": 0,
+          "retained": {
+            "z_rachunku/retained/right": 7,
+            "na_rachunek/retained/right": 6
+          },
+          "beam": {
+            "z_rachunku/beam_hit": 7,
+            "z_rachunku/new": 0,
+            "z_rachunku/old": 7,
+            "z_rachunku/one": 7,
+            "na_rachunek/beam_hit": 6,
+            "na_rachunek/new": 0,
+            "na_rachunek/old": 6,
+            "na_rachunek/one": 6
+          },
+          "mean_seconds_triggered": 0.136680875,
+          "max_seconds_triggered": 0.255385,
+          "mean_recognition_ms_per_field": {
+            "z_rachunku": 27.357142857142858,
+            "na_rachunek": 23.3
+          }
+        },
+        "best": {
+          "eligible_by_field": {
+            "z_rachunku": 7,
+            "na_rachunek": 6
+          },
+          "crop_calls": {
+            "z_rachunku": 7,
+            "na_rachunek": 6
+          },
+          "expired_pdfs": 0,
+          "retained": {
+            "z_rachunku/retained/right": 6,
+            "na_rachunek/retained/right": 6
+          },
+          "beam": {
+            "z_rachunku/beam_hit": 7,
+            "z_rachunku/new": 0,
+            "z_rachunku/old": 7,
+            "z_rachunku/one": 7,
+            "na_rachunek/beam_hit": 6,
+            "na_rachunek/new": 0,
+            "na_rachunek/old": 6,
+            "na_rachunek/one": 6
+          },
+          "mean_seconds_triggered": 0.183577625,
+          "max_seconds_triggered": 0.238664,
+          "mean_recognition_ms_per_field": {
+            "z_rachunku": 51.971428571428575,
+            "na_rachunek": 48.15
+          }
+        }
+      }
+    }
   }
 }

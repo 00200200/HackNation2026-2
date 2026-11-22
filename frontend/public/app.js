@@ -20,12 +20,8 @@ function notice(text) {
   $("#notice").hidden = !text;
 }
 
-function hasJson(item) {
-  return item.data && Object.keys(item.data).length > 0;
-}
-
 function jsonText(item) {
-  return hasJson(item) ? JSON.stringify(item.data, null, 2) : "";
+  return JSON.stringify(item.data, null, 2);
 }
 
 function renderFiles() {
@@ -68,8 +64,7 @@ function showOutput(name, tag, text, actions) {
 function select(item) {
   state.selected = item;
   const name = item.file.name.replace(/\.pdf$/i, "") + ".json";
-  if (hasJson(item)) showOutput(name, "", jsonText(item), true);
-  else showOutput(name, "Pusty plik", "Dokument spoza trzech rodzajów. Plik JSON zostaje pusty.", false);
+  showOutput(name, item.error || "", jsonText(item), true);
   renderFiles();
 }
 
@@ -126,8 +121,13 @@ async function handleFiles(fileList) {
     fresh.forEach((item, i) => {
       const hit = results.find((r) => r.index === i);
       if (!hit) Object.assign(item, { busy: false, status: "Brak wyniku" });
-      else if (hit.error) Object.assign(item, { busy: false, status: "Błąd odczytu", error: hit.error });
-      else Object.assign(item, { busy: false, status: "", cls: hit.class, data: hit.data ?? {} });
+      else Object.assign(item, {
+        busy: false,
+        status: hit.error ? "Błąd odczytu" : "",
+        error: hit.error,
+        cls: hit.class,
+        data: hit.data,
+      });
     });
     const failed = fresh.filter((item) => item.error);
     notice(skipNote + (failed.length ? `Nie udało się odczytać: ${failed.map((f) => f.file.name).join(", ")}.` : ""));

@@ -12,6 +12,8 @@ The opt-in small-model profile uses Mistral’s regional API, compact source spa
 
 The batch CLI defaults to up to four PDF workers, with one thread per Tesseract instance and up to three concurrent page reads per PDF. The first OCR pass supplies layout word boxes, and optional OCR has up to 300 seconds per document. A shared batch cutoff stops rereads after 27 minutes for 150 PDFs.
 
+The local viewer flags disagreements between an appeal, its mandate and its receipt. The CLI and viewer can use independently printed sibling values to repair a damaged reading within one case folder.
+
 The grant certificate and board-stamp readers share the copy-attestation check so that a certifier cannot be counted as the issuing officer.
 
 Public landing https://doc2json.pl (`frontend/`, static nginx, monochrome) runs on the team VPS as `doc2json-web`
@@ -19,7 +21,21 @@ behind the faktczyfejk Caddy; deploy in `docs/deploy.md`. Its upload calls `kio2
 
 The jury can run the batch CLI and upload UI locally with the root Compose file. [Docker instructions](README.md#run-with-docker-compose)
 
+The evaluation VM kit installs the rules CLI under `/opt/solution`. The VM owner still needs to run the Ubuntu offline and reboot checks. [Deployment steps](README.md#deploy-on-the-evaluation-vm)
+
 ## Last eval
+
+The empty-object writer preserved all 180 positive training files byte for byte and wrote `{}\n` for all 16 negatives. Keeping printed country codes then changed two fields in each of 48 transfers. The comparison used local rules and two PDF workers. The integrated run includes the UZP scorer and the fix for a printed underline in a recipient account cell.
+
+| Dataset | Main strict `f7f3ee9` | Candidate strict `41903d1` | Integrated strict | Integrated UZP |
+|---|---:|---:|---:|---:|
+| Training, original references | 1.0000 | 0.9585 | 0.9585 | 0.9758 |
+| Training, corrected references | 0.9585 | 1.0000 | 1.0000 | 1.0000 |
+| Organizer scans (30) | 0.9766 | 0.9974 | 0.9974 | 1.0000 |
+| Corpus 1 all (39) | 0.8889 | 0.8873 | 0.8880 | 0.9212 |
+| Corpus 2 dev (39) | 0.8926 | 0.8926 | 0.8951 | 0.9244 |
+
+The first main scan batch required one isolated OCR timeout retry on the shared host. All 196 training files matched byte for byte before and after integration. The jury CI checker matched all 90 training entries against corrected references. [Field counts and expected changes by case](evals/results/p0-conventions.json)
 
 Main `f7f3ee9` ran with local rules and two PDF workers. Both scores below use the same predictions and original references. The difference is UZP F1 minus historical strict F1.
 
@@ -92,12 +108,14 @@ Two and four grant JSONs matched exactly. The ten organizer grants remained exac
   an OCR or model change has to beat this baseline in the eval. The baseline's rules have seen cases 51-60; a fresh case split is needed to measure generalization for work that builds on these rules.
 - 21.11.2026: use the date and act stated together in the first charge. When its heading lacks a date, use
   the introductory sentence describing the dated act. In cases 01–39 that sentence supplies the reference reason.
-- 21.11.2026: unrelated documents get an empty file (UNCONFIRMED with UZP; the team checks for a zero-byte output).
+- 21.11.2026 · UZP confirmed that unrelated PDFs produce `{}` and transfer account numbers keep their printed country code with all whitespace removed. The CLI and GUI use the same empty object for a failed PDF and report the failure separately. [Empty output](https://github.com/00200200/HackNation2026-2/issues/57) · [Account numbers](https://github.com/00200200/HackNation2026-2/issues/58)
 - 21.11.2026: file, module and identifier names are English; the jury GUI, organizer's JSON keys and original file stems use Polish.
 - 21.11.2026: delegated work and reviews (pre-commit review, pre-push judge) go to Codex workers through
   `/orchestrator`, not to Claude subagents.
 
 ## Log
+
+- 22.11.2026 · Codex · Added case warnings and opt-in sibling OCR repair for #61. All 304 keyless outputs matched main byte for byte. UZP F1 stayed at 0.9231 on corpus 1 all, 0.9221 on corpus 1 dev and 0.9244 on corpus 2 dev. Training scored 1.000 with 196 exact outputs. The 30 singleton scans had 29 exact outputs and UZP F1 of 1.000. [Paired case measurements](evals/results/case-siblings.json)
 
 - 22.11.2026 · Codex · Grouped appeal and mandate word boxes by printed role and column. Added regressions for wrapped names, repeated stationery, extra appointees and principal-specific signatures.
 
@@ -199,8 +217,11 @@ These runs used local rules with the three endpoint variables unset. The two loc
 | Wire the doc2json.pl upload to the extraction (serve the GUI backend behind `/api/` or point the page at it) | Open |
 
 - 21.11.2026 · Codex · Round 3 traced 130 field errors on 78 real development PDFs. Recovered identifiers from matching party records, checked damaged company names against declarations and read debit amounts across bank columns. The single-field Ministral whitespace trial lost one correct title in 12 calls and was dropped.
+- 22.11.2026 · Codex · Implemented UZP’s empty-object and printed-account conventions on `fix/p0-conventions`. The training scorer can restore missing country codes from each transfer PDF with `--correct-training-accounts`.
 
 - 22.11.2026 · Codex · Added a Python 3.13 jury install and 150-PDF CLI comparison for Windows x64, Linux x64 and macOS in `ab3c8fa`. GitHub blocked all three jobs before checkout due to account billing. The run produced no timings. [Run record](evals/results/jury-batch.json)
 - 22.11.2026 · Codex · Implemented the UZP scorer and retained historical strict micro F1 on `feat/uzp-metric` (#59).
 - 22.11.2026 · Codex · Added local jury Compose services and the signed task rules for #60. Compose configuration validated. Docker Desktop did not answer its health probe, so container byte parity is pending.
 - 22.11.2026 · Codex · The keyless LSTM crop experiment retained 13 correctly printed checksum-invalid accounts on the 240 seeded variants, raising UZP F1 from 0.2960 to 0.3053. It changed no digits on either real cohort or the organizer scans. [Paired measurements](evals/results/ocr-alternatives.json)
+
+- 22.11.2026 · Codex · Prepared the VM installation and offline rehearsal for #66 and refreshed the organizer instructions to `eadffbc`. [Rehearsal measurements](evals/results/vm-2vcpu.json)
