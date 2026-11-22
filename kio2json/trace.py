@@ -204,8 +204,10 @@ def value_pattern(value) -> re.Pattern:
             rf"|(?<!\d){day_forms}\s+{MONTHS[int(month) - 1]}\s+{year}",
             re.IGNORECASE,
         )
-    if text.isdigit():
-        return re.compile(r"(?<!\d)" + r"[ \-]?".join(text) + r"(?!\d)")
+    if re.fullmatch(r"(?:[A-Za-z]{2})?\d{6,}", text):
+        # Identifiers and accounts, with a printed country code kept, may be grouped by spaces or hyphens.
+        before = r"(?<!\d)" if text.isdigit() else r"(?<!\w)"
+        return re.compile(before + r"[ \-]?".join(map(re.escape, text)) + r"(?!\d)", re.IGNORECASE)
     return re.compile(r"\s+".join(map(re.escape, text.split())), re.IGNORECASE)
 
 

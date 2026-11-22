@@ -58,7 +58,7 @@ def test_receipt_trace_names_route_page_snippet_and_engine(monkeypatch, scanned,
 def test_unrelated_document_has_no_route_or_fields(monkeypatch):
     monkeypatch.setattr(pipeline, "read_pages", fake_reader("Faktura VAT nr 1/2025", []))
     result = read_document(Path("doc.pdf"), load_classes(), explain=True)
-    assert result.text == ""
+    assert result.text == "{}\n"
     assert result.trace == {"class": None, "routing": None, "pages": None, "fields": [], "warnings": []}
 
 

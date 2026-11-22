@@ -84,7 +84,7 @@ def analyze(sources: list[Source], directory: Path, classes: list[DocumentClass]
         try:
             shutil.copyfile(path, snapshot)
         except OSError as error:
-            result = Result(None, "", str(error))
+            result = Result(None, error=str(error))
         else:
             result = read_document(snapshot, classes, batch_deadline=deadline, explain=True)
         documents.append(Document(name, snapshot, result))

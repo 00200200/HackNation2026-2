@@ -16,7 +16,7 @@ The landing (`frontend/`, static nginx) runs on the team VPS next to the faktczy
 ## Deploy this repo
 
 ```bash
-rsync -az --delete -e "ssh -i ~/.ssh/faktczyfejk" compose.prod.yaml api.Dockerfile .dockerignore requirements.txt packaging kio2json config frontend ubuntu@135.125.239.206:/opt/doc2json/
+rsync -az --delete -e "ssh -i ~/.ssh/faktczyfejk" compose.prod.yaml api.Dockerfile .dockerignore requirements.txt kio2json config frontend ubuntu@135.125.239.206:/opt/doc2json/
 ssh -i ~/.ssh/faktczyfejk ubuntu@135.125.239.206 'cd /opt/doc2json && docker compose -f compose.prod.yaml up -d --build --wait'
 ```
 

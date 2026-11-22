@@ -23,6 +23,12 @@ def definitions():
         ("kwota", float("inf"), None),
         ("kwota", True, None),
         ("na_rachunek", "74123451234512345123451234", "74123451234512345123451234"),
+        ("na_rachunek", "PL74123451234512345123451234", "PL74123451234512345123451234"),
+        ("z_rachunku", "DE89370400440532013000", "DE89370400440532013000"),
+        ("na_rachunek", "GB82WEST12345698765432", "GB82WEST12345698765432"),
+        ("na_rachunek", "gB82West12345698765432", "gB82West12345698765432"),
+        ("z_rachunku", "GB83WEST12345698765432", None),
+        ("z_rachunku", "DE813704004405320130000", None),  # valid checksum, wrong length
         ("z_rachunku", "74123451234512345123451235", None),
         ("na_rachunek", "00123451234512345123451305", None),  # 00 is congruent to the actual check digits 97
         ("z_rachunku", "7412345123451234512345", None),

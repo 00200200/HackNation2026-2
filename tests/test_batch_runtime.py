@@ -57,7 +57,7 @@ def test_parallel_cli_preserves_bytes_order_and_failure_status(tmp_path):
         )
         assert run.returncode == 1, run.stderr
         assert run.stderr.count("bad.PDF: not processed") == 1
-        assert (target / "bad.json").read_bytes() == b""
+        assert (target / "bad.json").read_bytes() == b"{}" + os.linesep.encode()
         outputs.append(
             ({p.name: p.read_bytes() for p in target.glob("*.json")}, run.stdout.replace(str(target), "out"))
         )
@@ -96,12 +96,14 @@ def test_crashed_worker_does_not_lose_healthy_documents(tmp_path, monkeypatch, w
         f"        {exit_call}\n"
         "    assert remaining_ms(1) == 0, 'worker received a fresh batch deadline'\n"
         "    return {'threads': os.environ['OMP_THREAD_LIMIT']}\n"
-        "extract = lambda text: backend(text)\n"
+        "extract = lambda text: backend(text)\n",
+        encoding="utf-8",
     )
     monkeypatch.syspath_prepend(str(tmp_path))
     (tmp_path / "example.toml").write_text(
         'id = "example"\nengines = ["python"]\nextractor = "runtime_fixture.extract"\n'
-        "[routing]\nrequired = ['\\w']\n[fields.threads]\ntype = 'string'\ninstruction = 'test'\n"
+        "[routing]\nrequired = ['\\w']\n[fields.threads]\ntype = 'string'\ninstruction = 'test'\n",
+        encoding="utf-8",
     )
     source = Path("data/uzp/dane/przyklad_01")
     pdfs = [source / name for name in ("przelew.pdf", "pelnomocnictwo.pdf", "odwolanie.pdf")]
@@ -109,7 +111,7 @@ def test_crashed_worker_does_not_lose_healthy_documents(tmp_path, monkeypatch, w
     monkeypatch.setattr(batch, "batch_deadline", lambda count: 0.0)
     first, failed, last = batch.read_batch(pdfs, class_sources(tmp_path), workers)
     assert first.text == last.text == '{\n  "threads": "1"\n}\n'
-    assert failed.text == "" and failed.error
+    assert failed.text == "{}\n" and failed.error
 
 
 def test_crop_verification_obeys_remaining_milliseconds(monkeypatch):

@@ -3,13 +3,22 @@
 import re
 from decimal import Decimal
 
+from stdnum.pl import nip, pesel, regon
+
+from .accounts import valid_account
 from .class_config import DocumentClass, OutputField
 from .output_schema import normalize
-from .validators import CHECKSUMS, iban_valid
 
 NOTICE_FORMATS = {
     "numer_bzp": re.compile(r"[0-9]{4}/BZP[0-9]{8}(?:/[0-9]{2})?"),
     "numer_ted": re.compile(r"[0-9]{6}-[0-9]{4}"),
+}
+
+IDENTIFIER_CHECKS = {
+    "account_number": valid_account,
+    "nip": nip.is_valid,
+    "pesel": pesel.is_valid,
+    "regon": regon.is_valid,
 }
 
 
@@ -28,9 +37,7 @@ def _validate(field: OutputField, key: str, value, *, appeal: bool):
     if field.normalizer:
         if normalize(field.normalizer, value) != value:
             return None
-        if field.normalizer == "account_number" and not iban_valid(value):
-            return None
-        if (check := CHECKSUMS.get(field.normalizer)) and not check(value):
+        if (check := IDENTIFIER_CHECKS.get(field.normalizer)) and not check(value):
             return None
     if appeal and key in NOTICE_FORMATS and not NOTICE_FORMATS[key].fullmatch(value):
         return None

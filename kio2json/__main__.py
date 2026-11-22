@@ -1,10 +1,10 @@
 """Batch CLI: python -m kio2json [--input DIR] [--output DIR]   (defaults: ./input, ./output)
 
 Writes one JSON per PDF at the same relative path and file stem. A document outside the three
-known classes gets an empty file. --classes adds class TOML files, --enable turns on a class that
-its file disables, and --explain DIR writes DIR/<case>/<name>.trace.json with the routing reason and
-field sources. The keyed organizer profile retries failed documents with rules and continues with
-empty output if recovery fails. Other document errors give exit status 1.
+known classes gets {}. --classes adds class TOML files, --enable turns on a class that its file
+disables, and --explain DIR writes DIR/<case>/<name>.trace.json with the routing reason and field
+sources. The keyed organizer profile retries failed documents with rules and writes {} if recovery
+fails. Other document errors write {} and give exit status 1.
 """
 
 import argparse

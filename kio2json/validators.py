@@ -4,21 +4,14 @@ from datetime import date
 from typing import TYPE_CHECKING, Annotated, Literal, Self
 
 from pydantic import BaseModel, BeforeValidator, ConfigDict, Field, model_validator
-from stdnum import iban
 from stdnum.pl import nip, pesel, regon
+
+from .accounts import valid_account
 
 if TYPE_CHECKING:
     from .class_config import OutputField
 
 CHECKSUMS = {"nip": nip.is_valid, "regon": regon.is_valid, "pesel": pesel.is_valid}
-
-
-def iban_valid(value: str) -> bool:
-    """A residue check also accepts 00 for 97, so compare the printed check digits as well."""
-    account = "".join(str(value).split())
-    if not account[:2].isalpha():
-        account = "PL" + account
-    return iban.is_valid(account) and account[2:4] == iban.calc_check_digits(account)
 
 
 class Check(BaseModel):
@@ -34,7 +27,8 @@ class Checksum(Check):
     name: Literal["nip", "regon", "pesel", "iban"]
 
     def accepts(self, value) -> bool:
-        return iban_valid(value) if self.name == "iban" else CHECKSUMS[self.name](value)
+        # valid_account compares the printed check digits; a residue check alone also accepts 00 for 97.
+        return valid_account(str(value)) if self.name == "iban" else CHECKSUMS[self.name](value)
 
 
 class DateRange(Check):
