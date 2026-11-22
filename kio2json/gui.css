@@ -20,7 +20,8 @@ main { padding: 1.6rem; min-width: 0; }
 .panel-head .shiny-input-container { margin: 0; display: flex; align-items: center; gap: .5rem; width: auto; }
 .panel-head label { margin: 0; }
 #target { overflow-wrap: anywhere; }
-#preview, #result_text { height: calc(100vh - 235px); min-height: 15rem; overflow: auto; }
+#preview { height: calc(100vh - 235px); min-height: 15rem; overflow: auto; }
+#result_text, #trace_table { height: calc(50vh - 140px); min-height: 10rem; overflow: auto; }
 #preview { background: #e4eae8; padding: .7rem; }
 #preview img { width: 100%; height: auto; box-shadow: 0 1px 4px #9caba7; }
 #result_text { margin: 0; border: none; border-radius: 0; padding: 1rem; white-space: pre-wrap; overflow-wrap: anywhere; font-size: .85rem; color: #183d40; background: white; }
@@ -33,3 +34,19 @@ main { padding: 1.6rem; min-width: 0; }
 #upload_summary { margin: .3rem 0 1rem; font-size: .9rem; overflow-wrap: anywhere; }
 #files_progress:not(.active):not(:has(.progress-bar-danger)) { display: none; }
 #files_progress.active .progress-bar:not(.progress-bar-danger) { font-size: 0; }
+/* Loaded classes, the routing reason, failed checks and per-field sources from the trace. */
+.classes { margin-top: 1rem; font-size: .85rem; }
+.classes summary { cursor: pointer; font-weight: 600; }
+.classes ul { padding-left: 1.1rem; margin: .4rem 0 0; }
+.class-error { color: #9b2c2c; font-size: .85rem; overflow-wrap: anywhere; }
+#routing { margin: -.4rem 0 1rem; color: #405a60; overflow-wrap: anywhere; }
+.checks { padding: .5rem .9rem; border-top: 1px solid #cbd7d5; font-size: .85rem; }
+.checks h3 { font-size: .95rem; margin: 0 0 .3rem; }
+.checks ul { margin: 0; padding-left: 1.1rem; color: #7a4b00; }
+.trace-head { padding: .65rem .9rem; border-top: 1px solid #cbd7d5; border-bottom: 1px solid #cbd7d5; }
+#trace_table { padding: .5rem .9rem; font-size: .8rem; }
+#trace_table table { width: 100%; border-collapse: collapse; }
+#trace_table th, #trace_table td { padding: .25rem .4rem; border-bottom: 1px solid #e4eae8; vertical-align: top; overflow-wrap: anywhere; }
+.trace-row { cursor: pointer; }
+.trace-row:hover { background: #eef4f2; }
+.trace-note { color: #405a60; margin: 0 0 .4rem; }

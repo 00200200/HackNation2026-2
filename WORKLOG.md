@@ -23,6 +23,12 @@ The jury can run the batch CLI and upload UI locally with the root Compose file.
 
 The evaluation VM kit installs the rules CLI under `/opt/solution`. The VM owner still needs to run the Ubuntu offline and reboot checks. [Deployment steps](README.md#deploy-on-the-evaluation-vm)
 
+A new document class needs one TOML file. `--classes PATH` and `--enable ID` add classes to the three organizer
+classes in the CLI and viewer. A class file can declare weighted routing cues with a threshold and named checks
+(`nip`, `regon`, `pesel`, `iban`, `date_range`, `one_of`). `python -m kio2json.classes new` writes a class file from a sample PDF.
+The viewer lists the loaded classes, the cue that chose each class, failed checks and each field's source;
+`--explain DIR` writes the same trace to a folder outside `--output`. Example: `examples/classes/accession.toml`.
+
 ## Last eval
 
 On the 240 seeded PDFs, UZP field micro F1 rose from 0.2960 on #69 to **0.8948** on the robustness checkpoint. The classifier routed 170/180 positives, including all 60 appeals, and returned `{}` on all 60 negatives. The control with #78’s account and JSON conventions scored 0.3179. The ten remaining routing misses were alternative-format transfers.
@@ -108,7 +114,6 @@ Two and four grant JSONs matched exactly. The ten organizer grants remained exac
 | Score corpus 2 test once after the class rules and small-model profile are integrated | Coordinator |
 | Improve receipt routing and recover damaged party names on development inputs | Open |
 | Confirm the unresolved VM, model hosting and scoring details listed in [the task brief](docs/task/BRIEF.md). | Open |
-| Class-config flag, TOML validators, weighted routing and a scaffold for new classes (#62) | 00200200 (`claude/config-classes-case-ab8189`) |
 | Promote HackNation2026 PR #48 to `prod` after the faktczyfejk demo, so the doc2json.pl Caddy block survives a redeploy | Open |
 | Run `docker compose run --rm cli` and `docker compose up gui` once on an amd64 Docker host and compare the CLI output with `python -m kio2json` (no Docker on the dev Macs; hosted Actions are blocked by billing, #67) | Open |
 
@@ -140,6 +145,7 @@ Two and four grant JSONs matched exactly. The ten organizer grants remained exac
 
 - 22.11.2026 · Claude · Brought `docs/task/BRIEF.md` up to UZP's Discord answers (#64), the Regulamin (`docs/task/regulamin.pdf`) and the organizer's `VM.md`; refreshed `data/uzp` to `eadffbc` (adds `VM.md` only). In WORKLOG: recorded the `{}` and account-number decisions, put the VM row first, scoped the Ministral row to #38, split the UZP-answer issues into per-issue rows with their owners, flagged the eval's `negatives_empty` check and merged main and dropped the rows it finished (#60, #59, #61) · docs/brief-update
 
+- 22.11.2026 · Claude · #62 classes from one TOML file (`--classes`, `--enable`, weighted cues, named checks, `python -m kio2json.classes new`), and the #40 trace from `feat/explain` (`--explain DIR`, viewer class list, routing cue, field sources). 1826 tests pass. The CLI wrote the same bytes as main `328f705` for all 226 organizer PDFs (196 training, 30 scans), and the full training eval at `853b230` scored 1.000 micro F1 with every target met · branch `claude/config-classes-case-ab8189`
 - 22.11.2026 · Codex · Integrated the signed judging criteria, VM instructions and UZP clarifications from #49 and refreshed the README visuals from #36 against recorded results.
 - 21.11.2026 · Claude · presentation-style README with monochrome visuals in `docs/readme/`; previous README moved to `docs/readme/reference.md` · feat/docs
 
