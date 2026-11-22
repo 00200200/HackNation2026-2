@@ -1,0 +1,35 @@
+<!doctype html><html><head><meta charset="utf-8"><link rel="stylesheet" href="base.css"><style>
+body { padding: 56px 64px; }
+h2 { font-size: 34px; font-weight: 600; letter-spacing: -.035em; }
+.sub { margin-top: 6px; font-size: 17px; color: #a1a1a1; }
+.cols { display: grid; grid-template-columns: repeat(3, 1fr) 0.8fr; gap: 16px; margin-top: 40px; }
+.card { padding: 24px 22px 26px; }
+.card h3 { font-size: 22px; font-weight: 600; letter-spacing: -.02em; }
+.card .id { margin-top: 4px; font-family: "Geist Mono", monospace; font-size: 13px; color: #a1a1a1; }
+.card ul { list-style: none; margin-top: 20px; border-top: 1px solid rgba(255,255,255,.1); }
+.card li { padding: 9px 0; border-bottom: 1px solid rgba(255,255,255,.1); font-family: "Geist Mono", monospace; font-size: 13.5px; }
+.card li span { display: block; font-family: "Geist", sans-serif; font-size: 13px; color: #a1a1a1; margin-top: 1px; }
+.neg { border: 1px dashed rgba(255,255,255,.25); border-radius: 18px; padding: 24px 22px; }
+.neg h3 { font-size: 22px; font-weight: 600; letter-spacing: -.02em; }
+.neg p { margin-top: 10px; font-size: 15px; color: #a1a1a1; line-height: 1.5; }
+.neg .file { margin-top: 22px; font-family: "Geist Mono", monospace; font-size: 14px; padding: 12px 14px; border: 1px solid rgba(255,255,255,.12); border-radius: 10px; }
+</style></head><body>
+<h2>Three document types, one schema each</h2>
+<p class="sub">Schemas from the organizer: data/uzp/oczekiwane-json/</p>
+<div class="cols">
+  <div class="panel card"><h3>Appeal to KIO</h3><div class="id">appeal</div><ul>
+    <li>OdwolanieKIO<span>date, town, first charge and its code 1–12</span></li>
+    <li>Odwolujacy[]<span>name, KRS, NIP, REGON, attorney</span></li>
+    <li>Zamawiajacy[]<span>name, identifiers, lead buyer</span></li>
+    <li>ZamowieniePubliczne<span>BZP, TED, internal number, title</span></li></ul></div>
+  <div class="panel card"><h3>Power of attorney</h3><div class="id">power_of_attorney</div><ul>
+    <li>mocodawca[]<span>grantor, KRS, NIP, legal or natural person</span></li>
+    <li>podpisujacy[]<span>who signed for the grantor</span></li>
+    <li>pelnomocnicy[]<span>attorneys in the nominative, PESEL</span></li></ul></div>
+  <div class="panel card"><h3>Transfer confirmation</h3><div class="id">bank_transfer</div><ul>
+    <li>data_operacji, kwota<span>execution date and amount</span></li>
+    <li>z_rachunku, na_rachunek<span>payer and payee accounts</span></li>
+    <li>numer_transakcji, tytul<span>transaction ID and title</span></li></ul></div>
+  <div class="neg"><h3>Anything else</h3><p>Decisions, notices, brochures: recognised as none of the three.</p><div class="file">dokument.json<br><span class="muted">{}</span></div></div>
+</div>
+</body></html>
