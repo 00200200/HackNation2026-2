@@ -3,6 +3,7 @@
 import html
 import json
 import re
+import sys
 from io import BytesIO
 from pathlib import Path
 from zipfile import ZipFile
@@ -408,3 +409,82 @@ def test_the_fallback_trace_keeps_the_expired_optional_ocr(monkeypatch):
     trace = batch.explained("appeal", {}, {"warnings": [], "optional_ocr_expired": True})
     assert trace["optional_ocr_expired"] is True
     assert trace["trace_error"].startswith("ZeroDivisionError")
+
+
+@pytest.mark.parametrize("name", ["../../x.pdf", "/tmp/abs/x.pdf", "C:\\cases\\x.pdf", "sprawa/../../x.pdf"])
+def test_a_zip_entry_cannot_name_a_path_outside_its_case(tmp_path, name):
+    unpacked = tmp_path / "unpacked"
+    unpacked.mkdir()
+    with pytest.raises(ValueError, match="Niedozwolona nazwa"):
+        upload_sources("sprawa", [zip_upload(tmp_path, {name: b"%PDF-1.4"})], unpacked)
+    assert not list(unpacked.iterdir()) and not (tmp_path.parent / "x.pdf").exists()
+
+
+def test_a_zip_entry_that_is_a_symlink_is_refused(tmp_path):
+    import stat
+    from zipfile import ZipInfo
+
+    link = ZipInfo("sprawa/link.pdf")
+    link.external_attr = (stat.S_IFLNK | 0o777) << 16
+    path = tmp_path / "upload.zip"
+    with ZipFile(path, "w") as bundle:
+        bundle.writestr(link, "/etc/passwd")
+    with pytest.raises(ValueError, match="dowiązanie"):
+        upload_sources("sprawa", [{"name": "sprawy.zip", "datapath": str(path)}], tmp_path)
+
+
+SYMLINKS = pytest.mark.skipif(sys.platform == "win32", reason="creating links on Windows needs extra rights")
+
+
+@SYMLINKS
+def test_a_link_inside_the_folder_root_cannot_open_a_file_outside(tmp_path):
+    from kio2json.gui_files import folder_sources
+
+    root, outside = tmp_path / "root", tmp_path / "outside"
+    (root / "sprawa").mkdir(parents=True)
+    outside.mkdir()
+    (root / "sprawa" / "pismo.pdf").write_bytes(b"%PDF-1.4")
+    (outside / "obcy.pdf").write_bytes(b"%PDF-1.4")
+    (root / "sprawa" / "skrot.pdf").symlink_to(root / "sprawa" / "pismo.pdf")
+    assert len(folder_sources("sprawa", root)) == 2  # A link that stays inside the root still opens.
+    (root / "sprawa" / "link.pdf").symlink_to(outside / "obcy.pdf")
+    with pytest.raises(ValueError, match="prowadzi poza"):
+        folder_sources("sprawa", root)
+    assert len(folder_sources(str(root / "sprawa"))) == 3  # On localhost, without a root, links are the user's own.
+
+
+@SYMLINKS
+def test_a_link_chain_too_long_to_resolve_cannot_leave_the_folder_root(tmp_path):
+    from kio2json.gui_files import folder_sources
+
+    root, outside = tmp_path / "root", tmp_path / "outside"
+    root.mkdir()
+    outside.mkdir()
+    (outside / "obcy.pdf").write_bytes(b"%PDF-secret")
+    current, links = root, []
+    for level in range(24):  # Each link adds 200 characters, past PATH_MAX once expanded.
+        name = f"{level:02d}" + "d" * 198
+        (current / name).mkdir()
+        (current / f"l{level}").symlink_to(name)
+        current, links = current / f"l{level}", [*links, f"l{level}"]
+    (current / "esc").symlink_to("../" * 25 + "outside")
+    with pytest.raises(ValueError, match="tylko foldery w"):
+        folder_sources("/".join([*links, "esc"]), root)
+    # Inside a real case folder, only the check of each PDF's real target catches the same chain.
+    (root / "sprawa").mkdir()
+    (root / "sprawa" / "obcy.pdf").symlink_to("../" + "/".join([*links, "esc", "obcy.pdf"]))
+    with pytest.raises(ValueError, match="prowadzi poza"):
+        folder_sources("sprawa", root)
+    (root / "pismo.pdf").write_bytes(b"%PDF-1.4")
+    with pytest.raises(ValueError, match="istniejącego folderu"):
+        folder_sources("pismo.pdf/x", root)
+
+
+def test_plain_pdfs_count_toward_the_upload_byte_limit(tmp_path, monkeypatch):
+    monkeypatch.setattr(gui_files, "ZIP_MAX_BYTES", 12)
+    plain = tmp_path / "plain.pdf"
+    plain.write_bytes(b"%PDF-1.4")  # 8 bytes
+    (zipped := tmp_path / "z").mkdir()
+    uploads = [{"name": "a.pdf", "datapath": str(plain)}, zip_upload(zipped, {"s/b.pdf": b"%PDF-"})]
+    with pytest.raises(ValueError, match="Przekroczono limit"):
+        upload_sources("sprawa", uploads, tmp_path)
