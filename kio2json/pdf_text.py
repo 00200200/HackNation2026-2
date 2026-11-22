@@ -17,7 +17,6 @@ import pdfplumber
 from pdfplumber.utils import get_bbox_overlap, obj_to_bbox
 from PIL import Image
 
-from .case_repair import case_repair_enabled
 from .ocr_budget import CROP_TIMEOUT_MS, REREAD_PAGE_TIMEOUT_SECONDS, RereadExpired, remaining_ms, require_remaining_ms
 from .ocr_normalize import MAIL_TOKEN_RE, confirmed_email, normalize_ocr
 
@@ -319,7 +318,6 @@ def _recognize_raster(
         cursor = 0
         if iterator is not None:
             left, top = image.bbox[:2]
-            keep_confidence = case_repair_enabled()
             for item in iterate_level(iterator, RIL.WORD):
                 box = item.BoundingBox(RIL.WORD)
                 if not box:
@@ -327,16 +325,15 @@ def _recognize_raster(
                 token = item.GetUTF8Text(RIL.WORD)
                 x0, y0, x1, y1 = box
                 if words is not None:
-                    word = WordBox(
+                    word = OCRWord(
                         image.page_number,
                         token,
                         left + x0 / image.scale,
                         top + y0 / image.scale,
                         left + x1 / image.scale,
                         top + y1 / image.scale,
+                        confidence=item.Confidence(RIL.WORD),
                     )
-                    if keep_confidence:
-                        word = OCRWord(*word, confidence=item.Confidence(RIL.WORD))
                     words.append(word)
                 start = text.find(token, cursor)
                 if start < 0:
@@ -368,6 +365,11 @@ def _text_layer(page, force_ocr: bool, repair_image_text: bool) -> str | None:
     text = "" if force_ocr else page.extract_text() or ""
     if _needs_ocr(page, text) or (repair_image_text and damaged_text_layer(text) and _page_sized_image(page)):
         return None
+    if page.page_number == 1:
+        # The layout reader also consumes WordBox, so import after this module is initialized.
+        from .appeal_layout import restore_overprinted_card
+
+        return restore_overprinted_card(page, text)
     return text
 
 

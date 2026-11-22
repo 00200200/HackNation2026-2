@@ -2,7 +2,7 @@
 
 import re
 
-from .appeal_charges import ACTS, CHARGE, FILING, act_date, first_sentence, prose_action, sentences
+from .appeal_charges import ACTS, CHARGE, FILING, NEXT_ITEM, act_date, first_sentence, prose_action, sentences
 from .common import ATTORNEY_RE, DATE, EMAIL_RE, LOWER, PERSON, UPPER, registry_ids, squash, to_iso
 from .personal_names import nominative, same_nominal_form
 
@@ -39,8 +39,13 @@ REASON_RULES = [
 
 APPELLANT_LABEL = r"Odwo[łl]uj[ąa]cy"
 EXPLICIT_APPELLANT = re.compile(rf"(?im)^[ \t]*{APPELLANT_LABEL}[ \t]*[:(]")
+# A standalone role heading opens the same party card as a colon-labelled field.
+FORM_ROLE = re.compile(
+    r"(?im)^[ \t]*(?:(?P<appellant>odwo[łl]uj[ąa]cy)|(?P<authority>zamawiaj[ąa]cy))[ \t]*(?::[ \t]*|$)"
+)
 SECTION_RE = re.compile(rf"^(Zamawiaj[ąa]cy|{APPELLANT_LABEL}|Wykonawca)\s*[:(]", re.IGNORECASE)
 ADDRESS_RE = re.compile(r"^(?:ul\.|al\.|pl\.|os\.|\d{2}\s*[-–—]\s*\d{3}\b)|^[^,]{2,40},\s*(?:ul\.|al\.)", re.IGNORECASE)
+INLINE_STREET = re.compile(r",\s*(?:ul|al|os|pl)\.", re.IGNORECASE)
 ID_LINE_RE = re.compile(r"\b(?:KRS|NIP|REGON)\b")
 _PLACE = rf"[{UPPER}][{LOWER}]+(?:[ \-][{UPPER}][{LOWER}]+){{0,2}}"
 PLACE_DATE_RE = re.compile(
@@ -71,11 +76,43 @@ BODY_HEADING = re.compile(
 )
 
 
+# Only the grammatical head can name the owner. A genitive after "rachunek" or
+# "pełnomocnik" describes someone else's account or counsel.
+CARD_HEAD = r"(?:dane(?: identyfikacyjne| teleadresowe)?|(?:pełna )?nazwa(?: i (?:adres|siedziba))?|oznaczenie)"
+_FILER = r"(?:(?:wykonawca|podmiot) (?:wnosz|składaj)[ąa]cy|strona (?:wnosz|składaj)[ąa]ca) odwo[łl]anie"
+_BUYER = r"(?:podmiot (?:zamawiaj[ąa]cy|prowadz[ąa]cy post[ęe]powanie)|instytucja zamawiaj[ąa]ca)"
+_CARD_WORDING = (
+    rf"(?:(?P<appellant>{CARD_HEAD} odwo[łl]uj[ąa]cego|{_FILER}|"
+    rf"{CARD_HEAD} (?:wykonawcy|podmiotu) (?:wnosz|składaj)[ąa]cego odwo[łl]anie)|"
+    rf"(?P<authority>{CARD_HEAD} zamawiaj[ąa]cego|{_BUYER}))"
+)
+CARD_ROLE = re.compile(rf"^{_CARD_WORDING}(?:[ \t]*:[ \t]*|[ \t]*$)", re.IGNORECASE)
+# In a flat transcript the caption in the adjacent column can follow immediately.
+PARALLEL_CARD = re.compile(rf"^{_CARD_WORDING}\b", re.IGNORECASE | re.MULTILINE)
+_OTHER_CARD = re.compile(
+    r"^(?:pełnomocnik zamawiającego|rachunek zamawiającego|wybrany wykonawca|wykonawca wybrany|wykonawca, którego ofertę wybrano|"
+    r"(?:dane )?(?:przystępując(?:y|ego)|uczestnik(?:a)?(?: postępowania)?))(?:\s*:|$)",
+    re.IGNORECASE,
+)
+_QUOTE_INTRO = re.compile(
+    r'^(?:cytat\b|[„«"]$)|[„«]\s*$|\b(?:wskazał|napisał|podał|stwierdził|przytoczono|zacytowano)\w*\s*:\s*(?:[„«"]|$)',
+    re.IGNORECASE,
+)
+_ORGANIZATION = re.compile(
+    r"(?i:\b(?:sp\.\s*(?:z|j|k)\b|s\.a\.|spółka (?:akcyjna|jawna|komandytowa|z ograniczoną)|konsorcjum\b))|"
+    rf"^(?i:gmina|miasto|powiat|urząd|ministerstwo|szpital|uniwersytet|muzeum|związek|zarząd)\s+[{UPPER}]"
+)
+
+
 def _ends_party(line: str) -> bool:
     if PARTY_FIELD.match(line) or line.lower().endswith("składzie:"):
         return False
     return bool(
-        SECTION_LABEL.match(line) or BODY_HEADING.match(line) or squash(line).replace(" ", "").upper() == "ODWOŁANIE"
+        CARD_ROLE.fullmatch(line)
+        or SECTION_LABEL.match(line)
+        or _OTHER_CARD.match(line)
+        or BODY_HEADING.match(line)
+        or squash(line).replace(" ", "").upper() == "ODWOŁANIE"
     )
 
 
@@ -91,6 +128,74 @@ LEAD_FOR = re.compile(
     re.IGNORECASE,
 )
 CONSORTIUM = re.compile(r"\b(?:wspólnie|konsorcjum)\b", re.IGNORECASE)
+
+
+def party_evidence(rows: list[str]) -> bool:
+    """A name and local address/register, or an explicit organization name, support a card."""
+    rows = [r.strip() for r in rows if r.strip()]
+    if not rows:
+        return False
+    first = rows[0]
+    if (
+        CARD_ROLE.match(first)
+        or _ends_party(first)
+        or CONTACT.search(first)
+        or re.match(r"(?i)^(?:adw\.|r\.\s?pr\.|radca prawny|adwokat)\s", first)
+    ):
+        return False
+    if (
+        not (first[0].isupper() or CONSORTIUM.search(first))
+        or (ADDRESS_RE.match(first) and not INLINE_STREET.search(first))
+        or ID_LINE_RE.match(first)
+    ):
+        return False
+    for index, line in enumerate(rows):
+        if index and (_ends_party(line) or CARD_ROLE.match(line) or PARTIES_END_RE.match(line)):
+            break
+        if _ORGANIZATION.search(line) or ADDRESS_RE.match(line) or any(registry_ids(line).values()):
+            return True
+    return False
+
+
+def party_header_end(line: str) -> bool:
+    return bool(BODY_HEADING.match(line) or _QUOTE_INTRO.search(line))
+
+
+def _party_header(header: str) -> str:
+    lines = header.splitlines()
+    changed = False
+    for index, line in enumerate(lines):
+        line = line.strip()
+        if party_header_end(line):
+            if changed:
+                return "\n".join(lines[:index])
+            break
+        if (label := CARD_ROLE.match(line)) and party_evidence([line[label.end() :], *lines[index + 1 : index + 6]]):
+            name = "Odwołujący" if label["appellant"] else "Zamawiający"
+            lines[index] = name + ": " + line[label.end() :]
+            changed = True
+    return "\n".join(lines) if changed else header
+
+
+def _unquoted_party_text(text: str) -> str:
+    """Keep signature and filing evidence outside an explicitly quoted statement."""
+    kept = []
+    closing = None
+    for line in text.splitlines():
+        if closing:
+            if closing in line:
+                closing = None
+            continue
+        if _QUOTE_INTRO.search(line.strip()):
+            opener = re.search(r'[„«"]', line)
+            if opener is None:
+                break  # The quotation has no printed closing delimiter.
+            closing = {"„": "”", "«": "»", '"': '"'}[opener[0]]
+            if closing in line[opener.end() :]:
+                closing = None
+            continue
+        kept.append(line)
+    return "\n".join(kept)
 
 
 def _party_role(label: str, explicit_appellant: bool) -> str | None:
@@ -114,7 +219,9 @@ def _regional_name(name: str, lead: str) -> str:
     return name
 
 
-def _parties(lines: list[str], ocr_mail_lines: frozenset[int], explicit_appellant: bool) -> dict[str, list[dict]]:
+def _parties(
+    lines: list[str], ocr_mail_lines: frozenset[int], explicit_appellant: bool, *, inflected: bool = False
+) -> dict[str, list[dict]]:
     """Keep one name per labelled party or numbered member, through intervening contact lines."""
     parties = {"Zamawiający": [], "Odwołujący": []}
     role = None
@@ -152,6 +259,10 @@ def _parties(lines: list[str], ocr_mail_lines: frozenset[int], explicit_appellan
         name_lines.clear()
 
     for index, line in enumerate(map(str.strip, lines)):
+        if _OTHER_CARD.match(line):
+            finish_name()
+            role = None
+            continue
         if label := SECTION_RE.match(line):
             finish_name()
             role = _party_role(label[1], explicit_appellant)
@@ -193,7 +304,7 @@ def _parties(lines: list[str], ocr_mail_lines: frozenset[int], explicit_appellan
             elif line:
                 name_lines.append(line)
             continue
-        if (label or sublabel) and re.search(r",\s*(?:ul|al|os|pl)\.", line, re.IGNORECASE) and entity is None:
+        if entity is None and (label or sublabel or (inflected and not name_lines)) and INLINE_STREET.search(line):
             name_lines.append(line)
             finish_name()
         elif CONTACT.search(line) or ADDRESS_RE.match(line) or ID_LINE_RE.search(line):
@@ -295,6 +406,8 @@ def _representative(header: str, text: str, appellant_name: str, explicit_appell
     for line in map(str.strip, header.splitlines()):
         if label := SECTION_RE.match(line):
             appellant = _party_role(label[1], explicit_appellant) == "Odwołujący"
+        elif _OTHER_CARD.match(line):
+            appellant = False
         elif COUNSEL_LABEL.match(line):
             appellant = True
         elif _ends_party(line) and not (
@@ -421,6 +534,18 @@ def _challenged_action(text: str) -> tuple[str | None, int | None]:
         ):
             return first
         return None, reason
+    # Form fields describe the same first act only within their own section.
+    action = re.search(r"(?im)^(?:zaskarżona|kwestionowana|skarżona) czynność[ \t]*:[ \t]*(.+)$", text)
+    if (
+        action
+        and not (CHARGE.search(text, 0, action.start()) or NEXT_ITEM.search(text, 0, action.start()))
+        and (reason := _reason(action[1]))
+    ):
+        date_field = rf"(?im)^data (?:zaskarżonej |kwestionowanej |skarżonej )?czynności[ \t]*:[ \t]*({DATE})[ \t]*$"
+        lines = text.splitlines()
+        row = text[: action.start()].count("\n")
+        dates = [m[1] for line in lines[max(0, row - 1) : row + 2] if (m := re.fullmatch(date_field, line))]
+        return to_iso(dates[0]) if len(dates) == 1 else None, reason
     return prose_action(text)
 
 
@@ -456,7 +581,9 @@ def _procurement(text: str) -> dict:
             re.IGNORECASE | re.DOTALL,
         )
     if not title:
-        label = re.search(r"(?im)\b(?:nazwa postępowania|postępowaniu na):[ \t]*", text)
+        label = re.search(
+            r"(?im)\b(?:(?:nazwa|tytuł|przedmiot) (?:postępowania|zamówienia)|postępowaniu na):[ \t]*", text
+        )
         if label:
             rows = text[label.end() :].splitlines()
             if rows and not rows[0].strip():
@@ -514,19 +641,22 @@ def _appellant_registry(text: str, leader: dict) -> None:
 
 
 def extract(text: str, *, ocr_mail_lines: frozenset[int] = frozenset()) -> dict:
+    text = FORM_ROLE.sub(lambda m: "Odwołujący: " if m["appellant"] else "Zamawiający: ", text)
     header = text.split("Działając w imieniu", 1)[0]
-    explicit_appellant = bool(EXPLICIT_APPELLANT.search(header))
-    parties = _parties(header.splitlines(), ocr_mail_lines, explicit_appellant)
-    _prose_parties(text, parties)
+    party_header = _party_header(header)
+    explicit_appellant = bool(EXPLICIT_APPELLANT.search(party_header))
+    parties = _parties(party_header.splitlines(), ocr_mail_lines, explicit_appellant, inflected=party_header != header)
+    party_text = _unquoted_party_text(text) if party_header != header else text
+    _prose_parties(party_text, parties)
     place_date = PLACE_DATE_RE.search(header)
     filing_date = re.search(rf"(?im)^data (?:złożenia|wniesienia)(?: odwołania)?:[ \t]*({DATE})", header)
     action_date, reason = _challenged_action(text)
 
     appellants = parties["Odwołujący"]
     leader = next((a for a in appellants if "lider" in a["sublabel"].lower()), appellants[0] if appellants else None)
-    representative = _representative(header, text, leader["nazwa"], explicit_appellant) if leader else None
+    representative = _representative(party_header, party_text, leader["nazwa"], explicit_appellant) if leader else None
     if leader:
-        _appellant_registry(text, leader)
+        _appellant_registry(party_text, leader)
     authorities = parties["Zamawiający"]
     return {
         "OdwolanieKIO": {

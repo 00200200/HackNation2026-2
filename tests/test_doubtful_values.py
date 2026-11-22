@@ -24,6 +24,8 @@ def test_one_schema_for_both_populated_payment_fields(monkeypatch):
         "Kwota: 80,10 PLN\nKwota przelewu: 79,90 PLN\nData zlecenia: 01.02.2025\nDzień wykonania przelewu: 03.02.2025"
     )
     record = bank_transfer.extract(page)
+    # Simulate an OCR reading that bound the order date instead of the execution date.
+    record["przelew_bankowy"]["data_operacji"] = "2025-02-01"
     record["przelew_bankowy"].update(tytul="Opłata", z_rachunku="1", na_rachunek="2", numer_transakcji="T/1")
     calls = []
 
