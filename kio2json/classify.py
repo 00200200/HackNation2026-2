@@ -4,7 +4,7 @@ import re
 
 from rapidfuzz.distance import Levenshtein
 
-from . import bank_transfer, power_of_attorney
+from . import bank_transfer, delivery_proofs, power_of_attorney
 from .accounts import account_identity, account_matches, valid_account
 from .appeal_charges import FILING
 from .common import DATE, POLISH_FOLD, to_iso
@@ -665,7 +665,16 @@ def _bank_record(pages: list[str]) -> bool:
 
 
 def classify(pages: list[str], *, ocr_accounts: AccountEvidence | None = None) -> str | None:
+    body = delivery_proofs.message_pages(pages) if pages else None
+    if body is not None:
+        if label := delivery_proofs.filing_act(body):
+            return label
+        # Only a settlement in the message itself can route a transmission form.
+        pages = body
+        ocr_accounts = account_evidence(body[0]) if ocr_accounts is not None else None
     kind = _classify_document(pages, ocr_accounts=ocr_accounts)
     if kind is None and _bank_record(pages):
         return "bank_transfer"
+    if body is not None and kind != "bank_transfer":
+        return None
     return kind
