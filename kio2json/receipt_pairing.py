@@ -16,6 +16,8 @@ from .bank_transfer import (
     REMITTANCE_WITH_REFERENCE,
     TITLE_LABEL,
     _amount,
+    _field_text,
+    _title,
 )
 from .common import to_iso
 from .pdf_text import WordBox
@@ -136,6 +138,10 @@ def _title_agrees(old, source, label_words, first_value):
 def _complete_title(old, stream, physical, owned, start, stop, height, caption, values):
     _, label, inline = caption
     title = " ".join(values)
+    # Geometry establishes ownership, while the ordinary title reader still
+    # excludes another printed field or a control caption inside that cell.
+    if _title(_field_text("Tytuł: " + title)) != title:
+        return None
     if not re.search(r"[^\W\d_]", title) or re.fullmatch(r"[Xx*•\s.-]+", title):
         return None
     if any(_cell_value("Kwota", line, False) or _cell_value("Data operacji", line, False) for line in values):
