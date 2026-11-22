@@ -25,6 +25,14 @@ The evaluation VM kit installs the rules CLI under `/opt/solution`. The VM owner
 
 ## Last eval
 
+The fixed-seed benchmark re-rendered the facts from all 60 synthetic cases and generated 60 look-alike negatives. The keyless extractor was main at `3eccb41`, scored with the issue #59 metric. The initial `f7f3ee9` run had the same dataset digest and field counts.
+
+| Dataset | PDFs | UZP micro F1 | Strict micro F1 | Appeal F1 | Power F1 | Transfer F1 | Empty negatives |
+|---|---:|---:|---:|---:|---:|---:|---:|
+| Generated layouts | 240 | 0.2960 | 0.2860 | 0.0000 | 0.5529 | 0.6617 | 60/60 |
+
+Weakest positive profiles were label synonyms (0.1693), alternative formats (0.2083) and two columns (0.2089). Appeal F1 was zero in all six profiles. The benchmark uses short, newly authored forms built from the training facts. Profile scores also reflect their different case samples. [Ranked layouts and field scores](evals/results/variants.json)
+
 The empty-object writer preserved all 180 positive training files byte for byte and wrote `{}\n` for all 16 negatives. Keeping printed country codes then changed two fields in each of 48 transfers. The comparison used local rules and two PDF workers. The integrated run includes the UZP scorer and the fix for a printed underline in a recipient account cell.
 
 | Dataset | Main strict `f7f3ee9` | Candidate strict `41903d1` | Integrated strict | Integrated UZP |
@@ -96,7 +104,6 @@ Two and four grant JSONs matched exactly. The ten organizer grants remained exac
 | Score corpus 2 test once after the class rules and small-model profile are integrated | Coordinator |
 | Improve receipt routing and recover damaged party names on development inputs | Open |
 | Confirm the unresolved VM, model hosting and scoring details listed in [the task brief](docs/task/BRIEF.md). | Open |
-| Robustness eval on seeded layout variants and generated negatives (#63) | Dominik-Galus (`feat/variant-eval`, PR #69) |
 | Class-config flag, TOML validators, weighted routing and a scaffold for new classes (#62) | 00200200 (`claude/config-classes-case-ab8189`) |
 | Promote HackNation2026 PR #48 to `prod` after the faktczyfejk demo, so the doc2json.pl Caddy block survives a redeploy | Open |
 | Run `docker compose run --rm cli` and `docker compose up gui` once on an amd64 Docker host and compare the CLI output with `python -m kio2json` (no Docker on the dev Macs; hosted Actions are blocked by billing, #67) | Open |
@@ -140,6 +147,9 @@ Two and four grant JSONs matched exactly. The ten organizer grants remained exac
 - 22.11.2026 · Claude · Handoff fix/install-deps (#44/#45): code done at de49710; fresh py3.13 venv `pip install -r requirements.txt` from another directory rc=0, 80 pkgs, site-packages 642 → 519 MiB (main: raw.githubusercontent.com timeout, 133 pkgs); make check 1704+2 passed; eval-quick 1.000 clean; CLI identical on cases 01/13/27/38/50. Left: judge PASS, stamp, push, PR.
 - 21.11.2026 · Claude · #44/#45: vendored the pinned pol/eng tessdata in `kio2json/tessdata/` (SHA-256 checked at first OCR use), dropped the local `packaging/` wheel so pip needs only PyPI from any directory; `pydantic-ai-slim[openai]` replaces `pydantic-ai`, requirements.txt 134 → 81 packages without anthropic, google-genai, logfire or pydantic-evals.
 
+- 22.11.2026 · Codex · Integrated #55 on `integrate/pr55`. The filter preserves technical titles and native text in mixed PDFs. A lawyer’s name in a firm field needs two weak OCR words and a conflicting crop reading before the field is cleared.
+- 22.11.2026 · Claude · #39: scanned-appeal party names and lawyer fields become null on stray scanner symbols, a low letter ratio or capitals noise after a lawyer's title; a capitals-noise tail after a legal form is cut unless it names another consortium member; titles are checked for stray symbols only. On the organizer template scan the appellant and law firm names are now null and the authority name ends at its legal form (checked by a direct CLI run; the template is not in the eval). Organizer scans 0.9974 → 0.9974, full training 1.000 → 1.000 (holdout 1.000), both against `4d91600`; the private dev corpora are not on this machine and were not measured · b2121b5
+- 22.11.2026 · Claude · #39: judge PASS on `c4b3d94` after two rounds of P2 fixes; pushed `fix/ocr-plausibility` with a PR to main. Left: a real-corpus check by the corpus owner before merge (dev corpora not on this machine).
 - 21.11.2026 · Codex · Added native span output for small models, local source validation and a bounded parallel CLI. Verified the native schema on the quantized local model and both regional API releases.
 
 - 21.11.2026 · Claude · brief, eval harness, judge/eval skills, pre-push hook · f6db304
@@ -245,6 +255,9 @@ These runs used local rules with the three endpoint variables unset. The two loc
 
 - 22.11.2026 · Codex · Added a Python 3.13 jury install and 150-PDF CLI comparison for Windows x64, Linux x64 and macOS in `ab3c8fa`. GitHub blocked all three jobs before checkout due to account billing. The run produced no timings. [Run record](evals/results/jury-batch.json)
 - 22.11.2026 · Codex · Implemented the UZP scorer and retained historical strict micro F1 on `feat/uzp-metric` (#59).
+
+- 22.11.2026 · Codex · Added the seeded layout regression gate and measured main at `f7f3ee9` and `3eccb41` on the same 240 generated PDFs for issue #63.
+
 - 22.11.2026 · Codex · Added local jury Compose services and the signed task rules for #60. Compose configuration validated. Docker Desktop did not answer its health probe, so container byte parity is pending.
 - 22.11.2026 · Codex · The keyless LSTM crop experiment retained 13 correctly printed checksum-invalid accounts on the 240 seeded variants, raising UZP F1 from 0.2960 to 0.3053. It changed no digits on either real cohort or the organizer scans. [Paired measurements](evals/results/ocr-alternatives.json)
 
@@ -255,3 +268,4 @@ These runs used local rules with the three endpoint variables unset. The two loc
 - 22.11.2026 · Codex · Synced #72 with main at `4222472`, retaining first-page candidate selection in the keyed profile.
 - 22.11.2026 · Codex · Synced the rule fixes in #75 with main at `b9c2c7f`, preserving the printed account prefix during OCR slash repair.
 - 22.11.2026 · Codex · Integrated the merged #75 rule fixes into #72 at main `257a6af`.
+- 2026-11-22 · Transfer confirmations can bind a split execution heading to a single dated amount and two explicitly owned accounts. Receipt dates also accept Roman months and labelled whole amounts can place the currency first.

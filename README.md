@@ -36,10 +36,10 @@ Routing reads the document text. Each class configuration supplies its routing r
 
 | Dataset | PDFs | UZP micro F1 | Strict micro F1 | Source |
 |---|---:|---:|---:|---|
-| Organizer training (synthetic) | 196 | 1.0000 | 1.0000 | [Result](https://github.com/00200200/HackNation2026-2/blob/fe2b2fd47ae6759e066d81958cca0d84f8b34e69/evals/results/latest.json) |
-| Organizer scans | 30 | 1.0000 | 0.9974 | [Result](https://github.com/00200200/HackNation2026-2/blob/fe2b2fd47ae6759e066d81958cca0d84f8b34e69/evals/results/organizer-scans.json) |
-| Local corpus 1, all | 39 | 0.9231 | 0.8900 | [Result](https://github.com/00200200/HackNation2026-2/blob/fe2b2fd47ae6759e066d81958cca0d84f8b34e69/evals/results/ocr-alternatives.json) |
-| Local corpus 2, dev | 39 | 0.9244 | 0.8951 | [Result](https://github.com/00200200/HackNation2026-2/blob/fe2b2fd47ae6759e066d81958cca0d84f8b34e69/evals/results/ocr-alternatives.json) |
+| Organizer training (synthetic) | 196 | 1.0000 | 1.0000 | [Result](https://github.com/00200200/HackNation2026-2/blob/35b1d0159b580268d10aaebbbd6ce7c01aeb2911/evals/results/latest.json) |
+| Organizer scans | 30 | 1.0000 | 0.9974 | [Result](https://github.com/00200200/HackNation2026-2/blob/35b1d0159b580268d10aaebbbd6ce7c01aeb2911/evals/results/organizer-scans.json) |
+| Local corpus 1, all | 39 | 0.9231 | 0.8900 | [Result](https://github.com/00200200/HackNation2026-2/blob/35b1d0159b580268d10aaebbbd6ce7c01aeb2911/evals/results/ocr-alternatives.json) |
+| Local corpus 2, dev | 39 | 0.9244 | 0.8951 | [Result](https://github.com/00200200/HackNation2026-2/blob/35b1d0159b580268d10aaebbbd6ce7c01aeb2911/evals/results/ocr-alternatives.json) |
 
 The public training score uses the account prefixes printed in the PDFs. The local rows report the `fast` Tesseract arm of the OCR-alternatives experiment. All four rows used local rules without a model endpoint. UZP accepts approximate matches for five long fields. Our scorer uses normalized Levenshtein similarity for those fields. The strict column uses the project's earlier scoring method. [Scoring rules](https://github.com/00200200/HackNation2026-2/issues/59) · [Evaluation method](docs/readme/reference.md#measure)
 
