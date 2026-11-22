@@ -315,7 +315,7 @@ def test_the_upload_limit_stops_a_second_zip_before_unpacking(tmp_path, monkeypa
     (first := tmp_path / "a").mkdir()
     (second := tmp_path / "b").mkdir()
     uploads = [zip_upload(first, {"s1/x.pdf": b"A"}), zip_upload(second, {"s2/y.pdf": b"B"})]
-    with pytest.raises(ValueError, match="za duże"):
+    with pytest.raises(ValueError, match="Przekroczono limit przesyłania"):
         upload_sources("sprawa", uploads, tmp_path)
     assert not list(tmp_path.glob("zip1-*.pdf"))
 
@@ -385,3 +385,26 @@ pattern = '^NIP:[ \t]*(\d+)$'
     assert json.loads(result.text) == {"wnioskodawca": {"nip": "111"}, "zamawiajacy": {"nip": "222"}}
     fields = {field["field"]: field for field in result.trace["fields"]}
     assert fields["zamawiajacy.nip"]["snippet"] == "NIP: 222"
+
+
+def test_a_damaged_entry_gets_a_polish_message_and_a_disk_error_keeps_its_own(tmp_path, monkeypatch):
+    import errno
+    import shutil
+
+    upload = zip_upload(tmp_path, {"s1/a.pdf": b"%PDF-1.4"})
+    monkeypatch.setattr(shutil, "copyfileobj", lambda *_: (_ for _ in ()).throw(OSError("bad data")))
+    with pytest.raises(ValueError, match="Nie udało się rozpakować s1/a.pdf"):
+        upload_sources("sprawa", [upload], tmp_path)
+    full = OSError(errno.ENOSPC, "No space left on device")
+    monkeypatch.setattr(shutil, "copyfileobj", lambda *_: (_ for _ in ()).throw(full))
+    with pytest.raises(OSError, match="No space left"):
+        upload_sources("sprawa", [upload], tmp_path)
+
+
+def test_the_fallback_trace_keeps_the_expired_optional_ocr(monkeypatch):
+    from kio2json import batch
+
+    monkeypatch.setattr(batch, "build", lambda *_: 1 / 0)
+    trace = batch.explained("appeal", {}, {"warnings": [], "optional_ocr_expired": True})
+    assert trace["optional_ocr_expired"] is True
+    assert trace["trace_error"].startswith("ZeroDivisionError")

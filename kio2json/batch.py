@@ -113,7 +113,8 @@ def explained(label: str | None, data: dict, events: dict) -> dict:
         return build(label, data, events)
     except Exception as error:  # noqa: BLE001 - the trace only reads values the extraction already produced
         empty = {"class": label, "routing": None, "pages": None, "fields": [], "warnings": events["warnings"]}
-        return empty | {"trace_error": f"{type(error).__name__}: {error}"}
+        expired = {"optional_ocr_expired": True} if events.get("optional_ocr_expired") else {}
+        return empty | expired | {"trace_error": f"{type(error).__name__}: {error}"}
 
 
 _worker_classes: list[DocumentClass]

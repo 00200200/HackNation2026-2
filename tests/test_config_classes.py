@@ -168,10 +168,11 @@ def test_failed_checks_null_or_keep_the_value_and_reach_the_trace(tmp_path, monk
     result = read_document(pdf, classes, explain=True)
     record = json.loads(result.text)
     assert record == EXPECTED | {"nip": None, "strona": None, "data_wezwania": "2032-03-11"}
+    # Values kept with a warning come first, checked where the record holds them; rejected values follow.
     assert result.trace["warnings"] == [
+        {"field": "data_wezwania", "check": "date_range", "value": "2032-03-11", "action": "warn"},
         {"field": "nip", "check": "nip", "value": "1234567884", "action": "null"},
         {"field": "strona", "check": "one_of", "value": "Wykonawcy", "action": "null"},
-        {"field": "data_wezwania", "check": "date_range", "value": "2032-03-11", "action": "warn"},
     ]
 
 
@@ -612,13 +613,12 @@ def test_check_warnings_survive_the_early_core_field_return(monkeypatch):
 
     definition = next(c for c in parse_classes(class_sources(extra=[EXAMPLES])) if c.id == "accession")
     definition = definition.model_copy(update={"engines": ["labelled_fields", "llm"]})
-    monkeypatch.setattr(engines, "missing_core_fields", lambda class_id, record: False)
+    monkeypatch.setattr(engines, "missing_core_fields", lambda record: False)
+    page = ACCESSION_PAGE.replace("123-456-78-83", "123-456-78-84").replace("11.03.2026", "11.03.2032")
     with trace.recording() as events:
-        record = engines.extract(
-            definition, ACCESSION_PAGE.replace("123-456-78-83", "123-456-78-84"), check_core_fields=True
-        )
-    assert record["nip"] is None
-    assert [w["field"] for w in events["warnings"]] == ["nip"]
+        record = engines.extract(definition, page, check_core_fields=True)
+    assert (record["nip"], record["data_wezwania"]) == (None, "2032-03-11")
+    assert [w["field"] for w in events["warnings"]] == ["data_wezwania", "nip"]
 
 
 def test_printed_commands_quote_a_folder_with_spaces(tmp_path, monkeypatch, capsys):
@@ -636,6 +636,11 @@ def test_printed_commands_quote_a_folder_with_spaces(tmp_path, monkeypatch, caps
         (125.125, "Stawka: 125.125", "Stawka: 125.12"),
         (15.5, "Kwota: 15,50", "Kwota: 15,55"),
         (15.0, "15,0 zł", "15,05"),
+        (150, "Kwota: 150,00 zł", "Kwota: 150.000 zł"),
+        (1.5, "Kwota: 1,50 zł", "Kwota: 1.500,00 zł"),
+        (500, "Wpis: 500,00 zł", "Wpis: 7.500,00 zł"),
+        (1000, "Kwota: 1 000,00 zł", "do godz. 10.00"),
+        (7500, "Wpis: 7.500,00 zł", "Wpis: 17 500 zł"),
     ],
 )
 def test_numbers_keep_their_full_precision_in_the_source_search(value, found, missed):
@@ -643,3 +648,151 @@ def test_numbers_keep_their_full_precision_in_the_source_search(value, found, mi
 
     assert value_pattern(value).search(found)
     assert not value_pattern(value).search(missed)
+
+
+PEOPLE = """id = "form"
+engines = ["labelled_fields"]
+[routing]
+required = ['^Formularz$']
+[fields.osoby]
+type = "list"
+match_by = "imie"
+instruction = "People."
+pattern = '^Osoba:[ \\t]*(.+)$'
+[fields.osoby.items]
+type = "object"
+instruction = "Person."
+[fields.osoby.items.fields.imie]
+type = "string"
+instruction = "Name."
+pattern = '^(\\w+)'
+[fields.osoby.items.fields.pesel]
+type = "string"
+instruction = "PESEL."
+validators = ["pesel"]
+on_invalid = "warn"
+pattern = 'PESEL[ \\t]*(\\d{11})'
+"""
+
+
+def test_a_kept_value_in_a_list_row_is_reported_in_its_merged_row(tmp_path):
+    form = load(tmp_path, PEOPLE).model_copy(update={"engines": ["labelled_fields", "python"]})
+    second = {"osoby": [{"imie": "Anna", "pesel": "44051401358"}, {"imie": "Jan", "pesel": "02070803628"}]}
+    record, events = traced_extract(form, "Formularz\nOsoba: Jan\nOsoba: Anna", second)
+    # Rows merge by name in the first reading's order, so Anna's failed PESEL ends up in the second row.
+    assert record["osoby"] == [{"imie": "Jan", "pesel": "02070803628"}, {"imie": "Anna", "pesel": "44051401358"}]
+    assert [(w["field"], w["value"]) for w in events["warnings"]] == [("osoby[1].pesel", "44051401358")]
+
+
+@pytest.mark.parametrize("key", ['"data.wezwania"', '"osoby[0]"'])
+def test_a_field_key_with_a_dot_or_brackets_is_refused(tmp_path, key):
+    form = f"""id = "form"
+engines = ["labelled_fields"]
+[routing]
+required = ['^Formularz$']
+[fields.{key}]
+type = "string"
+instruction = "Date."
+pattern = '^Data:[ \\t]*(.+)$'
+"""
+    with pytest.raises(ValueError, match="may not contain"):
+        load(tmp_path, form)
+
+
+def test_a_rejected_value_in_a_later_engines_row_is_reported_at_its_merged_row(tmp_path):
+    form = load(tmp_path, PEOPLE.replace('on_invalid = "warn"', 'on_invalid = "null"'))
+    form = form.model_copy(update={"engines": ["labelled_fields", "python"]})
+    second = {"osoby": [{"imie": "Anna", "pesel": "44051401358"}, {"imie": "Jan", "pesel": "02070803628"}]}
+    record, events = traced_extract(form, "Formularz\nOsoba: Jan\nOsoba: Anna", second)
+    assert record["osoby"] == [{"imie": "Jan", "pesel": "02070803628"}, {"imie": "Anna", "pesel": None}]
+    assert [(w["field"], w["value"]) for w in events["warnings"]] == [("osoby[1].pesel", "44051401358")]
+
+
+def test_a_nested_capture_across_a_page_break_is_located_by_its_value():
+    import re
+
+    from kio2json.trace import field_source
+
+    flags = re.IGNORECASE | re.MULTILINE
+    patterns = [re.compile(r"(?s)^Zamawiający:(.*?)^Koniec", flags), re.compile(r"^NIP:[ \t]*(\d{10})$", flags)]
+    pages = ["Zamawiający:\nNIP: 5260250995", "Koniec"]
+    entry = field_source(
+        "z.nip", "5260250995", pages, [], [("labelled_fields", {"z": {"nip": "5260250995"}})], patterns
+    )
+    assert (entry["page"], entry["snippet"]) == (1, "NIP: 5260250995")
+
+
+def test_a_restored_value_is_traced_to_the_engine_that_read_it():
+    from kio2json import trace
+
+    page = ACCESSION_PAGE.replace("11.03.2026", "11.03.2032")
+    record, events = traced_extract(accession_with_second_engine(), page, {"nip": "1234567883"})
+    date = next(f for f in trace.build("accession", record, events)["fields"] if f["field"] == "data_wezwania")
+    assert (date["engine"], date["page"], date["snippet"]) == ("rule", 1, "Data doręczenia wezwania: 11.03.2032")
+
+
+def test_a_nested_field_is_located_inside_its_parents_capture(tmp_path):
+    from kio2json import trace
+
+    form = load(
+        tmp_path,
+        """id = "form"
+engines = ["labelled_fields"]
+[routing]
+required = ['^Formularz$']
+[fields.zamawiajacy]
+type = "object"
+instruction = "Buyer."
+pattern = '(?s)^Zamawiający:(.*?)^Koniec'
+[fields.zamawiajacy.fields.nip]
+type = "string"
+instruction = "Buyer's NIP."
+pattern = '^NIP:[ \\t]*(\\d{10})$'
+""",
+    )
+    page = "Formularz\nWykonawca: Alfa, NIP: 5260250995\nZamawiający:\nNIP: 5260250995\nKoniec"
+    record, events = traced_extract(form, page)
+    (field,) = trace.build("form", record, events)["fields"]
+    assert (field["value"], field["page"], field["snippet"]) == ("5260250995", 1, "NIP: 5260250995")
+
+
+def test_a_record_of_another_shape_has_no_core_fields():
+    from kio2json.engines import missing_core_fields
+
+    assert missing_core_fields({"sygnatura": None}) is False
+
+
+def test_model_profile_accepts_the_colon_form_of_an_organizer_extractor(tmp_path):
+    appeal = (ROOT / "config" / "classes" / "appeal.toml").read_text(encoding="utf-8")
+    copy = appeal.replace('id = "appeal"', 'id = "appeal_copy"', 1).replace(
+        'extractor = "kio2json.appeal.extract"', 'extractor = "kio2json.appeal:extract"', 1
+    )
+    assert load(tmp_path, copy, "appeal_copy.toml").model_profile
+
+
+def test_a_rejected_value_keeps_its_row_through_a_third_engine(tmp_path, monkeypatch):
+    from kio2json import engines
+
+    unlisted = PEOPLE.replace("pattern = '^Osoba:[ \\t]*(.+)$'\n", "").replace(
+        'on_invalid = "warn"', 'on_invalid = "null"'
+    )
+    form = load(tmp_path, unlisted).model_copy(update={"engines": ["labelled_fields", "python", "llm"]})
+    bind = engines.bind_engine
+    monkeypatch.setattr(
+        engines,
+        "bind_engine",
+        lambda name, *args, **kw: (lambda text: {"osoby": []}) if name == "llm" else bind(name, *args, **kw),
+    )
+    second = {"osoby": [{"imie": "Anna", "pesel": "44051401358"}, {"imie": "Anna", "pesel": "02070803628"}]}
+    record, events = traced_extract(form, "Formularz", second)
+    assert record["osoby"] == [{"imie": "Anna", "pesel": None}, {"imie": "Anna", "pesel": "02070803628"}]
+    assert [(w["field"], w["value"]) for w in events["warnings"]] == [("osoby[0].pesel", "44051401358")]
+
+
+def test_a_later_row_with_a_repeated_identity_is_not_merged_or_reported(tmp_path):
+    form = load(tmp_path, PEOPLE.replace('on_invalid = "warn"', 'on_invalid = "null"'))
+    form = form.model_copy(update={"engines": ["labelled_fields", "python"]})
+    second = {"osoby": [{"imie": "Anna", "pesel": "44051401358"}, {"imie": "Anna", "pesel": "02070803628"}]}
+    record, events = traced_extract(form, "Formularz\nOsoba: Anna", second)
+    assert record["osoby"] == [{"imie": "Anna", "pesel": None}]
+    assert events["warnings"] == []

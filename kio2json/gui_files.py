@@ -2,7 +2,6 @@
 
 import base64
 import hashlib
-import lzma
 import ntpath
 import os
 import shutil
@@ -35,8 +34,12 @@ def validate_name(name: str) -> None:
 
 ZIP_MAX_FILES = 500
 ZIP_MAX_BYTES = 1 << 30
+try:
+    from lzma import LZMAError
+except ImportError:  # Python built without lzma: zipfile reports LZMA entries as unsupported instead.
+    LZMAError = RuntimeError
 # Reading an entry can fail on encryption, an unsupported method or damaged data in any of its codecs.
-UNREADABLE_ENTRY = (RuntimeError, NotImplementedError, BadZipFile, zlib.error, lzma.LZMAError, EOFError, OSError)
+UNREADABLE_ENTRY = (RuntimeError, NotImplementedError, BadZipFile, zlib.error, LZMAError, EOFError)
 
 
 def entry_name(entry: ZipInfo) -> str:
@@ -77,7 +80,9 @@ def zip_sources(
                 pdfs.append((index, entry, name, parts))
         # zipfile reads no more than an entry's declared size, so checking those sizes first bounds the unpacking.
         if len(pdfs) > budget[0] or sum(entry.file_size for _, entry, _, _ in pdfs) > budget[1]:
-            raise ValueError(f"Archiwum jest za duże. Limit to {ZIP_MAX_FILES} plików PDF i 1 GB po rozpakowaniu.")
+            raise ValueError(
+                f"Przekroczono limit przesyłania: najwyżej {ZIP_MAX_FILES} plików PDF i 1 GB po rozpakowaniu."
+            )
         for index, entry, name, parts in pdfs:
             for part in parts:
                 validate_name(part)
@@ -85,7 +90,10 @@ def zip_sources(
             try:
                 with bundle.open(entry) as source, target.open("wb") as copy:
                     shutil.copyfileobj(source, copy)
-            except UNREADABLE_ENTRY:
+            except (*UNREADABLE_ENTRY, OSError) as error:
+                # A codec's data error has no errno; a full disk or a permission error keeps its own message.
+                if isinstance(error, OSError) and error.errno is not None:
+                    raise
                 raise ValueError(
                     f"Nie udało się rozpakować {name}. Archiwum może być zaszyfrowane hasłem albo uszkodzone."
                 ) from None
@@ -114,7 +122,9 @@ def upload_sources(case: str, files: list[FileInfo], directory: Path | None = No
         else:
             raise ValueError(f"Plik {name} musi być plikiem PDF albo archiwum ZIP.")
         if len(sources) > ZIP_MAX_FILES or unpacked > ZIP_MAX_BYTES:
-            raise ValueError(f"Za dużo plików naraz. Limit to {ZIP_MAX_FILES} plików PDF i 1 GB po rozpakowaniu.")
+            raise ValueError(
+                f"Przekroczono limit przesyłania: najwyżej {ZIP_MAX_FILES} plików PDF i 1 GB po rozpakowaniu."
+            )
     if not sources:
         raise ValueError("W archiwum nie ma plików PDF.")
     return sources

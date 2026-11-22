@@ -2,6 +2,7 @@
 
 from collections import Counter
 from collections.abc import Callable
+from copy import deepcopy
 from functools import partial
 
 from . import trace
@@ -91,32 +92,74 @@ def bind_engine(
     return partial(extract_llm, definition, model=model)
 
 
-def settle_checks(values: dict, failed: list[dict], held: dict) -> None:
-    """Return held "warn" readings to fields still empty, then report each failed check the record still shows."""
-    for path, value in held.items():
+def merged_path(fields: dict, candidate: dict, merged: dict, path: str) -> str | None:
+    """Where a later reading's value sits right after its merge, or None if its row was not merged.
+
+    This follows `fill`: the record keeps its own rows in order, takes a whole list it lacked, and joins a later
+    row to its one row with the same identity when that identity is also unique in the later reading.
+    """
+    field, source, target, parts = None, candidate, merged, []
+    for key, index in trace.PATH_PARTS.findall(path):
+        if not index:
+            field = (fields if field is None else field.fields or {}).get(key)
+            if field is None or not isinstance(source, dict) or not isinstance(target, dict):
+                return None
+            source, target = source.get(key), target.get(key)
+            parts.append(f".{key}" if parts else key)
+            continue
+        row = int(index)
+        if not isinstance(source, list) or not isinstance(target, list) or row >= len(source):
+            return None
+        if target is source:  # The merge took this reading's whole list.
+            final = row
+        elif field.match_by and (name := identity(source[row], field.match_by)) is not None:
+            matches = [i for i, other in enumerate(target) if identity(other, field.match_by) == name]
+            if [identity(other, field.match_by) for other in source].count(name) != 1 or len(matches) != 1:
+                return None
+            final = matches[0]
+        else:
+            return None
+        source, target, field = source[row], target[final], field.items
+        parts.append(f"[{final}]")
+    return "".join(parts)
+
+
+def settle_checks(fields: dict, values: dict, rejected: list[dict], held: dict) -> None:
+    """Return held "warn" readings to fields still empty, then report the failed checks the record still shows.
+
+    Kept values are checked again where the merged record holds them. A rejected value, already placed at its
+    merged path, is reported while that place stays empty.
+    """
+    for path, (candidate, value) in held.items():
         if trace.lookup(values, path, missing=MISSING) is None:
             trace.assign(values, path, value)
-    kept = []
-    for warning in failed:
+            # The trace finds the producing engine through its candidate.
+            trace.assign(candidate, path, value)
+    kept = [warning for warning in check_record(fields, deepcopy(values)) if warning["action"] == "warn"]
+    for warning in rejected:
         final = trace.lookup(values, warning["field"], missing=MISSING)
-        emptied = warning["action"] == "null" and final is None
-        if (emptied or final == warning["value"]) and warning not in kept:
+        if (final is None or final is MISSING) and warning not in kept:
             kept.append(warning)
     trace.note_warnings(kept)
 
 
-def missing_core_fields(class_id: str, record: dict) -> bool:
-    """A missing party or transaction detail warrants a second reading of a rule-routed document."""
-    if class_id == "appeal":
+def missing_core_fields(record: dict) -> bool:
+    """A missing party or transaction detail warrants a second reading of a rule-routed document.
+
+    The organizer's record shape decides which details count; any other record has none.
+    """
+    if "Odwolujacy" in record:
         return not all(any(row.get("nazwa") for row in record[key]) for key in ("Odwolujacy", "Zamawiajacy"))
-    if class_id == "power_of_attorney":
+    if "mocodawca" in record:
         principals = (row["data"] for row in record["mocodawca"])
         return not (
             any(party.get("nazwa") or party.get("imie_nazwisko") for party in principals)
             and any(person.get("imie_nazwisko") for person in record["pelnomocnicy"])
         )
-    payment = record["przelew_bankowy"]
-    return any(payment[key] is None for key in ("kwota", "data_operacji", "tytul", "na_rachunek", "z_rachunku"))
+    if "przelew_bankowy" in record:
+        payment = record["przelew_bankowy"]
+        return any(payment[key] is None for key in ("kwota", "data_operacji", "tytul", "na_rachunek", "z_rachunku"))
+    return False
 
 
 def extract(
@@ -131,7 +174,7 @@ def extract(
     check_core_fields: bool = False,
 ) -> dict:
     values = None
-    failed = []
+    rejected = []
     held = {}
     trace.note("declared_fields", definition.fields)
     fill_empty = definition.profile.mode in ("RL", "LR")
@@ -154,8 +197,9 @@ def extract(
                 focus_charge(values["OdwolanieKIO"], source, model=model)
                 if charge_focus == "only":
                     break
-        if engine == "llm" and check_core_fields and not missing_core_fields(definition.id, values):
-            settle_checks(values, failed, held)
+        if engine == "llm" and check_core_fields and not missing_core_fields(values):
+            if definition.checked:
+                settle_checks(definition.fields, values, rejected, held)
             return values
         if engine == "python" and ocr_python is not None:
             candidate = ocr_python()
@@ -174,28 +218,40 @@ def extract(
 
                 reassess(definition.id, candidate, first_page, model=model)
         trace.note_candidate(engine, candidate)
-        if definition.checked:
-            # A failed check empties the value, so a later engine can fill it. A value the field keeps
-            # ("warn") is held aside too, and returns only if no later engine supplies a valid one.
-            found = check_record(definition.fields, candidate)
-            failed += found
-            for warning in found:
-                if warning["action"] == "warn":
-                    held.setdefault(warning["field"], warning["value"])
-                    trace.assign(candidate, warning["field"], None)
+        # A failed check empties the value, so a later engine can fill it. A value the field keeps
+        # ("warn") is held aside too, and returns only if no later engine supplies a valid one.
+        found = check_record(definition.fields, candidate) if definition.checked else []
+        for warning in found:
+            path = warning["field"]
+            # A list row can be merged by identity into another position, so only values outside lists are held.
+            if warning["action"] == "warn" and "[" not in path:
+                # The first engine's reading is the one returned if no engine passes the check.
+                held.setdefault(path, (candidate, warning["value"]))
+                trace.assign(candidate, path, None)
         if values is None:
-            values = candidate
+            merged = candidate
         else:
-            values = {
+            merged = {
                 k: fill(f, values.get(k), candidate.get(k), fill_empty=fill_empty) for k, f in definition.fields.items()
             }
+        # Merged rows keep their place, so a rejected value is located in the record right after its merge.
+        for warning in found:
+            path = (
+                warning["field"]
+                if values is None
+                else merged_path(definition.fields, candidate, merged, warning["field"])
+            )
+            if warning["action"] == "null" and path is not None:
+                rejected.append(warning | {"field": path})
+        values = merged
     if definition.profile.mode == "RL" and definition.id == "power_of_attorney":
         for principal in values["mocodawca"]:
             owner = principal["data"]
             if owner["typ"] == "osoba_prawna":
                 # A person's name belongs to an individual grantor or signer.
                 owner["imie_nazwisko"] = None
-    settle_checks(values, failed, held)
+    if definition.checked:
+        settle_checks(definition.fields, values, rejected, held)
     if definition.engines == ["python"]:
         # Python extractors own their normalization and serialization order.
         return values

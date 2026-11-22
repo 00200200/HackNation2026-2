@@ -190,6 +190,7 @@ class OutputField(Config):
             raise ValueError('a non-nullable field with validators needs on_invalid = "warn"')
         if (self.fields is not None) != (self.type == "object") or self.fields == {}:
             raise ValueError("only object fields declare a nonempty fields table")
+        plain_keys(self.fields or {})
         if (self.items is not None) != (self.type == "list"):
             raise ValueError("only list fields declare an items definition")
         if self.match_by is not None:
@@ -205,6 +206,13 @@ class OutputField(Config):
         if self.pattern and self.pattern.groups != 1:
             raise ValueError("field patterns require one capture group")
         return self
+
+
+def plain_keys(fields: dict) -> None:
+    """Field paths such as `osoby[0].pesel` name fields in the trace and the viewer, so keys cannot hold "." or brackets."""
+    for key in fields:
+        if any(char in key for char in ".[]"):
+            raise ValueError(f"field key {key!r} may not contain '.', '[' or ']'")
 
 
 def routing_kind(value) -> str:
@@ -279,6 +287,11 @@ class DocumentClass(Config):
         from .output_schema import record_model
 
         return record_model(self.fields, self.id, allow_abstention=True, spans=True)
+
+    @model_validator(mode="after")
+    def plain_top_keys(self) -> Self:
+        plain_keys(self.fields)
+        return self
 
     @model_validator(mode="after")
     def python_extractor(self) -> Self:
@@ -371,7 +384,7 @@ def parse_classes(sources: ClassSources | Mapping[Path, bytes]) -> list[Document
             definition = DocumentClass.model_validate(raw)
             if definition.id in classes:
                 raise ValueError(f"duplicate class id {definition.id} (also in {classes[definition.id].source})")
-            if definition.model_profile and raw.get("extractor") not in PROFILE_EXTRACTORS:
+            if definition.model_profile and str(raw.get("extractor", "")).replace(":", ".") not in PROFILE_EXTRACTORS:
                 # The model profile's routing and gap checks know only the organizer's Python extractors.
                 raise ValueError("model_profile applies only to the organizer's Python extractors")
             # Enable before the profile copies the class for rule recovery, so the copy is enabled too.

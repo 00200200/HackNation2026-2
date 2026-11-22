@@ -5,6 +5,7 @@ searching the text the extractor read; a value that cannot be found there is rep
 """
 
 import re
+from collections.abc import Sequence
 from contextlib import contextmanager
 from contextvars import ContextVar
 from decimal import Decimal
@@ -114,8 +115,8 @@ def build(label: str | None, record: dict, events: dict) -> dict:
     for box in events.get("boxes", []):
         words.setdefault(box.page, []).append(box)
     for path, value in leaves(record):
-        pattern = declared_pattern(declared, path)
-        trace["fields"].append(field_source(path, value, pages, ocr_pages, candidates, pattern, words))
+        patterns = declared_patterns(declared, path)
+        trace["fields"].append(field_source(path, value, pages, ocr_pages, candidates, patterns, words))
     return trace
 
 
@@ -173,20 +174,47 @@ def assign(record, path: str, value) -> None:
     record[keys[-1]] = value
 
 
-def declared_pattern(fields: dict, path: str) -> re.Pattern | None:
-    """The label pattern a class declares for this field, through nested objects but not list rows.
+def declared_patterns(fields: dict, path: str) -> list[re.Pattern]:
+    """The label patterns on a field's path, outermost first; none for list rows or a field without its own.
 
-    A child of a list row, or of an object with its own pattern, is read inside its parent's capture. On the
-    whole page the child's pattern could find another row or object, so such a field is located by its value.
+    A list row is located by its value: its pattern finds every row, and the trace cannot tell which one.
     """
-    field = None
+    field, patterns = None, []
     for key, index in PATH_PARTS.findall(path):
-        if index or (field is not None and field.pattern is not None):
-            return None
-        field = (fields if field is None else field.fields or {}).get(key)
+        field = None if index else (fields if field is None else field.fields or {}).get(key)
         if field is None:
+            return []
+        if field.pattern is not None:
+            patterns.append(field.pattern)
+    return patterns if field is not None and field.pattern is not None else []
+
+
+def locate(pages: list[str], patterns: Sequence[re.Pattern], value) -> tuple[int, tuple[int, int, str]] | None:
+    """The first page, span and text of a value: inside its label patterns when given, else as printed."""
+    for number, page in enumerate(pages, 1):
+        if patterns:
+            found = scoped_match(patterns, page)
+        else:
+            match = value_pattern(value).search(page)
+            found = match and (match.start(), match.end(), match[0])
+        if found:
+            return number, found
+    return None
+
+
+def scoped_match(patterns: Sequence[re.Pattern], page: str) -> tuple[int, int, str] | None:
+    """Search each pattern inside the previous one's capture, as the labelled engine reads nested objects.
+
+    Returns the innermost match's span on the page and its captured text.
+    """
+    offset, text, found = 0, page, None
+    for pattern in patterns:
+        match = pattern.search(text)
+        if match is None or match[1] is None:
             return None
-    return field.pattern
+        found = (offset + match.start(), offset + match.end(), match[1])
+        offset, text = offset + match.start(1), match[1]
+    return found
 
 
 def field_source(
@@ -195,7 +223,7 @@ def field_source(
     pages: list[str],
     ocr_pages: list[int],
     candidates,
-    pattern: re.Pattern | None = None,
+    patterns: Sequence[re.Pattern] = (),
     words: dict[int, list] | None = None,
 ) -> dict:
     """Locate a value by its field's own label pattern when the class declares one, else by its printed forms.
@@ -207,19 +235,22 @@ def field_source(
         return entry | {"note": "no value extracted"}
     producer = next((engine for engine, candidate in candidates if lookup(candidate, path) == value), None)
     # A label pattern locates only what the labelled engine read; a value from another engine is searched as printed.
-    pattern = pattern if producer == "labelled_fields" else None
-    if pattern is None and (isinstance(value, bool) or (isinstance(value, int) and abs(value) < 100)):
+    patterns = patterns if producer == "labelled_fields" else ()
+    derived = isinstance(value, bool) or (isinstance(value, int) and abs(value) < 100)
+    if not patterns and derived:
         entry["note"] = "derived code or flag, not a printed value"
     else:
-        for number, page in enumerate(pages, 1):
-            match = (pattern or value_pattern(value)).search(page)
-            if match:
-                entry["page"], entry["snippet"] = number, snippet(page, match)
-                # An optional capture group can be empty; the whole match still shows where the label is.
-                printed = (match[1] if pattern is not None else None) or match[0]
-                spelled = word_span((words or {}).get(number, []), printed)
-                entry["boxes"] = [[round(c, 1) for c in (w.x0, w.y0, w.x1, w.y1)] for w in spelled]
-                break
+        located = locate(pages, patterns, value)
+        if located is None and patterns and not derived:
+            # The labelled engine reads the joined pages, so a capture can cross a page break; search the value.
+            located = locate(pages, (), value)
+        if located:
+            number, (start, end, printed) = located
+            page = pages[number - 1]
+            entry["page"], entry["snippet"] = number, snippet(page, start, end)
+            # A whitespace-only capture still shows where the label is.
+            spelled = word_span((words or {}).get(number, []), printed.strip() or page[start:end])
+            entry["boxes"] = [[round(c, 1) for c in (w.x0, w.y0, w.x1, w.y1)] for w in spelled]
         else:
             entry["note"] = "value not found verbatim in the text read"
     if producer is None:
@@ -238,14 +269,19 @@ def field_source(
 
 def value_pattern(value) -> re.Pattern:
     if isinstance(value, float | int):
-        whole, _, fraction = format(Decimal(str(value)), "f").partition(".")
+        whole, _, fraction = format(abs(Decimal(str(value))), "f").partition(".")
         fraction = fraction.rstrip("0")
-        digits = r"[ . ]?".join(re.escape(d) for d in whole)
+        # Thousands may be grouped by a space or a dot ("7 500", "7.500"), and the value must not continue
+        # a longer number on either side: 500 is not the end of "7.500,00".
+        head = len(whole) % 3 or 3
+        digits = r"[ . ]?".join([whole[:head], *(whole[i : i + 3] for i in range(head, len(whole), 3))])
+        start = r"(?<!\d)(?<!\d[ ., ])"
         if fraction:
-            # The printed value may add trailing zeros ("15,50" for 15.5) but no other digits.
-            return re.compile(rf"(?<!\d){digits}[.,]{fraction}0*(?!\d)")
+            # The printed value may pad the cents ("15,50" for 15.5); a longer group is another number.
+            zeros = "0" * max(0, 2 - len(fraction))
+            return re.compile(rf"{start}{digits}[.,]{fraction}(?:{zeros})?(?![.,]?\d)")
         # A whole amount may print ",00", but must not be the integer part of a different amount.
-        return re.compile(rf"(?<!\d){digits}(?:[.,]0+)?(?![.,]?\d)")
+        return re.compile(rf"{start}{digits}(?:[.,]00?)?(?![.,]?\d)")
     text = str(value)
     date = re.fullmatch(r"(\d{4})-(0[1-9]|1[0-2])-(\d{2})", text)
     if date:
@@ -289,11 +325,11 @@ def word_span(words: list, printed: str) -> list:
     return next(([word] for word, token in zip(words, tokens, strict=True) if target in token), [])
 
 
-def snippet(page: str, match: re.Match) -> str:
-    start = page.rfind("\n", 0, match.start()) + 1
-    end = page.find("\n", match.end())
+def snippet(page: str, begin: int, finish: int) -> str:
+    start = page.rfind("\n", 0, begin) + 1
+    end = page.find("\n", finish)
     line = page[start : end if end != -1 else len(page)].strip()
     if len(line) <= SNIPPET_CHARS:
         return line
-    offset = max(0, match.start() - start - 60)
+    offset = max(0, begin - start - 60)
     return "…" + line[offset : offset + SNIPPET_CHARS] + "…"
