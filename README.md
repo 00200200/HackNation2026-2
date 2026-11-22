@@ -91,6 +91,16 @@ downloads one JSON per PDF under its case folder. Failed documents show the reas
 empty file. The viewer keeps temporary copies for the current session. The default configuration
 works offline. Page provenance is used internally and the output follows the organizer’s JSON schema.
 
+When a case contains an appeal and a mandate or receipt, the viewer flags differences in party
+identifiers, attorney names and procedure numbers. It also flags unusual appeal fees when the
+procurement title identifies the category. Select a document to see which files to compare.
+
+Set `KIO_CASE_REPAIR=1` to enable sibling OCR repair in the CLI or viewer. The CLI finishes its
+parallel PDF reads before comparing documents in each `input/<case>/` folder. A replacement needs
+a damaged printed value and one compatible, independently read spelling in a different document
+class. Registry numbers also need a matching party identifier or name. A native text value can be
+corrected only when its NIP checksum fails. Missing fields stay empty.
+
 | Start from the repository | Windows | Linux or macOS |
 |---|---|---|
 | Run the CLI on `input/` and write to `output/` | `.\start.bat` | `./start.sh` |
