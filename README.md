@@ -516,7 +516,9 @@ rules. [OCR results](evals/results/ocr-engines.json)
   accounts. A booking table or bank letter needs both an amount and a date. The extractor binds payer
   and payee separately from fee and refund accounts. Explicit operation or execution dates and transaction IDs take
   precedence over posting dates and daily sequence numbers. An unclear role or conflicting value can
-  leave a field empty.
+  leave a field empty. For an unfamiliar split confirmation heading, the fallback requires a single
+  labelled amount, a transaction date and distinct, explicitly owned accounts. A register or a
+  payment with an explicit refusal can therefore produce an empty object.
 - First-page word positions can recover fields whose labels and values occupy different rows or columns.
   OCR can still split a title or change an amount. For an unrouted scan with confirmation and transaction
   evidence, the default engine can reread the first page at automatic resolution. Conflicting dates,

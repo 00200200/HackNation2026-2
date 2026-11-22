@@ -45,6 +45,11 @@ def date_pattern(separator: str) -> str:
 DATE = date_pattern(r"[-/.]")
 DATE_RE = re.compile(DATE)
 
+ROMAN_MONTHS = ["I", "II", "III", "IV", "V", "VI", "VII", "VIII", "IX", "X", "XI", "XII"]
+# Receipt exports also print dates with a Roman month between day and year.
+RECEIPT_DATE = rf"(?:{DATE}|(?<!\w)\d{{1,2}}[ ./-]+(?i:{'|'.join(ROMAN_MONTHS)})[ ./-]+\d{{4}}(?!\w))"
+RECEIPT_DATE_RE = re.compile(RECEIPT_DATE)
+
 _NAME_PART = rf"[{UPPER}][{LOWER}]+(?:-[{UPPER}][{LOWER}]+)?"
 PERSON = rf"{_NAME_PART}\s+{_NAME_PART}"
 ATTORNEY_RE = re.compile(rf"(?:adw\.|r\.\s?pr\.|adwokat\w*|radc\w+\s+prawn\w+)\s+({PERSON})")
@@ -61,7 +66,10 @@ def to_iso(text: str) -> str | None:
         year, month, day = parts
     else:
         day, month, year = parts
-    month_number = MONTHS.index(month) + 1 if month in MONTHS else int(month)
+    if month.upper() in ROMAN_MONTHS:
+        month_number = ROMAN_MONTHS.index(month.upper()) + 1
+    else:
+        month_number = MONTHS.index(month) + 1 if month in MONTHS else int(month)
     try:
         return date(int(year), month_number, int(day)).isoformat()
     except ValueError:

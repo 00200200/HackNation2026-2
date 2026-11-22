@@ -3,7 +3,9 @@
 import re
 
 from .accounts import ACCOUNT_RE, account_matches, complete_account_match, normalize_account, valid_account
-from .common import DATE, DATE_RE, squash, to_iso
+from .common import RECEIPT_DATE as DATE
+from .common import RECEIPT_DATE_RE as DATE_RE
+from .common import squash, to_iso
 
 SENDER_RE = re.compile(r"nadawc|zleceniodawc|płatnik|obciąż|z rachunku")
 RECIPIENT_RE = re.compile(r"odbiorc|beneficjent|adresat|uznawan|na rachunek")
@@ -36,6 +38,13 @@ STATUS = re.compile(
 )
 PADDING = r"[\s.:]*"
 AMOUNT_RE = re.compile(rf"^{AMOUNT_LABEL}{PADDING}(?:PLN\s*)?[−-]?[ \t]*({MONEY})", re.IGNORECASE | re.MULTILINE)
+WHOLE_AMOUNT = r"[0-9]+(?:[ \u00a0\u202f][0-9]{3})*"
+CURRENCY = r"(?:PLN|zł|EUR)"
+WHOLE_AMOUNT_RE = re.compile(
+    rf"^{AMOUNT_LABEL}{PADDING}(?:{CURRENCY}[ \t]*[−-]?[ \t]*({WHOLE_AMOUNT})[ \t]*$|"
+    rf"[−-]?[ \t]*({WHOLE_AMOUNT})[ \t]*{CURRENCY}\b)",
+    re.IGNORECASE | re.MULTILINE,
+)
 OPERATION_DATE_RE = re.compile(
     rf"^({DATE_LABEL})(?: (?:przelewu|płatności))?{PADDING}({DATE})", re.IGNORECASE | re.MULTILINE
 )
@@ -396,11 +405,9 @@ def transaction_values(text: str) -> tuple[float | None, str | None]:
     raw_amount = amount[1] if amount else description_debit(fields)
     money = _amount(raw_amount) if raw_amount else None
     if money is None:
-        integer = re.search(
-            rf"(?im)^{AMOUNT_LABEL}{PADDING}([0-9]+(?:[ \u00a0\u202f][0-9]{{3}})*)[ \t]*(?:PLN|zł|EUR)\b", fields
-        )
+        integer = WHOLE_AMOUNT_RE.search(fields)
         if integer:
-            money = float("".join(integer[1].split()))
+            money = float("".join((integer[1] or integer[2]).split()))
     dates = [(_date_label(m[1]), m[2]) for m in OPERATION_DATE_RE.finditer(fields)]
     posted = _posted_row(fields)
     if posted:

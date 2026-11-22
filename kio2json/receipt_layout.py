@@ -10,7 +10,7 @@ from rapidfuzz.distance import Levenshtein
 
 from .accounts import ACCOUNT_RE, normalize_account, valid_account
 from .bank_transfer import REFERENCE_RE
-from .common import DATE_RE
+from .common import RECEIPT_DATE_RE as DATE_RE
 from .ocr_normalize import normalize_ocr
 from .pdf_text import WordBox
 

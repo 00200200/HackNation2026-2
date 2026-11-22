@@ -106,29 +106,73 @@ CURRENCY_VALUE = re.compile(
 )
 
 
+SETTLEMENT_CAPTION = re.compile(
+    r"(?:potwierdzenie|poswiadczenie|dowod|zaswiadczenie) (?:wykonania|realizacji|zaksiegowania|rozliczenia)"
+)
+
+
+SINGLE_PAYMENT_SUBJECT = re.compile(
+    r"(?:(?:karta|wydruk|wyciag|metryka|zapis|szczegoly|dane|dokument) )?"
+    r"(?:przelew(?:u)?|transakcj[ai]|operacj[ai]|platnosc[i]?)"
+    r"(?: (?:bankow|krajow|zagraniczn|wychodzac|przychodzac)(?:a|y|ej|ego))?"
+)
+
+
+def _settlement_caption(line: str, following: str) -> bool:
+    """A form can name the payment and attest its execution in separate heading segments."""
+    parts = re.split(r"\s+[-–—/|·]\s+", line)
+    if len(parts) == 1:
+        parts.append(following)
+    return len(parts) == 2 and any(
+        SETTLEMENT_CAPTION.fullmatch(caption) and SINGLE_PAYMENT_SUBJECT.fullmatch(subject)
+        for caption, subject in (parts, reversed(parts))
+    )
+
+
 def _payment_card(first: str, folded: str, amount: float | None, day: str | None) -> bool:
     """Require account, value and settlement evidence even when no exact receipt title matches."""
     lines = folded.splitlines()
     titles = []
+    split_caption = False
     bank_header = False
-    for line in lines[:10]:
+    for index, line in enumerate(lines[:10]):
         if re.search(r"\b(?:zalacznik|w zalaczeniu|przedkladam|przesylam)\w*", line):
             return False
         if ORDER_OR_COPY.search(line) or re.match(r"^(?:dyspozycja|polecenie|zlecenie)\b", line):
             return False
+        # Only the opening heading (optionally following its issuer) owns this assertion.
+        if index == 0 or (index == 1 and bank_header):
+            split_caption |= _settlement_caption(line, lines[index + 1] if index + 1 < len(lines) else "")
         bank_header |= bool(re.match(r"^(?:[a-z-]+ ){0,2}bank\b", line))
         if (BANK_DOCUMENT.match(line) or PAYMENT_SUBJECT.match(line)) and PAYMENT_SUBJECT.search(line):
             if re.search(r"\b(?:zlecenia|zlecenie|przyjet\w*|rejestracji|autoryzacji|do realizacji)\b", line):
                 return False
             titles.append(line)
-    if not (titles or bank_header) or not (amount is not None or CURRENCY_VALUE.search(folded)):
+    if not (titles or bank_header or split_caption) or not (amount is not None or CURRENCY_VALUE.search(folded)):
         return False
     accounts = bank_transfer.ANCILLARY_ACCOUNT.sub("", bank_transfer.normalize_account_spacing(first))
     numbers = {account_identity("".join(m[1].split())) for m in account_matches(accounts)}
     if len(numbers) != 2:
         return False
-    if None in bank_transfer.printed_accounts(accounts).values():
+    roles = bank_transfer.printed_accounts(accounts)
+    if None in roles.values():
         return False
+    if split_caption:
+        # An unfamiliar caption can also appear on a list of transactions. Require
+        # one dated amount and explicitly bound, distinct debit and credit cells.
+        amount_count = len(bank_transfer.AMOUNT_RE.findall(first)) + len(bank_transfer.WHOLE_AMOUNT_RE.findall(first))
+        return bool(
+            amount is not None
+            and day is not None
+            and any(
+                not match[1].casefold().endswith("zlecenia") and to_iso(match[2]) == day
+                for match in bank_transfer.OPERATION_DATE_RE.finditer(first)
+            )
+            and amount_count == 1
+            and len(bank_transfer.REFERENCE_RE.findall(first)) <= 1
+            and set(roles) == {"sender", "recipient"}
+            and account_identity(roles["sender"]) != account_identity(roles["recipient"])
+        )
     booked = any(
         m[1].casefold().endswith(("księgowania", "wykonania", "obciążenia")) and to_iso(m[2])
         for m in bank_transfer.OPERATION_DATE_RE.finditer(first)
@@ -156,14 +200,28 @@ def _cue_score(text: str, cues: tuple[str, ...]) -> int:
 # A "stan" field can also describe a balance or another bank-specific state.
 # It vetoes a confirmation only when the value actually describes a pending or failed payment.
 NONEXECUTED_STATE = re.compile(
-    r"^(?:przelew\s+)?(?:oczekuj|odrzucon|anulowan|wstrzyman|zaplanowan|"
+    r"^(?:przelew\s+)?(?:oczekuj|odrzucon|odmow[ay]\b|odmówion|anulowan|wstrzyman|zaplanowan|"
     r"nie\s*(?:wykon|opłac|zrealiz|zaksięgow|zatwierdz|rozlicz)|w (?:realizacji|toku)|do (?:realizacji|akceptacji))",
     re.IGNORECASE,
 )
 
 
+REFUSAL_REASON = re.compile(r"^(?:powód|przyczyna) (?:odrzucenia|odmowy|anulowania)\s*:\s*(.+)$", re.IGNORECASE)
+
+
+PAYMENT_OUTCOME = re.compile(rf"^wynik (?:{bank_transfer.STATUS_SCOPE})\s*:\s*(.+)$", re.IGNORECASE)
+
+
 def _nonexecuted(lines: list[str]) -> bool:
     for line in lines:
+        reason = REFUSAL_REASON.match(line)
+        if reason:
+            value = reason[1].strip(" .:–—-").casefold()
+            if re.search(r"\w", value) and value not in {"brak", "nie dotyczy", "n/d", "n/dot", "n/a", "nd"}:
+                return True
+        outcome = PAYMENT_OUTCOME.match(line)
+        if outcome and NONEXECUTED_STATE.match(outcome[1]):
+            return True
         state = bank_transfer.STATUS.match(line)
         if state is None:
             continue
@@ -385,7 +443,7 @@ def classify(pages: list[str], *, ocr_accounts: AccountEvidence | None = None) -
         return None
     amount, day = bank_transfer.transaction_values(first)
     if not conventional or (amount is None and day is None):
-        return "bank_transfer" if _payment_card(first, folded_first, amount, day) else None
+        return "bank_transfer" if not register_heading and _payment_card(first, folded_first, amount, day) else None
 
     # A receipt can print NRB/IBAN in groups other than the domestic 2+6x4.
     first = bank_transfer.normalize_account_spacing(first)
