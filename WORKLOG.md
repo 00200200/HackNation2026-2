@@ -8,11 +8,13 @@ The integration branch combines real-layout appeal, grant and transfer rules wit
 OpenAI-compatible model engine. The default CLI and GUI run locally with the three endpoint
 variables unset. Keyed runs can use a second OCR reading and recover a failed document with local rules.
 
-The opt-in small-model profile uses Mistral’s regional API, compact source spans and bounded PDF workers. [Provider comparison](docs/small-model-providers.md)
+On the jury VM the three regional Mistral settings select Ministral 3B after local routing and rules. One bounded request can fill missing fields using owner-specific source quotes. Populated rule values remain authoritative. Local rules supply the result when the key is absent or inference fails. [Jury runbook](deploy/RUN.md) · [Measured profiles](evals/results/jury-keyed-profile.md)
 
 The batch CLI defaults to up to four PDF workers, with one thread per Tesseract instance and up to three concurrent page reads per PDF. The first OCR pass supplies layout word boxes, and optional OCR has up to 300 seconds per document. A shared batch cutoff stops rereads after 27 minutes for 150 PDFs. Required OCR has a 180-second page watchdog and can retry a stalled page once at 150 dpi.
 
 The local viewer flags disagreements between an appeal, its mandate and its receipt. The CLI and viewer can use independently printed sibling values to repair a damaged reading within one case folder.
+
+The default Tesseract reader accepts a rotated reading when OSD identifies a nonzero turn with confidence of at least 15 and the corrected OCR finds substantially more Polish dictionary words. On searchable scans it can verify a suspect identifier, list marker or displaced line against the printed image.
 
 The grant certificate and board-stamp readers share the copy-attestation check so that a certifier cannot be counted as the issuing officer.
 
@@ -148,6 +150,8 @@ Two and four grant JSONs matched exactly. The ten organizer grants remained exac
 
 ## Log
 
+- 22.11.2026 · Codex · Linked a printed firm name and execution signature to an identified sole trader, including a named proxy signing for the issuer. The frozen panel recovered 5/10 firms and 2/10 signer lists on each rendering. [Results by grant](evals/results/trader-firm-signer.md)
+
 - 22.11.2026 · Codex · Added role-based sole-trader identification in declarations, registry cards and proprietor signatures. The frozen extractor recovered 8/8 reserved proprietor names. [Control and benchmark results](evals/results/sole-trader-grantors.md)
 
 - 22.11.2026 · Codex · Separated sole-trader identities, mandate signatures and challenged acts using the case-linked development split. [Field errors and split results](evals/results/case-mandates-appeals.md)
@@ -261,6 +265,7 @@ Two and four grant JSONs matched exactly. The ten organizer grants remained exac
 - 22.11.2026 · Codex · Fixed appeal party boundaries at numbered headings, parenthesized page counters over scans, labelled OCR receipt accounts and explicit grantor signature blocks. The remaining round-three routing and role errors are tracked in #1.
 
 - 22.11.2026 · Restored independent appeal sections from native and OCR word positions, preserved shared headings and bound party cards to their columns. [Measurements](evals/results/two-column-appeals.json)
+- 22.11.2026 · Measured merged main `725765b` keyless with two workers. Printed-prefix training was 196/196 byte-identical (UZP and strict F1 1.0000), and organizer scans were 29/30 exact (UZP 1.0000). UZP F1 was 0.9512 on fixed variants, 0.9729/0.7923 on linked development/reserved cases and 0.9286/0.9244 on corpus 1/2 development. The 150-PDF mixed batch took 343.53 seconds. [Measurements](evals/results/merged-main-725765b.json)
 
 - 22.11.2026 · Added corroborating Polish filing and payment cues, scoped fields and native two-column reading for issue #63. Re-ran the 240-PDF benchmark and organizer and private gates against the confirmed JSON and account conventions. [Final field counts](evals/results/variants.json)
 
@@ -316,6 +321,14 @@ These runs used local rules with the three endpoint variables unset. The two loc
 - 2026-11-22 · Transfer confirmations can bind a split execution heading to a single dated amount and two explicitly owned accounts. Receipt dates also accept Roman months and labelled whole amounts can place the currency first.
 - 22.11.2026 · Codex · Added bank-attestation, single-entry history and settled-detail rules. The development bank letters routed 4/4 with 0.9767 UZP F1. The reserved history, operation-detail and order-detail layouts remained at 0/4 each. [Measurements](evals/results/case-transfers.json)
 - 22.11.2026 · Codex · Integrated the bank-letter update with main `cf67694`. The merged extractor `95c87f3` scored 0.9729 development and 0.7923 reserved UZP F1, matched all 196 training outputs and scored 29/30 exact on serial organizer scans. [Results](evals/results/case-transfers.json)
+- 22.11.2026 · Codex · Router `b5cdc5b` recovered two of four reserved receipts in each of the history, operation-detail and order-detail families. Reserved UZP F1 rose from 0.7923 to 0.8159 on the second blind evaluation. Development counts and all 52 negative outputs held. [Results](evals/results/case-transfer-routing.json)
 - 22.11.2026 · Codex · Added the seeded case-linked benchmark on `feat/case-benchmark`, pairing each native appeal, mandate, transfer and near-negative with a scan and grouping the results by case and layout. Main `fa9937e` scored 0.7191 UZP and 0.6617 strict on 208 PDFs. [Measurements](evals/results/case-benchmark.json)
 - 22.11.2026 · Codex · Integrated the additional document families and matched native controls from #88 as `make eval-document-variants`. The fixed #69/#93 benchmark still runs with `make eval-variants`. · integrate/pr88
 - 22.11.2026 · Codex · Added grammatical agreement for descriptive appellant and buyer captions and linked printed joint-procurement lead references to numbered member identities on appeal cards.
+- 22.11.2026 · Codex · Added cardinal orientation checks and targeted image verification for searchable scans. The reproducible 39-PDF organizer-derived panel runs with `make eval-rotation-textlayer`.
+
+- 2026-11-22 — Jury profile: use regional Ministral 3B for evidence-checked field completion after local extraction, with shared time and concurrency limits across PDF workers.
+- 22.11.2026 · Refreshed the [jury pipeline diagram](docs/pipeline/pipeline.pdf) and [README results](README.md#results) with the merged-main scorecard at `725765b` and the later receipt-routing results.
+- 22.11.2026 · Codex · The default router rejects all five development transmission forms that main misclassified as grants, in native and scan views. The independent panel matched main on every output. [Delivery-proof measurements](evals/results/delivery-proofs.md)
+- 22.11.2026 · Codex · Rotation and searchable-layer release gates on main `b2fd9c6` preserved 196 training outputs, 30 organizer scans and nine upright development controls byte-for-byte. Five of 39 stress documents improved. The earlier independent acceptance panel missed its thresholds. [Measurements](evals/results/rotation-textlayer.json)
+- 22.11.2026 · Codex · Added bounded date, amount and purpose pairing on routed transfers using first-page word boxes. Repeated captions, competing typed values and unassigned title continuations cause the reader to abstain.

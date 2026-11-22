@@ -1,6 +1,8 @@
 x-jury: &jury
   image: kio2json-jury:local
   pull_policy: never
+  # The native CLI reads this same file from its working directory.
+  # With a missing file or blank key, both entry points use local rules.
   env_file:
     - path: /opt/solution/.env
       required: false

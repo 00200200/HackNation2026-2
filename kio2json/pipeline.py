@@ -36,6 +36,7 @@ from .ocr_grant_register import disputed_register_cells, verified_pages
 from .ocr_signatures import recover_board_stamp
 from .pdf_text import (
     DEFAULT_OCR_ENGINE,
+    MAX_PAGES,
     NoReadableTextError,
     OCRRecognitionError,
     WordBox,
@@ -45,6 +46,7 @@ from .pdf_text import (
 )
 from .receipt_account_crop import recover_account_crops
 from .receipt_layout import append_receipt_fields, has_detached_labels, receipt_cell_fields
+from .receipt_pairing import apply_receipt_cards
 from .receipt_reading import missing_letter_body, read_letter_body
 from .receipt_title import reread_title
 
@@ -154,18 +156,23 @@ def _grant_signers(pdf_path, record, pages, ocr_pages, engine):
         recover_board_stamp(pdf_path, record, pages[0])
 
 
-def _document_rules(definition, pdf_path, pages, ocr_pages, boxes, engine, selected, accounts, blocks):
+def _document_rules(definition, pdf_path, pages, ocr_pages, all_boxes, engine, selected, accounts, blocks):
     """Build the local candidate, including PDF evidence, before optional model gap filling."""
     rules_first = definition.profile.rules_first
-    if definition.extractor is bank_transfer.extract and ocr_pages:
-        record = ocr_extract.extract_bank_transfer(pages, ocr_pages, accounts=accounts)
-        if boxes and 1 in ocr_pages and (definition.engines == ["python"] or definition.profile.mode == "RL"):
-            fields = record["przelew_bankowy"]
-            title = reread_title(pdf_path, boxes, fields["tytul"])
-            if title is not None:
-                fields["tytul"] = title
-        if rules_first and boxes:
-            verify_cells(pdf_path, disputed_account_cells, record, boxes)
+    boxes = [box for box in all_boxes if box.page in ocr_pages]
+    if definition.extractor is bank_transfer.extract:
+        if ocr_pages:
+            record = ocr_extract.extract_bank_transfer(pages, ocr_pages, accounts=accounts)
+            if boxes and 1 in ocr_pages and (definition.engines == ["python"] or definition.profile.mode == "RL"):
+                fields = record["przelew_bankowy"]
+                title = reread_title(pdf_path, boxes, fields["tytul"])
+                if title is not None:
+                    fields["tytul"] = title
+            if rules_first and boxes:
+                verify_cells(pdf_path, disputed_account_cells, record, boxes)
+        else:
+            record = definition.extractor(join_pages(pages))
+        apply_receipt_cards(record["przelew_bankowy"], [box.layout_box for box in all_boxes])
         return record
     if definition.extractor is appeal.extract:
         if ocr_pages and rules_first:
@@ -178,6 +185,8 @@ def _document_rules(definition, pdf_path, pages, ocr_pages, boxes, engine, selec
         apply_appeal_blocks(record, blocks)
         if not ocr_pages:
             ocr_extract.complete_text_appeal(record, pages)
+        if not ocr_pages and len(pages) == MAX_PAGES:
+            appeal.complete_signed_filing(record, pdf_path, len(pages))
         if rules_first and boxes:
             verify_cells(pdf_path, disputed_register_cells, record, boxes)
         return record
@@ -237,7 +246,7 @@ def _process_with_recovery(
         return pages, scanned, boxes
 
     try:
-        return _process(pdf_path, definitions, read, page_sizes, case_readings)
+        return _process(pdf_path, definitions, read, page_sizes, case_readings, on_recovery)
     except Exception:  # The PDF, OCR and model libraries raise unrelated per-document errors.
         if not any(d.enabled and d.profile.keyed for d in definitions):
             raise
@@ -264,6 +273,7 @@ def _process(
     read: Callable[[str], tuple[list[str], list[int], list[WordBox]]],
     page_sizes: dict[int, tuple[float, float]],
     case_readings: list[Reading] | None,
+    on_recovery: Callable[[str], None] | None = None,
 ) -> tuple[str | None, dict]:
     selected = os.getenv("KIO_OCR_ENGINE", DEFAULT_OCR_ENGINE)
     engines = ("tesseract-dpi", "rapidocr") if selected == "hybrid" else (selected,)
@@ -373,17 +383,26 @@ def _process(
                 and definition.profile.mode == "RL"
                 and definition.profile.gap_scope == "incomplete"
             )
+            # Keep physical boxes for all crop and provenance readers below. A
+            # document can mix native, upright OCR and independently rotated pages.
+            layout_boxes = [word.layout_box for word in boxes]
+            layout_sizes = page_sizes | {
+                word.page: word.upright_page_size for word in boxes if hasattr(word, "upright_page_size")
+            }
             page_gutters = {}
             if definition.extractor is appeal.extract:
                 # Match boxes against their original transcript, before routing reordered native cards.
                 appeal_pages = [original_first, *pages[1:]] if original_first and 1 not in ocr_pages else pages
-                ordered, page_gutters = read_appeal_columns(appeal_pages, boxes, page_sizes, ocr_pages)
+                ordered, page_gutters = read_appeal_columns(appeal_pages, layout_boxes, layout_sizes, ocr_pages)
                 if page_gutters:
                     pages = [ordered[i] if i + 1 in page_gutters else page for i, page in enumerate(pages)]
             model_source = pages if page_gutters else primary
             blocks = (
                 party_inventory(
-                    boxes, page_sizes, appeal_cards=definition.extractor is appeal.extract, page_gutters=page_gutters
+                    layout_boxes,
+                    layout_sizes,
+                    appeal_cards=definition.extractor is appeal.extract,
+                    page_gutters=page_gutters,
                 )
                 if definition.extractor in (appeal.extract, power_of_attorney.extract)
                 and definition.profile.rules_first
@@ -391,10 +410,9 @@ def _process(
             )
             pages = read_role_columns(pages, blocks)
             if definition.id == "appeal":
-                pages = restore_party_columns(pages, boxes)
-            scan_boxes = [box for box in boxes if box.page in ocr_pages]
+                pages = restore_party_columns(pages, layout_boxes)
             python_rules = partial(
-                _document_rules, definition, pdf_path, pages, ocr_pages, scan_boxes, engine, selected, accounts, blocks
+                _document_rules, definition, pdf_path, pages, ocr_pages, boxes, engine, selected, accounts, blocks
             )
             record = extract(
                 definition,
@@ -404,6 +422,8 @@ def _process(
                 model_text=join_pages(model_source) if pages is not model_source else None,
                 first_page=primary[0] if primary else None,
                 check_core_fields=check_core_fields,
+                source_pages=model_source,
+                on_recovery=on_recovery,
             )
             if definition.extractor is power_of_attorney.extract and not definition.profile.keyed:
                 _grant_signers(pdf_path, record, pages, ocr_pages, engine)

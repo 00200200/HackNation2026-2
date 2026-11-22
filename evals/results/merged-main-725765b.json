@@ -1,0 +1,1622 @@
+{
+  "extractor": "725765b075a8361f2519002f95f50825b5aa9ed3",
+  "training_run_utc": "2026-11-22T06:09:37+00:00",
+  "configuration": {
+    "profile": "keyless",
+    "workers": 2,
+    "serial_scan_workers": 1,
+    "clean_checkout": true,
+    "python_cpu_count": 2,
+    "omp_thread_limit": 1,
+    "python_version": "3.13.1",
+    "system": "Darwin",
+    "architecture": "arm64",
+    "training_reference": "Organizer training gold with printed account prefixes.",
+    "variants": "make eval-variants, fixed 60-case seed.",
+    "linked_cases": "make eval-cases, default seed and 26 cases. Both views of each document are scored within their assigned split.",
+    "private": "evals.run --corpus <local-corpus> --split dev, once per corpus. Only development PDFs and references were scored.",
+    "scan_protocol": "Score all 30 organizer scans with two workers, then rerun each nonexact JSON individually with one worker and replace those predictions for the after_serial aggregate.",
+    "jury_mix": "evals.jury_batch.make_mix and measure, 90 native PDFs and two copies of the 30 organizer scans."
+  },
+  "public_report_sha256": {
+    "training": "f80100e5dc15e9172adbf782c0eedabc0764a3f09102ac58ab6c2d20cc156282",
+    "organizer_scan_batch": "c04faa588d1be73d9a60a22b06b40ae452a49c0210a8f262a1783e7393a6cf23",
+    "fixed_variants": "f6f47083524e97f6cc3d4c3fcae60bb4fa73ad9d889f388dac53bb98b89e948e",
+    "linked_cases": "d13dcced08f163304072e82ecdec7c48986b75720a677eada694688b425d55a3"
+  },
+  "training": {
+    "micro_f1": 1.0,
+    "micro_f1_strict": 1.0,
+    "exact": 196,
+    "pdfs": 196,
+    "counts": {
+      "tp": 2032,
+      "fp": 0,
+      "fn": 0,
+      "tn": 284
+    },
+    "counts_strict": {
+      "tp": 2316,
+      "fp": 0,
+      "fn": 0
+    },
+    "per_class_f1": {
+      "odwolanie": 1.0,
+      "pelnomocnictwo": 1.0,
+      "przelew": 1.0
+    },
+    "classification_accuracy": 1.0,
+    "negatives_empty": 1.0,
+    "outputs_complete": 1.0,
+    "ordered_sha256": "27ce5adb70df47f1961fc2ec316b6536f864ee1e305252ad97ae657184ce4f54",
+    "control_sha256": "27ce5adb70df47f1961fc2ec316b6536f864ee1e305252ad97ae657184ce4f54",
+    "byte_parity": true,
+    "digest_order": "SHA-256 of concatenated lowercase hex SHA-256 digests of the 196 output files in evaluator case/file order.",
+    "comparison": "two-column-appeals.json / output_byte_parity / ordered_output_digests_sha256 / final"
+  },
+  "organizer_scans": {
+    "batch": {
+      "micro_f1": 1.0,
+      "micro_f1_strict": 0.9974226804123711,
+      "exact": 29,
+      "pdfs": 30,
+      "counts": {
+        "tp": 309,
+        "fp": 0,
+        "fn": 0,
+        "tn": 79
+      },
+      "counts_strict": {
+        "tp": 387,
+        "fp": 1,
+        "fn": 1
+      },
+      "per_class_f1": {
+        "odwolanie": 1.0,
+        "pelnomocnictwo": 1.0,
+        "przelew": 1.0
+      },
+      "classification_accuracy": 1.0,
+      "negatives_empty": null,
+      "outputs_complete": 1.0
+    },
+    "batch_routing": {
+      "odwolanie": {
+        "correct": 10,
+        "total": 10
+      },
+      "pelnomocnictwo": {
+        "correct": 10,
+        "total": 10
+      },
+      "przelew": {
+        "correct": 10,
+        "total": 10
+      },
+      "negatywny": {
+        "correct": 0,
+        "total": 0
+      }
+    },
+    "batch_seconds": 124.97852454194798,
+    "after_serial": {
+      "micro_f1": 1.0,
+      "micro_f1_strict": 0.9974226804123711,
+      "exact": 29,
+      "pdfs": 30,
+      "counts": {
+        "tp": 309,
+        "fp": 0,
+        "fn": 0,
+        "tn": 79
+      },
+      "counts_strict": {
+        "tp": 387,
+        "fp": 1,
+        "fn": 1
+      },
+      "per_class_f1": {
+        "odwolanie": 1.0,
+        "pelnomocnictwo": 1.0,
+        "przelew": 1.0
+      },
+      "classification_accuracy": 1.0,
+      "negatives_empty": null,
+      "outputs_complete": 1.0
+    },
+    "serial_reruns": [
+      {
+        "public_case": "skany/potwierdzenia/0008",
+        "serial_exact": false,
+        "serial_uzp": 1.0,
+        "serial_strict": 0.8333333333333334,
+        "seconds": 9.34
+      }
+    ],
+    "reference": {
+      "docs": 30,
+      "exact": 29,
+      "micro_f1": 1.0,
+      "micro_f1_strict": 0.9974226804123711,
+      "routing_by_class": {
+        "odwolanie": {
+          "correct": 10,
+          "total": 10
+        },
+        "pelnomocnictwo": {
+          "correct": 10,
+          "total": 10
+        },
+        "przelew": {
+          "correct": 10,
+          "total": 10
+        }
+      }
+    }
+  },
+  "control_before_pr_113": {
+    "extractor": "3f7398b6c9784ad585db87942513438d0183c365",
+    "training": {
+      "pdfs": 196,
+      "exact": 196,
+      "micro_f1": 1.0,
+      "micro_f1_strict": 1.0,
+      "ordered_sha256": "27ce5adb70df47f1961fc2ec316b6536f864ee1e305252ad97ae657184ce4f54"
+    },
+    "organizer_scans": {
+      "batch": {
+        "micro_f1": 0.9785123966942149,
+        "micro_f1_strict": 0.9659685863874345,
+        "exact": 20,
+        "pdfs": 30,
+        "counts": {
+          "tp": 296,
+          "fp": 3,
+          "fn": 10,
+          "tn": 79
+        },
+        "counts_strict": {
+          "tp": 369,
+          "fp": 7,
+          "fn": 19
+        },
+        "per_class_f1": {
+          "odwolanie": 0.9971671388101983,
+          "pelnomocnictwo": 0.9935483870967742,
+          "przelew": 0.8865979381443299
+        },
+        "classification_accuracy": 0.9333333333333333,
+        "negatives_empty": null,
+        "outputs_complete": 1.0
+      },
+      "serial_reruns": 10,
+      "exact_after_serial": 29,
+      "all_serial_reruns_uzp_perfect": true
+    }
+  },
+  "fixed_variants": {
+    "cases": 60,
+    "docs": 240,
+    "seed": 63059,
+    "dataset_sha256": "53414e5959d93426f1553cc36fcbe86968fca23edb80a959740654790b20dd03",
+    "micro_f1": 0.9512258064516129,
+    "micro_f1_strict": 0.9264413518886679,
+    "counts": {
+      "tp": 1843,
+      "fp": 17,
+      "fn": 172,
+      "tn": 284
+    },
+    "counts_strict": {
+      "tp": 2097,
+      "fp": 114,
+      "fn": 219
+    },
+    "classification_accuracy": 1.0,
+    "negatives_empty": 1.0,
+    "outputs_complete": 1.0,
+    "per_profile": {
+      "alternative-formats": {
+        "docs": 30,
+        "routing_by_class": {
+          "odwolanie": {
+            "correct": 10,
+            "total": 10
+          },
+          "pelnomocnictwo": {
+            "correct": 10,
+            "total": 10
+          },
+          "przelew": {
+            "correct": 10,
+            "total": 10
+          }
+        },
+        "micro_f1": 0.9622926093514329,
+        "per_class_f1": {
+          "odwolanie": 0.9489795918367347,
+          "pelnomocnictwo": 0.9668874172185431,
+          "przelew": 1.0
+        },
+        "counts": {
+          "tp": 319,
+          "fp": 0,
+          "fn": 25,
+          "tn": 46
+        }
+      },
+      "reordered": {
+        "docs": 30,
+        "routing_by_class": {
+          "odwolanie": {
+            "correct": 10,
+            "total": 10
+          },
+          "pelnomocnictwo": {
+            "correct": 10,
+            "total": 10
+          },
+          "przelew": {
+            "correct": 10,
+            "total": 10
+          }
+        },
+        "micro_f1": 0.9628482972136223,
+        "per_class_f1": {
+          "odwolanie": 0.9514066496163683,
+          "pelnomocnictwo": 0.9629629629629629,
+          "przelew": 1.0
+        },
+        "counts": {
+          "tp": 311,
+          "fp": 0,
+          "fn": 24,
+          "tn": 48
+        }
+      },
+      "scan": {
+        "docs": 30,
+        "routing_by_class": {
+          "odwolanie": {
+            "correct": 10,
+            "total": 10
+          },
+          "pelnomocnictwo": {
+            "correct": 10,
+            "total": 10
+          },
+          "przelew": {
+            "correct": 10,
+            "total": 10
+          }
+        },
+        "micro_f1": 0.9526813880126183,
+        "per_class_f1": {
+          "odwolanie": 0.9490616621983914,
+          "pelnomocnictwo": 0.9444444444444444,
+          "przelew": 0.9743589743589743
+        },
+        "counts": {
+          "tp": 302,
+          "fp": 3,
+          "fn": 27,
+          "tn": 50
+        }
+      },
+      "single-column": {
+        "docs": 30,
+        "routing_by_class": {
+          "odwolanie": {
+            "correct": 10,
+            "total": 10
+          },
+          "pelnomocnictwo": {
+            "correct": 10,
+            "total": 10
+          },
+          "przelew": {
+            "correct": 10,
+            "total": 10
+          }
+        },
+        "micro_f1": 0.9847094801223242,
+        "per_class_f1": {
+          "odwolanie": 0.9744897959183674,
+          "pelnomocnictwo": 1.0,
+          "przelew": 1.0
+        },
+        "counts": {
+          "tp": 322,
+          "fp": 0,
+          "fn": 10,
+          "tn": 45
+        }
+      },
+      "synonyms": {
+        "docs": 30,
+        "routing_by_class": {
+          "odwolanie": {
+            "correct": 10,
+            "total": 10
+          },
+          "pelnomocnictwo": {
+            "correct": 10,
+            "total": 10
+          },
+          "przelew": {
+            "correct": 10,
+            "total": 10
+          }
+        },
+        "micro_f1": 0.8980891719745223,
+        "per_class_f1": {
+          "odwolanie": 0.9489795918367347,
+          "pelnomocnictwo": 0.8489208633093526,
+          "przelew": 0.7628865979381443
+        },
+        "counts": {
+          "tp": 282,
+          "fp": 3,
+          "fn": 61,
+          "tn": 48
+        }
+      },
+      "two-column": {
+        "docs": 30,
+        "routing_by_class": {
+          "odwolanie": {
+            "correct": 10,
+            "total": 10
+          },
+          "pelnomocnictwo": {
+            "correct": 10,
+            "total": 10
+          },
+          "przelew": {
+            "correct": 10,
+            "total": 10
+          }
+        },
+        "micro_f1": 0.9446153846153846,
+        "per_class_f1": {
+          "odwolanie": 0.9717223650385605,
+          "pelnomocnictwo": 0.9006622516556292,
+          "przelew": 0.9090909090909091
+        },
+        "counts": {
+          "tp": 307,
+          "fp": 11,
+          "fn": 25,
+          "tn": 47
+        }
+      }
+    },
+    "per_field": {
+      "OdwolanieKIO.czynnosc_dzien": {
+        "tp": 59,
+        "fp": 0,
+        "fn": 1,
+        "tn": 0,
+        "f1": 0.9915966386554622
+      },
+      "OdwolanieKIO.czynnosc_opis": {
+        "tp": 60,
+        "fp": 0,
+        "fn": 0,
+        "tn": 0,
+        "f1": 1.0
+      },
+      "OdwolanieKIO.czynnosc_powod_id": {
+        "tp": 60,
+        "fp": 0,
+        "fn": 0,
+        "tn": 0,
+        "f1": 1.0
+      },
+      "OdwolanieKIO.data": {
+        "tp": 45,
+        "fp": 0,
+        "fn": 0,
+        "tn": 15,
+        "f1": 1.0
+      },
+      "OdwolanieKIO.miejscowosc": {
+        "tp": 45,
+        "fp": 0,
+        "fn": 0,
+        "tn": 15,
+        "f1": 1.0
+      },
+      "Odwolujacy[].krs": {
+        "tp": 56,
+        "fp": 0,
+        "fn": 0,
+        "tn": 4,
+        "f1": 1.0
+      },
+      "Odwolujacy[].nazwa": {
+        "tp": 60,
+        "fp": 0,
+        "fn": 0,
+        "tn": 0,
+        "f1": 1.0
+      },
+      "Odwolujacy[].nip": {
+        "tp": 60,
+        "fp": 0,
+        "fn": 0,
+        "tn": 0,
+        "f1": 1.0
+      },
+      "Odwolujacy[].pelnomocnik.imie_nazwisko": {
+        "tp": 60,
+        "fp": 0,
+        "fn": 0,
+        "tn": 0,
+        "f1": 1.0
+      },
+      "Odwolujacy[].pelnomocnik.mail": {
+        "tp": 54,
+        "fp": 0,
+        "fn": 6,
+        "tn": 0,
+        "f1": 0.9473684210526315
+      },
+      "Odwolujacy[].pelnomocnik.nazwa": {
+        "tp": 59,
+        "fp": 1,
+        "fn": 0,
+        "tn": 0,
+        "f1": 0.9915966386554622
+      },
+      "Odwolujacy[].przez-pelnomocnika": {
+        "tp": 60,
+        "fp": 0,
+        "fn": 0,
+        "tn": 0,
+        "f1": 1.0
+      },
+      "Odwolujacy[].regon": {
+        "tp": 60,
+        "fp": 0,
+        "fn": 0,
+        "tn": 0,
+        "f1": 1.0
+      },
+      "Zamawiajacy[].krs": {
+        "tp": 53,
+        "fp": 0,
+        "fn": 5,
+        "tn": 5,
+        "f1": 0.954954954954955
+      },
+      "Zamawiajacy[].nazwa": {
+        "tp": 57,
+        "fp": 0,
+        "fn": 6,
+        "tn": 0,
+        "f1": 0.95
+      },
+      "Zamawiajacy[].nip": {
+        "tp": 57,
+        "fp": 0,
+        "fn": 6,
+        "tn": 0,
+        "f1": 0.95
+      },
+      "Zamawiajacy[].prowadzacy_postepowanie": {
+        "tp": 0,
+        "fp": 0,
+        "fn": 6,
+        "tn": 57,
+        "f1": 0.0
+      },
+      "Zamawiajacy[].regon": {
+        "tp": 57,
+        "fp": 0,
+        "fn": 6,
+        "tn": 0,
+        "f1": 0.95
+      },
+      "ZamowieniePubliczne.numer_bzp": {
+        "tp": 46,
+        "fp": 0,
+        "fn": 2,
+        "tn": 12,
+        "f1": 0.9787234042553191
+      },
+      "ZamowieniePubliczne.numer_postepowania": {
+        "tp": 60,
+        "fp": 0,
+        "fn": 0,
+        "tn": 0,
+        "f1": 1.0
+      },
+      "ZamowieniePubliczne.numer_ted": {
+        "tp": 47,
+        "fp": 0,
+        "fn": 0,
+        "tn": 13,
+        "f1": 1.0
+      },
+      "ZamowieniePubliczne.tytul": {
+        "tp": 0,
+        "fp": 0,
+        "fn": 60,
+        "tn": 0,
+        "f1": 0.0
+      },
+      "mocodawca[].data.imie_nazwisko": {
+        "tp": 0,
+        "fp": 0,
+        "fn": 4,
+        "tn": 62,
+        "f1": 0.0
+      },
+      "mocodawca[].data.krs": {
+        "tp": 59,
+        "fp": 0,
+        "fn": 3,
+        "tn": 4,
+        "f1": 0.9752066115702479
+      },
+      "mocodawca[].data.nazwa": {
+        "tp": 58,
+        "fp": 1,
+        "fn": 7,
+        "tn": 0,
+        "f1": 0.9354838709677419
+      },
+      "mocodawca[].data.nip": {
+        "tp": 59,
+        "fp": 0,
+        "fn": 7,
+        "tn": 0,
+        "f1": 0.944
+      },
+      "mocodawca[].data.typ": {
+        "tp": 59,
+        "fp": 0,
+        "fn": 7,
+        "tn": 0,
+        "f1": 0.944
+      },
+      "mocodawca[].podpisujacy[].imie_nazwisko": {
+        "tp": 85,
+        "fp": 0,
+        "fn": 10,
+        "tn": 0,
+        "f1": 0.9444444444444444
+      },
+      "pelnomocnicy[].imie_nazwisko": {
+        "tp": 83,
+        "fp": 0,
+        "fn": 15,
+        "tn": 0,
+        "f1": 0.9171270718232044
+      },
+      "pelnomocnicy[].pesel": {
+        "tp": 1,
+        "fp": 0,
+        "fn": 0,
+        "tn": 97,
+        "f1": 1.0
+      },
+      "przelew_bankowy.data_operacji": {
+        "tp": 50,
+        "fp": 0,
+        "fn": 10,
+        "tn": 0,
+        "f1": 0.9090909090909091
+      },
+      "przelew_bankowy.kwota": {
+        "tp": 50,
+        "fp": 0,
+        "fn": 10,
+        "tn": 0,
+        "f1": 0.9090909090909091
+      },
+      "przelew_bankowy.na_rachunek": {
+        "tp": 58,
+        "fp": 2,
+        "fn": 0,
+        "tn": 0,
+        "f1": 0.9830508474576272
+      },
+      "przelew_bankowy.numer_transakcji": {
+        "tp": 60,
+        "fp": 0,
+        "fn": 0,
+        "tn": 0,
+        "f1": 1.0
+      },
+      "przelew_bankowy.tytul": {
+        "tp": 47,
+        "fp": 13,
+        "fn": 0,
+        "tn": 0,
+        "f1": 0.8785046728971962
+      },
+      "przelew_bankowy.z_rachunku": {
+        "tp": 59,
+        "fp": 0,
+        "fn": 1,
+        "tn": 0,
+        "f1": 0.9915966386554622
+      }
+    },
+    "negative_families": {
+      "bzp": {
+        "docs": 10,
+        "empty": 10
+      },
+      "invoice": {
+        "docs": 10,
+        "empty": 10
+      },
+      "pro-forma": {
+        "docs": 10,
+        "empty": 10
+      },
+      "request": {
+        "docs": 10,
+        "empty": 10
+      },
+      "ruling": {
+        "docs": 10,
+        "empty": 10
+      },
+      "ted": {
+        "docs": 10,
+        "empty": 10
+      }
+    },
+    "all_quality_metrics_match_committed_reference": true
+  },
+  "fixed_variants_reference": {
+    "source": "#120, two-column-appeals.json / fixed_variants / final",
+    "micro_f1": 0.9512258064516129,
+    "micro_f1_strict": 0.9264413518886679,
+    "counts": {
+      "tp": 1843,
+      "fp": 17,
+      "fn": 172,
+      "tn": 284
+    }
+  },
+  "linked_cases": {
+    "seed": 92026,
+    "case_prefix": 26,
+    "split": "all",
+    "dataset_sha256": "9a0290871b89fa10c691c4e6f84d84764bb0929bd72ac4be6419782a8bf0f1aa",
+    "extraction_seconds": 210.79,
+    "missing_or_invalid": 0,
+    "overall": {
+      "cases": 26,
+      "docs": 208,
+      "uzp_f1": 0.8953258722843976,
+      "strict_f1": 0.8780745834435335,
+      "uzp_ci95": [
+        0.85181,
+        0.93482
+      ],
+      "counts": {
+        "tp": 1360,
+        "fp": 16,
+        "fn": 302,
+        "tn": 326
+      },
+      "exact": 131,
+      "routed": 192,
+      "rejected": 52,
+      "negatives": 52
+    },
+    "per_split": {
+      "development": {
+        "cases": 14,
+        "docs": 112,
+        "uzp_f1": 0.9728793998845932,
+        "strict_f1": 0.9667149059334298,
+        "uzp_ci95": [
+          0.95215,
+          0.98971
+        ],
+        "counts": {
+          "tp": 843,
+          "fp": 5,
+          "fn": 42,
+          "tn": 164
+        },
+        "exact": 90,
+        "routed": 110,
+        "rejected": 28,
+        "negatives": 28
+      },
+      "reserved": {
+        "cases": 12,
+        "docs": 96,
+        "uzp_f1": 0.7923371647509578,
+        "strict_f1": 0.7704918032786885,
+        "uzp_ci95": [
+          0.74859,
+          0.8429
+        ],
+        "counts": {
+          "tp": 517,
+          "fp": 11,
+          "fn": 260,
+          "tn": 162
+        },
+        "exact": 41,
+        "routed": 82,
+        "rejected": 24,
+        "negatives": 24
+      }
+    },
+    "per_class": {
+      "negatywny": {
+        "cases": 26,
+        "docs": 52,
+        "uzp_f1": null,
+        "strict_f1": null,
+        "uzp_ci95": null,
+        "counts": {
+          "tp": 0,
+          "fp": 0,
+          "fn": 0,
+          "tn": 0
+        },
+        "exact": 52,
+        "routed": 52,
+        "rejected": 52,
+        "negatives": 52
+      },
+      "odwolanie": {
+        "cases": 26,
+        "docs": 52,
+        "uzp_f1": 0.9355191256830601,
+        "strict_f1": 0.8991228070175439,
+        "uzp_ci95": [
+          0.90479,
+          0.96257
+        ],
+        "counts": {
+          "tp": 856,
+          "fp": 13,
+          "fn": 105,
+          "tn": 170
+        },
+        "exact": 18,
+        "routed": 52,
+        "rejected": 0,
+        "negatives": 0
+      },
+      "pelnomocnictwo": {
+        "cases": 26,
+        "docs": 52,
+        "uzp_f1": 0.8531073446327684,
+        "strict_f1": 0.8735868448098664,
+        "uzp_ci95": [
+          0.77356,
+          0.92154
+        ],
+        "counts": {
+          "tp": 302,
+          "fp": 0,
+          "fn": 104,
+          "tn": 142
+        },
+        "exact": 30,
+        "routed": 52,
+        "rejected": 0,
+        "negatives": 0
+      },
+      "przelew": {
+        "cases": 26,
+        "docs": 52,
+        "uzp_f1": 0.808,
+        "strict_f1": 0.7954545454545454,
+        "uzp_ci95": [
+          0.67538,
+          0.90647
+        ],
+        "counts": {
+          "tp": 202,
+          "fp": 3,
+          "fn": 93,
+          "tn": 14
+        },
+        "exact": 31,
+        "routed": 36,
+        "rejected": 0,
+        "negatives": 0
+      }
+    },
+    "per_family": {
+      "decision-extract": {
+        "cases": 12,
+        "docs": 24,
+        "uzp_f1": null,
+        "strict_f1": null,
+        "uzp_ci95": null,
+        "counts": {
+          "tp": 0,
+          "fp": 0,
+          "fn": 0,
+          "tn": 0
+        },
+        "exact": 24,
+        "routed": 24,
+        "rejected": 24,
+        "negatives": 24
+      },
+      "early-letterhead": {
+        "cases": 2,
+        "docs": 4,
+        "uzp_f1": 0.9830508474576272,
+        "strict_f1": 0.9879518072289156,
+        "uzp_ci95": [
+          0.96774,
+          1.0
+        ],
+        "counts": {
+          "tp": 29,
+          "fp": 0,
+          "fn": 1,
+          "tn": 12
+        },
+        "exact": 3,
+        "routed": 4,
+        "rejected": 0,
+        "negatives": 0
+      },
+      "early-modular": {
+        "cases": 14,
+        "docs": 28,
+        "uzp_f1": 0.987535953978907,
+        "strict_f1": 0.9772727272727273,
+        "uzp_ci95": [
+          0.97889,
+          0.99437
+        ],
+        "counts": {
+          "tp": 515,
+          "fp": 3,
+          "fn": 10,
+          "tn": 88
+        },
+        "exact": 17,
+        "routed": 28,
+        "rejected": 0,
+        "negatives": 0
+      },
+      "early-panels": {
+        "cases": 2,
+        "docs": 4,
+        "uzp_f1": 1.0,
+        "strict_f1": 1.0,
+        "uzp_ci95": [
+          1.0,
+          1.0
+        ],
+        "counts": {
+          "tp": 26,
+          "fp": 0,
+          "fn": 0,
+          "tn": 8
+        },
+        "exact": 4,
+        "routed": 4,
+        "rejected": 0,
+        "negatives": 0
+      },
+      "early-paragraphs": {
+        "cases": 3,
+        "docs": 6,
+        "uzp_f1": 1.0,
+        "strict_f1": 1.0,
+        "uzp_ci95": [
+          1.0,
+          1.0
+        ],
+        "counts": {
+          "tp": 40,
+          "fp": 0,
+          "fn": 0,
+          "tn": 14
+        },
+        "exact": 6,
+        "routed": 6,
+        "rejected": 0,
+        "negatives": 0
+      },
+      "early-procedural": {
+        "cases": 2,
+        "docs": 4,
+        "uzp_f1": 1.0,
+        "strict_f1": 1.0,
+        "uzp_ci95": [
+          1.0,
+          1.0
+        ],
+        "counts": {
+          "tp": 30,
+          "fp": 0,
+          "fn": 0,
+          "tn": 12
+        },
+        "exact": 3,
+        "routed": 4,
+        "rejected": 0,
+        "negatives": 0
+      },
+      "early-register": {
+        "cases": 3,
+        "docs": 6,
+        "uzp_f1": 0.8169014084507042,
+        "strict_f1": 0.845360824742268,
+        "uzp_ci95": [
+          0.4,
+          1.0
+        ],
+        "counts": {
+          "tp": 29,
+          "fp": 0,
+          "fn": 13,
+          "tn": 14
+        },
+        "exact": 3,
+        "routed": 6,
+        "rejected": 0,
+        "negatives": 0
+      },
+      "early-short": {
+        "cases": 2,
+        "docs": 4,
+        "uzp_f1": 0.8888888888888888,
+        "strict_f1": 0.9090909090909091,
+        "uzp_ci95": [
+          0.76923,
+          1.0
+        ],
+        "counts": {
+          "tp": 24,
+          "fp": 0,
+          "fn": 6,
+          "tn": 12
+        },
+        "exact": 3,
+        "routed": 4,
+        "rejected": 0,
+        "negatives": 0
+      },
+      "early_cards": {
+        "cases": 2,
+        "docs": 4,
+        "uzp_f1": 1.0,
+        "strict_f1": 1.0,
+        "uzp_ci95": [
+          1.0,
+          1.0
+        ],
+        "counts": {
+          "tp": 24,
+          "fp": 0,
+          "fn": 0,
+          "tn": 0
+        },
+        "exact": 4,
+        "routed": 4,
+        "rejected": 0,
+        "negatives": 0
+      },
+      "early_letter": {
+        "cases": 2,
+        "docs": 4,
+        "uzp_f1": 0.9767441860465116,
+        "strict_f1": 0.9166666666666666,
+        "uzp_ci95": [
+          0.95652,
+          1.0
+        ],
+        "counts": {
+          "tp": 21,
+          "fp": 1,
+          "fn": 0,
+          "tn": 2
+        },
+        "exact": 2,
+        "routed": 4,
+        "rejected": 0,
+        "negatives": 0
+      },
+      "early_order": {
+        "cases": 2,
+        "docs": 4,
+        "uzp_f1": 1.0,
+        "strict_f1": 1.0,
+        "uzp_ci95": [
+          1.0,
+          1.0
+        ],
+        "counts": {
+          "tp": 24,
+          "fp": 0,
+          "fn": 0,
+          "tn": 0
+        },
+        "exact": 4,
+        "routed": 4,
+        "rejected": 0,
+        "negatives": 0
+      },
+      "early_register": {
+        "cases": 2,
+        "docs": 4,
+        "uzp_f1": 0.9767441860465116,
+        "strict_f1": 0.9583333333333334,
+        "uzp_ci95": [
+          0.94737,
+          1.0
+        ],
+        "counts": {
+          "tp": 21,
+          "fp": 1,
+          "fn": 0,
+          "tn": 2
+        },
+        "exact": 3,
+        "routed": 4,
+        "rejected": 0,
+        "negatives": 0
+      },
+      "early_sections": {
+        "cases": 2,
+        "docs": 4,
+        "uzp_f1": 1.0,
+        "strict_f1": 1.0,
+        "uzp_ci95": [
+          1.0,
+          1.0
+        ],
+        "counts": {
+          "tp": 24,
+          "fp": 0,
+          "fn": 0,
+          "tn": 0
+        },
+        "exact": 4,
+        "routed": 4,
+        "rejected": 0,
+        "negatives": 0
+      },
+      "early_summary": {
+        "cases": 2,
+        "docs": 4,
+        "uzp_f1": 1.0,
+        "strict_f1": 1.0,
+        "uzp_ci95": [
+          1.0,
+          1.0
+        ],
+        "counts": {
+          "tp": 24,
+          "fp": 0,
+          "fn": 0,
+          "tn": 0
+        },
+        "exact": 4,
+        "routed": 4,
+        "rejected": 0,
+        "negatives": 0
+      },
+      "early_thermal": {
+        "cases": 2,
+        "docs": 4,
+        "uzp_f1": 0.6666666666666666,
+        "strict_f1": 0.6666666666666666,
+        "uzp_ci95": [
+          0.66667,
+          0.66667
+        ],
+        "counts": {
+          "tp": 12,
+          "fp": 0,
+          "fn": 12,
+          "tn": 0
+        },
+        "exact": 2,
+        "routed": 2,
+        "rejected": 0,
+        "negatives": 0
+      },
+      "late-company": {
+        "cases": 4,
+        "docs": 8,
+        "uzp_f1": 1.0,
+        "strict_f1": 1.0,
+        "uzp_ci95": [
+          1.0,
+          1.0
+        ],
+        "counts": {
+          "tp": 58,
+          "fp": 0,
+          "fn": 0,
+          "tn": 20
+        },
+        "exact": 8,
+        "routed": 8,
+        "rejected": 0,
+        "negatives": 0
+      },
+      "late-consortium": {
+        "cases": 4,
+        "docs": 8,
+        "uzp_f1": 0.7105263157894737,
+        "strict_f1": 0.7450980392156863,
+        "uzp_ci95": [
+          0.6755,
+          0.74847
+        ],
+        "counts": {
+          "tp": 54,
+          "fp": 0,
+          "fn": 44,
+          "tn": 30
+        },
+        "exact": 0,
+        "routed": 8,
+        "rejected": 0,
+        "negatives": 0
+      },
+      "late-list": {
+        "cases": 12,
+        "docs": 24,
+        "uzp_f1": 0.866581956797967,
+        "strict_f1": 0.8072519083969466,
+        "uzp_ci95": [
+          0.8229,
+          0.90542
+        ],
+        "counts": {
+          "tp": 341,
+          "fp": 10,
+          "fn": 95,
+          "tn": 82
+        },
+        "exact": 1,
+        "routed": 24,
+        "rejected": 0,
+        "negatives": 0
+      },
+      "late-trader": {
+        "cases": 4,
+        "docs": 8,
+        "uzp_f1": 0.375,
+        "strict_f1": 0.5,
+        "uzp_ci95": [
+          0.28571,
+          0.44444
+        ],
+        "counts": {
+          "tp": 12,
+          "fp": 0,
+          "fn": 40,
+          "tn": 20
+        },
+        "exact": 0,
+        "routed": 8,
+        "rejected": 0,
+        "negatives": 0
+      },
+      "late_table": {
+        "cases": 2,
+        "docs": 4,
+        "uzp_f1": 1.0,
+        "strict_f1": 1.0,
+        "uzp_ci95": [
+          1.0,
+          1.0
+        ],
+        "counts": {
+          "tp": 20,
+          "fp": 0,
+          "fn": 0,
+          "tn": 4
+        },
+        "exact": 4,
+        "routed": 4,
+        "rejected": 0,
+        "negatives": 0
+      },
+      "payment-advice": {
+        "cases": 7,
+        "docs": 14,
+        "uzp_f1": null,
+        "strict_f1": null,
+        "uzp_ci95": null,
+        "counts": {
+          "tp": 0,
+          "fp": 0,
+          "fn": 0,
+          "tn": 0
+        },
+        "exact": 14,
+        "routed": 14,
+        "rejected": 14,
+        "negatives": 14
+      },
+      "request-for-authority": {
+        "cases": 7,
+        "docs": 14,
+        "uzp_f1": null,
+        "strict_f1": null,
+        "uzp_ci95": null,
+        "counts": {
+          "tp": 0,
+          "fp": 0,
+          "fn": 0,
+          "tn": 0
+        },
+        "exact": 14,
+        "routed": 14,
+        "rejected": 14,
+        "negatives": 14
+      },
+      "scan_bordered": {
+        "cases": 2,
+        "docs": 4,
+        "uzp_f1": 0.8292682926829268,
+        "strict_f1": 0.7619047619047619,
+        "uzp_ci95": [
+          0.66667,
+          0.95652
+        ],
+        "counts": {
+          "tp": 17,
+          "fp": 1,
+          "fn": 6,
+          "tn": 0
+        },
+        "exact": 2,
+        "routed": 3,
+        "rejected": 0,
+        "negatives": 0
+      },
+      "scan_history": {
+        "cases": 2,
+        "docs": 4,
+        "uzp_f1": 0.0,
+        "strict_f1": 0.0,
+        "uzp_ci95": [
+          0.0,
+          0.0
+        ],
+        "counts": {
+          "tp": 0,
+          "fp": 0,
+          "fn": 24,
+          "tn": 0
+        },
+        "exact": 0,
+        "routed": 0,
+        "rejected": 0,
+        "negatives": 0
+      },
+      "scan_operation": {
+        "cases": 2,
+        "docs": 4,
+        "uzp_f1": 0.0,
+        "strict_f1": 0.0,
+        "uzp_ci95": [
+          0.0,
+          0.0
+        ],
+        "counts": {
+          "tp": 0,
+          "fp": 0,
+          "fn": 20,
+          "tn": 4
+        },
+        "exact": 0,
+        "routed": 0,
+        "rejected": 0,
+        "negatives": 0
+      },
+      "scan_order": {
+        "cases": 2,
+        "docs": 4,
+        "uzp_f1": 0.0,
+        "strict_f1": 0.0,
+        "uzp_ci95": [
+          0.0,
+          0.0
+        ],
+        "counts": {
+          "tp": 0,
+          "fp": 0,
+          "fn": 24,
+          "tn": 0
+        },
+        "exact": 0,
+        "routed": 0,
+        "rejected": 0,
+        "negatives": 0
+      },
+      "scan_participants": {
+        "cases": 2,
+        "docs": 4,
+        "uzp_f1": 0.8108108108108109,
+        "strict_f1": 0.8095238095238095,
+        "uzp_ci95": [
+          0.66667,
+          0.94737
+        ],
+        "counts": {
+          "tp": 15,
+          "fp": 0,
+          "fn": 7,
+          "tn": 2
+        },
+        "exact": 2,
+        "routed": 3,
+        "rejected": 0,
+        "negatives": 0
+      }
+    },
+    "per_view": {
+      "native": {
+        "cases": 26,
+        "docs": 104,
+        "uzp_f1": 0.9153199741435035,
+        "strict_f1": 0.899581589958159,
+        "uzp_ci95": [
+          0.87416,
+          0.95369
+        ],
+        "counts": {
+          "tp": 708,
+          "fp": 4,
+          "fn": 127,
+          "tn": 163
+        },
+        "exact": 77,
+        "routed": 98,
+        "rejected": 26,
+        "negatives": 26
+      },
+      "scan": {
+        "cases": 26,
+        "docs": 104,
+        "uzp_f1": 0.8745808182427901,
+        "strict_f1": 0.8560727661851257,
+        "uzp_ci95": [
+          0.82725,
+          0.91843
+        ],
+        "counts": {
+          "tp": 652,
+          "fp": 12,
+          "fn": 175,
+          "tn": 163
+        },
+        "exact": 54,
+        "routed": 94,
+        "rejected": 26,
+        "negatives": 26
+      }
+    }
+  },
+  "linked_reference": {
+    "source": "#113, case-transfers.json / integration_on_cf67694",
+    "extractor": "95c87f314633b355bc896772f265b12e330242c5",
+    "development": {
+      "docs": 112,
+      "routed": 110,
+      "exact": 90,
+      "uzp_f1": 0.9728793998845932,
+      "strict_f1": 0.9667149059334298,
+      "rejected": 28,
+      "negatives": 28
+    },
+    "reserved": {
+      "docs": 96,
+      "routed": 82,
+      "exact": 41,
+      "uzp_f1": 0.7923371647509578,
+      "strict_f1": 0.7704918032786885,
+      "rejected": 24,
+      "negatives": 24
+    }
+  },
+  "private_development": {
+    "corpus_1": {
+      "micro_f1": 0.9285714285714286,
+      "micro_f1_strict": 0.8821138211382114,
+      "exact": 10,
+      "pdfs": 22,
+      "counts": {
+        "tp": 143,
+        "fp": 10,
+        "fn": 12,
+        "tn": 82
+      },
+      "counts_strict": {
+        "tp": 217,
+        "fp": 28,
+        "fn": 30
+      },
+      "per_class_f1": {
+        "odwolanie": 0.9454545454545454,
+        "pelnomocnictwo": 0.9583333333333334,
+        "przelew": 0.8
+      },
+      "classification_accuracy": 1.0,
+      "negatives_empty": 1.0,
+      "outputs_complete": 1.0,
+      "routing": {
+        "odwolanie": {
+          "correct": 8,
+          "total": 8
+        },
+        "pelnomocnictwo": {
+          "correct": 3,
+          "total": 3
+        },
+        "przelew": {
+          "correct": 4,
+          "total": 4
+        },
+        "negatywny": {
+          "correct": 7,
+          "total": 7
+        }
+      },
+      "reference": {
+        "micro_f1": 0.9255663430420712,
+        "micro_f1_strict": 0.8780487804878049,
+        "exact": 10,
+        "counts": {
+          "tp": 143,
+          "fp": 11,
+          "fn": 12,
+          "tn": 81
+        }
+      }
+    },
+    "corpus_2": {
+      "micro_f1": 0.9243697478991597,
+      "micro_f1_strict": 0.8951406649616368,
+      "exact": 22,
+      "pdfs": 39,
+      "counts": {
+        "tp": 220,
+        "fp": 12,
+        "fn": 24,
+        "tn": 138
+      },
+      "counts_strict": {
+        "tp": 350,
+        "fp": 38,
+        "fn": 44
+      },
+      "per_class_f1": {
+        "odwolanie": 0.8976897689768977,
+        "pelnomocnictwo": 0.9836065573770492,
+        "przelew": 0.9642857142857143
+      },
+      "classification_accuracy": 1.0,
+      "negatives_empty": 1.0,
+      "outputs_complete": 1.0,
+      "routing": {
+        "odwolanie": {
+          "correct": 13,
+          "total": 13
+        },
+        "pelnomocnictwo": {
+          "correct": 5,
+          "total": 5
+        },
+        "przelew": {
+          "correct": 10,
+          "total": 10
+        },
+        "negatywny": {
+          "correct": 11,
+          "total": 11
+        }
+      },
+      "reference": {
+        "micro_f1": 0.9243697478991597,
+        "micro_f1_strict": 0.8951406649616368,
+        "exact": 22,
+        "counts": {
+          "tp": 220,
+          "fp": 12,
+          "fn": 24,
+          "tn": 138
+        }
+      }
+    }
+  },
+  "corpus_1_earlier_peak": {
+    "source": "#120, two-column-appeals.json / earlier_integrated_dev",
+    "extractor": "f19d5322e2ca121d7627f46ad1c459509252b724",
+    "micro_f1": 0.9285714285714286
+  },
+  "mixed_batch": {
+    "gold_exact": {
+      "training": 90,
+      "scan1": 29,
+      "scan2": 29
+    },
+    "wall_s": 343.53,
+    "peak_sampled_tree_mib": 1069.5,
+    "max_serial_completion_gap_s": 21.5,
+    "sha256": "317631e3edecdfbcf064ee36c75791d560b0e5365fc54c6e2180e7f415ed67a2",
+    "files": 150
+  },
+  "mixed_batch_budget_s": 2700,
+  "earlier_mixed_batch": {
+    "commit": "f19d5322e2ca121d7627f46ad1c459509252b724",
+    "files": 150,
+    "wall_s": 200.72,
+    "gold_exact": {
+      "training": 90,
+      "scan1": 29,
+      "scan2": 29
+    },
+    "sha256": "317631e3edecdfbcf064ee36c75791d560b0e5365fc54c6e2180e7f415ed67a2"
+  },
+  "mixed_batch_reference": {
+    "source": "#120, two-column-appeals.json / jury_150",
+    "gold_exact": {
+      "training": 90,
+      "scan1": 29,
+      "scan2": 29
+    },
+    "wall_s": 1036.78,
+    "peak_sampled_tree_mib": 748.3,
+    "max_serial_completion_gap_s": 112.32,
+    "sha256": "317631e3edecdfbcf064ee36c75791d560b0e5365fc54c6e2180e7f415ed67a2",
+    "files": 150
+  },
+  "comparison_findings": {
+    "timing_method": "After the six release gates, ran the earlier extractor and then the pinned extractor on the same shared host, with identical inputs, locked dependencies and two workers. Child CPU seconds include the harness process sampler.",
+    "timing_control": {
+      "gold_exact": {
+        "training": 90,
+        "scan1": 29,
+        "scan2": 29
+      },
+      "wall_s": 332.52,
+      "peak_sampled_tree_mib": 1087.4,
+      "max_serial_completion_gap_s": 21.47,
+      "sha256": "317631e3edecdfbcf064ee36c75791d560b0e5365fc54c6e2180e7f415ed67a2",
+      "files": 150,
+      "child_cpu_seconds": 369.7,
+      "start_load_1m": 31.71,
+      "end_load_1m": 38.24,
+      "commit": "f19d5322e2ca121d7627f46ad1c459509252b724"
+    },
+    "timing_repeat": {
+      "gold_exact": {
+        "training": 90,
+        "scan1": 29,
+        "scan2": 29
+      },
+      "wall_s": 323.2,
+      "peak_sampled_tree_mib": 1073.9,
+      "max_serial_completion_gap_s": 18.41,
+      "sha256": "317631e3edecdfbcf064ee36c75791d560b0e5365fc54c6e2180e7f415ed67a2",
+      "files": 150,
+      "child_cpu_seconds": 371.09,
+      "start_load_1m": 34.98,
+      "end_load_1m": 25.82,
+      "commit": "725765b075a8361f2519002f95f50825b5aa9ed3"
+    },
+    "timing_result": "The original merged measurement was 343.53 s. The earlier extractor took 332.52 s on replay, and the merged extractor took 323.20 s on replay. All three runs produced the same 150 output byte hashes. The 200.72 s historical timing did not reproduce on the earlier extractor.",
+    "quality_result": "Training output bytes and all fixed-variant quality metrics match #120. The scan gate and both linked splits match #113. Corpus 1 development matches the earlier #120 peak, and corpus 2 development matches #113 and #120."
+  }
+}
