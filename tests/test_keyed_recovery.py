@@ -118,18 +118,18 @@ def test_bundled_keyed_batch_recovers_and_continues(inputs, monkeypatch, capsys,
     assert json.loads(Path("out/two.json").read_text()) == {"mocodawca": [], "pelnomocnicy": []}
     first = Path("out/one.json")
     if failure in ("unreadable", "corrupt", "rules"):
-        assert first.read_bytes() == b""
+        assert first.read_text() == "{}\n"
     else:
         assert json.loads(first.read_text()) == {"mocodawca": [], "pelnomocnicy": []}
 
 
-def test_gui_keyed_unreadable_is_empty_and_marked_as_recovered(inputs, tmp_path, monkeypatch, capsys):
+def test_gui_keyed_unreadable_returns_empty_object_and_marks_recovery(inputs, tmp_path, monkeypatch, capsys):
     def unreadable(*args, **kwargs):
         raise ValueError(PRIVATE)
 
     monkeypatch.setattr(pipeline, "read_pages", unreadable)
     docs = gui_files.analyze([(Path("case/one.pdf"), inputs / "one.pdf")], tmp_path)
-    assert docs[0].result.text == "" and docs[0].result.used_recovery
+    assert docs[0].result.text == "{}\n" and docs[0].result.used_recovery
     assert PRIVATE not in capsys.readouterr().err
 
 

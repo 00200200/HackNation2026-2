@@ -24,7 +24,7 @@ Check, in this order:
    that reads file names or paths; values from `data/uzp` gold files or holdout cases 51–60 copied into prompts,
    configs or code (grep for distinctive gold strings: names, NIP/KRS/REGON, account numbers, BZP/TED numbers);
    a closed-weight model or non-EU endpoint in the extraction path; the CLI or the `input/`→`output/` contract
-   broken (file names, tree, one JSON per PDF, empty file for negatives); JSON keys or types that drift from
+   broken (file names, tree, one JSON per PDF, `{}` for negatives); JSON keys or types that drift from
    `data/uzp/oczekiwane-json/`; F1 or speed numbers in docs without matching results; failing tests or lint;
    `requirements.txt` out of sync with `uv.lock` or Python < 3.13.
 2. **Basic requirements** still met (skill list). If one is missing, say that stage I scores nothing.

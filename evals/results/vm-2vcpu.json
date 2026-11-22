@@ -1,0 +1,39 @@
+{
+  "organizer_revision": "eadffbce531eeac876d0f7e62c1cc6e857b05796",
+  "extraction_revision": "7a1c45bf3535397d4535c15695c2fc164ea7fd00",
+  "profile": "rules only",
+  "dataset": {
+    "training_pdfs": 196,
+    "scan_pdfs": 30,
+    "total_pdfs": 226
+  },
+  "ubuntu_24_04_amd64_2vcpu_16g": {
+    "status": "unverified",
+    "reason": "Docker Desktop did not respond to docker run, docker info or repeated Engine socket pings.",
+    "offline_wall_seconds": null,
+    "estimate_150_pdfs_seconds": null,
+    "peak_memory_bytes": null,
+    "byte_parity": null,
+    "after_restart": null,
+    "reproduce_from_opt_solution": "bash repo/deploy/rehearse_vm.sh /opt/solution/.venv/bin/python"
+  },
+  "fallback_host": {
+    "platform": "macOS arm64, Apple M1, shared host, no CPU quota",
+    "workers": 2,
+    "bootstrap_python": "3.12.3",
+    "installed_python": "3.13.7",
+    "reference_python": "3.13.1",
+    "setup_smoke": "Native transfer and nested scanned appeal passed on first installation and rerun. Existing input/output sentinel files survived the rerun.",
+    "invocation": "RUN.md command as the deployment user in a temporary solution tree, without sudo.",
+    "network": "macOS sandbox denied outbound IP for the CLI and children. An external TCP connection returned EPERM under the same rule.",
+    "local_reference_wall_seconds": 243.61,
+    "offline_wall_seconds": 399.77,
+    "estimate_150_pdfs_seconds_same_host_mix": 265.33,
+    "max_resident_set_size_bytes_reported_by_bsd_time_l": 471121920,
+    "byte_identical_including_paths": 226,
+    "zero_byte_predictions": 16,
+    "scan_routing_correct": 30,
+    "scan_exact_json_matches": 29,
+    "exit_code": 0
+  }
+}
