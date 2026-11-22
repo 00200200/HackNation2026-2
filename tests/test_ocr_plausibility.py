@@ -46,8 +46,6 @@ def test_trailing_stray_symbols_are_stripped(raw, clean):
     [
         "wę =— MH EMMM Warszawa O |] EGO | Li ZWS |",
         "ąz =— KQ WWWW Lublin I |] OKA | Te XYV |",
-        "Kancelaria Prawn — Radca Prawny Kaj EBM",
-        "Kancelaria Praw — Radca Prawny Ola QBX |",
         "[| ~~ 12 # 7 <> |",
     ],
 )
@@ -69,6 +67,23 @@ def test_value_with_a_recoverable_part_is_trimmed_not_nulled(raw, clean):
 @pytest.mark.parametrize("name", ["Firma ` Alfa", "Firma | Alfa Beta", "GMINA MIASTO | ŁÓDŹ"])
 def test_a_lone_stray_symbol_inside_a_name_stays(name):
     # Still 80 % similar to the printed name under the UZP counting, so a null would lose the hit.
+    assert trim_name(name) == name
+
+
+@pytest.mark.parametrize(
+    "name",
+    [
+        "Kancelaria Radcy Prawnego Jan Kowalski EBX",
+        "Kancelaria Radcy Prawnego Anna LIS",
+        "Kancelaria Radcy Prawnego Jan KOT",
+        "Kancelaria Prawn — Radca Prawny Kaj EBM",
+        "| ALFA | Sp. z o.o.",
+        "Instytut | PAN | Warszawa",
+        "PHU | ABC | Jan Kowalski",
+    ],
+)
+def test_a_value_that_can_still_match_is_not_nulled(name):
+    # A few capitals after a full firm name, or two rules around an acronym, leave an 80 % match under the UZP counting.
     assert trim_name(name) == name
 
 

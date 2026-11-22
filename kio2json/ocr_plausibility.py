@@ -3,7 +3,7 @@
 A stamp, a table rule or a redaction box leaves OCR noise at the end of a good value, or in place of one. Under the UZP
 counting (issue #59) a wrong value costs one FP and a missing one one FN, a long string is a hit from 80 % similarity,
 and null is free when the reference holds no value. So a value that is still close is trimmed, never nulled; only a value
-that is scanner noise throughout, which cannot match anyway, becomes null.
+that is scanner noise throughout, which is unlikely to match anyway, becomes null.
 """
 
 import re
@@ -30,13 +30,8 @@ _KEEP_TAIL = re.compile(
 )
 # Stamp noise runs on; an all-capitals seat or unit ("W NOWYM SĄCZU", "ZW JAWORZNO III") is shorter than this.
 _MIN_NOISE_TAIL = 6
-# A law firm named after a professional title ends in that lawyer's name. A given name followed by one to three
-# capitals at the very end is a misread surname (a printed surname in capitals is usually longer); an undotted legal
-# form such as SC or SKA is no surname.
-_LAWYER_TITLE = re.compile(r"(?i)\b(?:adwokat\w*|radc\w*\s+prawn\w*)\s+(.+)$")
-_MISREAD_SURNAME = re.compile(
-    r"\b[A-ZĄĆĘŁŃÓŚŹŻ][a-ząćęłńóśźż]+\s+(?!(?:SC|SKA|SA|SE|AG|LLP)\s*$)[A-ZĄĆĘŁŃÓŚŹŻ]{1,3}\s*$"
-)
+# A value with this many stray-symbol tokens is not a name with one rule through it.
+_MIN_STRAY_TOKENS = 3
 
 
 def _noise(token: str) -> bool:
@@ -61,32 +56,29 @@ def _cut_after_legal_form(text: str) -> str:
 
 
 def _garbage(text: str) -> bool:
-    """Scanner noise throughout: stray symbols and no letters at all, or, in mixed-case text, two or more stray-symbol
-    tokens among mostly noise tokens. A lone rule inside a name is trimmed, not nulled; in all capitals a short word is
+    """Scanner noise throughout: stray symbols and no letters at all, or, in mixed-case text, three or more stray-symbol
+    tokens among mostly noise tokens. A rule or two inside a name is trimmed, not nulled; in all capitals a short word is
     a word, so it never counts as noise here."""
     tokens = text.split()
     strays = sum(bool(_STRAY.search(token)) for token in tokens)
     if not any(c.isalpha() for c in text):
         return bool(strays)
     mixed_case = any(c.islower() for c in text)
-    return mixed_case and strays >= 2 and sum(map(_noise, tokens)) * 2 >= len(tokens)
-
-
-def _misread_lawyer(text: str) -> bool:
-    return bool((lawyer := _LAWYER_TITLE.search(text)) and _MISREAD_SURNAME.search(lawyer[1]))
+    return mixed_case and strays >= _MIN_STRAY_TOKENS and sum(map(_noise, tokens)) * 2 >= len(tokens)
 
 
 def trim_name(text: str | None, *, legal_form: bool = True) -> str | None:
-    """Return the name without its noisy tail or trailing stray symbols; None if only noise is left.
+    """Return the name without its noisy tail or trailing stray symbols; None if it is scanner noise throughout.
 
-    The noise tail is cut first, so a name with a recoverable head is trimmed even when the tail is garbage.
+    The noise tail is cut first, so a name with a recoverable head is trimmed even when the tail is garbage. A titled
+    law-firm name is never nulled for its ending: a few capitals after a full name leave it a match.
     """
     if not text:
         return text
     if legal_form:
         text = _cut_after_legal_form(text)
     text = text.rstrip(_NAME_END)
-    return None if not text or _garbage(text) or _misread_lawyer(text) else text
+    return None if not text or _garbage(text) else text
 
 
 def trim_title(text: str | None) -> str | None:
