@@ -42,9 +42,12 @@ label patterns or an optional language model.
 
    The development host’s Docker engine timed out before starting Ubuntu.
    The Ubuntu offline run, two-vCPU timing and reboot result are unverified.
-   On the shared Apple M1 host, the network-denied run matched all 226 local
-   files byte for byte in 399.77 seconds with two workers. The same mix scales
-   to about 4 min 25 s for 150 PDFs on that host. [Rehearsal measurements](../../evals/results/vm-2vcpu.json)
+   On the shared Apple M1 host, the network-denied run (rules-only profile,
+   extraction revision `7a1c45b`) wrote output byte-identical to the reference
+   run for all 226 local files (196 synthetic training PDFs, 30 organizer scans)
+   in 399.77 seconds with two workers. The same mix scales to about 4 min 25 s
+   for 150 PDFs on that host.
+   [Rehearsal measurements](../../evals/results/vm-2vcpu.json)
 
 4. **Copy `RUN.md` and check the real VM.** Setup installs the native command
    automatically. To restore it for handover, run the following from
